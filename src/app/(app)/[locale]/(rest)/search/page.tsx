@@ -29,11 +29,11 @@ import {
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import {
-  parseSearchParams,
-  RawSearchParams,
-} from '@/app/(app)/features/search/utils/parseSearchParams';
+  toFindResourcesQuery,
+  type RawSearchParams,
+} from '@/app/(app)/features/search/intent';
 import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
-import { parseLegacyAiClarifyParams } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import { liftSearchRequest } from '@/app/(app)/features/search/utils/liftSearchRequest';
 import { navigateToSearchWithCoords } from '@/app/(app)/features/search/utils';
 import { getPrintableDirectoryContextParams } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 
@@ -47,9 +47,11 @@ const getPageData = cache(async function (
 ) {
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const searchQuery = parseSearchParams(rawParams);
+  const { intent, envelope } = liftSearchRequest(rawParams);
+  const searchQuery = toFindResourcesQuery(intent);
 
   if (searchQuery.location && !searchQuery.coordinates) {
+    // The redirect re-serialises the URL as received; moving it onto the serializer is ISS-2376.
     await navigateToSearchWithCoords(
       locale,
       appConfig.tenantId,
@@ -58,18 +60,16 @@ const getPageData = cache(async function (
     );
   }
 
-  // Run before the search executes: for AI-classification tenants this
-  // always redirects, so running it after would discard a real search.
-  await handleLegacyDeepLinks({
+  // Resolve before the search executes: a redirect here would discard a real search.
+  const clarify = await handleLegacyDeepLinks({
     appConfig,
-    searchQuery,
+    intent,
     locale,
-    skipLegacyLinkCheck: rawParams.sllc === '1',
     printableDirectoryContext: getPrintableDirectoryContextParams(rawParams),
+    skipLegacyLinkCheck: envelope.sllc === '1',
   });
 
-  const page =
-    typeof rawParams.page === 'string' ? parseInt(rawParams.page) || 1 : 1;
+  const page = envelope.page !== undefined ? parseInt(envelope.page) || 1 : 1;
   const limit = appConfig.search.resultsLimit;
 
   let useFindResourcesV2 = false;
@@ -156,6 +156,9 @@ const getPageData = cache(async function (
     resources,
     t,
     searchQuery,
+    envelope,
+    clarify,
+    intent,
     cardLayout,
   };
 });
@@ -169,7 +172,7 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const [{ locale }, rawParams] = await Promise.all([params, searchParams]);
   const appConfig = await getAppConfigWithoutHost(locale);
-  const searchQuery = parseSearchParams(rawParams);
+  const searchQuery = toFindResourcesQuery(liftSearchRequest(rawParams).intent);
 
   const baseTitle = appConfig.meta.title || appConfig.brand.name || '';
   const parts = [
@@ -223,16 +226,20 @@ export default async function SearchPage({
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
 
-  const aiSearchAlert =
-    typeof searchParamsResult.a === 'string' ? searchParamsResult.a : undefined;
-  const legacyAiClarifyState = parseLegacyAiClarifyParams(searchParamsResult);
-
-  const { filters, results, totalResults, resources, searchQuery, cardLayout } =
-    await getPageData(locale, searchParamsResult);
+  const {
+    filters,
+    results,
+    totalResults,
+    resources,
+    searchQuery,
+    envelope,
+    clarify: legacyAiClarifyState,
+    intent,
+    cardLayout,
+  } = await getPageData(locale, searchParamsResult);
+  const aiSearchAlert = envelope.a;
   const currentPage =
-    typeof searchParamsResult.page === 'string'
-      ? parseInt(searchParamsResult.page, 10) || 1
-      : 1;
+    envelope.page !== undefined ? parseInt(envelope.page, 10) || 1 : 1;
 
   if (searchQuery.widgetId) {
     trackEvent(AnalyticsEvent.WidgetSearch, AnalyticsTools.Umami);
@@ -265,6 +272,7 @@ export default async function SearchPage({
       >
         <SearchPageShell
           legacyAiClarifyState={legacyAiClarifyState ?? undefined}
+          searchIntent={intent}
           cardLayout={cardLayout}
           aiSearchAlert={aiSearchAlert}
         />

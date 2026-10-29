@@ -2,8 +2,9 @@
 
 import { useCallback, useState } from 'react';
 
+import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { FilterPanel } from './filter/filter-panel';
 import { MapContainer } from './map-container';
@@ -13,12 +14,15 @@ type SearchPageShellProps = {
   aiSearchAlert?: string;
   cardLayout: SearchCardLayoutConfig;
   legacyAiClarifyState?: LegacyAiClarifyState;
+  /** The lifted intent: the plain data the client's resolver starts from. */
+  searchIntent?: SearchIntent;
 };
 
 export function SearchPageShell({
   aiSearchAlert,
   cardLayout,
   legacyAiClarifyState,
+  searchIntent,
 }: SearchPageShellProps) {
   const [hideSupplementaryContent, setHideSupplementaryContent] = useState(
     Boolean(legacyAiClarifyState?.autoOpenDialog),
@@ -33,6 +37,7 @@ export function SearchPageShell({
       <FilterPanel
         legacyAiClarifyState={legacyAiClarifyState}
         onLegacyAiClarifyAction={handleLegacyDialogClose}
+        searchIntent={searchIntent}
       />
       {!hideSupplementaryContent && (
         <>

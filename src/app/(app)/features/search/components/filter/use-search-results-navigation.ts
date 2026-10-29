@@ -2,9 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
-import qs from 'qs';
 import { useCallback, useEffect, useState } from 'react';
 
+import {
+  rawSearchParams,
+  rewriteSearchUrl,
+  type SearchIntent,
+} from '@/app/(app)/features/search/intent';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 
 import {
@@ -32,28 +36,31 @@ export function useSearchResultsNavigation() {
     setIsPending(false);
   }, [stringifiedSearchParams]);
 
-  const updateSearchParams = useCallback(
-    (updater: (params: Record<string, unknown>) => Record<string, unknown>) => {
+  /**
+   * Navigates to the current search with a change: the URL is lifted, changed and serialized, so a
+   * repeated key reaches the next page as its first value instead of `key[n]` (ISS-2409). A changed
+   * search starts on the first page.
+   */
+  const updateSearch = useCallback(
+    (change: (intent: SearchIntent) => SearchIntent) => {
       queueResultsFocus();
 
-      const nextParams = updater({ ...searchParamsObject });
-
-      if ('page' in nextParams) {
-        delete nextParams.page;
-      }
-
-      const search = qs.stringify(nextParams);
+      const url = rewriteSearchUrl(
+        rawSearchParams(stringifiedSearchParams.replace(/^\?/, '')),
+        change,
+        { newSearch: true },
+      );
 
       setIsPending(true);
       start();
-      router.push(`/search${search ? `?${search}` : ''}`);
+      router.push(url);
     },
-    [router, searchParamsObject, start],
+    [router, stringifiedSearchParams, start],
   );
 
   return {
     isPending,
     searchParamsObject,
-    updateSearchParams,
+    updateSearch,
   };
 }

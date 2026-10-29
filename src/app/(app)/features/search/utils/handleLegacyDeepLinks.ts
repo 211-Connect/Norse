@@ -1,5 +1,15 @@
+// Server-only: the search page calls this directly. It is not a Server Action: nothing on the client
+// imports it, and a `'use server'` export is a public POST endpoint (tests/search-server-actions.test.ts).
+import { initialTransition, transition } from 'xstate';
+
+import type { SearchIntent } from '@/app/(app)/features/search/intent';
+import {
+  pageActionOf,
+  searchPolicy,
+  searchResolverMachine,
+} from '@/app/(app)/features/search/resolver';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 import { predictSearchNeeds } from '@/app/(app)/shared/services/ai-classification-search-service';
-import { FindResourcesQuery } from '@/app/(app)/shared/services/search-service';
 import { createLogger } from '@/lib/logger';
 import {
   PrintableDirectoryContextParams,
@@ -7,13 +17,12 @@ import {
 } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import { AppConfig } from '@/types/appConfig';
 import { redirect } from 'next/navigation';
-import { buildSearchUrl, BuildSearchUrlArgs } from './buildSearchUrl';
 
 const log = createLogger('handle-legacy-deep-links');
 
 type Args = {
   appConfig: AppConfig;
-  searchQuery: FindResourcesQuery;
+  intent: SearchIntent;
   locale: string;
   skipLegacyLinkCheck: boolean;
   /**
@@ -24,119 +33,59 @@ type Args = {
 };
 
 /**
- * Server-only: called by the search page before it searches. Deliberately
- * not a `'use server'` module, which would make it a publicly callable
- * action taking a client-supplied app config.
+ * The server half of the search resolver: resolves the intent before the search runs, predicts when the
+ * resolver asks for it, and redirects when the resolved state says so. Returns the clarify state the page
+ * renders beside the results, or null.
  */
 export async function handleLegacyDeepLinks({
   appConfig,
-  searchQuery,
+  intent,
   locale,
   skipLegacyLinkCheck,
   printableDirectoryContext,
-}: Args): Promise<unknown> {
-  const contextParams = new URLSearchParams(printableDirectoryContext);
-
-  if (appConfig.search.searchEngine !== 'ai_classification') {
-    log.debug(
-      "Skipping legacy deep link handling because search engine is not 'ai_classification'",
-    );
-    return;
-  }
-
-  if (skipLegacyLinkCheck) {
-    log.debug(
-      'Skipping legacy deep link handling because skipLegacyLinkCheck is true',
-    );
-    return;
-  }
-
-  if (searchQuery.queryType === 'hybrid' && searchQuery.taxonomy?.length) {
-    log.debug(
-      "Skipping legacy deep link handling because queryType is 'hybrid' and taxonomy is present",
-    );
-    return;
-  }
-
-  if (searchQuery.queryType === 'taxonomy') {
-    log.debug(
-      "Skipping legacy deep link handling because queryType is 'taxonomy'",
-    );
-    return;
-  }
-
-  if (searchQuery.organizationId) {
-    log.debug(
-      'Skipping legacy deep link handling because the search is scoped to an organization',
-    );
-    return;
-  }
-
-  if (!searchQuery.query) {
-    log.debug(
-      'Skipping legacy deep link handling because query is not present',
-    );
-    return;
-  }
-
-  log.debug('Handling legacy deep link for AI classification search engine');
-  const predictResponse = await predictSearchNeeds(
-    {
-      query: searchQuery.query,
-    },
-    locale,
-    appConfig.tenantId,
-  );
-
-  if (!predictResponse) {
-    log.warn(
-      'Skipping legacy deep link handling because predictResponse is null',
-    );
-    return;
-  }
-  const scenario = predictResponse.scenario;
-
-  if (
-    [
-      'search',
-      'search_and_notify_low_confidence',
-      'search_and_notify_low_info',
-    ].includes(scenario)
-  ) {
-    log.debug(
-      `Handling legacy deep link for scenario: ${scenario}, taxonomies: ${predictResponse.hsis_taxonomies}`,
-    );
-
-    const searchUrlArgs: BuildSearchUrlArgs = {
-      ...searchQuery,
-      aiScenario: scenario,
-      taxonomies: predictResponse.hsis_taxonomies,
+}: Args): Promise<LegacyAiClarifyState | null> {
+  let [snapshot] = initialTransition(searchResolverMachine, {
+    intent,
+    loopGuard: skipLegacyLinkCheck,
+    policy: searchPolicy({
       searchEngine: appConfig.search.searchEngine,
-      skipLegacyLinkCheck: true,
-    };
+      requireUserLocation: appConfig.featureFlags.requireUserLocation,
+    }),
+    searchEngine: appConfig.search.searchEngine,
+  });
 
-    const url = buildSearchUrl(searchUrlArgs);
-
-    return redirect(withPrintableDirectoryContext(url, contextParams));
+  if (snapshot.value === 'needs_prediction') {
+    // The resolver only asks for a prediction when there is a query to classify.
+    const { query } = snapshot.context.searchQuery;
+    if (!query) throw new Error('search resolver asked to predict no query');
+    log.debug('Handling legacy deep link for AI classification search engine');
+    const prediction = await predictSearchNeeds(
+      { query },
+      locale,
+      appConfig.tenantId,
+    );
+    if (!prediction) {
+      log.warn(
+        'Skipping legacy deep link handling because predictResponse is null',
+      );
+    }
+    [snapshot] = transition(searchResolverMachine, snapshot, {
+      type: 'PREDICTION_RESOLVED',
+      prediction,
+    });
   }
 
-  const options = Array.isArray(predictResponse.options)
-    ? predictResponse.options
-    : [];
-
-  log.debug(
-    `Handling legacy deep link for scenario: ${scenario}, taxonomies: ${predictResponse.hsis_taxonomies}, options: ${options}`,
-  );
-
-  const searchUrlArgs: BuildSearchUrlArgs = {
-    ...searchQuery,
-    clarifyOptions: options,
-    clarifyScenario: scenario,
-    searchEngine: appConfig.search.searchEngine,
-    skipLegacyLinkCheck: true,
-  };
-
-  const url = buildSearchUrl(searchUrlArgs);
-
-  return redirect(withPrintableDirectoryContext(url, contextParams));
+  log.debug({ state: snapshot.value }, 'Search resolved');
+  if (pageActionOf(snapshot) === 'page:redirect') {
+    const { redirectTo } = snapshot.context;
+    if (!redirectTo)
+      throw new Error(`search state ${snapshot.value} has no redirect`);
+    return redirect(
+      withPrintableDirectoryContext(
+        redirectTo,
+        new URLSearchParams(printableDirectoryContext),
+      ),
+    );
+  }
+  return snapshot.context.clarify;
 }

@@ -19,7 +19,8 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type { SearchIntent } from '@/app/(app)/features/search/intent';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { useSearchResults } from '../../context/search-results-context';
 import { AgeFilter } from './age-filter';
@@ -31,11 +32,13 @@ import { useSearchResultsNavigation } from './use-search-results-navigation';
 type FilterPanelProps = {
   legacyAiClarifyState?: LegacyAiClarifyState;
   onLegacyAiClarifyAction: () => void;
+  searchIntent?: SearchIntent;
 };
 
 export function FilterPanel({
   legacyAiClarifyState,
   onLegacyAiClarifyAction,
+  searchIntent,
 }: FilterPanelProps) {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
@@ -51,16 +54,16 @@ export function FilterPanel({
   const hasSearchCoordinates = searchCoordinates.length === 2;
 
   useScrollOffset();
-  const { isPending, updateSearchParams } = useSearchResultsNavigation();
+  const { isPending, updateSearch } = useSearchResultsNavigation();
 
   const handleDistanceChange = useCallback(
     (distance: string) => {
-      updateSearchParams((params) => ({
-        ...params,
-        distance,
+      updateSearch((intent) => ({
+        ...intent,
+        distance: { stated: true, value: distance },
       }));
     },
-    [updateSearchParams],
+    [updateSearch],
   );
 
   const renderFilters = useCallback(
@@ -92,6 +95,7 @@ export function FilterPanel({
           className="flex-1"
           legacyAiClarifyState={legacyAiClarifyState}
           onLegacyAiClarifyAction={onLegacyAiClarifyAction}
+          searchIntent={searchIntent}
         />
         <Button
           size="sm"

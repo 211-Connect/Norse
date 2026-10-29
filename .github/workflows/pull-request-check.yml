@@ -30,5 +30,8 @@ jobs:
       - name: Run formatter check
         run: npm run format:check
 
+      - name: Run unit tests
+        run: npm run test:unit
+
       - name: Build project
         run: npm run build
