@@ -1,4 +1,5 @@
 import { request } from '@arcjet/next';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { forbidden } from 'next/navigation';
 import { after } from 'next/server';
 import { cache } from 'react';
@@ -30,6 +31,40 @@ const arcjetRequest = cache(async () => {
   return (await request()) as ArcjetRequestLike;
 });
 
+const tracer = trace.getTracer('norse-app');
+
+/**
+ * The Arcjet SDK calls its API over a `node:http2` Connect RPC session, not
+ * the global `fetch` that @vercel/otel instruments, so the call needs a
+ * manual span to show up in traces (see docs/tracing.md).
+ */
+function tracedProtect(
+  req: ArcjetRequestLike,
+  pathName: string,
+  afterResponse: boolean,
+) {
+  return tracer.startActiveSpan('arcjet.protect', async (span) => {
+    span.setAttributes({
+      'url.path': pathName,
+      'arcjet.enforced': !afterResponse,
+    });
+    try {
+      const result = await arcjetProtect(req, pathName, log);
+      span.setAttribute('arcjet.conclusion', result.conclusion);
+      if (isArcjetDeniedResult(result)) {
+        span.setAttribute('arcjet.reason_type', result.reasonType);
+      }
+      return result;
+    } catch (error) {
+      span.recordException(error as Error);
+      span.setStatus({ code: SpanStatusCode.ERROR });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+}
+
 /**
  * One Arcjet decision; a denial, enforced or not, is also counted for the
  * Blocked Bots widget (ISS-2366). While the response is still pending the
@@ -41,7 +76,7 @@ async function decideAndCount(
   pathName: string,
   afterResponse: boolean,
 ) {
-  const result = await arcjetProtect(req, pathName, log);
+  const result = await tracedProtect(req, pathName, afterResponse);
   if (isArcjetDeniedResult(result)) {
     const host = req.headers.get('host') ?? '';
     const count = () => recordBlockedTraffic(host, result, log);
