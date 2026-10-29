@@ -58,6 +58,13 @@ function edgeLog(
 }
 
 const TENANT_DATA_CACHE_TTL_MS = 10 * 60 * 1000;
+/**
+ * A failed lookup (timeout, network error, non-2xx) is cached only briefly:
+ * long enough that an outage doesn't make every request wait out the fetch
+ * timeout, short enough that a blip doesn't serve a tenant without its
+ * config (default locales, no login wall) for the full TTL above.
+ */
+const TENANT_DATA_FAILURE_CACHE_TTL_MS = 10 * 1000;
 const TENANT_DATA_CACHE_MAX_ENTRIES = 1_000;
 
 type TenantDataCacheEntry = {
@@ -98,6 +105,7 @@ function getCachedTenantData(
 function setCachedTenantData(
   host: string,
   data: TenantBasicConfigResponse | null,
+  ttlMs: number = TENANT_DATA_CACHE_TTL_MS,
 ): void {
   if (tenantDataCache.size >= TENANT_DATA_CACHE_MAX_ENTRIES) {
     const firstKey = tenantDataCache.keys().next().value;
@@ -108,7 +116,7 @@ function setCachedTenantData(
 
   tenantDataCache.set(host, {
     data,
-    expiresAt: Date.now() + TENANT_DATA_CACHE_TTL_MS,
+    expiresAt: Date.now() + ttlMs,
   });
 }
 
@@ -287,7 +295,7 @@ export async function proxy(request: NextRequest) {
   let tenantConfig: TenantBasicConfigResponse | null | undefined;
 
   if (cached !== undefined) {
-    // Cache hit (may be null if tenant was not found previously)
+    // Cache hit (null after a recent failed lookup)
     if (cached && cached.enabledLocales.length && cached.defaultLocale) {
       locales = cached.enabledLocales;
       defaultLocale = cached.defaultLocale;
@@ -313,6 +321,12 @@ export async function proxy(request: NextRequest) {
           },
         );
 
+      // fetchWrapper resolves to null on an abort or network error, which
+      // is a failed lookup, not a tenant without config.
+      if (tenantBasicConfig === null) {
+        throw new Error('Tenant basic config fetch returned no response');
+      }
+
       setCachedTenantData(host, tenantBasicConfig);
       tenantConfig = tenantBasicConfig;
 
@@ -336,8 +350,8 @@ export async function proxy(request: NextRequest) {
         });
       }
     } catch (error) {
-      // Cache the failure so we don't retry immediately
-      setCachedTenantData(host, null);
+      // Cache the failure briefly so we don't retry on every request
+      setCachedTenantData(host, null, TENANT_DATA_FAILURE_CACHE_TTL_MS);
       edgeLog('error', 'tenant_basic_config_fetch_failed', {
         error: error instanceof Error ? error.message : String(error),
         url: request.url,

@@ -4,6 +4,7 @@ import {
   UpdatePrintableDirectoryDto,
 } from '@/lib/api/generated/data-contracts';
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
 
 import { PrintableDirectoryMutationResult } from '../serverActions/printableDirectories/printableDirectoryMutationResult';
 import type { TranslationMeter } from '../services/translation-usage/translation-meter';
@@ -17,6 +18,8 @@ import {
   getApiErrorStatus,
   getTranslationUsageContext,
 } from './printableDirectoryServerAccess';
+
+const log = createLogger('printableDirectoryMutations');
 
 /**
  * Server-only building blocks for the printable directory server actions.
@@ -142,23 +145,32 @@ async function translateAllSections(
   const headers = await getApiHeaders(tenantId, 'en', true);
 
   for (const section of directory.sections) {
-    const update = await getSectionAutoTranslationUpdate(
-      section,
-      directory.primaryLanguage,
-      directory.locales,
-      meter,
-    );
-    if (!update) {
-      continue;
-    }
-
-    const response =
-      await printableDirectoriesApiClient.printableDirectoryControllerUpdateSection(
-        { id: directory.id, sectionId: section.id },
-        update,
-        { cache: 'no-store', headers },
+    // One section failing must not discard the ones already translated:
+    // they are saved, so the caller should get the directory with them.
+    try {
+      const update = await getSectionAutoTranslationUpdate(
+        section,
+        directory.primaryLanguage,
+        directory.locales,
+        meter,
       );
-    latest = response.data ?? latest;
+      if (!update) {
+        continue;
+      }
+
+      const response =
+        await printableDirectoriesApiClient.printableDirectoryControllerUpdateSection(
+          { id: directory.id, sectionId: section.id },
+          update,
+          { cache: 'no-store', headers },
+        );
+      latest = response.data ?? latest;
+    } catch (error) {
+      log.warn(
+        { err: error, directoryId: directory.id, sectionId: section.id },
+        'Failed to auto-translate section; continuing with the rest',
+      );
+    }
   }
 
   return latest;

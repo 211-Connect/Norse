@@ -49,7 +49,6 @@
   "cover_image_back_label": "Naslovna slika (stražnja strana)",
   "image_upload": "Prenesi sliku",
   "image_remove": "Ukloniti",
-  "image_invalid_type": "Molimo odaberite slikovnu datoteku",
   "image_too_large": "Slika mora biti manja od 10 MB",
   "image_upload_error": "Nije moguće prenijeti sliku",
   "header_config_title": "Konfiguracija zaglavlja",

@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { PRINTABLE_DIRECTORY_CONTEXT_PARAMS } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import {
   PrintableDirectoryDefaultQueryConfigDto,
   PrintableDirectorySourceResponseDto,
@@ -63,7 +64,10 @@ export function SectionSourceItem({
 }: SectionSourceItemProps) {
   const { t } = useTranslation('page-directories');
 
-  const queryParamsEntries = Object.entries(source.query?.params ?? {});
+  // Older sources may have stored empty params (e.g. `query_label: ''`).
+  const queryParamsEntries = Object.entries(source.query?.params ?? {}).filter(
+    ([, value]) => value !== '' && value != null,
+  );
   const hasLocationConflict =
     source.type === 'query'
       ? getLocationConflict(
@@ -79,8 +83,12 @@ export function SectionSourceItem({
               source.query.params as Record<string, unknown>,
               defaultQueryConfig,
             ),
-            pdid: directoryId,
-            pdsid: sectionId,
+            // So the search page shows the source's title (e.g. a taxonomy
+            // name) rather than the raw query (a taxonomy code).
+            query_label: source.query.title || undefined,
+            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.directoryId]: directoryId,
+            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sectionId]: sectionId,
+            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sourceId]: source.id,
           },
           {
             arrayFormat: 'indices',

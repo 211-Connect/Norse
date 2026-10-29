@@ -36,6 +36,7 @@ export function FilterOptionRow({
           <span aria-hidden="true">{bucket.doc_count}</span>
           <span className="sr-only">
             {t('filter_results_count', {
+              ns: 'common',
               count: bucket.doc_count,
             })}
           </span>

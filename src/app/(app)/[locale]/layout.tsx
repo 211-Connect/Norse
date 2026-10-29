@@ -10,6 +10,7 @@ import { AppConfig } from '@/types/appConfig';
 import { getContrastColor } from '@/utils';
 
 import { GoogleTagManagerNoscript } from '../shared/components/google-tag-manager-noscript';
+import { GoogleTagManagerScript } from '../shared/components/google-tag-manager-script';
 import { Providers } from '../shared/components/providers';
 import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
 import { getServerDevice } from '../shared/lib/get-server-device';
@@ -19,6 +20,7 @@ import {
   resolveHeaderGradient,
 } from '../shared/theme/theme-config';
 import { getAppConfigWithoutHost } from '../shared/utils/appConfig';
+import { getGoogleSiteVerification } from '../shared/utils/googleSiteVerification';
 import { getSession } from '../shared/utils/getServerSession';
 import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
 import { shouldBlockCrawlers } from '../shared/utils/shouldBlockCrawlers';
@@ -37,8 +39,15 @@ export const generateMetadata = async ({
   // specific branded tenant has opted out via `tenants.seo.noindex`.
   const blockCrawlers = shouldBlockCrawlers(appConfig.noindex ?? false);
 
+  // Search Console ownership proof for every tenant's branded site. Rendered
+  // as `<meta name="google-site-verification">` inside <head>.
+  const googleSiteVerification = getGoogleSiteVerification();
+
   return {
     description: appConfig.meta.description,
+    ...(googleSiteVerification && {
+      verification: { google: googleSiteVerification },
+    }),
     icons: {
       icon: favicon,
     },
@@ -132,9 +141,17 @@ export default async function RootLayout({
     headers(),
   ]);
   const device = getServerDevice(headersList.get('user-agent') ?? '');
+  const nonce = headersList.get('x-nonce') ?? '';
 
   return (
     <html lang={locale} style={style as any} className="max-sm:!text-[100%]">
+      <head>
+        {/* Must be server-rendered inside <head> for Search Console GTM verification. */}
+        <GoogleTagManagerScript
+          containerId={appConfig.gtmContainerId}
+          nonce={nonce}
+        />
+      </head>
       <body
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"

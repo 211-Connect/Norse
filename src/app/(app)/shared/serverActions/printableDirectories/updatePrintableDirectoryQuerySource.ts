@@ -2,6 +2,7 @@
 
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import { toQuerySourceParams } from '../../utils/printableDirectoryQueryParams';
 import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
 
 type UpdatePrintableDirectoryQuerySourceParams = {
@@ -36,7 +37,7 @@ export async function updatePrintableDirectoryQuerySource({
         type: 'query',
         query: {
           title,
-          params: queryParams,
+          params: toQuerySourceParams(queryParams),
         },
       },
       {

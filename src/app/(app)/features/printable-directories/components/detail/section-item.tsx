@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { PRINTABLE_DIRECTORY_CONTEXT_PARAMS } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import {
   PrintableDirectoryDefaultQueryConfigDto,
   PrintableDirectorySectionResponseDto,
@@ -67,8 +68,8 @@ export function SectionItem({
   );
 
   const directoryQueryParams = {
-    pdid: directoryId,
-    pdsid: section.id,
+    [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.directoryId]: directoryId,
+    [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sectionId]: section.id,
   };
   const searchHref = `/search?${qs.stringify(directoryQueryParams, {
     encodeValuesOnly: true,
@@ -117,7 +118,7 @@ export function SectionItem({
             variant="outline"
             size="icon"
             onClick={() => onEditSection(section.id)}
-            aria-label={t('call_to_action.edit', { ns: 'common' })}
+            aria-label={t('edit_named', { name: sectionName })}
           >
             <PencilIcon className="size-4" aria-hidden="true" />
           </Button>

@@ -36,7 +36,7 @@ export async function getSearchLocationMeta(
   };
 }
 
-type SearchLocationPayload = {
+export type SearchLocationPayload = {
   userCoordinates: string;
   searchCoordinates: string;
   searchCity: string;

@@ -119,6 +119,10 @@ export function GeneralInfoCard({
               setSlugError(null);
               setOpen(true);
             }}
+            aria-label={t('edit_named', {
+              ns: 'page-directories',
+              name: t('general_info_title', { ns: 'page-directories' }),
+            })}
           >
             <PencilIcon className="size-4" aria-hidden="true" />
             {t('call_to_action.edit', { ns: 'common' })}

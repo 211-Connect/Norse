@@ -320,13 +320,21 @@ export function CloneDirectoryDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>
+            <Label id="clone-options-label">
               {t('clone_options_label', { ns: 'page-directories' })}
             </Label>
 
-            <div className="space-y-2 rounded-md border p-3">
-              <label className="flex items-center gap-2 text-sm">
+            <div
+              role="group"
+              aria-labelledby="clone-options-label"
+              className="space-y-2 rounded-md border p-3"
+            >
+              <label
+                htmlFor="clone-option-generalInfo"
+                className="flex items-center gap-2 text-sm"
+              >
                 <Checkbox
+                  id="clone-option-generalInfo"
                   checked={options.generalInfo}
                   onCheckedChange={(value) =>
                     setOption('generalInfo', value === true)
@@ -336,8 +344,12 @@ export function CloneDirectoryDialog({
                   {t('clone_options.general_info', { ns: 'page-directories' })}
                 </span>
               </label>
-              <label className="flex items-center gap-2 text-sm">
+              <label
+                htmlFor="clone-option-cover"
+                className="flex items-center gap-2 text-sm"
+              >
                 <Checkbox
+                  id="clone-option-cover"
                   checked={options.cover}
                   onCheckedChange={(value) =>
                     setOption('cover', value === true)
@@ -348,8 +360,12 @@ export function CloneDirectoryDialog({
                 </span>
               </label>
               {canCopyHeaderFooter && (
-                <label className="flex items-center gap-2 text-sm">
+                <label
+                  htmlFor="clone-option-header"
+                  className="flex items-center gap-2 text-sm"
+                >
                   <Checkbox
+                    id="clone-option-header"
                     checked={options.header}
                     onCheckedChange={(value) =>
                       setOption('header', value === true)
@@ -361,8 +377,12 @@ export function CloneDirectoryDialog({
                 </label>
               )}
               {canCopyHeaderFooter && (
-                <label className="flex items-center gap-2 text-sm">
+                <label
+                  htmlFor="clone-option-footer"
+                  className="flex items-center gap-2 text-sm"
+                >
                   <Checkbox
+                    id="clone-option-footer"
                     checked={options.footer}
                     onCheckedChange={(value) =>
                       setOption('footer', value === true)
@@ -373,8 +393,12 @@ export function CloneDirectoryDialog({
                   </span>
                 </label>
               )}
-              <label className="flex items-center gap-2 text-sm">
+              <label
+                htmlFor="clone-option-sources"
+                className="flex items-center gap-2 text-sm"
+              >
                 <Checkbox
+                  id="clone-option-sources"
                   checked={options.sources}
                   onCheckedChange={(value) =>
                     setOption('sources', value === true)

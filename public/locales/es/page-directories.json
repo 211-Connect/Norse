@@ -49,7 +49,6 @@
   "cover_image_back_label": "Imagen de portada (reverso)",
   "image_upload": "Subir imagen",
   "image_remove": "Eliminar",
-  "image_invalid_type": "Por favor, seleccione un archivo de imagen.",
   "image_too_large": "La imagen debe ser menor de 10 MB.",
   "image_upload_error": "No se pudo cargar la imagen",
   "header_config_title": "Configuración del encabezado",

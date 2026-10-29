@@ -49,7 +49,6 @@
   "cover_image_back_label": "कवर इमेज (पीछे)",
   "image_upload": "तस्विर अपलोड करना",
   "image_remove": "निकालना",
-  "image_invalid_type": "कृपया एक छवि फ़ाइल चुनें",
   "image_too_large": "छवि का आकार 10MB से कम होना चाहिए।",
   "image_upload_error": "छवि अपलोड करने में असमर्थ",
   "header_config_title": "हेडर कॉन्फ़िगरेशन",

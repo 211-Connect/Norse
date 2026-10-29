@@ -35,6 +35,7 @@ import {
 import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
 import { parseLegacyAiClarifyParams } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
 import { navigateToSearchWithCoords } from '@/app/(app)/features/search/utils';
+import { getPrintableDirectoryContextParams } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 
 const log = createLogger('search-page');
 
@@ -64,6 +65,7 @@ const getPageData = cache(async function (
     searchQuery,
     locale,
     skipLegacyLinkCheck: rawParams.sllc === '1',
+    printableDirectoryContext: getPrintableDirectoryContextParams(rawParams),
   });
 
   const page =

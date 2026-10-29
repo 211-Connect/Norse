@@ -4,8 +4,9 @@ import {
   trackSearchEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
+import { withPrintableDirectoryContext } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
@@ -14,6 +15,7 @@ import {
 } from '@/app/(app)/shared/store/search';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { AiClassificationScenario } from '@/app/(app)/shared/services/ai-classification-search-service';
+import type { SearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 
 type Args = {
   setDialogOpen?: (open: boolean) => void;
@@ -26,6 +28,7 @@ export const useNavigateAiSearch = ({
 }: Args) => {
   const appConfig = useAppConfig();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const search = useAtomValue(searchAtom);
   const distance = useAtomValue(searchDistanceAtom);
   const setSearchEntry = useSetAtom(searchEntryAtom);
@@ -34,26 +37,31 @@ export const useNavigateAiSearch = ({
     ({
       scenario,
       taxonomies,
+      locationPayload,
     }: {
       scenario?: AiClassificationScenario;
       taxonomies?: string[];
-    } = {}) => {
+      locationPayload: SearchLocationPayload;
+    }) => {
       const query = (search.query || search.searchTerm || '').trim();
       if (!query) {
         return false;
       }
 
-      const url = buildSearchUrl({
-        aiScenario: scenario,
-        query,
-        queryLabel: search.queryLabel,
-        taxonomies,
-        location: search.searchLocation,
-        coordinates: search.searchCoordinates,
-        distance: search.searchDistance,
-        searchEngine: appConfig.search.searchEngine,
-        skipLegacyLinkCheck: true,
-      });
+      const url = withPrintableDirectoryContext(
+        buildSearchUrl({
+          aiScenario: scenario,
+          query,
+          queryLabel: search.queryLabel,
+          taxonomies,
+          location: search.searchLocation,
+          coordinates: search.searchCoordinates,
+          distance: search.searchDistance,
+          searchEngine: appConfig.search.searchEngine,
+          skipLegacyLinkCheck: true,
+        }),
+        searchParams,
+      );
 
       persistSearchDistancePreference(distance);
       startTransition(() => {
@@ -65,6 +73,7 @@ export const useNavigateAiSearch = ({
             query,
             queryLabel: String(search.queryLabel ?? ''),
             tenantId: appConfig.tenantId ?? '',
+            ...locationPayload,
           },
           appConfig.sessionId,
         );
@@ -82,6 +91,7 @@ export const useNavigateAiSearch = ({
       search.searchLocation,
       search.searchCoordinates,
       search.searchDistance,
+      searchParams,
       appConfig.search.searchEngine,
       appConfig.sessionId,
       appConfig.tenantId,

@@ -1,12 +1,17 @@
 import { request } from '@arcjet/next';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { forbidden } from 'next/navigation';
+import { after } from 'next/server';
 import { cache } from 'react';
 
 import {
   type ArcjetLog,
   type ArcjetRequestLike,
   arcjetProtect,
+  isArcjetDeniedResult,
+  isEnforcedHost,
 } from '@/lib/arcjet';
+import { recordBlockedTraffic } from '@/lib/blocked-traffic';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('arcjet');
@@ -16,15 +21,89 @@ const log: ArcjetLog = (level, event, data) => {
 };
 
 /**
- * One Arcjet decision per request and path. React `cache` is scoped to the
- * request, so the page and its `generateMetadata` share the decision: one
- * Decide call, one log line.
+ * The request as Arcjet reads it, once per request. `request()` reads
+ * headers and cookies eagerly, so the result stays usable inside `after()`,
+ * where request APIs cannot be called.
  */
-const decide = cache(async (pathName: string) => {
+const arcjetRequest = cache(async () => {
   // `request()` always sets `headers` from next/headers; its declared type
   // is the wider ArcjetNextRequest, where `headers` is optional.
-  const req = (await request()) as ArcjetRequestLike;
-  return arcjetProtect(req, pathName, log);
+  return (await request()) as ArcjetRequestLike;
+});
+
+const tracer = trace.getTracer('norse-app');
+
+/**
+ * The Arcjet SDK calls its API over a `node:http2` Connect RPC session, not
+ * the global `fetch` that @vercel/otel instruments, so the call needs a
+ * manual span to show up in traces (see docs/tracing.md).
+ */
+function tracedProtect(
+  req: ArcjetRequestLike,
+  pathName: string,
+  afterResponse: boolean,
+) {
+  return tracer.startActiveSpan('arcjet.protect', async (span) => {
+    span.setAttributes({
+      'url.path': pathName,
+      'arcjet.enforced': !afterResponse,
+    });
+    try {
+      const result = await arcjetProtect(req, pathName, log);
+      span.setAttribute('arcjet.conclusion', result.conclusion);
+      if (isArcjetDeniedResult(result)) {
+        span.setAttribute('arcjet.reason_type', result.reasonType);
+      }
+      return result;
+    } catch (error) {
+      span.recordException(error as Error);
+      span.setStatus({ code: SpanStatusCode.ERROR });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+}
+
+/**
+ * One Arcjet decision; a denial, enforced or not, is also counted for the
+ * Blocked Bots widget (ISS-2366). While the response is still pending the
+ * count is deferred to `after()` so it never delays it; `afterResponse`
+ * means we already run there and count directly.
+ */
+async function decideAndCount(
+  req: ArcjetRequestLike,
+  pathName: string,
+  afterResponse: boolean,
+) {
+  const result = await tracedProtect(req, pathName, afterResponse);
+  if (isArcjetDeniedResult(result)) {
+    const host = req.headers.get('host') ?? '';
+    const count = () => recordBlockedTraffic(host, result, log);
+    if (afterResponse) await count();
+    else after(count);
+  }
+  return result;
+}
+
+/**
+ * Enforced hosts: one Arcjet decision per request and path, awaited before
+ * the page renders. React `cache` is scoped to the request, so the page and
+ * its `generateMetadata` share the decision: one Decide call, one log line,
+ * one blocked-traffic count.
+ */
+const decide = cache(async (pathName: string) =>
+  decideAndCount(await arcjetRequest(), pathName, false),
+);
+
+/**
+ * Observe-only hosts: the decision cannot change the response, so it runs
+ * in `after()` and never delays the page. `cache` schedules it once per
+ * request although the page and `generateMetadata` both call `protectPage`.
+ */
+const observe = cache(async (pathName: string) => {
+  const req = await arcjetRequest();
+  after(() => decideAndCount(req, pathName, true));
 });
 
 /**
@@ -33,15 +112,22 @@ const decide = cache(async (pathName: string) => {
  * directory data, before any data fetch and before anything streams:
  * `forbidden()` only answers a real 403 when it is thrown before the
  * response starts. Pass the same `pathName` in both so they share one
- * decision (see `decide`).
+ * decision.
  *
- * On a denied decision for an enforced host this throws `forbidden()`, and
- * `forbidden.tsx` renders the branded page. Otherwise it returns; it fails
- * open on a missing key or an Arcjet error.
+ * Only an enforced host (`ARCJET_ENFORCED_HOSTS`) waits for the decision:
+ * on a denial this throws `forbidden()`, and `forbidden.tsx` renders the
+ * branded page. On every other host the decision runs after the response,
+ * so Arcjet adds no latency where a denial would only be logged. Either way
+ * it fails open on a missing key or an Arcjet error.
  *
  * @param pathName  Path only, e.g. `/en/search`. Never the query string.
  */
 export async function protectPage(pathName: string): Promise<void> {
+  const req = await arcjetRequest();
+  if (!isEnforcedHost(req)) {
+    await observe(pathName);
+    return;
+  }
   const result = await decide(pathName);
   if (result.denied) forbidden();
 }

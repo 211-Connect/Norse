@@ -253,6 +253,23 @@ const eventCatalogEndpoint = proxyEndpoint(
   { skipWebsiteIdValidation: true },
 );
 
+/**
+ * Requests blocked as bots (ISS-2366). Counted per tenant by Norse, not by
+ * Umami, so the selected websites do not apply.
+ */
+const blockedTrafficEndpoint = proxyEndpoint(
+  '/analytics/blocked-traffic',
+  (ctx, query) => {
+    const start = toISO(query?.startAt as string);
+    const end = toISO(query?.endAt as string);
+    return analyticsApiClient.analyticsControllerGetBlockedTraffic(
+      { start, end },
+      { headers: ctx.headers },
+    );
+  },
+  { skipWebsiteIdValidation: true },
+);
+
 export const analyticsProxyEndpoints: Endpoint[] = [
   infoEndpoint,
   statsEndpoint,
@@ -268,4 +285,5 @@ export const analyticsProxyEndpoints: Endpoint[] = [
   areaSearchesEndpoint,
   eventValuesEndpoint,
   eventCatalogEndpoint,
+  blockedTrafficEndpoint,
 ];

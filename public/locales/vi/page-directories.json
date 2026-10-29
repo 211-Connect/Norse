@@ -49,7 +49,6 @@
   "cover_image_back_label": "Ảnh bìa (mặt sau)",
   "image_upload": "Tải ảnh lên",
   "image_remove": "Di dời",
-  "image_invalid_type": "Vui lòng chọn một tệp hình ảnh.",
   "image_too_large": "Ảnh phải có dung lượng nhỏ hơn 10MB.",
   "image_upload_error": "Không thể tải ảnh lên",
   "header_config_title": "Cấu hình tiêu đề",

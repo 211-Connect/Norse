@@ -142,6 +142,13 @@ option — one connection URI, not three separate instances):
 | `translationCacheService`  | 1    | Translation job caching                                                                                                                                                          |
 | `apiConfigCacheService`    | 2    | One-way config channel: Payload pushes tenant config (facets, hybrid search config, orchestration config, Keycloak realm id, enabled locales, analytics config) into Redis on save, so the **Norse API (NestJS)** can read current tenant config without calling back into Payload |
 
+Redis is a cache, never a dependency: every `CacheService` call fails open
+(a miss, or a skipped write) and callers fetch from the source. When the
+connection drops, `ioredis` keeps reconnecting with backoff capped at 5 s, and
+commands fail fast meanwhile (`enableOfflineQueue: false`) rather than
+waiting out `commandTimeout`. A failed first connect is retried after a 10 s
+cooldown. Neither case disables the cache until a restart.
+
 Point `CACHE_REDIS_URI` at a local Redis/Valkey for development
 (`compose.yaml`'s `valkey` service) — same "don't touch shared state"
 reasoning as the database.
@@ -235,6 +242,28 @@ bot rule and otherwise end as `CONCLUSION_ERROR` (fail-open). It runs in
 after deploy (Arcjet dashboard and those log lines) and then flip the mode to
 `LIVE`. On 2026-10-16 the only traffic observed in this class was Outlook
 link-scanning from Microsoft's `2a01:111:f400::/48` range.
+
+#### Blocked traffic analytics (ISS-2366)
+
+Every denial (enforced `DENY` and observe-only `DENIED_NOT_ENFORCED`) is
+counted in memory per server instance, by tenant, UTC hour and
+classification, and pushed to Norse-API once a minute; the **Blocked Bots**
+dashboard widget reads the hourly totals back. Pipeline and limits:
+[docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
+
+The `classification` is decided by `classifyBlockedTraffic` in
+`src/lib/arcjet-classification.ts` from the SDK's own category map
+(`categories` in `@arcjet/protocol`, pinned in package.json). When a bot
+carries several signals the most severe wins: nefarious > seo > unknown.
+
+| Classification | Rule |
+| --- | --- |
+| `nefarious` | Any member of `CATEGORY:PROGRAMMATIC`, `CATEGORY:TOOL`, `CATEGORY:BOTNET`, `CATEGORY:AI`, `CATEGORY:ARCHIVE`, `CATEGORY:ACADEMIC`; the labels `UNKNOWN_BOT` and `HEADLESS_*`; and **any filter-rule denial** (`reason: filter`, e.g. the no-User-Agent filter). |
+| `seo` | Any member of `CATEGORY:ADVERTISING` or `CATEGORY:OPTIMIZER`, plus the named SEO vendors the map files elsewhere: `SEMRUSH_CRAWLER`, `AHREFS_CRAWLER`, `AHREFS_SITE_AUDIT`, `MOZ_CRAWLER`, `DATAFORSEO_CRAWLER`, `MAJESTIC_CRAWLER`, `BRIGHTEDGE_CRAWLER`, `BOTIFY_CRAWLER` — unless a nefarious rule also matches (`BOTIFY_CRAWLER` is in `CATEGORY:AI`, so it is `nefarious`). |
+| `unknown` | Everything else: `CATEGORY:UNKNOWN` bots not named above, bots in no category, and categories outside both lists (e.g. `CATEGORY:SOCIAL`, `CATEGORY:SEARCH_ENGINE` — normally allowed anyway). |
+
+Tests in `tests/arcjet-classification.test.ts` run against the real map, so
+an SDK upgrade that moves a bot between categories shows up there.
 
 ### Historical note: Strapi → Payload
 

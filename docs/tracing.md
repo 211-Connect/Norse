@@ -9,6 +9,15 @@ a separate NestJS repo).
 - **Incoming requests**: Next.js's built-in request/render spans (root span
   per request, RSC render spans, route handler spans, etc.) — these come for
   free once an OTel SDK is registered, no extra code required.
+- **Redis commands**: `@opentelemetry/instrumentation-ioredis`, registered in
+  `src/instrumentation.ts` next to `'auto'`, creates a client span per
+  command (`get`, `setex`, ...; `db.system = redis`) under the request that
+  ran it, with an error status on a timeout. `db.statement` keeps the
+  command and key only; values are masked (`[2 other arguments]`). It
+  patches `ioredis` when `require()` loads it, so `ioredis` is in
+  `serverExternalPackages` (`next.config.js`): a copy bundled into
+  `.next/server/chunks` is never patched and traces nothing.
+  `requireParentSpan` drops commands that run outside a request.
 - **Outgoing calls to the Norse API**: every call made through the generated
   SDK (`src/lib/api/clients.ts`) goes through the global `fetch`. `@vercel/otel`'s
   fetch instrumentation patches that global `fetch`, creates a client span for
@@ -17,6 +26,21 @@ a separate NestJS repo).
   Keycloak, S3, Umami, Mapbox, Azure/Google Translate, etc. are traced (a
   span still shows up locally) but do **not** get a `traceparent` header,
   since those services don't consume/expect one.
+
+  The scope is read from `API_URL` at startup; if it's unset, a warning is
+  logged and no `traceparent` reaches the API. Don't rely on `@vercel/otel`'s
+  defaults instead: without `propagateContextUrls` it only propagates to
+  `http://localhost` URLs (or the deployment's own host on Vercel), so local
+  dev would look fine while staging/prod traces silently stop at `norse-app`.
+
+- **Arcjet decisions**: the Arcjet SDK calls its API over a `node:http2`
+  Connect RPC session (`@arcjet/transport` → `@connectrpc/connect-node`),
+  not the global `fetch`, so the fetch instrumentation above never sees it.
+  `src/lib/arcjet-page.ts` wraps each decision in a manual `arcjet.protect`
+  span (attributes `url.path`, `arcjet.enforced`, `arcjet.conclusion`, and
+  `arcjet.reason_type` on a denial). On observe-only hosts the decision runs
+  in `after()`, so its span ends after the request's root span. No
+  `traceparent` is sent to Arcjet.
 
 The Norse API's `main.ts` already documents `traceparent` as an accepted
 global Swagger header, so no API-side change was needed for it to receive
@@ -179,8 +203,8 @@ configuration change, out of scope here.
 
 - `onRequestError` instrumentation hook for error reporting — not wired up;
   can be added alongside `register()` in the same `instrumentation.ts`.
-- DB/Redis-level spans (e.g. `@opentelemetry/instrumentation-pg`/`ioredis`)
-  — only HTTP-level request/response tracing exists today.
+- Postgres spans (e.g. `@opentelemetry/instrumentation-pg`). Redis is
+  traced (see above); Postgres queries are not.
 - Tempo `metrics_generator` / service-graph wiring into the existing local
   Prometheus — would need `--web.enable-remote-write-receiver` on the
   `prometheus` service; not required to see propagated traces.

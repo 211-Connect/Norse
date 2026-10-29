@@ -108,6 +108,10 @@ export function CoverCard({ directory, onDirectoryUpdated }: CoverCardProps) {
             variant="outline"
             className="gap-1"
             onClick={() => setOpen(true)}
+            aria-label={t('edit_named', {
+              ns: 'page-directories',
+              name: t('cover_title', { ns: 'page-directories' }),
+            })}
           >
             <PencilIcon className="size-4" aria-hidden="true" />
             {t('call_to_action.edit', { ns: 'common' })}

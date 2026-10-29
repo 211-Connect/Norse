@@ -131,7 +131,7 @@ suggestions are on their way.
 - **General info**: name, Share URL (an uneditable base URL followed by the
   editable slug; a taken slug is reported, not auto-suffixed, because the
   user chose it; with a copy button), languages (checkboxes; the primary
-  language is fixed), access policy, default location.
+  language is fixed), access policy, default location and default radius.
 - **Cover**: title and description (basic); front/back images (Cover
   Customization; hidden without it). Primary color and cover layout type are
   hidden until more cover layouts exist.
@@ -147,7 +147,9 @@ suggestions are on their way.
 - **Images**: cover images and the logo are uploaded to the tenant's
   media by `uploadPrintableDirectoryImage` (`kind`: `cover` needs Cover
   Customization, `logo` needs Logo Upload), then saved on the directory
-  like any other field. Shared UI: `DirectoryImageField` /
+  like any other field. Only PNG, JPEG and SVG are accepted
+  (`DIRECTORY_IMAGE_MIME_TYPES`): the formats `@react-pdf/renderer` can
+  draw; others would silently drop out of the PDF. Shared UI: `DirectoryImageField` /
   `DirectoryImageThumbnail`.
 - **Sections and sources**: heading, description, max resources (default
   100, always editable); create,
@@ -164,11 +166,53 @@ suggestions are on their way.
   - pick/create section
   - save current search params as query source
 
-### Edit Query Source
+### Search page directory context (edit / add from a directory)
 
-- From directory section query row, “Edit query” opens search page with context.
-- Search page displays disclaimer (“editing printable directory query”).
-- Save action updates source query and redirects back to directory.
+"Go to search results" on the detail page opens `/search` with URL params
+that put the search page into directory context
+(`PRINTABLE_DIRECTORY_CONTEXT_PARAMS` in
+`shared/utils/printableDirectorySearchContext.ts`):
+
+| Entry point                        | Params                     | Mode           |
+| ---------------------------------- | -------------------------- | -------------- |
+| A query source's button            | `pdid`, `pdsid`, `pdsrcid` | edit source    |
+| An empty section's button          | `pdid`, `pdsid`            | add to section |
+
+- `usePrintableDirectorySearchContext()` loads the directory and resolves
+  the section and source. Unresolvable params (deleted section, no access)
+  give no context; a missing or non-query source falls back to add mode.
+- `PrintableDirectoryContextBanner` (top of the results column) says which
+  section/source Save targets, links back to the directory, and has an ✕
+  that drops the params — Save then behaves normally (pick any directory
+  and section).
+- In context, Save skips the directory/section pickers. Edit mode's button
+  reads "Update search", calls `updatePrintableDirectoryQuerySource`, and
+  is shown even with 0 results; add mode creates a source in that section.
+  Both return to the directory on success.
+- The source link fills in the directory's default location
+  (`withDefaultQueryParams()`) and passes the source's title as
+  `query_label`, so the search page shows e.g. the taxonomy name rather
+  than its code. When the search's location still equals it
+  (`matchesDefaultLocation()`), "include search location" starts unchecked
+  so the saved source keeps following the default.
+- The URL is the only state, so the context survives refresh and back.
+  Filters, sort, pagination and the language switcher keep unknown params;
+  a new search from the search dialog rebuilds the URL from scratch, so
+  `useNavigateClassicSearch` and `useNavigateAiSearch` carry the params over
+  with `withPrintableDirectoryContext()`. On `ai_classification` tenants a
+  saved free-text source has no `taxonomy`, so its link goes through the
+  legacy-link redirect (`handleLegacyDeepLinks`), which re-predicts the
+  taxonomies and also carries the context params over.
+- The saved query never includes the context params or the search's label
+  (that is the source's title): `ResultsSection` copies only known search
+  keys with a value, and `toQuerySourceParams()` (used by both
+  `createPrintableDirectorySource` and `updatePrintableDirectoryQuerySource`)
+  keeps only the search keys, including `organization_id` for an
+  organization search (titled with the organization's name). On update the
+  source keeps its title while its `query` and `organization_id` are
+  unchanged.
+- The favorites page reads `pdid`/`pdsid` only to preselect the Save
+  dialog; it has no banner.
 
 ### PDF Preview / Download / Print
 
@@ -257,7 +301,8 @@ Implementation:
   directory, sections included, so added languages get content. Human-edited
   languages are never overwritten. When the primary text is cleared, its
   machine translations are removed. A translation failure never fails the
-  save.
+  save; when translating the whole directory, a section that fails is
+  logged and skipped, and the sections already translated are kept.
 - **Metering and limits**: every auto-translation is metered per tenant and
   user in billed characters. It is skipped, without failing the save, once
   the user's quota or the tenant's monthly cap is reached. Every localized

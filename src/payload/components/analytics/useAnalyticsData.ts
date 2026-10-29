@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   AnalyticsInfoResponse,
   AreaSearchesResponse,
+  BlockedTrafficResponse,
   EventCatalogEntryResponse,
   EventValuesResponse,
   HeatmapPointResponse,
@@ -27,6 +28,7 @@ import {
 import {
   AnalyticsMetricsWithTrend,
   fetchAnalyticsAreaSearches,
+  fetchAnalyticsBlockedTraffic,
   fetchAnalyticsEventCatalog,
   fetchAnalyticsEventValues,
   fetchAnalyticsHeatmap,
@@ -169,6 +171,10 @@ export const useAnalyticsHeatmap = makeAsyncHook<HeatmapPointResponse[]>(
 );
 export const useAnalyticsAreaSearches = makeAsyncHook<AreaSearchesResponse>(
   fetchAnalyticsAreaSearches,
+);
+
+export const useAnalyticsBlockedTraffic = makeAsyncHook<BlockedTrafficResponse>(
+  fetchAnalyticsBlockedTraffic,
 );
 
 export function useAnalyticsInfo(
