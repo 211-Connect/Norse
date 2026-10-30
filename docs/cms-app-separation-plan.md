@@ -31,22 +31,33 @@ NORSE_ROLE=app | cms | all     # default: all
 
 What the role controls:
 
-1. **Routing gate** (`src/proxy.ts`). Both roles run the full image; the
-   gate only decides what answers.
-   - `app` answers `404` for `/admin`, Payload's `/api/[...slug]` and
-     `/api/internal/*` (except the routes the app itself owns).
-   - `cms` answers `404` for every public `(app)` page and the app's own API
-     routes (`/api/auth`, `/api/share`, …). It keeps `/admin`,
-     `/api/[...slug]`, `/api/internal/*`, `/api/tenants/[tenantId]/config`
-     and the PDF render route.
-   - Today's matcher skips `/admin` and `/api`, so the gate needs its own
-     matcher entries.
+1. **Routing gate** (`servesPath` in `src/lib/norse-role.ts`). Both roles
+   run the full image; the gate only decides what answers.
+   - `app` serves public pages and its own `/api` routes (`/api/auth`,
+     `/api/share`, `/api/resource-titles`, `/api/search-config`,
+     `/api/webhook`). Not `/admin`, Payload's REST API or `/api/internal/*`.
+   - `cms` serves `/admin` and every other `/api` route (Payload REST,
+     `/api/internal/*` incl. the PDF render route, `/api/getTenantBasicConfig`,
+     `/api/tenants/[tenantId]/config`). Public pages are `404`; `/` redirects
+     to `/admin`.
+   - Both: `/api/health`, `/api/healthz`, `/api/metrics`,
+     `/api/keycloak/domain-check` (until row 6 moves it).
+   - **Enforced for pages only, in `src/proxy.ts`.** The proxy matcher skips
+     `/admin` and `/api` and must keep doing so: when the proxy matches a
+     route, Next.js buffers its request body for it (10 MB limit), which
+     would break large media uploads. Blocking `/admin` and Payload's REST
+     API in the `app` role is a phase 4 task, done at the route level (the
+     Payload route files are generated, so this needs care) or by phase 5's
+     separate build.
 2. **Payload guard** (`src/payload/getPayloadSingleton.ts`). In `app` it
-   throws (phase 4) or logs `payload_used_in_app_role` with a stack (phase 0),
-   so every remaining DB path shows up in production logs before it is cut.
-3. **Jobs and migrations.** `jobs.autoRun` (translation, cache queues) and
-   `payload migrate` run only in `cms`/`all`. Today `autoRun` starts in
-   whichever process first initializes Payload.
+   logs `payload_used_in_app_role` with the caller and stack, once per call
+   site (phase 0), so every remaining DB path shows up in production logs;
+   phase 4 makes it throw. Payload's own route files call `getPayload`
+   directly and bypass it.
+3. **Jobs and migrations.** `jobs.shouldAutoRun` and the Dockerfile's
+   `payload migrate` run only in `cms`/`all`. While the public app is still
+   `all` (phases 0–3) both apps run them, as several instances of one app
+   already do today.
 4. **Lint guard.** ESLint `no-restricted-imports` in `src/app/(app)/**`,
    `src/lib/**`: forbid `@/payload/getPayloadSingleton`,
    `@payload-config`, `@/payload/collections/*/actions*`, `@/payload/services/*`.
@@ -176,10 +187,12 @@ complete.
 
 Each phase ships on its own and leaves production working.
 
-0. **Role switch, observe only.** Add `NORSE_ROLE` (default `all`), the
-   routing gate and the Payload guard in log-only mode. Deploy a second DO app
-   with `NORSE_ROLE=cms` from the same image (admin on `cms.<domain>`, jobs
-   and migrations only there). The existing app keeps `all`.
+0. **Role switch, observe only.** ✅ Implemented on `feat/cms-app-split`:
+   `NORSE_ROLE` (default `all`), the page gate, the Payload guard in log-only
+   mode, jobs and migrations gated by role. To roll out: deploy a second DO
+   app from the same image with `NORSE_ROLE=cms` (admin on `cms.<domain>`,
+   `CUSTOM_AUTH_HOST` set to that host so password-reset links point at the
+   CMS, not a tenant host). The existing app keeps `all`.
 1. **CMS internal API + client.** Endpoints for rows 1–5 and 11, the
    `src/lib/cms/client.ts` client, one internal key, the networking choice
    above. Contract tests against `all` locally.
@@ -189,7 +202,8 @@ Each phase ships on its own and leaves production working.
 3. **Move the rest.** Rows 2, 4, 6–10. Move job-only code
    (`scheduled-pdf-delivery`, `translation-usage`) under `src/payload/`.
 4. **Cut the cord.** Switch the public app to `NORSE_ROLE=app`, guard
-   throws, lint rule on, remove `DATABASE_URI`/`PAYLOAD_SECRET` from the app.
+   throws, lint rule on, `/admin` and Payload REST blocked in `app`, remove
+   `DATABASE_URI`/`PAYLOAD_SECRET` from the app.
 5. **Optional: separate builds.** Exclude `(payload)` and `src/payload/**`
    from the app bundle (smaller image, faster cold start).
 

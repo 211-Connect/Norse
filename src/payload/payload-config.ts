@@ -44,6 +44,7 @@ import {
   taxonomyScorecardsUpdate,
 } from './endpoints/taxonomyScorecards';
 import { defaultLocale, locales } from './i18n/locales';
+import { runsPayload } from '@/lib/norse-role';
 import { deliverScheduledPdfs } from './jobs/deliverScheduledPdfs';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
@@ -90,6 +91,8 @@ const config = buildConfig({
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs],
+    // Jobs run on the CMS only, never in the public app (NORSE_ROLE=app).
+    shouldAutoRun: () => runsPayload(),
     autoRun: [
       {
         queue: 'translation',

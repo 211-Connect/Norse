@@ -47,4 +47,5 @@ ENV PORT=$PORT
 ENV HOSTNAME=0.0.0.0
 EXPOSE 3000
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["sh", "-c", "npx payload migrate && node server.js"]
+# NORSE_ROLE=app (public app) has no database: only the CMS migrates.
+CMD ["sh", "-c", "if [ \"$NORSE_ROLE\" != app ]; then npx payload migrate || exit 1; fi; exec node server.js"]

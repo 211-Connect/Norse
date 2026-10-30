@@ -27,6 +27,9 @@ declare global {
       STRAPI_URL?: string;
       STRAPI_TOKEN?: string;
 
+      /** app | cms | all (default); see src/lib/norse-role.ts. */
+      NORSE_ROLE?: 'app' | 'cms' | 'all';
+
       // Payload
       PAYLOAD_APP_CONFIG_API_KEY?: string;
       PAYLOAD_API_ROUTE_SECRET?: string;

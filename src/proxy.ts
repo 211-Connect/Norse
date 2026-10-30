@@ -12,6 +12,7 @@ import {
 } from './app/(app)/shared/utils/publicPageCategory';
 import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
 import { describeError, truncateBody } from './lib/describe-error';
+import { getNorseRole, servesPath } from './lib/norse-role';
 import { maskSecret, redactUrl } from './lib/redact';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
@@ -303,7 +304,33 @@ async function hasActiveSession(request: NextRequest): Promise<boolean> {
   }
 }
 
+/** Read once: an invalid `NORSE_ROLE` fails the server at startup. */
+const NORSE_ROLE = getNorseRole();
+
+/**
+ * Pages the role does not serve. The matcher skips `/admin` and `/api`, so
+ * only pages reach this: in the CMS (`NORSE_ROLE=cms`) every public page is
+ * a 404 and `/` goes to the admin. `/admin` and Payload's REST API are not
+ * gated here: matching `/api` would make Next.js buffer every API request
+ * body for the proxy (10 MB limit), which breaks large media uploads.
+ */
+function roleGate(request: NextRequest): NextResponse | undefined {
+  const { pathname } = request.nextUrl;
+  if (servesPath(NORSE_ROLE, pathname)) return undefined;
+
+  if (NORSE_ROLE === 'cms' && pathname === '/') {
+    return NextResponse.redirect(
+      new URL(withOptionalCustomBasePath('/admin'), request.url),
+    );
+  }
+
+  return new NextResponse('Not Found', { status: 404 });
+}
+
 export async function proxy(request: NextRequest) {
+  const gated = roleGate(request);
+  if (gated) return gated;
+
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {
       url: request.url,
