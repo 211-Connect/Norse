@@ -1,6 +1,7 @@
 import { TypedLocale } from 'payload';
 
 import { PublicPageCategory } from '@/app/(app)/shared/utils/publicPageCategory';
+import { secretsMatch } from '@/lib/secrets';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
@@ -21,9 +22,9 @@ export type TenantBasicConfigResponse = {
 export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);
   const host = searchParams.get('host');
-  const secret = searchParams.get('secret');
 
-  if (secret !== process.env.PAYLOAD_API_ROUTE_SECRET) {
+  const secret = request.headers.get('x-internal-api-key');
+  if (!secretsMatch(secret, process.env.PAYLOAD_API_ROUTE_SECRET)) {
     return new Response('Unauthorized', { status: 401 });
   }
 

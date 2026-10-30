@@ -61,6 +61,18 @@ enforcement is set by env vars, not in Payload. See
 [bot-protection.md](/docs/bot-protection.md) for the covered routes, the
 config, the rollout and the recovery runbook.
 
+`src/proxy.ts` resolves each host's locales, login wall and `noindex` from
+`/api/getTenantBasicConfig`, cached in memory for 10 minutes (10 seconds after
+a failure). It calls the route on `PAYLOAD_CMS_URL` when set, otherwise on the
+tenant's own public host, which goes out through Cloudflare, whose WAF can
+answer `403`. The tenant is passed as `?host=`, and `PAYLOAD_API_ROUTE_SECRET`
+travels in the `x-internal-api-key` header, never in the URL. A failed
+lookup logs `tenant_basic_config_fetch_failed` with the status, `fetchUrl`,
+`server`, `cf-ray`, `cf-mitigated` and the start of the body: a Cloudflare
+block shows a `cf-ray` and an HTML body.
+While a lookup is failing that host gets default locales and **no login
+wall**.
+
 `shared/` holds code used by more than one feature:
 
 | Folder            | Contents                                                          |

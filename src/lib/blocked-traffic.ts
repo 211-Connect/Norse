@@ -2,6 +2,7 @@ import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { blockedTrafficInternalApiClient, getInternalHeaders } from '@/lib/api';
 import type { ArcjetDeniedResult, ArcjetLog } from '@/lib/arcjet';
 import { classifyBlockedTraffic } from '@/lib/arcjet-classification';
+import { describeError } from '@/lib/describe-error';
 import {
   type BlockedTrafficCounter,
   createBlockedTrafficCounter,
@@ -97,8 +98,6 @@ export async function recordBlockedTraffic(
       result.conclusion === 'DENY',
     );
   } catch (error) {
-    log('warn', 'blocked_traffic_record_failed', {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    log('warn', 'blocked_traffic_record_failed', describeError(error));
   }
 }

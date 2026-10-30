@@ -30,6 +30,8 @@ declare global {
       // Payload
       PAYLOAD_APP_CONFIG_API_KEY?: string;
       PAYLOAD_API_ROUTE_SECRET?: string;
+      /** Payload CMS origin (plus base path) the proxy calls; unset: tenant host. */
+      PAYLOAD_CMS_URL?: string;
       PAYLOAD_SECRET?: string;
       DATABASE_URI?: string;
       MEDIA_S3_BUCKET?: string;
