@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { runsPayload } from '@/lib/norse-role';
+// Only called where Payload runs (`runsPayload()`): the CMS checks its DB.
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 const log = createLogger('healthz');
@@ -24,7 +27,7 @@ interface HealthCheckResponse {
   };
   services: {
     postgres: {
-      status: 'ok' | 'error';
+      status: 'ok' | 'error' | 'disabled';
       message?: string;
     };
     redis: {
@@ -66,19 +69,24 @@ export async function GET() {
     healthCheck.status = 'degraded';
   }
 
-  try {
-    const payload = await getPayloadSingleton();
-    await payload.find({
-      collection: 'users',
-      limit: 1,
-      pagination: false,
-    });
-    healthCheck.services.postgres.status = 'ok';
-  } catch (error) {
-    healthCheck.status = 'degraded';
-    healthCheck.services.postgres.status = 'error';
-    healthCheck.services.postgres.message =
-      error instanceof Error ? error.message : 'Database connection failed';
+  if (!runsPayload()) {
+    // The public app (NORSE_ROLE=app) has no database; the CMS checks it.
+    healthCheck.services.postgres.status = 'disabled';
+  } else {
+    try {
+      const payload = await getPayloadSingleton();
+      await payload.find({
+        collection: 'users',
+        limit: 1,
+        pagination: false,
+      });
+      healthCheck.services.postgres.status = 'ok';
+    } catch (error) {
+      healthCheck.status = 'degraded';
+      healthCheck.services.postgres.status = 'error';
+      healthCheck.services.postgres.message =
+        error instanceof Error ? error.message : 'Database connection failed';
+    }
   }
 
   try {

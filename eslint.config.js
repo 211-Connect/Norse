@@ -87,6 +87,52 @@ const eslintConfig = [
     },
   },
   {
+    // The public app (NORSE_ROLE=app) has no database: app code reads CMS
+    // data through `@/lib/cms`, never Payload directly. The ignored files are
+    // the CMS side of features that live under (app): they run in the CMS
+    // (Payload jobs, `/api/internal/*`). See docs/cms-app-separation-plan.md.
+    files: [
+      'src/app/(app)/**/*.{ts,tsx}',
+      'src/app/robots.ts',
+      'src/lib/**/*.{ts,tsx}',
+      'src/middlewares/**/*.{ts,tsx}',
+      'src/proxy.ts',
+      'src/types/**/*.{ts,tsx}',
+      'src/utils/**/*.{ts,tsx}',
+    ],
+    ignores: [
+      'src/lib/cms/**',
+      'src/app/(app)/shared/services/scheduled-pdf-delivery/**',
+      'src/app/(app)/shared/services/translation-usage/translation-usage-store.ts',
+      'src/app/(app)/shared/services/translation-usage/translation-usage-alert-email.ts',
+      'src/app/(app)/shared/utils/buildAppConfig.ts',
+      'src/app/(app)/shared/utils/buildSearchConfig.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '@/payload/getPayloadSingleton',
+                '@/payload/payload-config',
+                '@payload-config',
+                '@/payload/collections/*/actions',
+                '@/payload/collections/*/actions/*',
+                '@/payload/services/*',
+                '!@/payload/services/translationService',
+              ],
+              allowTypeImports: true,
+              message:
+                'The public app has no database: read CMS data through @/lib/cms (docs/cms-app-separation-plan.md).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.d.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',

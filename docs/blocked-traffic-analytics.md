@@ -23,7 +23,7 @@ already in the `arcjet_denied` logs and the Arcjet console (`decisionId`).
 ## Where it is configured
 
 - Nothing per tenant. A tenant's denials are attributed by host with
-  `findTenantByHost` (`trustedDomains`), like the rest of the app. A denial
+  `getTenantByHost` (`@/lib/cms`) (`trustedDomains`), like the rest of the app. A denial
   on a host that matches no tenant is counted for the shared "unknown"
   tenant `UNKNOWN_TENANT_ID` (`00000000-0000-0000-0000-000000000000`),
   pushed with the internal key only (it has no Payload document or Norse
@@ -44,7 +44,7 @@ arcjetProtect → DENY / DENIED_NOT_ENFORCED
   ├ after(recordBlockedTraffic)  registered before forbidden()
   │ forbidden() → 403 (DENY only)
   └ recordBlockedTraffic, after the response
-      ├ findTenantByHost(host)  ← cached per host
+      ├ getTenantByHost(host)   ← cached per host
       ├ classifyBlockedTraffic → seo | nefarious | unknown
       └ counter.record(tenant, class, enforced)   Map increment, current UTC hour
 
@@ -76,7 +76,7 @@ in the Norse-API repo.
 
 | Key | Values |
 | --- | --- |
-| tenant | from the request host (`findTenantByHost`); `UNKNOWN_TENANT_ID` when no tenant matches |
+| tenant | from the request host (`getTenantByHost`); `UNKNOWN_TENANT_ID` when no tenant matches |
 | `hour` | start of the UTC hour the denial happened in |
 | `classification` | `seo` \| `nefarious` \| `unknown` |
 | `enforced` | `true` for a DENY (403); `false` for an observe-only host (not in `ARCJET_ENFORCED_HOSTS`, or in `ARCJET_UNENFORCED_HOSTS`, e.g. MBOA), so those denials are counted too, separately |

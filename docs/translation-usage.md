@@ -89,6 +89,13 @@ The Norse inputs match (`DIRECTORY_SHORT_TEXT_MAX_LENGTH` /
   3. It records the usage in `after()`, so recording never delays or fails
      the save. Usage is also recorded when translation throws, because
      calls that reached Google are billed anyway.
+- The totals live in the CMS database. The database side
+  (`readTranslationAllowance`, `recordTranslationUsage`, the alert email) is
+  `translation-usage-store.ts` and runs in the CMS; the public app reaches
+  it through `@/lib/cms/translation-usage` (CMS internal API
+  `POST /api/internal/translation-usage/allowance|record`). Translation
+  itself (Google) still runs in the app. See
+  [cms-app-separation-plan.md](/docs/cms-app-separation-plan.md).
 - `getTranslationUsageContext(access)` supplies tenant id, tenant name and
   the user's email. `PrintableDirectoryServerAccess.userEmail` carries the
   session email.

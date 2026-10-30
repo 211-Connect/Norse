@@ -1,257 +1,216 @@
-# Plan: split Norse into a CMS app and a public app
+# CMS / public app split (`NORSE_ROLE`)
 
-Status: proposal (2026-10-30). Not implemented.
+Status: implemented on `feat/cms-app-split` (2026-10-30), not yet rolled
+out. See [Rollout](#rollout) for what is left to do on DigitalOcean.
 
-## Goal
+## Purpose
 
-Run Norse as two DigitalOcean apps built from one repository:
+Norse runs as two DigitalOcean apps built from **one image**:
 
-| App     | Serves                                                                                   | Has access to                                          |
-| ------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| **cms** | Payload admin (`/admin`), Payload REST (`/api/[...slug]`), a new internal API, Payload jobs, migrations | Postgres (`DATABASE_URI`), S3, SendGrid, Keycloak admin, Redis |
-| **app** | Public directory pages, search, auth (Auth.js/Keycloak), share links, printable directories UI | Norse API, the CMS internal API, Redis (cache only — see open question 1) |
+| App     | `NORSE_ROLE` | Serves                                                                                       | Has access to                                                  |
+| ------- | ------------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **cms** | `cms`        | Payload admin, Payload REST, the CMS internal API, Payload jobs, migrations, PDF rendering   | Postgres, S3, SendGrid, Keycloak admin, Redis, Norse API        |
+| **app** | `app`        | Public directory pages, search, auth (Auth.js/Keycloak), share links, printable directories  | Norse API, the CMS internal API, Redis (cache only), Google     |
 
-The **app** never opens a database connection and never initializes Payload.
-Everything it reads from Payload today, it gets from the CMS over HTTP.
+The public app never opens a database connection and never initializes
+Payload. Everything it reads from Payload it gets from the CMS over HTTP.
 
-## The role switch
+`NORSE_ROLE=all` (the default) is the single process both halves ran in
+before the split. It keeps local dev and e2e working with no extra setup.
 
-One env var, read at runtime:
+## The role switch (`src/lib/norse-role.ts`)
 
-```
-NORSE_ROLE=app | cms | all     # default: all
-```
+- `getNorseRole()` reads `NORSE_ROLE` (`app` | `cms` | `all`, default `all`);
+  any other value fails at startup (the proxy reads it at module load).
+- `runsPayload()` is false only for `app`. It gates:
+  - **Jobs**: `jobs.shouldAutoRun` in `payload-config.ts`.
+  - **Migrations**: the Dockerfile `CMD` skips `payload migrate` for `app`.
+  - **The admin and Payload REST**: `cmsOnly` in the generated
+    `(payload)/admin/[[...segments]]/page.tsx` and `(payload)/api/[...slug]/route.ts`
+    (local changes to generated files, marked in them), `/api/getTenantBasicConfig`,
+    `/api/tenants/[tenantId]/config` and the Pages route
+    `/api/internal/printable-directory-pdf` answer 404 in `app`.
+  - **Health**: `/api/healthz` skips the Postgres check in `app`.
+- `servesPath(role, pathname)` decides which **pages** a role serves; the
+  proxy answers 404 for the rest. In `cms` every public page is a 404 and `/`
+  redirects to `/admin`. The proxy matcher skips `/admin` and `/api` and must
+  keep doing so: when the proxy matches a route, Next.js buffers its request
+  body for it (10 MB limit), which would break large media uploads. That is
+  why `/admin` and `/api` are gated in the route files instead.
+- `getPayloadSingleton()` throws (and logs `payload_used_in_app_role` with
+  the stack) in `app`. Payload's own route files call `getPayload` directly,
+  hence `cmsOnly` there.
+- ESLint (`eslint.config.js`) forbids importing `getPayloadSingleton`,
+  the Payload config, `@/payload/collections/*/actions` and
+  `@/payload/services/*` (except `translationService`) from app code
+  (`src/app/(app)`, `src/lib`, `src/proxy.ts`, …). Type imports are allowed.
+  The exempt files are the CMS side of features that live under `(app)`,
+  listed in the config.
 
-- `all` is today's single-process behaviour. It stays the default, so local
-  dev, e2e and the current production deploy keep working while the split is
-  built.
-- One Docker image, deployed twice with a different `NORSE_ROLE`. Payload 3
-  runs inside Next.js, so the CMS is a Next.js app too; separate builds are
-  an optional last phase (bundle size), not a requirement.
+## The bridge (`src/lib/cms/`)
 
-What the role controls:
+The only app-side code that touches CMS data. Each function picks its source
+with `isCmsRemote()`:
 
-1. **Routing gate** (`servesPath` in `src/lib/norse-role.ts`). Both roles
-   run the full image; the gate only decides what answers.
-   - `app` serves public pages and its own `/api` routes (`/api/auth`,
-     `/api/share`, `/api/resource-titles`, `/api/search-config`,
-     `/api/webhook`). Not `/admin`, Payload's REST API or `/api/internal/*`.
-   - `cms` serves `/admin` and every other `/api` route (Payload REST,
-     `/api/internal/*` incl. the PDF render route, `/api/getTenantBasicConfig`,
-     `/api/tenants/[tenantId]/config`). Public pages are `404`; `/` redirects
-     to `/admin`.
-   - Both: `/api/health`, `/api/healthz`, `/api/metrics`,
-     `/api/keycloak/domain-check` (until row 6 moves it).
-   - **Enforced for pages only, in `src/proxy.ts`.** The proxy matcher skips
-     `/admin` and `/api` and must keep doing so: when the proxy matches a
-     route, Next.js buffers its request body for it (10 MB limit), which
-     would break large media uploads. Blocking `/admin` and Payload's REST
-     API in the `app` role is a phase 4 task, done at the route level (the
-     Payload route files are generated, so this needs care) or by phase 5's
-     separate build.
-2. **Payload guard** (`src/payload/getPayloadSingleton.ts`). In `app` it
-   logs `payload_used_in_app_role` with the caller and stack, once per call
-   site (phase 0), so every remaining DB path shows up in production logs;
-   phase 4 makes it throw. Payload's own route files call `getPayload`
-   directly and bypass it.
-3. **Jobs and migrations.** `jobs.shouldAutoRun` and the Dockerfile's
-   `payload migrate` run only in `cms`/`all`. While the public app is still
-   `all` (phases 0–3) both apps run them, as several instances of one app
-   already do today.
-4. **Lint guard.** ESLint `no-restricted-imports` in `src/app/(app)/**`,
-   `src/lib/**`: forbid `@/payload/getPayloadSingleton`,
-   `@payload-config`, `@/payload/collections/*/actions*`, `@/payload/services/*`.
-   Type-only imports (`@/payload/payload-types`) and pure modules
-   (`@/payload/i18n/locales`) stay allowed.
+| Role                                 | Source                                                     |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `cms`                                | Payload, in process                                        |
+| `app` or `all` with `PAYLOAD_CMS_URL` | the CMS internal API over HTTP (`cmsRequest`)              |
+| `all` without `PAYLOAD_CMS_URL`       | Payload, in process (local dev)                            |
+| `app` without `PAYLOAD_CMS_URL`       | throws: `PAYLOAD_CMS_URL is required when NORSE_ROLE=app` |
 
-## What the app reads from Payload today
+| Bridge function (`@/lib/cms/...`)                  | Used by                                                                                                                   | CMS side                                          |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `tenants` `getTenantByHost`                        | `getServerSession`, `api/auth/[...nextauth]`, `api/auth/keycloak-logout`, share and favorites pages, `robots.ts`, `lib/blocked-traffic.ts` | `findTenantByHost`                                |
+| `tenants` `getTenantById`                          | `api/share/[tenantId]`, `lib/api/getTenantApiKey.ts` (the Norse API key is a tenant field)                               | `findTenantById`                                  |
+| `tenants` `getTenantByRealmId`                     | `api/keycloak/domain-check` (served by both apps)                                                                         | `findTenantByRealmId`                             |
+| `getAppConfig` in `shared/utils/appConfig.ts`      | every page                                                                                                                | `buildAppConfig` (`shared/utils/buildAppConfig.ts`) |
+| `search-config` `getSearchConfig`                  | `api/search-config/[tenantId]/[locale]` (widget, CORS `*`)                                                                | `buildSearchConfig`                               |
+| `translation-usage` `getTranslationAllowance`, `recordTranslationUsage` | `runMeteredTranslation`, the directory page                                                          | `translation-usage-store.ts`                      |
+| `tenant-media` `uploadTenantMedia`                 | `uploadPrintableDirectoryImage`                                                                                           | `payload/services/tenantMedia.ts`                 |
+| `printable-directory-deliveries` `sendDeliveryTest` | `sendPrintableDirectoryDeliveryTest` ("Send to me now")                                                                  | `scheduled-pdf-delivery/send-delivery-test.ts`    |
 
-Found by grepping the code outside `src/payload/`. Each row becomes a CMS
-internal endpoint or moves to the CMS.
+The proxy's tenant config lookup (`/api/getTenantBasicConfig`) does its own
+fetch to `PAYLOAD_CMS_URL` (see [architecture.md](/docs/architecture.md)).
 
-| # | Read                                    | Call sites                                                                                                                                                                       | Replacement                                                                                                           |
-| - | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| 1 | Tenant by host (`findTenantByHost`)     | `getServerSession`, `api/auth/[...nextauth]`, `share/[shortCode]` page, `favorites/[id]` page, `robots.ts`, `lib/blocked-traffic.ts`, `getTenantBasicConfig`                  | `GET /api/internal/tenants/by-host?host=`                                                                              |
-| 2 | Tenant by id (`findTenantById`)         | `api/share/[tenantId]`                                                                                                                                                           | `GET /api/internal/tenants/:id`                                                                                        |
-| 3 | `AppConfig` by host                     | `shared/utils/appConfig.ts` (every page render)                                                                                                                                  | `GET /api/internal/app-config?host=&locale=` returns the built, request-independent `CachedAppConfig`; the app adds `baseUrl` and `sessionId` |
-| 4 | ResourceDirectory by tenant id          | `api/search-config/[tenantId]/[locale]` (public, CORS `*`, used by the widget)                                                                                                    | route stays on the app; reads `GET /api/internal/app-config?tenantId=&locale=` (search settings are part of `AppConfig`) |
-| 5 | Tenant Norse API key                    | `lib/api/getTenantApiKey.ts` (every Norse API call)                                                                                                                              | field of #1/#2, internal endpoint only                                                                                 |
-| 6 | Keycloak domain check                   | `api/keycloak/domain-check`                                                                                                                                                      | move the route to the CMS (it is called by Keycloak, not by users)                                                     |
-| 7 | Health check                            | `api/healthz`                                                                                                                                                                    | app: liveness without Payload (don't fail the app when the CMS blips); cms: keeps the DB check                          |
-| 8 | Printable directory image upload        | `serverActions/printableDirectories/uploadPrintableDirectoryImage.ts` (TenantMedia)                                                                                              | `POST /api/internal/tenant-media` (multipart), or upload straight to S3 with a CMS-signed URL                            |
-| 9 | Auto-translation + usage metering       | `autoTranslatePrintableDirectoryText.ts`, `translation-usage/*` (TranslationUsage collections)                                                                                  | `POST /api/internal/translate` on the CMS: it translates, meters and enforces the monthly limit in one place            |
-| 10| Scheduled PDF delivery                  | `services/scheduled-pdf-delivery/*`, `sendPrintableDirectoryDeliveryTest.ts`                                                                                                    | job code moves under `src/payload/` (it is a Payload job); "send test" calls a CMS endpoint. See "PDF rendering" below |
-| 11| `getTenantBasicConfig` (proxy)          | `src/proxy.ts` → already HTTP via `PAYLOAD_CMS_URL`                                                                                                                              | move the route to `/api/internal/tenants/basic-config` with the others                                                 |
-| 12| `/api/tenants/[tenantId]/config`        | external consumers; builds `AppConfig` with `getAppConfig`                                                                                                                       | stays on the **cms** only (it has the DB and the full code); the app does not serve it                                 |
+**Caching** is unchanged: the bridge caches under the same keys as the
+Payload lookups (`tenant:<host|id>`, `tenant_api_key:<id>`,
+`app_config:<host>:<locale>`, `search_config:<id>:<locale>`), memory then
+Redis then the CMS. The CMS's `revalidateCache` hooks delete the Redis keys
+on save; memory entries expire within a minute, as they already did across
+instances. (The planned Redis pub/sub is not needed for that reason.)
 
-Already HTTP and unaffected: favorites, share URLs, printable directory CRUD,
-search, geocoding — they go to the Norse API through `src/lib/api/clients.ts`.
+Translation still runs in the app (Google), only metering moved: the app
+needs the translation credentials, the CMS needs them for its own jobs.
 
-## CMS internal API
+## CMS internal API (`src/app/(payload)/api/internal/`)
 
-- Route group `src/app/(payload)/api/internal/**`, served only in `cms`/`all`.
-- Auth: one header, `x-internal-api-key`, one secret. Fold
-  `PAYLOAD_API_ROUTE_SECRET` and `PAYLOAD_APP_CONFIG_API_KEY` into a single
-  `CMS_INTERNAL_API_KEY`, compared with `secretsMatch`.
-- App-side client: `src/lib/cms/client.ts`, the only module that knows
-  `PAYLOAD_CMS_URL`. Same rules as the Norse API SDK: no ad-hoc `fetch` in
-  feature code, every call carries the tenant (host or id), fail fast without
-  one.
+Every route is wrapped in `internalRoute` (`src/lib/cms/internal-route.ts`):
+404 in `app`, 401 without `x-internal-api-key: $CMS_INTERNAL_API_KEY`
+(constant-time compare), JSON answers, `null` for "not found", 500 with a
+log line on a throw.
 
-| Endpoint                                              | Returns                                                                                                   | Replaces rows |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------- |
-| `GET /api/internal/app-config?host=&locale=`          | `CachedAppConfig` built by today's `getCachedAppConfigBase` (moves to the CMS with its helpers)           | 3             |
-| `GET /api/internal/app-config?tenantId=&locale=`      | same, looked up by tenant                                                                                 | 4             |
-| `GET /api/internal/tenants/basic-config?host=`        | today's `TenantBasicConfigResponse` (locales, login wall, `noindex`) for the proxy                        | 11            |
-| `GET /api/internal/tenants/by-host?host=`             | the tenant fields the app uses (id, name, realm, auth, SMS settings); `null` for an unknown host          | 1             |
-| `GET /api/internal/tenants/:id`                       | same, by id                                                                                               | 2             |
-| `GET /api/internal/tenants/:id/api-key`               | the tenant's Norse API key; never part of the other responses                                             | 5             |
-| `POST /api/internal/tenant-media`                     | uploads a printable-directory image, returns its URL                                                      | 8             |
-| `POST /api/internal/translate`                        | translates printable-directory text, meters usage, enforces the monthly limit                             | 9             |
-| `POST /api/internal/printable-directory-deliveries/:id/test` | renders and emails a delivery to the signed-in user ("Send to me now")                             | 10            |
+| Endpoint                                              | Body / query                                    | Returns                                  |
+| ----------------------------------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| `GET tenants/by-host`                                 | `?host=`                                        | `Tenant` or `null`                       |
+| `GET tenants/by-id`                                   | `?id=`                                          | `Tenant` or `null`                       |
+| `GET tenants/by-realm`                                | `?realmId=`                                     | `Tenant` or `null`                       |
+| `GET app-config`                                      | `?host=&locale=`                                | `CachedAppConfig` (no `baseUrl`/`sessionId`) |
+| `GET search-config`                                   | `?tenantId=&locale=`                            | `SearchConfig` or `null`                 |
+| `POST translation-usage/allowance`                    | `{ tenantId, userEmail }`                       | `TranslationAllowance`                   |
+| `POST translation-usage/record`                       | `{ context, usage }`                            | `null`                                   |
+| `POST tenant-media`                                   | multipart `tenantId`, `file`                    | `{ url }`                                |
+| `POST printable-directory-deliveries/test`            | `DeliveryTestRequest`                           | `{ status }`                             |
 
-**AppConfig caching.** The app keeps the same Redis key,
-`app_config:<host>:<locale>`: memory → Redis → CMS on a miss. The CMS's
-`revalidateCache` hooks already delete that key on save, so invalidation works
-unchanged; the pub/sub message clears app memory caches.
+Plus, outside `/api/internal`: `GET /api/getTenantBasicConfig?host=` (same
+key) for the proxy, the Pages route `POST /api/internal/printable-directory-pdf`
+(`INTERNAL_API_KEY`, called by the delivery job), and
+`GET /api/tenants/[tenantId]/config` (`PAYLOAD_APP_CONFIG_API_KEY`, external
+consumers; CMS only).
+
+The tenant responses are full tenant documents, credentials included (Norse
+API key, SMS provider settings), exactly what the app cached in Redis before
+the split. They are only served with the internal key, on a server-to-server
+hostname.
+
+## Public app endpoints (`NORSE_ROLE=app`)
+
+| Route                                    | Purpose                                                | Backed by                     |
+| ---------------------------------------- | ------------------------------------------------------ | ----------------------------- |
+| `/api/auth/[...nextauth]`                | Auth.js (Keycloak realm per tenant)                    | `getTenantByHost`             |
+| `/api/auth/keycloak-logout`              | logout redirect                                        | `getTenantByHost`             |
+| `/api/share/[tenantId]`                  | send a resource by SMS                                 | `getTenantById`               |
+| `/api/share/[tenantId]/[id]`             | deprecated short-URL redirect                          | Norse API                     |
+| `/api/resource-titles`                   | resource titles for ids                                | Norse API                     |
+| `/api/search-config/[tenantId]/[locale]` | widget search settings (CORS `*`)                      | `getSearchConfig`             |
+| `/api/keycloak/domain-check`             | Keycloak domain allow-list check (also on the CMS)     | `getTenantByRealmId`          |
+| `/api/webhook`                           | client error alerts                                    | —                             |
+| `/api/health`, `/api/healthz`, `/api/metrics` | liveness and metrics                              | —                             |
+
+Server Actions (favorites, printable directories, search, geocoding, short
+URLs) also run in the app: Norse API, plus the bridge for image uploads,
+translation metering and test sends.
 
 ## Networking on DigitalOcean
 
-Two separate apps cannot use App Platform's internal component networking, so
-the app reaches the CMS on a public URL. **That URL must not sit behind the
-Cloudflare WAF rules that produced today's 403s**, or every page render
-inherits the same failure. Options, in order of preference:
+Two separate apps cannot use App Platform's internal networking, and
+loopback (`127.0.0.1`) does not work there, so every server-to-server call
+uses a URL from the environment. **That URL must not sit behind the
+Cloudflare WAF rules that answered 403 to the proxy's tenant config lookup**,
+or every page inherits the failure. In order of preference:
 
-1. `cms-internal.<domain>` as a DNS-only (grey cloud) record pointing at the
-   CMS app's DO hostname, used only for server-to-server traffic.
-2. A Cloudflare WAF skip rule for `/api/internal/*` carrying the internal key
-   header.
-3. DO VPC egress / private networking if your plan supports it.
+1. `cms-internal.<domain>`: a DNS-only (grey cloud) record pointing at the
+   CMS app, used only server to server.
+2. A Cloudflare WAF skip rule for `/api/internal/*` and
+   `/api/getTenantBasicConfig` carrying the internal key header.
 
-The admin UI can stay on a normal Cloudflare-proxied hostname
-(`cms.<domain>`); it is browser traffic.
+The admin can stay on a Cloudflare-proxied `cms.<domain>`.
 
-## Caching and invalidation
+## Environment
 
-Today Payload hooks (`revalidateCache` on Tenants and ResourceDirectories)
-delete Redis keys (`tenant:*`, `resource_directory:*`, `app_config:*`) and the
-**in-memory** cache — but only of the process that saved the document. After
-the split that process is the CMS, so app instances keep stale memory entries
-until TTL.
+| Variable                                                       | app | cms | Notes                                                                 |
+| -------------------------------------------------------------- | :-: | :-: | --------------------------------------------------------------------- |
+| `NORSE_ROLE`                                                   | `app` | `cms` |                                                                     |
+| `PAYLOAD_CMS_URL`                                              |  ✓  |     | the CMS server-to-server URL; must not be set on the CMS (ignored)    |
+| `CMS_INTERNAL_API_KEY`                                         |  ✓  |  ✓  | new random value; replaces `PAYLOAD_API_ROUTE_SECRET`                 |
+| `DATABASE_URI`, `DATABASE_POOL_*`, `PAYLOAD_SECRET`            |     |  ✓  |                                                                       |
+| `MEDIA_S3_*`, `MEDIA_DO_CDN_ENDPOINT`                          |     |  ✓  |                                                                       |
+| `SENDGRID_API_KEY`, `KEYCLOAK_ADMIN_SECRET`                    |     |  ✓  |                                                                       |
+| `CUSTOM_AUTH_HOST`                                             |     |  ✓  | the admin host, so password-reset links point at the CMS              |
+| `INTERNAL_APP_URL`                                             |     |  ✓  | the CMS's own server-to-server URL (PDF render route)                 |
+| `PAYLOAD_APP_CONFIG_API_KEY`                                   |     |  ✓  | external `/api/tenants/[id]/config` consumers                         |
+| `CACHE_REDIS_URI`                                              |  ✓  |  ✓  | the same Redis: the CMS deletes keys the app reads                    |
+| `API_URL`, `INTERNAL_API_KEY`                                  |  ✓  |  ✓  | Norse API                                                             |
+| `GOOGLE_TRANSLATE_CREDENTIALS_BASE64`, `AZURE_TRANSLATOR_*`    |  ✓  |  ✓  | app: printable directory translation; cms: translation jobs           |
+| `KEYCLOAK_INTERNAL_SECRET`                                     |  ✓  |  ✓  | `/api/keycloak/domain-check` is on both                               |
+| `NEXTAUTH_*`, `KEYCLOAK_*` (client), `ARCJET_*`, Umami, maps, Twilio/EMS | ✓ |  |                                                                   |
 
-- App caches CMS responses with `withCache` (memory + Redis), same keys as now.
-- Invalidation: the CMS hook publishes the host on a Redis pub/sub channel
-  (`norse:cache-invalidate`); every app instance subscribes and clears its
-  memory entries. Redis keys are still deleted directly.
-- Serve stale on CMS failure: keep a long stale TTL in Redis so a CMS outage
-  degrades to "config a few minutes old", not "no config". Without any
-  config the proxy keeps today's fail-open behaviour (default locales, no
-  login wall) — decided, see Decisions.
+## Rollout
 
-## PDF rendering
+Each step keeps production working.
 
-The scheduled-delivery job calls the Pages API render route
-`src/pages/api/internal/printable-directory-pdf.ts`. The job runs in the
-**cms**, and so does the render route: the cms runs the full image, and the
-routing gate lets `/api/internal/*` through. The render route itself needs
-only the Norse API, not Payload.
-
-Loopback (`http://127.0.0.1:$PORT`, today's default) does not work on DO App
-Platform, so set `INTERNAL_APP_URL` on the cms to its own server-to-server
-hostname (`cms-internal.<domain>`, see Networking). The render route already
-checks `INTERNAL_API_KEY`, so it is safe on a reachable hostname.
-
-The app's "Send to me now" button calls a CMS endpoint, which renders and
-emails through the same path.
-
-## Environment per app
-
-| Variable                                                          | app | cms |
-| ----------------------------------------------------------------- | :-: | :-: |
-| `NORSE_ROLE`                                                      | `app` | `cms` |
-| `DATABASE_URI`, `DATABASE_POOL_*`                                 |     |  ✓  |
-| `PAYLOAD_SECRET`                                                  |     |  ✓  |
-| S3 / media storage                                                |     |  ✓  |
-| `SENDGRID_API_KEY`, `KEYCLOAK_ADMIN_SECRET`, translation provider |     |  ✓  |
-| `PAYLOAD_CMS_URL`                                                 |  ✓  |     |
-| `INTERNAL_APP_URL` (render route)                                                 |     |  ✓  |
-| `CMS_INTERNAL_API_KEY`                                            |  ✓  |  ✓  |
-| `CACHE_REDIS_URI`                                                 |  ✓  |  ✓  |
-| `API_URL`, `INTERNAL_API_KEY` (Norse API)                         |  ✓  |  ✓  |
-| `NEXTAUTH_*`, `ARCJET_*`, Umami, map styles                       |  ✓  |     |
-
-Removing `DATABASE_URI` from the app is the final proof that the split is
-complete.
-
-## Phases
-
-Each phase ships on its own and leaves production working.
-
-0. **Role switch, observe only.** ✅ Implemented on `feat/cms-app-split`:
-   `NORSE_ROLE` (default `all`), the page gate, the Payload guard in log-only
-   mode, jobs and migrations gated by role. To roll out: deploy a second DO
-   app from the same image with `NORSE_ROLE=cms` (admin on `cms.<domain>`,
-   `CUSTOM_AUTH_HOST` set to that host so password-reset links point at the
-   CMS, not a tenant host). The existing app keeps `all`.
-1. **CMS internal API + client.** Endpoints for rows 1–5 and 11, the
-   `src/lib/cms/client.ts` client, one internal key, the networking choice
-   above. Contract tests against `all` locally.
-2. **Move the hot reads.** Switch rows 1, 3, 5 (tenant by host, app config,
-   API key) to the client with memory+Redis caching and pub/sub
-   invalidation. Watch latency and `payload_used_in_app_role` logs.
-3. **Move the rest.** Rows 2, 4, 6–10. Move job-only code
-   (`scheduled-pdf-delivery`, `translation-usage`) under `src/payload/`.
-4. **Cut the cord.** Switch the public app to `NORSE_ROLE=app`, guard
-   throws, lint rule on, `/admin` and Payload REST blocked in `app`, remove
-   `DATABASE_URI`/`PAYLOAD_SECRET` from the app.
-5. **Optional: separate builds.** Exclude `(payload)` and `src/payload/**`
+1. **Rotate the secret.** Generate `CMS_INTERNAL_API_KEY` (e.g.
+   `openssl rand -base64 32`) and set it on the existing app. Remove
+   `PAYLOAD_API_ROUTE_SECRET` (it leaked into logs).
+2. **Create the CMS app** on DigitalOcean from the same image with
+   `NORSE_ROLE=cms` and the cms column above. Give it `cms.<domain>` (admin)
+   and `cms-internal.<domain>` (DNS-only). It runs migrations and jobs.
+3. **Point the existing app at it**: set `PAYLOAD_CMS_URL` to
+   `https://cms-internal.<domain>` while it is still `NORSE_ROLE=all`. It now
+   reads all CMS data over HTTP but still has its database as a safety net.
+   Watch `cms_request_failed` and `tenant_basic_config_fetch_failed` logs and
+   page latency.
+4. **Cut the cord**: set `NORSE_ROLE=app` on the public app and remove
+   `DATABASE_URI`, `PAYLOAD_SECRET`, `MEDIA_S3_*`, `SENDGRID_API_KEY`,
+   `KEYCLOAK_ADMIN_SECRET`. Any missed database path now fails with
+   `payload_used_in_app_role` in the logs.
+5. **Move admin users** to `cms.<domain>/admin` (bookmarks, Keycloak/Umami
+   links, docs).
+6. **Optional: separate builds** that exclude `(payload)` and `src/payload/**`
    from the app bundle (smaller image, faster cold start).
 
 ## Decisions
 
 Agreed 2026-10-30:
 
-1. **Redis stays in the app** as a cache, never a source of truth. CMS hooks
-   keep deleting Redis keys directly; app memory caches are cleared over Redis
-   pub/sub.
-2. **Nothing on the public app uses the Payload admin cookie**
-   (`payload-token`). The admin moves to the CMS domain with no app-side
-   changes.
-3. **No fail-closed login wall.** If the config cannot be fetched, the proxy
-   keeps today's behaviour. The goal is that the fetch never fails: CMS on a
-   non-WAF hostname, Redis stale cache, alerting on
-   `tenant_basic_config_fetch_failed`.
-4. **`/api/tenants/[tenantId]/config` lives only in the CMS.** It is not
-   merged into the internal API.
-5. **The cms runs the whole image**, app routes included, and the routing
-   gate answers `404` for public pages. That keeps the PDF render route and
-   `getAppConfig` (used by #4) working there without a second build.
+1. **Redis stays in the app** as a cache, never a source of truth.
+2. **Nothing on the public app uses the Payload admin cookie**; the admin
+   moves to the CMS domain with no app-side changes.
+3. **No fail-closed login wall.** If the tenant config cannot be fetched, the
+   proxy keeps its fail-open behaviour; the goal is that the fetch never fails
+   (non-WAF hostname, Redis cache, alerting on
+   `tenant_basic_config_fetch_failed`).
+4. **`/api/tenants/[tenantId]/config` lives only in the CMS.**
+5. **The CMS runs the whole image**, and the role decides what answers. That
+   keeps the PDF render route and `buildAppConfig` working there without a
+   second build.
+6. **The CMS returns the built `AppConfig`**; the app only adds `baseUrl` and
+   `sessionId`.
 
-6. **The CMS returns the built `AppConfig`** (request-independent part). The
-   assembly code (`getCachedAppConfigBase` and its helpers) moves to the CMS;
-   the app only adds `baseUrl` and `sessionId` from the request.
+## Known gaps
 
-## App endpoints after the split
-
-What the public app (`NORSE_ROLE=app`) still serves under `/api`:
-
-| Route                                     | Purpose                                                       | Backed by                                  |
-| ----------------------------------------- | ------------------------------------------------------------- | ------------------------------------------ |
-| `/api/auth/[...nextauth]`                 | Auth.js sign-in/callback/session (Keycloak per tenant)        | CMS `tenants/by-host` (realm)              |
-| `/api/auth/keycloak-logout`               | Keycloak logout redirect                                      | —                                          |
-| `/api/share/[tenantId]`                   | send a resource by SMS (Twilio / EMS)                         | CMS `tenants/:id` (SMS settings)           |
-| `/api/share/[tenantId]/[id]`              | deprecated short-URL redirect                                 | Norse API                                  |
-| `/api/resource-titles`                    | resource titles for a list of ids                             | Norse API                                  |
-| `/api/search-config/[tenantId]/[locale]`  | public search settings for the widget (CORS `*`)              | CMS `app-config?tenantId=`                 |
-| `/api/webhook`                            | client error alert to `WEBHOOK_ALERT_URL`                     | —                                          |
-| `/api/health`, `/api/healthz`             | liveness; no CMS or DB check                                  | —                                          |
-| `/api/metrics`                            | Prometheus metrics (`PROMETHEUS_TOKEN`)                       | —                                          |
-
-Moving to the CMS: `/api/keycloak/domain-check` (called by Keycloak) and the
-Pages route `/api/internal/printable-directory-pdf` (called by the delivery
-job). Not served by the app: `/admin`, Payload's `/api/[...slug]`,
-`/api/internal/*`, `/api/getTenantBasicConfig`, `/api/tenants/[tenantId]/config`.
-
-Server Actions (favorites, printable directories, geocoding, search, short
-URLs) are not `/api` routes but run in the app too; they call the Norse API,
-plus the CMS for rows 8–10.
+- The proxy's `hasActiveSession` (login-wall tenants) still calls
+  `/api/auth/session` on the tenant's public host, through Cloudflare. It is
+  an app route, so it works after the split, but it can hit the same WAF.
+- In `cms`, the public app's `/api` routes (`/api/auth`, `/api/share`, …)
+  are not gated; nothing links to them on the CMS host.

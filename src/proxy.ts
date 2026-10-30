@@ -390,7 +390,7 @@ export async function proxy(request: NextRequest) {
           // No `host` override: the tenant goes in `?host=`, and the URL's
           // own host must route the request to the CMS.
           headers: {
-            'x-internal-api-key': process.env.PAYLOAD_API_ROUTE_SECRET ?? '',
+            'x-internal-api-key': process.env.CMS_INTERNAL_API_KEY ?? '',
           },
           signal: controller.signal,
           cache: 'no-store',
@@ -437,7 +437,7 @@ export async function proxy(request: NextRequest) {
           ? { error: error.message, ...error.details }
           : describeError(error)),
         timedOut: error instanceof Error && error.name === 'AbortError',
-        secret: maskSecret(process.env.PAYLOAD_API_ROUTE_SECRET),
+        secret: maskSecret(process.env.CMS_INTERNAL_API_KEY),
         url: request.url,
         method: request.method,
         host,

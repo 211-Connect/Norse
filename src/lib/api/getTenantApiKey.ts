@@ -1,18 +1,13 @@
 'use server';
 
 import { createLogger } from '@/lib/logger';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+import { getTenantById } from '@/lib/cms/tenants';
 import { withCache } from '@/utilities/withCache';
 
 const log = createLogger('getTenantApiKey');
 
 async function fetchTenantApiKey(tenantId: string): Promise<string | null> {
-  const payload = await getPayloadSingleton();
-  const tenant = await payload.findByID({
-    collection: 'tenants',
-    id: tenantId,
-    overrideAccess: true,
-  });
+  const tenant = await getTenantById(tenantId);
   return tenant?.api?.apiKey ?? null;
 }
 

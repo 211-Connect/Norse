@@ -7,7 +7,7 @@ import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { getPublicPageCategory } from '@/app/(app)/shared/utils/publicPageCategory';
 import { createLogger } from '@/lib/logger';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getTenantByHost } from '@/lib/cms/tenants';
 
 interface SharePageProps {
   params: Promise<{ locale: string; shortCode: string }>;
@@ -57,7 +57,7 @@ export default async function SharePage({ params }: SharePageProps) {
     headersList.get('x-forwarded-host') ||
     headersList.get('host') ||
     'localhost';
-  const tenant = await findTenantByHost(parseHost(host));
+  const tenant = await getTenantByHost(parseHost(host));
 
   if (tenant?.auth?.requiresLogin) {
     const session = await getSession();

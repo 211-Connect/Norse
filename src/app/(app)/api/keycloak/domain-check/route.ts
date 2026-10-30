@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { createLogger } from '@/lib/logger';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+import { getTenantByRealmId } from '@/lib/cms/tenants';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,16 +50,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     return new NextResponse(null, { status: 400 });
   }
 
-  const payload = await getPayloadSingleton();
-
-  const { docs } = await payload.find({
-    collection: 'tenants',
-    where: { 'auth.realmId': { equals: realmId } },
-    limit: 1,
-    pagination: false,
-  });
-
-  const tenant = docs[0];
+  const tenant = await getTenantByRealmId(realmId);
 
   if (!tenant) {
     log.warn({ realmId }, 'domain-check: no tenant found for realmId');

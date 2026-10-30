@@ -32,9 +32,10 @@ declare global {
 
       // Payload
       PAYLOAD_APP_CONFIG_API_KEY?: string;
-      PAYLOAD_API_ROUTE_SECRET?: string;
-      /** Payload CMS origin (plus base path) the proxy calls; unset: tenant host. */
+      /** Payload CMS origin (plus base path) for /api/internal/*; see src/lib/cms. */
       PAYLOAD_CMS_URL?: string;
+      /** Shared secret for /api/internal/* (x-internal-api-key). */
+      CMS_INTERNAL_API_KEY?: string;
       PAYLOAD_SECRET?: string;
       DATABASE_URI?: string;
       MEDIA_S3_BUCKET?: string;

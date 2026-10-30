@@ -1,7 +1,7 @@
 import { TypedLocale } from 'payload';
 
 import { PublicPageCategory } from '@/app/(app)/shared/utils/publicPageCategory';
-import { secretsMatch } from '@/lib/secrets';
+import { cmsOnly, isInternalRequest } from '@/lib/cms/internal-route';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
@@ -19,12 +19,11 @@ export type TenantBasicConfigResponse = {
   };
 };
 
-export const GET = async (request: Request) => {
+export const GET = cmsOnly(async (request: Request) => {
   const { searchParams } = new URL(request.url);
   const host = searchParams.get('host');
 
-  const secret = request.headers.get('x-internal-api-key');
-  if (!secretsMatch(secret, process.env.PAYLOAD_API_ROUTE_SECRET)) {
+  if (!isInternalRequest(request)) {
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -63,4 +62,4 @@ export const GET = async (request: Request) => {
   }
 
   return new Response('Tenant not found', { status: 404 });
-};
+});
