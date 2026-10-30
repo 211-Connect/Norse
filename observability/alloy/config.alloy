@@ -1,0 +1,94 @@
+// Local OTLP gateway: mirrors production Alloy (`alloy-otlp`, charts repo C2/C5).
+// Receives OTLP from norse-app on 4317 (gRPC) / 4318 (HTTP), batches it, and fans out:
+// traces -> Tempo, metrics -> Prometheus (remote write, with exemplars), logs -> Loki.
+// env-label convention: deployment.environment.name -> env, same as production.
+
+otelcol.receiver.otlp "default" {
+	grpc {
+		endpoint = "0.0.0.0:4317"
+	}
+
+	http {
+		endpoint = "0.0.0.0:4318"
+	}
+
+	output {
+		metrics = [otelcol.processor.transform.env.input]
+		logs    = [otelcol.processor.transform.env.input]
+		traces  = [otelcol.processor.transform.env.input]
+	}
+}
+
+// env label convention (same as production): copy deployment.environment.name to `env`.
+// Metrics: datapoint attribute (+ span-metric dimensions in Tempo also carry the resource attribute).
+// Traces / logs: resource attribute, which Loki's OTLP ingestion turns into the `env` label.
+otelcol.processor.transform "env" {
+	error_mode = "ignore"
+
+	trace_statements {
+		context    = "resource"
+		statements = [
+			`set(attributes["env"], attributes["deployment.environment.name"]) where attributes["deployment.environment.name"] != nil`,
+		]
+	}
+
+	metric_statements {
+		context    = "datapoint"
+		statements = [
+			`set(attributes["env"], resource.attributes["deployment.environment.name"]) where resource.attributes["deployment.environment.name"] != nil`,
+		]
+	}
+
+	log_statements {
+		context    = "resource"
+		statements = [
+			`set(attributes["env"], attributes["deployment.environment.name"]) where attributes["deployment.environment.name"] != nil`,
+		]
+	}
+
+	output {
+		metrics = [otelcol.processor.batch.default.input]
+		logs    = [otelcol.processor.batch.default.input]
+		traces  = [otelcol.processor.batch.default.input]
+	}
+}
+
+otelcol.processor.batch "default" {
+	timeout = "5s"
+
+	output {
+		metrics = [otelcol.exporter.prometheus.default.input]
+		logs    = [otelcol.exporter.otlphttp.loki.input]
+		traces  = [otelcol.exporter.otlp.tempo.input]
+	}
+}
+
+otelcol.exporter.otlp "tempo" {
+	client {
+		endpoint = "tempo:4317"
+
+		tls {
+			insecure = true
+		}
+	}
+}
+
+// service.name -> job, service.instance.id -> instance; other resource attributes -> target_info.
+// Do NOT enable resource_to_telemetry_conversion (copies every resource attribute to every series).
+otelcol.exporter.prometheus "default" {
+	forward_to = [prometheus.remote_write.default.receiver]
+}
+
+prometheus.remote_write "default" {
+	endpoint {
+		url            = "http://prometheus:9090/api/v1/write"
+		send_exemplars = true
+	}
+}
+
+// Loki native OTLP: the exporter appends /v1/logs -> http://loki:3100/otlp/v1/logs.
+otelcol.exporter.otlphttp "loki" {
+	client {
+		endpoint = "http://loki:3100/otlp"
+	}
+}
