@@ -10,13 +10,33 @@ export type NorseRole = 'app' | 'cms' | 'all';
 
 const ROLES: readonly NorseRole[] = ['app', 'cms', 'all'];
 
-/** `NORSE_ROLE`, or `all` when unset. Throws on any other value. */
-export function getNorseRole(value = process.env.NORSE_ROLE): NorseRole {
-  if (!value) return 'all';
+function parseRole(name: string, value: string): NorseRole {
   if ((ROLES as readonly string[]).includes(value)) return value as NorseRole;
-  throw new Error(
-    `NORSE_ROLE must be one of ${ROLES.join(', ')}; got "${value}"`,
-  );
+  throw new Error(`${name} must be one of ${ROLES.join(', ')}; got "${value}"`);
+}
+
+/**
+ * The role this process runs as.
+ *
+ * - A target build (`NORSE_BUILD=app|cms`, inlined by Next.js at build
+ *   time) is that role; a different `NORSE_ROLE` is a deployment mistake
+ *   and throws.
+ * - Otherwise (`NORSE_BUILD` unset or `all`): `NORSE_ROLE`, default `all`.
+ */
+export function getNorseRole(
+  value = process.env.NORSE_ROLE,
+  build = process.env.NORSE_BUILD,
+): NorseRole {
+  const role = value ? parseRole('NORSE_ROLE', value) : 'all';
+  if (!build || build === 'all') return role;
+
+  const buildRole = parseRole('NORSE_BUILD', build);
+  if (value && role !== buildRole) {
+    throw new Error(
+      `This image is built for NORSE_BUILD=${buildRole}; NORSE_ROLE=${value} does not match`,
+    );
+  }
+  return buildRole;
 }
 
 /** Whether this process runs Payload: jobs, migrations, the admin. */

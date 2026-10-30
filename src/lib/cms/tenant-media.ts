@@ -1,5 +1,3 @@
-import { createTenantMedia } from '@/payload/services/tenantMedia';
-
 import { cmsRequest } from './client';
 import { isCmsRemote } from './config';
 
@@ -11,12 +9,17 @@ export async function uploadTenantMedia(
   tenantId: string,
   file: File,
 ): Promise<string | null> {
-  if (!isCmsRemote()) {
-    return createTenantMedia(tenantId, {
-      data: Buffer.from(await file.arrayBuffer()),
-      mimetype: file.type,
-      name: file.name,
-    });
+  // Dropped from the public app's build (see ./tenants.ts).
+  if (process.env.NORSE_BUILD !== 'app') {
+    if (!isCmsRemote()) {
+      const { createTenantMedia } =
+        await import('@/payload/services/tenantMedia');
+      return createTenantMedia(tenantId, {
+        data: Buffer.from(await file.arrayBuffer()),
+        mimetype: file.type,
+        name: file.name,
+      });
+    }
   }
 
   const form = new FormData();

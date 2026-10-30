@@ -1,23 +1,7 @@
-import { TypedLocale } from 'payload';
-
-import { PublicPageCategory } from '@/app/(app)/shared/utils/publicPageCategory';
 import { cmsOnly, isInternalRequest } from '@/lib/cms/internal-route';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
-
-export type TenantBasicConfigResponse = {
-  enabledLocales: TypedLocale[];
-  defaultLocale: string;
-  auth: {
-    requiresLogin: boolean;
-    allowedEmailDomains: string[];
-    publicPages: PublicPageCategory[];
-  };
-  seo: {
-    noindex: boolean;
-  };
-};
 
 export const GET = cmsOnly(async (request: Request) => {
   const { searchParams } = new URL(request.url);

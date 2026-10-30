@@ -86,3 +86,27 @@ describe('servesPath', () => {
     assert.equal(servesPath('cms', '/api/authors'), true);
   });
 });
+
+describe('getNorseRole with a target build', () => {
+  test('a target build is its role', () => {
+    assert.equal(getNorseRole(undefined, 'app'), 'app');
+    assert.equal(getNorseRole(undefined, 'cms'), 'cms');
+    assert.equal(getNorseRole('app', 'app'), 'app');
+  });
+
+  test('a mismatched NORSE_ROLE throws', () => {
+    assert.throws(
+      () => getNorseRole('cms', 'app'),
+      /built for NORSE_BUILD=app/,
+    );
+    assert.throws(
+      () => getNorseRole('all', 'cms'),
+      /built for NORSE_BUILD=cms/,
+    );
+  });
+
+  test('an all build follows NORSE_ROLE', () => {
+    assert.equal(getNorseRole('cms', 'all'), 'cms');
+    assert.equal(getNorseRole(undefined, 'all'), 'all');
+  });
+});

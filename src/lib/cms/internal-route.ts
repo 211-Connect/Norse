@@ -2,15 +2,15 @@ import { createLogger } from '@/lib/logger';
 import { runsPayload } from '@/lib/norse-role';
 import { secretsMatch } from '@/lib/secrets';
 
-import { CMS_INTERNAL_API_KEY_HEADER } from './config';
+import { CMS_SECRET_HEADER } from './config';
 
 const log = createLogger('cms-internal-api');
 
 /** Whether `request` carries the CMS internal API key. */
 export function isInternalRequest(request: Request): boolean {
   return secretsMatch(
-    request.headers.get(CMS_INTERNAL_API_KEY_HEADER),
-    process.env.CMS_INTERNAL_API_KEY,
+    request.headers.get(CMS_SECRET_HEADER),
+    process.env.PAYLOAD_API_ROUTE_SECRET,
   );
 }
 

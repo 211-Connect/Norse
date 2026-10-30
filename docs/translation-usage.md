@@ -94,7 +94,8 @@ The Norse inputs match (`DIRECTORY_SHORT_TEXT_MAX_LENGTH` /
   `translation-usage-store.ts` and runs in the CMS; the public app reaches
   it through `@/lib/cms/translation-usage` (CMS internal API
   `POST /api/internal/translation-usage/allowance|record`). Translation
-  itself (Google) still runs in the app. See
+  itself (Google) also runs in the CMS (`POST /api/internal/translation/batch`
+  through `@/lib/cms/translation`); the app meters what comes back. See
   [cms-app-separation-plan.md](/docs/cms-app-separation-plan.md).
 - `getTranslationUsageContext(access)` supplies tenant id, tenant name and
   the user's email. `PrintableDirectoryServerAccess.userEmail` carries the

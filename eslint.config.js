@@ -121,7 +121,6 @@ const eslintConfig = [
                 '@/payload/collections/*/actions',
                 '@/payload/collections/*/actions/*',
                 '@/payload/services/*',
-                '!@/payload/services/translationService',
               ],
               allowTypeImports: true,
               message:

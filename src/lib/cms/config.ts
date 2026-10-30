@@ -27,5 +27,5 @@ export function getCmsUrl(): string | undefined {
   return process.env.PAYLOAD_CMS_URL?.replace(/\/+$/, '') || undefined;
 }
 
-/** Header carrying `CMS_INTERNAL_API_KEY` on every CMS internal API call. */
-export const CMS_INTERNAL_API_KEY_HEADER = 'x-internal-api-key';
+/** Header carrying `PAYLOAD_API_ROUTE_SECRET` on every CMS internal API call. */
+export const CMS_SECRET_HEADER = 'x-internal-api-key';

@@ -10,10 +10,10 @@ import {
   getPublicPageCategory,
   isShareLinkPath,
 } from './app/(app)/shared/utils/publicPageCategory';
-import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
 import { describeError, truncateBody } from './lib/describe-error';
 import { getNorseRole, servesPath } from './lib/norse-role';
 import { maskSecret, redactUrl } from './lib/redact';
+import type { TenantBasicConfigResponse } from './types/tenantBasicConfig';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
 
@@ -390,7 +390,7 @@ export async function proxy(request: NextRequest) {
           // No `host` override: the tenant goes in `?host=`, and the URL's
           // own host must route the request to the CMS.
           headers: {
-            'x-internal-api-key': process.env.CMS_INTERNAL_API_KEY ?? '',
+            'x-internal-api-key': process.env.PAYLOAD_API_ROUTE_SECRET ?? '',
           },
           signal: controller.signal,
           cache: 'no-store',
@@ -437,7 +437,7 @@ export async function proxy(request: NextRequest) {
           ? { error: error.message, ...error.details }
           : describeError(error)),
         timedOut: error instanceof Error && error.name === 'AbortError',
-        secret: maskSecret(process.env.CMS_INTERNAL_API_KEY),
+        secret: maskSecret(process.env.PAYLOAD_API_ROUTE_SECRET),
         url: request.url,
         method: request.method,
         host,

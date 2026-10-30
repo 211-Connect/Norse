@@ -1,7 +1,6 @@
-import {
-  type DeliveryTestOutcome,
-  type DeliveryTestRequest,
-  sendDeliveryTest as sendDeliveryTestInProcess,
+import type {
+  DeliveryTestOutcome,
+  DeliveryTestRequest,
 } from '@/app/(app)/shared/services/scheduled-pdf-delivery/send-delivery-test';
 
 import { cmsRequest } from './client';
@@ -14,14 +13,17 @@ const SEND_TEST_TIMEOUT_MS = 120_000;
 export async function sendDeliveryTest(
   request: DeliveryTestRequest,
 ): Promise<DeliveryTestOutcome> {
-  if (!isCmsRemote()) return sendDeliveryTestInProcess(request);
+  // Dropped from the public app's build (see ./tenants.ts).
+  if (process.env.NORSE_BUILD !== 'app') {
+    if (!isCmsRemote()) {
+      const { sendDeliveryTest: sendInProcess } =
+        await import('@/app/(app)/shared/services/scheduled-pdf-delivery/send-delivery-test');
+      return sendInProcess(request);
+    }
+  }
 
   return cmsRequest<DeliveryTestOutcome>(
     'printable-directory-deliveries/test',
-    {
-      method: 'POST',
-      body: request,
-      timeoutMs: SEND_TEST_TIMEOUT_MS,
-    },
+    { method: 'POST', body: request, timeoutMs: SEND_TEST_TIMEOUT_MS },
   );
 }

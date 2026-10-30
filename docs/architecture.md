@@ -65,7 +65,7 @@ config, the rollout and the recovery runbook.
 `/api/getTenantBasicConfig`, cached in memory for 10 minutes (10 seconds after
 a failure). It calls the route on `PAYLOAD_CMS_URL` when set, otherwise on the
 tenant's own public host, which goes out through Cloudflare, whose WAF can
-answer `403`. The tenant is passed as `?host=`, and `CMS_INTERNAL_API_KEY`
+answer `403`. The tenant is passed as `?host=`, and `PAYLOAD_API_ROUTE_SECRET`
 travels in the `x-internal-api-key` header, never in the URL. A failed
 lookup logs `tenant_basic_config_fetch_failed` with the status, `fetchUrl`,
 `server`, `cf-ray`, `cf-mitigated` and the start of the body: a Cloudflare

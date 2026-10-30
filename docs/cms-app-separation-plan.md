@@ -1,7 +1,8 @@
 # CMS / public app split (`NORSE_ROLE`)
 
 Status: implemented on `feat/cms-app-split` (2026-10-30), not yet rolled
-out. See [Rollout](#rollout) for what is left to do on DigitalOcean.
+out. Deployment, environment per app and the step-by-step rollout for
+DevOps: [cms-app-release-plan.md](/docs/cms-app-release-plan.md).
 
 ## Purpose
 
@@ -10,7 +11,7 @@ Norse runs as two DigitalOcean apps built from **one image**:
 | App     | `NORSE_ROLE` | Serves                                                                                       | Has access to                                                  |
 | ------- | ------------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | **cms** | `cms`        | Payload admin, Payload REST, the CMS internal API, Payload jobs, migrations, PDF rendering   | Postgres, S3, SendGrid, Keycloak admin, Redis, Norse API        |
-| **app** | `app`        | Public directory pages, search, auth (Auth.js/Keycloak), share links, printable directories  | Norse API, the CMS internal API, Redis (cache only), Google     |
+| **app** | `app`        | Public directory pages, search, auth (Auth.js/Keycloak), share links, printable directories  | Norse API, the CMS internal API, Redis (cache only)            |
 
 The public app never opens a database connection and never initializes
 Payload. Everything it reads from Payload it gets from the CMS over HTTP.
@@ -18,10 +19,37 @@ Payload. Everything it reads from Payload it gets from the CMS over HTTP.
 `NORSE_ROLE=all` (the default) is the single process both halves ran in
 before the split. It keeps local dev and e2e working with no extra setup.
 
+## Builds (`NORSE_BUILD`, Dockerfile targets)
+
+The Dockerfile has three targets: `app`, `cms`, and the default combined
+image. The `app` and `cms` targets build with `NORSE_BUILD` set, which
+`next.config.js` inlines into the code at build time, after
+`bin/prepare-build-target.mjs` deletes the routes the target never serves:
+
+| Target | Deleted before `next build`                                                              |
+| ------ | ---------------------------------------------------------------------------------------- |
+| `app`  | `src/app/(payload)` (admin, Payload REST, CMS internal API), `src/pages` (PDF render)    |
+| `cms`  | `src/app/(app)/[locale]` (public pages), the app's own `/api/auth`, `share`, `resource-titles`, `search-config`, `webhook` |
+
+Every in-process Payload path in the bridge (and in `/api/healthz`) is a
+dynamic `import()` inside `if (process.env.NORSE_BUILD !== 'app')`, so the
+`app` build drops it: its server bundle has no Payload, Postgres client or
+translation clients (37 MB instead of 72 MB, traced `node_modules` 61 MB
+instead of 93 MB). Keep new in-process branches in that shape: the import
+must be written inside the guarded branch (a shared helper that wraps the
+`import()` outside the branch keeps it in the bundle). Check with a target
+build: `grep -rl 'cannot connect to Postgres' .next/standalone/.next/server`
+must find nothing.
+
+The prune script deletes source files, so it refuses to run without
+`--yes` and only runs in the Docker build stage. Nothing outside the pruned
+folders may import from them (today only types were, now in `src/types`).
+
 ## The role switch (`src/lib/norse-role.ts`)
 
 - `getNorseRole()` reads `NORSE_ROLE` (`app` | `cms` | `all`, default `all`);
-  any other value fails at startup (the proxy reads it at module load).
+  any other value fails at startup (the proxy reads it at module load). In a
+  target build the role is `NORSE_BUILD`, and a different `NORSE_ROLE` fails.
 - `runsPayload()` is false only for `app`. It gates:
   - **Jobs**: `jobs.shouldAutoRun` in `payload-config.ts`.
   - **Migrations**: the Dockerfile `CMD` skips `payload migrate` for `app`.
@@ -68,6 +96,7 @@ with `isCmsRemote()`:
 | `search-config` `getSearchConfig`                  | `api/search-config/[tenantId]/[locale]` (widget, CORS `*`)                                                                | `buildSearchConfig`                               |
 | `translation-usage` `getTranslationAllowance`, `recordTranslationUsage` | `runMeteredTranslation`, the directory page                                                          | `translation-usage-store.ts`                      |
 | `tenant-media` `uploadTenantMedia`                 | `uploadPrintableDirectoryImage`                                                                                           | `payload/services/tenantMedia.ts`                 |
+| `translation` `translateBatch`                     | `autoTranslatePrintableDirectoryText` (printable directory auto-translation)                                              | `batchTranslate` (`payload/services/translationService.ts`) |
 | `printable-directory-deliveries` `sendDeliveryTest` | `sendPrintableDirectoryDeliveryTest` ("Send to me now")                                                                  | `scheduled-pdf-delivery/send-delivery-test.ts`    |
 
 The proxy's tenant config lookup (`/api/getTenantBasicConfig`) does its own
@@ -80,13 +109,14 @@ Redis then the CMS. The CMS's `revalidateCache` hooks delete the Redis keys
 on save; memory entries expire within a minute, as they already did across
 instances. (The planned Redis pub/sub is not needed for that reason.)
 
-Translation still runs in the app (Google), only metering moved: the app
-needs the translation credentials, the CMS needs them for its own jobs.
+Translation runs in the CMS (Google/Azure credentials and the Redis
+translation cache live there); the app sends the texts and meters the
+results it gets back (`fromCache` results are not billed).
 
 ## CMS internal API (`src/app/(payload)/api/internal/`)
 
 Every route is wrapped in `internalRoute` (`src/lib/cms/internal-route.ts`):
-404 in `app`, 401 without `x-internal-api-key: $CMS_INTERNAL_API_KEY`
+404 in `app`, 401 without `x-internal-api-key: $PAYLOAD_API_ROUTE_SECRET`
 (constant-time compare), JSON answers, `null` for "not found", 500 with a
 log line on a throw.
 
@@ -97,6 +127,7 @@ log line on a throw.
 | `GET tenants/by-realm`                                | `?realmId=`                                     | `Tenant` or `null`                       |
 | `GET app-config`                                      | `?host=&locale=`                                | `CachedAppConfig` (no `baseUrl`/`sessionId`) |
 | `GET search-config`                                   | `?tenantId=&locale=`                            | `SearchConfig` or `null`                 |
+| `POST translation/batch`                              | `{ engine, inputs, sourceLocale }`              | `BatchTranslationResult[]`               |
 | `POST translation-usage/allowance`                    | `{ tenantId, userEmail }`                       | `TranslationAllowance`                   |
 | `POST translation-usage/record`                       | `{ context, usage }`                            | `null`                                   |
 | `POST tenant-media`                                   | multipart `tenantId`, `file`                    | `{ url }`                                |
@@ -146,48 +177,11 @@ or every page inherits the failure. In order of preference:
 
 The admin can stay on a Cloudflare-proxied `cms.<domain>`.
 
-## Environment
+## Environment and rollout
 
-| Variable                                                       | app | cms | Notes                                                                 |
-| -------------------------------------------------------------- | :-: | :-: | --------------------------------------------------------------------- |
-| `NORSE_ROLE`                                                   | `app` | `cms` |                                                                     |
-| `PAYLOAD_CMS_URL`                                              |  ✓  |     | the CMS server-to-server URL; must not be set on the CMS (ignored)    |
-| `CMS_INTERNAL_API_KEY`                                         |  ✓  |  ✓  | new random value; replaces `PAYLOAD_API_ROUTE_SECRET`                 |
-| `DATABASE_URI`, `DATABASE_POOL_*`, `PAYLOAD_SECRET`            |     |  ✓  |                                                                       |
-| `MEDIA_S3_*`, `MEDIA_DO_CDN_ENDPOINT`                          |     |  ✓  |                                                                       |
-| `SENDGRID_API_KEY`, `KEYCLOAK_ADMIN_SECRET`                    |     |  ✓  |                                                                       |
-| `CUSTOM_AUTH_HOST`                                             |     |  ✓  | the admin host, so password-reset links point at the CMS              |
-| `INTERNAL_APP_URL`                                             |     |  ✓  | the CMS's own server-to-server URL (PDF render route)                 |
-| `PAYLOAD_APP_CONFIG_API_KEY`                                   |     |  ✓  | external `/api/tenants/[id]/config` consumers                         |
-| `CACHE_REDIS_URI`                                              |  ✓  |  ✓  | the same Redis: the CMS deletes keys the app reads                    |
-| `API_URL`, `INTERNAL_API_KEY`                                  |  ✓  |  ✓  | Norse API                                                             |
-| `GOOGLE_TRANSLATE_CREDENTIALS_BASE64`, `AZURE_TRANSLATOR_*`    |  ✓  |  ✓  | app: printable directory translation; cms: translation jobs           |
-| `KEYCLOAK_INTERNAL_SECRET`                                     |  ✓  |  ✓  | `/api/keycloak/domain-check` is on both                               |
-| `NEXTAUTH_*`, `KEYCLOAK_*` (client), `ARCJET_*`, Umami, maps, Twilio/EMS | ✓ |  |                                                                   |
-
-## Rollout
-
-Each step keeps production working.
-
-1. **Rotate the secret.** Generate `CMS_INTERNAL_API_KEY` (e.g.
-   `openssl rand -base64 32`) and set it on the existing app. Remove
-   `PAYLOAD_API_ROUTE_SECRET` (it leaked into logs).
-2. **Create the CMS app** on DigitalOcean from the same image with
-   `NORSE_ROLE=cms` and the cms column above. Give it `cms.<domain>` (admin)
-   and `cms-internal.<domain>` (DNS-only). It runs migrations and jobs.
-3. **Point the existing app at it**: set `PAYLOAD_CMS_URL` to
-   `https://cms-internal.<domain>` while it is still `NORSE_ROLE=all`. It now
-   reads all CMS data over HTTP but still has its database as a safety net.
-   Watch `cms_request_failed` and `tenant_basic_config_fetch_failed` logs and
-   page latency.
-4. **Cut the cord**: set `NORSE_ROLE=app` on the public app and remove
-   `DATABASE_URI`, `PAYLOAD_SECRET`, `MEDIA_S3_*`, `SENDGRID_API_KEY`,
-   `KEYCLOAK_ADMIN_SECRET`. Any missed database path now fails with
-   `payload_used_in_app_role` in the logs.
-5. **Move admin users** to `cms.<domain>/admin` (bookmarks, Keycloak/Umami
-   links, docs).
-6. **Optional: separate builds** that exclude `(payload)` and `src/payload/**`
-   from the app bundle (smaller image, faster cold start).
+See [cms-app-release-plan.md](/docs/cms-app-release-plan.md): which variables
+each app needs, DNS, the CI change, and the rollout steps with checks and
+rollback.
 
 ## Decisions
 

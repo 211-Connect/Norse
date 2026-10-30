@@ -1,6 +1,5 @@
 import type { TypedLocale } from 'payload';
 
-import { buildSearchConfig } from '@/app/(app)/shared/utils/buildSearchConfig';
 import type { SearchConfig } from '@/types/search-config';
 
 import { cmsRequest } from './client';
@@ -11,7 +10,14 @@ export async function getSearchConfig(
   tenantId: string,
   locale: TypedLocale,
 ): Promise<SearchConfig | null> {
-  if (!isCmsRemote()) return buildSearchConfig(tenantId, locale);
+  // Dropped from the public app's build (see ./tenants.ts).
+  if (process.env.NORSE_BUILD !== 'app') {
+    if (!isCmsRemote()) {
+      const { buildSearchConfig } =
+        await import('@/app/(app)/shared/utils/buildSearchConfig');
+      return buildSearchConfig(tenantId, locale);
+    }
+  }
 
   return cmsRequest<SearchConfig | null>('search-config', {
     query: { tenantId, locale },

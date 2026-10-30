@@ -7,7 +7,7 @@ import { AppConfig } from '@/types/appConfig';
 import { ONE_HOUR, withCache } from '@/utilities/withCache';
 
 import { SESSION_ID } from '../lib/constants';
-import { type CachedAppConfig, buildAppConfig } from './buildAppConfig';
+import type { CachedAppConfig } from './buildAppConfig';
 import { getHost } from './getHost';
 import { parseHost } from './parseHost';
 
@@ -19,11 +19,19 @@ export type { CachedAppConfig };
  * `revalidateCache` hooks on save), plus the per-request `baseUrl` and
  * `sessionId`.
  */
-function fetchAppConfig(
+async function fetchAppConfig(
   host: string,
   locale: string,
 ): Promise<CachedAppConfig> {
-  if (!isCmsRemote()) return buildAppConfig(host, locale);
+  // `NORSE_BUILD` is inlined at build time: the public app's build drops
+  // this branch and never bundles Payload.
+  if (process.env.NORSE_BUILD !== 'app') {
+    if (!isCmsRemote()) {
+      const { buildAppConfig } = await import('./buildAppConfig');
+      return buildAppConfig(host, locale);
+    }
+  }
+
   return cmsRequest<CachedAppConfig>('app-config', {
     query: { host, locale },
   });

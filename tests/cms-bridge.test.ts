@@ -8,7 +8,7 @@ import { isCmsRemote } from '../src/lib/cms/config';
 import { internalRoute } from '../src/lib/cms/internal-route';
 
 const KEY = 'test-internal-key-not-a-real-secret';
-const ENV_NAMES = ['NORSE_ROLE', 'PAYLOAD_CMS_URL', 'CMS_INTERNAL_API_KEY'];
+const ENV_NAMES = ['NORSE_ROLE', 'PAYLOAD_CMS_URL', 'PAYLOAD_API_ROUTE_SECRET'];
 let savedEnv: Record<string, string | undefined>;
 
 beforeEach(() => {
@@ -63,12 +63,12 @@ describe('internalRoute', () => {
 
   test('404 in the public app', async () => {
     process.env.NORSE_ROLE = 'app';
-    process.env.CMS_INTERNAL_API_KEY = KEY;
+    process.env.PAYLOAD_API_ROUTE_SECRET = KEY;
     assert.equal((await call('ok', KEY)).status, 404);
   });
 
   test('401 without the right key', async () => {
-    process.env.CMS_INTERNAL_API_KEY = KEY;
+    process.env.PAYLOAD_API_ROUTE_SECRET = KEY;
     assert.equal((await call('ok')).status, 401);
     assert.equal((await call('ok', 'wrong')).status, 401);
   });
@@ -79,7 +79,7 @@ describe('internalRoute', () => {
 
   test('answers JSON, null included, and 500 on a throw', async () => {
     process.env.NORSE_ROLE = 'cms';
-    process.env.CMS_INTERNAL_API_KEY = KEY;
+    process.env.PAYLOAD_API_ROUTE_SECRET = KEY;
     assert.deepEqual(await (await call('ok', KEY)).json(), { ok: true });
     assert.equal(await (await call('null', KEY)).json(), null);
     assert.equal((await call('throw', KEY)).status, 500);
@@ -114,7 +114,7 @@ describe('cmsRequest', () => {
     await new Promise<void>((resolve) => server.listen(0, resolve));
     const { port } = server.address() as AddressInfo;
     process.env.PAYLOAD_CMS_URL = `http://127.0.0.1:${port}/`;
-    process.env.CMS_INTERNAL_API_KEY = KEY;
+    process.env.PAYLOAD_API_ROUTE_SECRET = KEY;
   });
 
   afterEach(
@@ -155,7 +155,10 @@ describe('cmsRequest', () => {
   });
 
   test('throws when the key is not configured', async () => {
-    delete process.env.CMS_INTERNAL_API_KEY;
-    await assert.rejects(cmsRequest('tenants/by-host'), /CMS_INTERNAL_API_KEY/);
+    delete process.env.PAYLOAD_API_ROUTE_SECRET;
+    await assert.rejects(
+      cmsRequest('tenants/by-host'),
+      /PAYLOAD_API_ROUTE_SECRET/,
+    );
   });
 });

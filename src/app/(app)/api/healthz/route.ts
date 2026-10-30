@@ -3,9 +3,6 @@ import { NextResponse } from 'next/server';
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
 import { runsPayload } from '@/lib/norse-role';
-// Only called where Payload runs (`runsPayload()`): the CMS checks its DB.
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 const log = createLogger('healthz');
 
@@ -69,11 +66,15 @@ export async function GET() {
     healthCheck.status = 'degraded';
   }
 
-  if (!runsPayload()) {
+  // `NORSE_BUILD` is inlined at build time: the public app's build has no
+  // Payload to check (the CMS checks its database).
+  if (process.env.NORSE_BUILD === 'app' || !runsPayload()) {
     // The public app (NORSE_ROLE=app) has no database; the CMS checks it.
     healthCheck.services.postgres.status = 'disabled';
   } else {
     try {
+      const { getPayloadSingleton } =
+        await import('@/payload/getPayloadSingleton');
       const payload = await getPayloadSingleton();
       await payload.find({
         collection: 'users',

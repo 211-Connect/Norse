@@ -1,7 +1,7 @@
 import { describeError, truncateBody } from '@/lib/describe-error';
 import { createLogger } from '@/lib/logger';
 
-import { CMS_INTERNAL_API_KEY_HEADER, getCmsUrl } from './config';
+import { CMS_SECRET_HEADER, getCmsUrl } from './config';
 
 const log = createLogger('cms-client');
 
@@ -43,9 +43,9 @@ export async function cmsRequest<T>(
   const cmsUrl = getCmsUrl();
   if (!cmsUrl) throw new CmsRequestError('PAYLOAD_CMS_URL is not configured');
 
-  const apiKey = process.env.CMS_INTERNAL_API_KEY;
+  const apiKey = process.env.PAYLOAD_API_ROUTE_SECRET;
   if (!apiKey) {
-    throw new CmsRequestError('CMS_INTERNAL_API_KEY is not configured');
+    throw new CmsRequestError('PAYLOAD_API_ROUTE_SECRET is not configured');
   }
 
   const url = new URL(`${cmsUrl}/api/internal/${path}`);
@@ -55,7 +55,7 @@ export async function cmsRequest<T>(
 
   const isFormData = body instanceof FormData;
   const headers: Record<string, string> = {
-    [CMS_INTERNAL_API_KEY_HEADER]: apiKey,
+    [CMS_SECRET_HEADER]: apiKey,
   };
   if (body !== undefined && !isFormData) {
     headers['content-type'] = 'application/json';
