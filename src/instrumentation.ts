@@ -1,3 +1,6 @@
+import type { Context, Exception, TextMapGetter } from '@opentelemetry/api';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import {
   ParentBasedSampler,
@@ -9,6 +12,20 @@ import { createLogger } from '@/lib/logger';
 import { InboundIgnoringTraceContextPropagator } from '@/lib/tracing';
 
 const log = createLogger('instrumentation');
+
+/**
+ * Norse is the entry point of our system. Requests arrive with a `traceparent`
+ * added upstream (DO App Platform / Cloudflare) whose parent span never reaches
+ * our Tempo. Continuing it makes traces rootless and lets the upstream flag decide
+ * sampling. Never extract incoming context; still inject into outgoing Norse API
+ * calls (scoped by propagateContextUrls).
+ */
+export class InjectOnlyTraceContextPropagator extends W3CTraceContextPropagator {
+  // The carrier is ignored on purpose: never extract incoming context.
+  extract(context: Context, _carrier: unknown, _getter: TextMapGetter): Context {
+    return context;
+  }
+}
 
 export function register() {
   if (!process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
@@ -44,10 +61,10 @@ export function register() {
     );
   }
 
-  // Next.js's own built-in fetch span does not propagate trace context.
-  // Disable it so @vercel/otel's fetch instrumentation (which does, via
-  // propagateContextUrls below) is the only one tracing outgoing fetches.
-  process.env.NEXT_OTEL_FETCH_DISABLED = '1';
+  // `@vercel/otel` sets NEXT_OTEL_FETCH_DISABLED itself in its fetch
+  // instrumentation, disabling Next's built-in fetch span so the fetch
+  // instrumentation below (which propagates context, scoped by
+  // propagateContextUrls) is the only one tracing outgoing fetches.
 
   const apiUrl = process.env.API_URL;
   if (!apiUrl) {
@@ -60,6 +77,9 @@ export function register() {
     traceSampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
     }),
+    // Baggage is dropped on purpose; it is not used. Code-level
+    // `propagators` overrides OTEL_PROPAGATORS.
+    propagators: [new InjectOnlyTraceContextPropagator()],
     instrumentations: [
       'auto',
       // A span per Redis command (`cacheService`). Needs ioredis in
@@ -76,4 +96,67 @@ export function register() {
       },
     },
   });
+}
+
+type RequestErrorContext = Readonly<{
+  routerKind: 'Pages Router' | 'App Router';
+  routePath: string;
+  routeType: 'render' | 'route' | 'action' | 'proxy';
+  renderSource?:
+    | 'react-server-components'
+    | 'react-server-components-payload'
+    | 'server-rendering';
+  revalidateReason: 'on-demand' | 'stale' | undefined;
+}>;
+
+/**
+ * Next.js request-error hook (signature from next/dist/server/instrumentation
+ * in Next 16.4.2). Records the error on the active span (if any), marks it
+ * ERROR, and logs the failure once. `request.path` is deliberately not logged:
+ * it can contain a query string (privacy rule 8).
+ */
+export async function onRequestError(
+  err: unknown,
+  request: Readonly<{
+    path: string;
+    method: string;
+    headers: NodeJS.Dict<string | string[]>;
+  }>,
+  ctx: RequestErrorContext,
+): Promise<void> {
+  // Telemetry must never break the app (plan rule 7).
+  try {
+    const span = trace.getActiveSpan();
+    if (span) {
+      span.recordException(err as Exception);
+      span.setStatus({ code: SpanStatusCode.ERROR });
+    }
+  } catch (hookError) {
+    log.warn(
+      { err: hookError },
+      'onRequestError: failed to record exception on the active span',
+    );
+  }
+  try {
+    const errName = err instanceof Error ? err.name : 'unknown';
+    const errMessage = err instanceof Error ? err.message : String(err);
+    const digest =
+      err && typeof err === 'object' && 'digest' in err && typeof err.digest === 'string'
+        ? err.digest
+        : undefined;
+    log.error(
+      {
+        event: 'request_error',
+        routePath: ctx.routePath,
+        routeType: ctx.routeType,
+        method: request.method,
+        digest,
+        errName,
+        errMessage,
+      },
+      'request error',
+    );
+  } catch {
+    // Never break the app because of telemetry.
+  }
 }
