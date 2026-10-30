@@ -48,11 +48,7 @@ describe('InjectOnlyTraceContextPropagator', () => {
       isRemote: false,
     });
     const carrier: Record<string, string> = {};
-    propagator.inject(
-      trace.setSpan(ROOT_CONTEXT, span),
-      carrier,
-      setter,
-    );
+    propagator.inject(trace.setSpan(ROOT_CONTEXT, span), carrier, setter);
     assert.equal(carrier.traceparent, `00-${TRACE_ID}-${SPAN_ID}-01`);
   });
 
@@ -65,11 +61,7 @@ describe('InjectOnlyTraceContextPropagator', () => {
       isRemote: false,
     });
     const carrier: Record<string, string> = {};
-    propagator.inject(
-      trace.setSpan(ROOT_CONTEXT, span),
-      carrier,
-      setter,
-    );
+    propagator.inject(trace.setSpan(ROOT_CONTEXT, span), carrier, setter);
     assert.equal(carrier.traceparent, `00-${TRACE_ID}-${SPAN_ID}-00`);
   });
 });

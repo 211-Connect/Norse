@@ -22,7 +22,11 @@ const log = createLogger('instrumentation');
  */
 export class InjectOnlyTraceContextPropagator extends W3CTraceContextPropagator {
   // The carrier is ignored on purpose: never extract incoming context.
-  extract(context: Context, _carrier: unknown, _getter: TextMapGetter): Context {
+  extract(
+    context: Context,
+    _carrier: unknown,
+    _getter: TextMapGetter,
+  ): Context {
     return context;
   }
 }
@@ -141,7 +145,10 @@ export async function onRequestError(
     const errName = err instanceof Error ? err.name : 'unknown';
     const errMessage = err instanceof Error ? err.message : String(err);
     const digest =
-      err && typeof err === 'object' && 'digest' in err && typeof err.digest === 'string'
+      err &&
+      typeof err === 'object' &&
+      'digest' in err &&
+      typeof err.digest === 'string'
         ? err.digest
         : undefined;
     log.error(

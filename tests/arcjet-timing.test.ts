@@ -92,10 +92,7 @@ describe('arcjet timing fields (N1)', () => {
     const entry = entries.find((e) => e.event === 'arcjet_fingerprint_failed');
     assert.ok(entry);
     assert.equal(entry.data.durationMs, TIMING.durationMs);
-    assert.equal(
-      entry.data.eventLoopUtilization,
-      TIMING.eventLoopUtilization,
-    );
+    assert.equal(entry.data.eventLoopUtilization, TIMING.eventLoopUtilization);
     assert.equal(entry.data.instance, INSTANCE);
     assert.equal(entry.data.traceId, TRACE.traceId);
     assert.equal(entry.data.traceSampled, TRACE.traceSampled);
@@ -114,10 +111,7 @@ describe('arcjet timing fields (N1)', () => {
     );
     assert.ok(entry);
     assert.equal(entry.data.durationMs, TIMING.durationMs);
-    assert.equal(
-      entry.data.eventLoopUtilization,
-      TIMING.eventLoopUtilization,
-    );
+    assert.equal(entry.data.eventLoopUtilization, TIMING.eventLoopUtilization);
     assert.equal(entry.data.instance, INSTANCE);
     assert.equal(entry.data.traceId, TRACE.traceId);
     assert.equal(entry.data.traceSampled, TRACE.traceSampled);

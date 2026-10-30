@@ -28,9 +28,8 @@ void patchable.child; // keep the patched shape referenced
 
 // Dynamic import is load-order dependent: createLogger('search') runs at module
 // evaluation, so the logger must be patched before this module is loaded.
-const { findResources, findResourcesV2 } = await import(
-  '../src/app/(app)/shared/services/search-service'
-);
+const { findResources, findResourcesV2 } =
+  await import('../src/app/(app)/shared/services/search-service');
 
 // Search text that must never appear in any logged object.
 const SECRET_QUERY = 'crisis-shelter-search-text-DO-NOT-LOG';

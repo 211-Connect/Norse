@@ -94,12 +94,7 @@ export type ArcjetProtectResult =
        * all (not even an internal one); deliberately allowed.
        */
       conclusion:
-        | 'ALLOW'
-        | 'CHALLENGE'
-        | 'ERROR'
-        | 'SKIPPED'
-        | 'THREW'
-        | 'NO_CLIENT_IP';
+        'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
       timing?: ArcjetTiming;
     }
   | {
