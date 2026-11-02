@@ -48,6 +48,7 @@ import { runsPayload } from '@/lib/norse-role';
 import { deliverScheduledPdfs } from './jobs/deliverScheduledPdfs';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
+import { tracedTask } from './jobs/tracedTask';
 import { warmCache } from './jobs/warmCache';
 import { addLocalAdminEndpoint, seedEndpoint } from './migrations';
 import { Config, Tenant } from './payload-types';
@@ -90,7 +91,9 @@ const config = buildConfig({
     TranslationUsageAlerts,
   ],
   jobs: {
-    tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs],
+    tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs].map(
+      tracedTask,
+    ),
     // Jobs run on the CMS only, never in the public app (NORSE_ROLE=app).
     shouldAutoRun: () => runsPayload(),
     autoRun: [
