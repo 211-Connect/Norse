@@ -6,6 +6,7 @@ import {
 import { registerOTel } from '@vercel/otel';
 
 import { createLogger } from '@/lib/logger';
+import { InboundIgnoringTraceContextPropagator } from '@/lib/tracing';
 
 const log = createLogger('instrumentation');
 
@@ -55,6 +56,7 @@ export function register() {
 
   registerOTel({
     serviceName: 'norse-app',
+    propagators: [new InboundIgnoringTraceContextPropagator()],
     traceSampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
     }),
