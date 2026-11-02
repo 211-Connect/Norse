@@ -3,6 +3,7 @@
 import qs from 'qs';
 
 import { createLogger } from '@/lib/logger';
+import { recordSearch } from '@/lib/telemetry/search';
 import { SearchEngine } from '@/types/appConfig';
 import { BBox } from '@/types/resource';
 import {
@@ -230,7 +231,8 @@ export async function findResources(
   tenantId: string,
   searchEngine: SearchEngine,
 ) {
-  return withCache(
+  let cacheHit = false;
+  const result = await withCache(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit, searchEngine })}`,
     () =>
       findResourcesOrigin({
@@ -243,7 +245,24 @@ export async function findResources(
       }),
     { redis: true, memory: false, ttl: ONE_HOUR },
     (value) => value.results.length > 0,
+    (hit) => {
+      cacheHit = hit;
+    },
   );
+
+  // Only the shape of the search is recorded: never the query, location,
+  // coordinates, taxonomy or filters (privacy rule 8).
+  recordSearch({
+    api: 'v1',
+    engine: searchEngine,
+    page: result?.page ?? (Number.isNaN(page) ? 1 : page),
+    limit: !limit || Number.isNaN(limit) ? 25 : limit,
+    results: result?.results.length ?? 0,
+    totalResults: result?.totalResults ?? 0,
+    cacheHit,
+  });
+
+  return result;
 }
 
 /**
@@ -348,20 +367,36 @@ export async function findResourcesV2(
   tenantId: string,
   searchEngine: SearchEngine,
 ): Promise<SearchResult> {
-  return (
-    (await withCache(
-      `search_results:${tenantId}:${locale}:${stableHash({ query: searchStore, page, limit, searchEngine, version: 'v2' })}`,
-      () =>
-        findResourcesV2Origin(
-          searchStore,
-          locale,
-          page,
-          limit,
-          tenantId,
-          searchEngine,
-        ),
-      { redis: true, memory: true, ttl: ONE_HOUR },
-      (value) => value.results.length > 0,
-    )) ?? createEmptyResult(page)
+  let cacheHit = false;
+  const cached = await withCache(
+    `search_results:${tenantId}:${locale}:${stableHash({ query: searchStore, page, limit, searchEngine, version: 'v2' })}`,
+    () =>
+      findResourcesV2Origin(
+        searchStore,
+        locale,
+        page,
+        limit,
+        tenantId,
+        searchEngine,
+      ),
+    { redis: true, memory: true, ttl: ONE_HOUR },
+    (value) => value.results.length > 0,
+    (hit) => {
+      cacheHit = hit;
+    },
   );
+  const result = cached ?? createEmptyResult(page);
+
+  // Same allowlist as v1: shape only, never search text (privacy rule 8).
+  recordSearch({
+    api: 'v2',
+    engine: searchEngine,
+    page: result.page,
+    limit: !limit || Number.isNaN(limit) ? 25 : limit,
+    results: result.results.length,
+    totalResults: result.totalResults,
+    cacheHit,
+  });
+
+  return result;
 }

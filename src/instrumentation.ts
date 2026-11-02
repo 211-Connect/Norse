@@ -174,6 +174,15 @@ export async function register(
     // provider to cache against, so the flag stays off.
     if (nodeConfiguration.metricReaders?.length) {
       markTelemetryReady();
+      try {
+        // Observable gauge: reads process.getActiveResourcesInfo() at
+        // collection time, so it must be created after the provider exists.
+        const { registerActiveResourcesGauge } =
+          await import('./instrumentation.node');
+        registerActiveResourcesGauge();
+      } catch (error) {
+        setupErrors.push({ signal: 'metrics', error });
+      }
     }
 
     // Logged only after registerOTel() so the lazy logger is created through

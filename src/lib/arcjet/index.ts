@@ -101,6 +101,8 @@ export type ArcjetProtectResult =
        */
       conclusion:
         'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
+      /** `decision.id`; absent when no decision came back (SKIPPED/THREW). */
+      decisionId?: string;
       timing?: ArcjetTiming;
     }
   | {
@@ -110,6 +112,7 @@ export type ArcjetProtectResult =
       deniedBots: string[];
       /** `decision.reason.type`: 'BOT' | 'FILTER' | ... (ISS-2366). */
       reasonType: string;
+      decisionId?: string;
       timing?: ArcjetTiming;
     }
   | {
@@ -117,6 +120,7 @@ export type ArcjetProtectResult =
       conclusion: 'DENY';
       deniedBots: string[];
       reasonType: string;
+      decisionId?: string;
       timing?: ArcjetTiming;
     };
 
@@ -401,6 +405,7 @@ export function createArcjetProtect(
           conclusion: 'DENIED_NOT_ENFORCED',
           deniedBots,
           reasonType,
+          decisionId: decision.id,
           timing,
         };
       }
@@ -410,6 +415,7 @@ export function createArcjetProtect(
         conclusion: 'DENY',
         deniedBots,
         reasonType,
+        decisionId: decision.id,
         timing,
       };
     }
@@ -429,7 +435,12 @@ export function createArcjetProtect(
         timing,
       );
       recordDecision(timing, true);
-      return { denied: false, conclusion: 'ERROR', timing };
+      return {
+        denied: false,
+        conclusion: 'ERROR',
+        decisionId: decision.id,
+        timing,
+      };
     }
 
     for (const match of dryRunMatchesOf(decision)) {
@@ -444,6 +455,7 @@ export function createArcjetProtect(
     return {
       denied: false,
       conclusion: decision.conclusion === 'CHALLENGE' ? 'CHALLENGE' : 'ALLOW',
+      decisionId: decision.id,
       timing,
     };
   }
