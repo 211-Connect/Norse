@@ -3,7 +3,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
-import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
+import {
+  withOptionalCustomBasePath,
+  withOptionalTrailingSlash,
+} from './app/(app)/shared/lib/utils';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { shouldBlockCrawlers } from './app/(app)/shared/utils/shouldBlockCrawlers';
 import {
@@ -385,7 +388,9 @@ export async function proxy(request: NextRequest) {
       timeoutId = setTimeout(() => controller.abort(), 5000);
 
       const response = await fetch(
-        `${getCmsApiRoute(request, 'getTenantBasicConfig')}?host=${encodeURIComponent(host)}`,
+        withOptionalTrailingSlash(
+          `${getCmsApiRoute(request, 'getTenantBasicConfig')}?host=${encodeURIComponent(host)}`,
+        ),
         {
           // No `host` override: the tenant goes in `?host=`, and the URL's
           // own host must route the request to the CMS.

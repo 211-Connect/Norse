@@ -2,7 +2,6 @@ import color from 'color';
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
-import { isValidLocale } from '@/payload/i18n/locales';
 import { Metadata } from 'next/types';
 
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
@@ -33,9 +32,6 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> => {
   const { locale } = await params;
-  // A path that is not a locale (e.g. `/admin` in the public app's build,
-  // which has no Payload routes) is a 404, not an app config lookup.
-  if (!isValidLocale(locale)) notFound();
   const appConfig = await getAppConfigWithoutHost(locale);
 
   const favicon = appConfig.brand.faviconUrl ?? '/favicon.ico';
@@ -132,7 +128,6 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  if (!isValidLocale(locale)) notFound();
   const appConfig = await getAppConfigWithoutHost(locale);
 
   const session = await getSession();

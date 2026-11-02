@@ -26,208 +26,34 @@ on:
       - 'Dockerfile'
 
   workflow_dispatch:
-
-env:
-  REGISTRY: registry.digitalocean.com
-  IMAGE_NAME: ${{ secrets.DO_REGISTRY_NAME }}/norse
+    inputs:
+      images_only:
+        description: Push images without waiting for deployments or running e2e (first rollout, before the apps exist)
+        type: boolean
+        default: false
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    outputs:
-      deployment_id_multitenant: ${{ steps.before-multitenant.outputs.deployment_id }}
-      deployment_id_mboa: ${{ steps.before-mboa.outputs.deployment_id }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Get multi-tenant-dev active deployment ID before push
-        id: before-multitenant
-        run: |
-          APP_ID="${{ secrets.DO_MULTITENANT_DEV_APP_ID }}"
-
-          ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
-          echo "deployment_id=$ACTIVE_DEPLOYMENT" >> "$GITHUB_OUTPUT"
-          echo "Current active deployment (multi-tenant-dev): $ACTIVE_DEPLOYMENT"
-
-      - name: Get mboa-dev active deployment ID before push
-        id: before-mboa
-        run: |
-          APP_ID="${{ secrets.DO_MBOA_DEV_APP_ID }}"
-
-          ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
-          echo "deployment_id=$ACTIVE_DEPLOYMENT" >> "$GITHUB_OUTPUT"
-          echo "Current active deployment (mboa-dev): $ACTIVE_DEPLOYMENT"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: ${{ runner.temp }}/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to DigitalOcean Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-          password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha,format=short
-            type=raw,value=development
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          sbom: true
-          build-args: |
-            NEXT_PUBLIC_MAPBOX_API_KEY=${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
-            NEXT_PUBLIC_MAPBOX_STYLE_URL=${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
-            NEXT_PUBLIC_MAPLIBRE_STYLE_URL=${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
-            NEXT_PUBLIC_UMAMI_SCRIPT_URL=${{ vars.DEVELOPMENT_UMAMI_SCRIPT_URL }}
-            NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=false
-          cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
-          cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache-new,mode=max
-
-      - name: Move cache
-        run: |
-          rm -rf ${{ runner.temp }}/.buildx-cache
-          mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
-
-  wait-for-deploy-multitenant:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Wait for new multi-tenant-dev deployment to become active
-        env:
-          OLD_DEPLOYMENT_ID: ${{ needs.build-and-push.outputs.deployment_id_multitenant }}
-        run: |
-          APP_ID="${{ secrets.DO_MULTITENANT_DEV_APP_ID }}"
-          echo "Waiting for a new deployment to replace: $OLD_DEPLOYMENT_ID"
-          MAX_ATTEMPTS=60
-          SLEEP_SECONDS=30
-          for i in $(seq 1 $MAX_ATTEMPTS); do
-            CURRENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
-
-            if [ -n "$CURRENT" ] && [ "$CURRENT" != "$OLD_DEPLOYMENT_ID" ]; then
-              echo "New deployment is active: $CURRENT"
-              echo "new_deployment_id=$CURRENT" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            # Check if latest deployment failed
-            LATEST_PHASE=$(doctl apps list-deployments "$APP_ID" --format Phase --no-header | head -n1)
-            if [ "$LATEST_PHASE" = "ERROR" ]; then
-              echo "::error::Latest deployment failed with ERROR status"
-              exit 1
-            fi
-
-            echo "Attempt $i/$MAX_ATTEMPTS - deployment not yet active (current: ${CURRENT:-none}, phase: ${LATEST_PHASE:-unknown}). Waiting ${SLEEP_SECONDS}s..."
-            sleep $SLEEP_SECONDS
-          done
-
-          echo "::error::Timed out waiting for new deployment after $((MAX_ATTEMPTS * SLEEP_SECONDS)) seconds"
-          exit 1
-
-  wait-for-deploy-mboa:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Wait for new mboa-dev deployment to become active
-        env:
-          OLD_DEPLOYMENT_ID: ${{ needs.build-and-push.outputs.deployment_id_mboa }}
-        run: |
-          APP_ID="${{ secrets.DO_MBOA_DEV_APP_ID }}"
-          echo "Waiting for a new deployment to replace: $OLD_DEPLOYMENT_ID"
-          MAX_ATTEMPTS=60
-          SLEEP_SECONDS=30
-          for i in $(seq 1 $MAX_ATTEMPTS); do
-            CURRENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
-
-            if [ -n "$CURRENT" ] && [ "$CURRENT" != "$OLD_DEPLOYMENT_ID" ]; then
-              echo "New deployment is active: $CURRENT"
-              echo "new_deployment_id=$CURRENT" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            # Check if latest deployment failed
-            LATEST_PHASE=$(doctl apps list-deployments "$APP_ID" --format Phase --no-header | head -n1)
-            if [ "$LATEST_PHASE" = "ERROR" ]; then
-              echo "::error::Latest deployment failed with ERROR status"
-              exit 1
-            fi
-
-            echo "Attempt $i/$MAX_ATTEMPTS - deployment not yet active (current: ${CURRENT:-none}, phase: ${LATEST_PHASE:-unknown}). Waiting ${SLEEP_SECONDS}s..."
-            sleep $SLEEP_SECONDS
-          done
-
-          echo "::error::Timed out waiting for new deployment after $((MAX_ATTEMPTS * SLEEP_SECONDS)) seconds"
-          exit 1
+  deploy:
+    uses: ./.github/workflows/deploy-images.yaml
+    with:
+      environment: development
+      app_id_suffix: DEV
+      umami_script_url: ${{ vars.DEVELOPMENT_UMAMI_SCRIPT_URL }}
+      allow_search_engines: 'false'
+      images_only: ${{ inputs.images_only == true }}
+    secrets: inherit
 
   e2e-tests:
-    needs: [wait-for-deploy-multitenant, wait-for-deploy-mboa]
+    needs: deploy
+    if: inputs.images_only != true
     uses: ./.github/workflows/e2e-tests.yaml
     with:
       environment: dev
     secrets: inherit
 
-  notify-build-failure:
-    if: always() && needs.build-and-push.result == 'failure'
-    needs: [build-and-push]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Slack notification - Build & Push Failed
-        uses: slackapi/slack-github-action@v2.1.0
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": ":x: *Build & Push Failed*",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":x: *Development Build & Push Failed*\nThe Docker image could not be built or pushed to the registry.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
-                  }
-                }
-              ]
-            }
-
-  notify-activate-failure:
-    if: always() && (needs.wait-for-deploy-multitenant.result == 'failure' || needs.wait-for-deploy-mboa.result == 'failure')
-    needs: [wait-for-deploy-multitenant, wait-for-deploy-mboa]
+  notify-deploy-failure:
+    if: always() && needs.deploy.result == 'failure'
+    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification - Deploy Failed
@@ -243,7 +69,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Development Deploy Failed*\nThe new deployment did not become active within the expected timeframe (multi-tenant-dev and/or mboa-dev).\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                    "text": ":x: *Development Deploy Failed*\nAn image could not be built or pushed, or its deployment did not become active. Public images are only pushed after both CMS apps are active.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]

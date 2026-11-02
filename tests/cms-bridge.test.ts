@@ -162,3 +162,34 @@ describe('cmsRequest', () => {
     );
   });
 });
+
+describe('cmsRequest in a build with trailing slashes (MBOA)', () => {
+  let server: Server;
+  let seenUrl: string | undefined;
+
+  beforeEach(async () => {
+    server = createServer((req, res) => {
+      seenUrl = req.url;
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end('null');
+    });
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const { port } = server.address() as AddressInfo;
+    process.env.PAYLOAD_CMS_URL = `http://127.0.0.1:${port}/adresources`;
+    process.env.PAYLOAD_API_ROUTE_SECRET = KEY;
+    process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES = 'true';
+  });
+
+  afterEach(async () => {
+    delete process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES;
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+  });
+
+  test('keeps the base path and adds the slash before the query', async () => {
+    await cmsRequest('tenants/by-host', { query: { host: 'a.test' } });
+    assert.equal(
+      seenUrl,
+      '/adresources/api/internal/tenants/by-host/?host=a.test',
+    );
+  });
+});

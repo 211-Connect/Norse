@@ -1,4 +1,7 @@
-import { getNormalizedCustomBasePath } from '@/app/(app)/shared/lib/utils';
+import {
+  getNormalizedCustomBasePath,
+  withOptionalTrailingSlash,
+} from '@/app/(app)/shared/lib/utils';
 
 import type { RenderPrintableDirectoryPdfOptions } from './render-printable-directory-pdf';
 
@@ -28,7 +31,9 @@ export async function requestPrintableDirectoryPdf(
   }
 
   const response = await fetch(
-    `${getInternalOrigin()}${getNormalizedCustomBasePath()}/api/internal/printable-directory-pdf`,
+    withOptionalTrailingSlash(
+      `${getInternalOrigin()}${getNormalizedCustomBasePath()}/api/internal/printable-directory-pdf`,
+    ),
     {
       method: 'POST',
       headers: {

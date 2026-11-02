@@ -1,8 +1,8 @@
 # CMS / public app split (`NORSE_ROLE`)
 
-Status: implemented on `feat/cms-app-split` (2026-10-30), not yet rolled
-out. Deployment, environment per app and the step-by-step rollout for
-DevOps: [cms-app-release-plan.md](/docs/cms-app-release-plan.md).
+Status: implemented on `feat/cms-app-split`, not yet rolled out. Deployment,
+environment per app and the step-by-step rollout:
+[cms-app-release-plan.md](/docs/cms-app-release-plan.md).
 
 ## Purpose
 
@@ -18,6 +18,38 @@ Payload. Everything it reads from Payload it gets from the CMS over HTTP.
 
 `NORSE_ROLE=all` (the default) is the single process both halves ran in
 before the split. It keeps local dev and e2e working with no extra setup.
+
+## Deployments
+
+Each environment has four DigitalOcean apps: a public app and a CMS for the
+multi-tenant deployment, and a public app and a CMS for MBOA. MBOA needs its
+own pair because `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
+`NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` are baked in at build time, in the
+browser code and in Next.js's routing. The CMS needs them too: it serves its
+routes under the base path and builds the links in emails and the widget
+config from it.
+
+| Image            | Dockerfile target | Build args                                  |
+| ---------------- | ----------------- | ------------------------------------------- |
+| `norse-app`      | `app`             |                                             |
+| `norse-cms`      | `cms`             |                                             |
+| `norse-app-mboa` | `app`             | base path `/adresources`, trailing slashes  |
+| `norse-cms-mboa` | `cms`             | base path `/adresources`, trailing slashes  |
+
+CI (`.github/workflows/deploy-images.yaml`, called by the development and
+production deploys) builds all four. It pushes the CMS images first and waits
+for both CMS apps to go active before it pushes the public images, because the
+CMS runs migrations and the public app may call endpoints of the same release.
+
+The admin moves to the CMS's own host. Two things depended on the admin being
+on a tenant's host:
+
+- **Password-reset links** use `CMS_ADMIN_URL`. The tenant lookup in
+  `getTenantResetOrigin` cannot match a CMS host, and trusting the request's
+  `Host` header would let a forged header redirect the link.
+- **`setCookieBasedOnDomain`** preselected the tenant from the host on login. A
+  CMS host matches no tenant, so nothing is preselected and Payload's tenant
+  selector starts from its default.
 
 ## Builds (`NORSE_BUILD`, Dockerfile targets)
 
@@ -42,7 +74,9 @@ build: `grep -rl 'cannot connect to Postgres' .next/standalone/.next/server`
 must find nothing.
 
 The prune script deletes source files, so it refuses to run without
-`--yes` and only runs in the Docker build stage. Nothing outside the pruned
+`--yes`. It runs in the Docker build stages and in the throwaway CI checkouts
+of the `build-target` pull request job, which also fails if Payload reappears
+in the `app` bundle. Nothing outside the pruned
 folders may import from them (today only types were, now in `src/types`).
 
 ## The role switch (`src/lib/norse-role.ts`)
@@ -200,11 +234,16 @@ Agreed 2026-10-30:
    second build.
 6. **The CMS returns the built `AppConfig`**; the app only adds `baseUrl` and
    `sessionId`.
+7. **MBOA migrates together with multi-tenant, with its own CMS.** Its base path
+   and trailing slashes are baked into its builds, so it cannot share images
+   or a CMS with the multi-tenant deployment.
+8. **CI builds only the four split images.** The Dockerfile's default combined
+   target remains for local use; old `norse:<sha>` images remain for rollback.
 
 ## Known gaps
 
 - The proxy's `hasActiveSession` (login-wall tenants) still calls
   `/api/auth/session` on the tenant's public host, through Cloudflare. It is
   an app route, so it works after the split, but it can hit the same WAF.
-- In `cms`, the public app's `/api` routes (`/api/auth`, `/api/share`, …)
-  are not gated; nothing links to them on the CMS host.
+- The combined image run with `NORSE_ROLE=cms` still serves the public app's
+  `/api` routes (`/api/auth`, `/api/share`, …). The `cms` image has none.

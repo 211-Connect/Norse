@@ -224,9 +224,10 @@ locales (`locales`, `defaultLocale`) used by both systems.
 ### mboa — a specific tenant deployment
 
 `mboa` is a real client with its own separate deployment, not just a generic
-tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
-`NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` (see the commented-out block in
-`.env.examples`), and its inbound requests arrive through the mn.gov proxy
+tenant: its images (`norse-app-mboa`, `norse-cms-mboa`) are built with
+`NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
+`NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` (see `deploy-images.yaml` and
+[cms-app-separation-plan.md](/docs/cms-app-separation-plan.md)), and its inbound requests arrive through the mn.gov proxy
 (`MBOA_PROXY_IP` in `src/lib/arcjet/client-ip.ts`). That IP is in Arcjet's trusted
 `proxies` list, so Arcjet resolves the real client from `x-forwarded-for`
 instead of treating every MBOA visitor as one address. The proxy IP is not

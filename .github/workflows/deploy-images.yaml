@@ -1,0 +1,108 @@
+name: Deploy Images
+
+# Shared by the development and production deploys. Each environment has four
+# DigitalOcean apps, which auto-deploy their image tag:
+#
+#   multi-tenant CMS  norse-cms       multi-tenant public  norse-app
+#   MBOA CMS          norse-cms-mboa  MBOA public          norse-app-mboa
+#
+# The CMS apps go first and must become active before the public images are
+# pushed: the CMS runs migrations, and a public app may call CMS endpoints of
+# the same release. See docs/cms-app-release-plan.md.
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Moving image tag, development or production
+        type: string
+        required: true
+      app_id_suffix:
+        description: Suffix of the app id secrets, DEV or PROD
+        type: string
+        required: true
+      umami_script_url:
+        type: string
+        required: false
+        default: ''
+      allow_search_engines:
+        type: string
+        required: true
+      images_only:
+        description: Push images without waiting for deployments
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-cms:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: norse-cms
+            app_id_secret: DO_MULTITENANT_CMS
+          - image: norse-cms-mboa
+            app_id_secret: DO_MBOA_CMS
+            custom_base_path: /adresources
+            trailing_slashes: 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build, push and wait
+        uses: ./.github/actions/deploy-image
+        with:
+          image: ${{ matrix.image }}
+          target: cms
+          environment: ${{ inputs.environment }}
+          registry-name: ${{ secrets.DO_REGISTRY_NAME }}
+          app-id: ${{ secrets[format('{0}_{1}_APP_ID', matrix.app_id_secret, inputs.app_id_suffix)] }}
+          do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          images-only: ${{ inputs.images_only }}
+          mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
+          mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
+          maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
+          umami-script-url: ${{ inputs.umami_script_url }}
+          allow-search-engines: ${{ inputs.allow_search_engines }}
+          custom-base-path: ${{ matrix.custom_base_path }}
+          trailing-slashes: ${{ matrix.trailing_slashes }}
+
+  deploy-app:
+    needs: deploy-cms
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: norse-app
+            app_id_secret: DO_MULTITENANT
+          - image: norse-app-mboa
+            app_id_secret: DO_MBOA
+            custom_base_path: /adresources
+            trailing_slashes: 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build, push and wait
+        uses: ./.github/actions/deploy-image
+        with:
+          image: ${{ matrix.image }}
+          target: app
+          environment: ${{ inputs.environment }}
+          registry-name: ${{ secrets.DO_REGISTRY_NAME }}
+          app-id: ${{ secrets[format('{0}_{1}_APP_ID', matrix.app_id_secret, inputs.app_id_suffix)] }}
+          do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          images-only: ${{ inputs.images_only }}
+          mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
+          mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
+          maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
+          umami-script-url: ${{ inputs.umami_script_url }}
+          allow-search-engines: ${{ inputs.allow_search_engines }}
+          custom-base-path: ${{ matrix.custom_base_path }}
+          trailing-slashes: ${{ matrix.trailing_slashes }}

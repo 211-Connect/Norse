@@ -47,6 +47,25 @@ async function getTenantResetOrigin(req?: {
   return `${protocol}://${host}`;
 }
 
+/**
+ * The admin's password-reset link. A separate CMS app serves the admin on
+ * its own host, which is no tenant's: `CMS_ADMIN_URL` (origin plus any base
+ * path) names it. It comes from the environment, not the request, so a forged
+ * `Host` header cannot redirect the link. Without it (one process serving
+ * both halves) the admin is on a tenant's host.
+ */
+async function getResetUrl(
+  token: unknown,
+  req?: { headers?: Headers },
+): Promise<string> {
+  const adminUrl = process.env.CMS_ADMIN_URL?.replace(/\/+$/, '');
+  if (adminUrl) return `${adminUrl}/admin/reset/${token}`;
+
+  const resetPath = withOptionalCustomBasePath(`/admin/reset/${token}`);
+  const resetOrigin = await getTenantResetOrigin(req);
+  return resetOrigin ? new URL(resetPath, resetOrigin).toString() : resetPath;
+}
+
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
@@ -66,11 +85,7 @@ export const Users: CollectionConfig = {
         }
 
         const { req, token, user } = args;
-        const resetPath = withOptionalCustomBasePath(`/admin/reset/${token}`);
-        const resetOrigin = await getTenantResetOrigin(req);
-        const resetURL = resetOrigin
-          ? new URL(resetPath, resetOrigin).toString()
-          : resetPath;
+        const resetURL = await getResetUrl(token, req);
 
         return `${user?.email ? `<p>Hello ${user.email},</p>` : ''}<p>You are receiving this because you (or someone else) have requested the reset of the password for your account.</p><p>Please click on the following link, or paste this into your browser to complete the process:</p><p><a href="${resetURL}">${resetURL}</a></p><p>If you did not request this, please ignore this email and your password will remain unchanged.</p>`;
       },

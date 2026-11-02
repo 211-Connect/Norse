@@ -1,8 +1,10 @@
 import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
 import { cmsRequest } from '@/lib/cms/client';
 import { isCmsRemote } from '@/lib/cms/config';
+import { isValidLocale } from '@/payload/i18n/locales';
 import { AppConfig } from '@/types/appConfig';
 import { ONE_HOUR, withCache } from '@/utilities/withCache';
 
@@ -56,6 +58,10 @@ const getCachedAppConfig = cache(async function (
   host: string,
   locale: string,
 ): Promise<CachedAppConfig> {
+  // A first path segment that is not a locale (`/admin` in the public app's
+  // build, which has no Payload routes) is a 404, not a CMS lookup.
+  if (!isValidLocale(locale)) notFound();
+
   const domain = parseHost(host);
   const cached = await withCache(
     `app_config:${domain}:${locale}`,

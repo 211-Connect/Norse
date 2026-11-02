@@ -36,6 +36,8 @@ declare global {
       PAYLOAD_APP_CONFIG_API_KEY?: string;
       /** Payload CMS origin (plus base path) for /api/internal/*; see src/lib/cms. */
       PAYLOAD_CMS_URL?: string;
+      /** Admin origin plus base path on a separate CMS app (password-reset links). */
+      CMS_ADMIN_URL?: string;
       /** Shared secret for /api/internal/* (x-internal-api-key header). */
       PAYLOAD_API_ROUTE_SECRET?: string;
       PAYLOAD_SECRET?: string;

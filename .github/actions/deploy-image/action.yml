@@ -1,0 +1,157 @@
+name: Build, push and wait for deployment
+description: >
+  Builds one Dockerfile target, pushes it to the DigitalOcean registry, and
+  waits for the DigitalOcean app that auto-deploys that image to go active.
+
+inputs:
+  image:
+    description: Repository name in the registry, e.g. norse-cms
+    required: true
+  target:
+    description: Dockerfile target (app or cms)
+    required: true
+  environment:
+    description: Moving image tag, development or production
+    required: true
+  registry-name:
+    required: true
+  app-id:
+    description: DigitalOcean app that auto-deploys this image
+    required: false
+    default: ''
+  do-token:
+    required: true
+  images-only:
+    description: Push the image and do not wait for a deployment
+    required: false
+    default: 'false'
+  mapbox-api-key:
+    required: false
+    default: ''
+  mapbox-style-url:
+    required: false
+    default: ''
+  maplibre-style-url:
+    required: false
+    default: ''
+  umami-script-url:
+    required: false
+    default: ''
+  allow-search-engines:
+    required: true
+  custom-base-path:
+    required: false
+    default: ''
+  trailing-slashes:
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ inputs.do-token }}
+
+    - name: Get active deployment before push
+      id: before
+      if: inputs.images-only != 'true'
+      shell: bash
+      env:
+        APP_ID: ${{ inputs.app-id }}
+      run: |
+        if [ -z "$APP_ID" ]; then
+          echo "::error::No DigitalOcean app id for ${{ inputs.image }}. Create the app and add its secret, or run with images_only."
+          exit 1
+        fi
+        ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+        echo "deployment_id=$ACTIVE_DEPLOYMENT" >> "$GITHUB_OUTPUT"
+        echo "Current active deployment (${{ inputs.image }}): $ACTIVE_DEPLOYMENT"
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Cache Docker layers
+      uses: actions/cache@v5
+      with:
+        path: ${{ runner.temp }}/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ inputs.image }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-${{ inputs.image }}-
+
+    - name: Log in to DigitalOcean Container Registry
+      uses: docker/login-action@v4
+      with:
+        registry: registry.digitalocean.com
+        username: ${{ inputs.do-token }}
+        password: ${{ inputs.do-token }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v6
+      with:
+        images: registry.digitalocean.com/${{ inputs.registry-name }}/${{ inputs.image }}
+        tags: |
+          type=sha,format=short
+          type=raw,value=${{ inputs.environment }}
+          type=semver,pattern={{version}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        file: ./Dockerfile
+        target: ${{ inputs.target }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        sbom: true
+        build-args: |
+          NEXT_PUBLIC_MAPBOX_API_KEY=${{ inputs.mapbox-api-key }}
+          NEXT_PUBLIC_MAPBOX_STYLE_URL=${{ inputs.mapbox-style-url }}
+          NEXT_PUBLIC_MAPLIBRE_STYLE_URL=${{ inputs.maplibre-style-url }}
+          NEXT_PUBLIC_UMAMI_SCRIPT_URL=${{ inputs.umami-script-url }}
+          NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=${{ inputs.allow-search-engines }}
+          NEXT_PUBLIC_CUSTOM_BASE_PATH=${{ inputs.custom-base-path }}
+          NEXT_PUBLIC_WITH_TRAILING_SLASHES=${{ inputs.trailing-slashes }}
+        cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
+        cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache-new,mode=max
+
+    - name: Move cache
+      shell: bash
+      run: |
+        rm -rf ${{ runner.temp }}/.buildx-cache
+        mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
+
+    - name: Wait for the new deployment to become active
+      if: inputs.images-only != 'true'
+      shell: bash
+      env:
+        APP_ID: ${{ inputs.app-id }}
+        OLD_DEPLOYMENT_ID: ${{ steps.before.outputs.deployment_id }}
+      run: |
+        echo "Waiting for a new deployment to replace: $OLD_DEPLOYMENT_ID"
+        MAX_ATTEMPTS=60
+        SLEEP_SECONDS=30
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+          CURRENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+
+          if [ -n "$CURRENT" ] && [ "$CURRENT" != "$OLD_DEPLOYMENT_ID" ]; then
+            echo "New deployment is active: $CURRENT"
+            exit 0
+          fi
+
+          # Check if latest deployment failed
+          LATEST_PHASE=$(doctl apps list-deployments "$APP_ID" --format Phase --no-header | head -n1)
+          if [ "$LATEST_PHASE" = "ERROR" ]; then
+            echo "::error::Latest deployment failed with ERROR status"
+            exit 1
+          fi
+
+          echo "Attempt $i/$MAX_ATTEMPTS - deployment not yet active (current: ${CURRENT:-none}, phase: ${LATEST_PHASE:-unknown}). Waiting ${SLEEP_SECONDS}s..."
+          sleep $SLEEP_SECONDS
+        done
+
+        echo "::error::Timed out waiting for new deployment after $((MAX_ATTEMPTS * SLEEP_SECONDS)) seconds"
+        exit 1

@@ -1,3 +1,4 @@
+import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { describeError, truncateBody } from '@/lib/describe-error';
 import { createLogger } from '@/lib/logger';
 
@@ -52,6 +53,8 @@ export async function cmsRequest<T>(
   for (const [name, value] of Object.entries(query ?? {})) {
     url.searchParams.set(name, value);
   }
+  // Builds with trailing slashes (MBOA) would answer every call with a 308.
+  url.pathname = withOptionalTrailingSlash(url.pathname);
 
   const isFormData = body instanceof FormData;
   const headers: Record<string, string> = {
