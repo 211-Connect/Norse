@@ -7,12 +7,19 @@ const log = createLogger('tenant-config');
 const CDN_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=59';
 
 /**
- * Currently this endpoint is protected by a static API key,
+ * Currently this endpoint is protected by static API keys,
  * but in the future we may want to implement more dynamic approach with API key per tenant.
+ *
+ * PAYLOAD_MOBILE_APP_CONFIG_API_KEY is shipped inside the mobile apps, so
+ * anyone can extract it. It is kept separate from PAYLOAD_APP_CONFIG_API_KEY
+ * (server-side callers) so each can be rotated without breaking the other.
  */
 function isAuthorized(request: Request): boolean {
-  const expectedApiKey = process.env.PAYLOAD_APP_CONFIG_API_KEY;
-  if (!expectedApiKey) {
+  const expectedApiKeys = [
+    process.env.PAYLOAD_APP_CONFIG_API_KEY,
+    process.env.PAYLOAD_MOBILE_APP_CONFIG_API_KEY,
+  ].filter((key): key is string => Boolean(key));
+  if (expectedApiKeys.length === 0) {
     return false;
   }
 
@@ -25,7 +32,7 @@ function isAuthorized(request: Request): boolean {
     ? authorizationHeader.slice('Bearer '.length)
     : authorizationHeader;
 
-  return token === expectedApiKey;
+  return expectedApiKeys.includes(token);
 }
 
 export const GET = async (

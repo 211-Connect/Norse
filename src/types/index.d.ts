@@ -29,6 +29,7 @@ declare global {
 
       // Payload
       PAYLOAD_APP_CONFIG_API_KEY?: string;
+      PAYLOAD_MOBILE_APP_CONFIG_API_KEY?: string;
       PAYLOAD_API_ROUTE_SECRET?: string;
       PAYLOAD_SECRET?: string;
       DATABASE_URI?: string;
