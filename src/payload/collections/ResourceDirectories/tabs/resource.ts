@@ -19,6 +19,14 @@ export const getCustomLayoutComponentLabel = (componentId: string) => {
       return 'Data Attribution';
     case ResourceComponentId.CATEGORIES:
       return 'Taxonomies';
+    case ResourceComponentId.ORGANIZATION_URL:
+      return 'Organization URL';
+    case ResourceComponentId.ORGANIZATION_NAME:
+      return 'Organization - Name';
+    case ResourceComponentId.ORGANIZATION_NAME_AND_ALTERNATE_NAME:
+      return 'Organization - Name and Alternate Name';
+    case ResourceComponentId.ORGANIZATION_NAME_AND_DESCRIPTION:
+      return 'Organization - Name and Description';
     default:
       return title(componentId);
   }
