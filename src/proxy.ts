@@ -20,6 +20,7 @@ import type { TenantBasicConfigResponse } from './types/tenantBasicConfig';
 import { crawlTrapMiddleware } from './middlewares/crawlTrapMiddleware';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
+import { trackDependency } from './lib/telemetry/dependency';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
@@ -289,13 +290,15 @@ async function hasActiveSession(request: NextRequest): Promise<boolean> {
   const sessionRoute = getApiRoute(request, 'auth/session');
 
   try {
-    const response = await fetch(sessionRoute, {
-      headers: {
-        cookie: request.headers.get('cookie') || '',
-        host: request.headers.get('host') || '',
-      },
-      cache: 'no-store',
-    });
+    const response = await trackDependency('payload_api', 'auth_session', () =>
+      fetch(sessionRoute, {
+        headers: {
+          cookie: request.headers.get('cookie') || '',
+          host: request.headers.get('host') || '',
+        },
+        cache: 'no-store',
+      }),
+    );
 
     if (!response.ok) {
       return false;
@@ -391,19 +394,25 @@ export async function proxy(request: NextRequest) {
       const controller = new AbortController();
       timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch(
-        withOptionalTrailingSlash(
-          `${getCmsApiRoute(request, 'getTenantBasicConfig')}?host=${encodeURIComponent(host)}`,
-        ),
-        {
-          // No `host` override: the tenant goes in `?host=`, and the URL's
-          // own host must route the request to the CMS.
-          headers: {
-            'x-internal-api-key': process.env.PAYLOAD_API_ROUTE_SECRET ?? '',
-          },
-          signal: controller.signal,
-          cache: 'no-store',
-        },
+      const response = await trackDependency(
+        'payload_api',
+        'tenant_basic_config',
+        () =>
+          fetch(
+            withOptionalTrailingSlash(
+              `${getCmsApiRoute(request, 'getTenantBasicConfig')}?host=${encodeURIComponent(host)}`,
+            ),
+            {
+              // No `host` override: the tenant goes in `?host=`, and the URL's
+              // own host must route the request to the CMS.
+              headers: {
+                'x-internal-api-key':
+                  process.env.PAYLOAD_API_ROUTE_SECRET ?? '',
+              },
+              signal: controller.signal,
+              cache: 'no-store',
+            },
+          ),
       );
 
       if (!response.ok) {
