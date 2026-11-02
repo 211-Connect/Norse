@@ -46,6 +46,9 @@ export enum ResourceComponentId {
 
   // Organization
   ORGANIZATION = 'organization',
+  ORGANIZATION_NAME = 'organizationName',
+  ORGANIZATION_NAME_AND_ALTERNATE_NAME = 'organizationNameAndAlternateName',
+  ORGANIZATION_NAME_AND_DESCRIPTION = 'organizationNameAndDescription',
 
   // Quality
   QUALITY = 'quality',

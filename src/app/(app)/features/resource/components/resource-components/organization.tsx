@@ -6,11 +6,23 @@ import { Resource } from '@/types/resource';
 
 import { Datum } from '../datum';
 
-export function OrganizationComponent({ resource }: { resource: Resource }) {
+export function OrganizationComponent({
+  resource,
+  showAlternateName = true,
+  showDescription = true,
+}: {
+  resource: Resource;
+  showAlternateName?: boolean;
+  showDescription?: boolean;
+}) {
   const { t } = useTranslation('page-resource');
   const organizationName = resource.organizationName;
-  const organizationAlternateName = resource.organizationAlternateName;
-  const organizationDescription = resource.organizationDescription;
+  const organizationAlternateName = showAlternateName
+    ? resource.organizationAlternateName
+    : null;
+  const organizationDescription = showDescription
+    ? resource.organizationDescription
+    : null;
 
   if (!organizationName && !organizationDescription) {
     return null;
