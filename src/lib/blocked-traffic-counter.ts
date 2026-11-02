@@ -1,3 +1,5 @@
+import { ROOT_CONTEXT, context } from '@opentelemetry/api';
+
 import type { BlockedTrafficBucketDto } from '@/lib/api/generated/data-contracts';
 import type { ArcjetLog } from '@/lib/arcjet';
 import type { BlockedTrafficClassification } from '@/lib/arcjet-classification';
@@ -63,9 +65,17 @@ export interface BlockedTrafficCounter {
   pendingCount(): number;
 }
 
-function defaultSchedule(flush: () => void): void {
-  // unref: the timer must not keep a finishing process alive.
-  setInterval(flush, BLOCKED_TRAFFIC_FLUSH_INTERVAL_MS).unref?.();
+export function defaultSchedule(
+  flush: () => void,
+  intervalMs: number = BLOCKED_TRAFFIC_FLUSH_INTERVAL_MS,
+): void {
+  // ROOT_CONTEXT: the first denial arms this inside a request's `after()`,
+  // and a timer keeps the async context it was created in, so every flush
+  // for the life of the process would join that request's trace.
+  context.with(ROOT_CONTEXT, () => {
+    // unref: the timer must not keep a finishing process alive.
+    setInterval(flush, intervalMs).unref?.();
+  });
 }
 
 export function createBlockedTrafficCounter({
