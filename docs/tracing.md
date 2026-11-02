@@ -42,9 +42,59 @@ a separate NestJS repo).
   in `after()`, so its span ends after the request's root span. No
   `traceparent` is sent to Arcjet.
 
+- **Scheduled jobs**: each Payload job run gets a root span `job <slug>`
+  (`src/payload/jobs/tracedTask.ts`), and its fetch and Redis spans sit under
+  it.
+
 The Norse API's `main.ts` already documents `traceparent` as an accepted
 global Swagger header, so no API-side change was needed for it to receive
 and link the propagated context.
+
+## Trace boundaries
+
+`norse-app` starts its own trace for every request. Two rules keep traces
+whole; breaking either shows up in Grafana as `<root span not yet received>`
+or as a trace lasting hours.
+
+**Inbound `traceparent` is ignored.** Next.js extracts it from every incoming
+request, so without this a header from a gateway, CDN or bot makes our root
+span the child of a span that never reaches Tempo. It would also let any
+caller decide whether a request is sampled. `src/instrumentation.ts` registers
+`InboundIgnoringTraceContextPropagator` (`src/lib/tracing.ts`), which still
+injects `traceparent` on calls to the Norse API. If something upstream ever
+exports to the same Tempo, this is what to change to join its traces.
+
+**Timers must not keep a request's context.** A timer inherits the async
+context it was created in, so one armed during a request runs inside that
+request's trace for as long as it keeps firing. Anything long-lived has to
+leave that context when it starts:
+
+- the blocked-traffic flush timer arms under `ROOT_CONTEXT`
+  (`defaultSchedule` in `src/lib/blocked-traffic-counter.ts`), so each push is
+  its own trace;
+- Payload arms its `autoRun` crons inside whichever request first reaches
+  `getPayload({ cron: true })`, which we don't control, so job handlers are
+  wrapped with `tracedTask`. Add new tasks to the `tasks` list in
+  `payload-config.ts`, which applies it.
+
+Use `inNewTrace` from `src/lib/tracing.ts` for new background work.
+
+### Finding the cause of a rootless trace
+
+Open the trace and look at its topmost span:
+
+- `norse-api` spans only: the API recorded a request whose parent never
+  arrived. Either a caller sent it `traceparent` directly, or the `norse-app`
+  span was lost on export. The API honors a sampled inbound `traceparent`
+  (`remoteParentSampled: AlwaysOn`).
+- A `norse-app` span named after the request method, with a parent span ID:
+  an inbound `traceparent`, from a build older than the propagator above.
+- `fetch POST .../blocked-traffic...` or spans from a job, in a trace older
+  than the search window: a timer that kept a request's context. The root
+  exists but falls outside the range Grafana searched, so widen the range.
+- A mix, only under load: `BatchSpanProcessor` drops spans once its 2048-span
+  queue is full, without logging at the default level. Raise
+  `OTEL_BSP_MAX_QUEUE_SIZE` or lower the sampling ratio.
 
 ## Why `@vercel/otel`, not a manual `NodeSDK`
 
@@ -132,28 +182,12 @@ it arrived via a propagated `traceparent` — it **respects that decision**
 instead of re-deciding independently. The ratio sampler (`root`) is only
 consulted when there's **no** parent, i.e. this request is the trace root.
 
-**`norse-api`'s `tracing.ts` should use the same pattern** so the two
-services can run independent (even different) sampling ratios without ever
-producing partial traces:
-
-```ts
-import { ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-node';
-
-sampler: new ParentBasedSampler({
-  root: new TraceIdRatioBasedSampler(
-    parseFloat(process.env.OTEL_TRACES_SAMPLER_ARG || '1.0'),
-  ),
-}),
-```
-
-As of this writing, the API's `tracing.ts` still uses a raw
-`TraceIdRatioBasedSampler` (no `ParentBasedSampler`) — until it's updated,
-**keep `OTEL_TRACES_SAMPLER_ARG` identical on both services** to avoid
-partial traces. `norse-app` is almost always the trace root (browser →
-norse-app → norse-api), so in practice `norse-app`'s ratio is what
-determines whether a given user request is traced at all; `norse-api`'s
-ratio only matters on its own for requests that reach it directly without
-going through `norse-app` (if any exist).
+`norse-api`'s `tracing.ts` uses the same pattern, so the two services can run
+different ratios without producing partial traces. `norse-app` is almost
+always the trace root (browser → norse-app → norse-api), so its ratio decides
+whether a user request is traced at all; `norse-api`'s ratio only matters for
+requests that reach it directly. `@vercel/otel` sends no `traceparent` for a
+trace `norse-app` did not sample, so the API makes its own decision there.
 
 ### What value to use
 
@@ -171,12 +205,8 @@ what the OTLP backend costs to store — but as a starting point:
   - Light/moderate traffic: `0.1`–`0.2` is likely still affordable and gives
     better debugging signal.
 
-Once `norse-api` adopts `ParentBasedSampler`, its own ratio stops mattering
-for the normal browser → app → api path (it just inherits `norse-app`'s
-decision) and only applies to traffic that hits `norse-api` directly. At
-that point the two services no longer need to match, but keeping them equal
-remains the simplest default unless there's a specific reason to give
-direct-hit traffic different visibility.
+Keeping the two ratios equal remains the simplest default unless there's a
+specific reason to give direct-hit traffic different visibility.
 
 ## Viewing traces locally
 
