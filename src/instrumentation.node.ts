@@ -14,6 +14,9 @@ import {
 import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import type { Configuration } from '@vercel/otel';
 
+import { countActiveResources } from '@/lib/telemetry/active-resources';
+import { norseMeter } from '@/lib/telemetry/meter';
+
 import packageJson from '../package.json';
 
 /**
@@ -185,4 +188,34 @@ export function createNodeTelemetryOptions(): NodeTelemetryOptions {
   }
 
   return { configuration, errors };
+}
+
+let activeResourcesGaugeRegistered = false;
+
+/**
+ * Registers the `norse.process.active_resources` observable gauge. Must run
+ * after `registerOTel()` installed the meter provider and after
+ * `markTelemetryReady()`; the callback runs at collection time (no timer of
+ * ours) and reads the active resources then.
+ */
+export function registerActiveResourcesGauge(): void {
+  if (activeResourcesGaugeRegistered) return;
+
+  try {
+    norseMeter()
+      .createObservableGauge('norse.process.active_resources', {
+        description:
+          'Active Node resources by type, read when the metric is collected',
+      })
+      .addCallback((observable) => {
+        for (const { type, count } of countActiveResources(
+          process.getActiveResourcesInfo(),
+        )) {
+          observable.observe(count, { type });
+        }
+      });
+    activeResourcesGaugeRegistered = true;
+  } catch {
+    // Telemetry must never break startup (plan rule 7); retry next register().
+  }
 }

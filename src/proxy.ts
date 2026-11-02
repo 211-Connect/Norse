@@ -1,3 +1,4 @@
+import { trace } from '@opentelemetry/api';
 import { i18nRouter } from 'next-i18n-router';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -61,6 +62,48 @@ function edgeLog(
   else if (level === 'warn') console.warn(entry);
   else if (level === 'debug' || level === 'trace') console.debug(entry);
   else console.log(entry);
+}
+
+const ROOT_SPAN_EXTRAS_ENABLED = process.env.OTEL_ROOT_SPAN_EXTRAS === '1';
+
+/** `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` as a positive integer, else undefined. */
+function attributeValueLengthLimit(): number | undefined {
+  const raw = process.env.OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT;
+  if (!raw) return undefined;
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+/**
+ * Optional request-root enrichment (plan N5): `OTEL_ROOT_SPAN_EXTRAS=1` puts
+ * `server.address` and a length-limited `user_agent.original` on the root span.
+ * Only the root span is touched — a span that already has a parent is left
+ * alone, so a child span never gets request-level identity. Never throws.
+ */
+function addRootSpanExtras(request: NextRequest) {
+  if (!ROOT_SPAN_EXTRAS_ENABLED) return;
+
+  try {
+    const span = trace.getActiveSpan();
+    // `parentSpanContext` is only on real SDK spans; without it we cannot
+    // prove this is the root, so skip.
+    if (!span || !('parentSpanContext' in span)) return;
+    if (span.parentSpanContext !== undefined) return;
+
+    const host = request.headers.get('host');
+    if (host) {
+      span.setAttribute('server.address', host);
+    }
+
+    // The user agent is optional and only ever stored length-limited.
+    const limit = attributeValueLengthLimit();
+    const userAgent = request.headers.get('user-agent');
+    if (limit !== undefined && userAgent) {
+      span.setAttribute('user_agent.original', userAgent.slice(0, limit));
+    }
+  } catch {
+    // Telemetry must never break a request (plan rule 7).
+  }
 }
 
 const TENANT_DATA_CACHE_TTL_MS = 10 * 60 * 1000;
@@ -336,6 +379,8 @@ function roleGate(request: NextRequest): NextResponse | undefined {
 export async function proxy(request: NextRequest) {
   const gated = roleGate(request);
   if (gated) return gated;
+
+  addRootSpanExtras(request);
 
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {

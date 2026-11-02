@@ -13,6 +13,11 @@ import {
 } from '@/lib/arcjet';
 import { recordBlockedTraffic } from '@/lib/blocked-traffic';
 import { createLogger } from '@/lib/logger';
+import {
+  arcjetSpanAttributes,
+  isArcjetErrorConclusion,
+  recordArcjetDecision,
+} from '@/lib/telemetry/arcjet';
 
 const logger = createLogger('arcjet');
 
@@ -51,9 +56,23 @@ function tracedProtect(
     try {
       const result = await arcjetProtect(req, pathName, log);
       span.setAttribute('arcjet.conclusion', result.conclusion);
+      span.setAttributes(
+        arcjetSpanAttributes({
+          conclusion: result.conclusion,
+          decisionId: result.decisionId,
+          timing: result.timing,
+        }),
+      );
       if (isArcjetDeniedResult(result)) {
         span.setAttribute('arcjet.reason_type', result.reasonType);
       }
+      // A decision the API never answered (timeout/transport error) is a
+      // failed span even though the page fails open.
+      if (isArcjetErrorConclusion(result.conclusion)) {
+        span.setStatus({ code: SpanStatusCode.ERROR });
+      }
+      // One sample per decision, enforced or observe-only.
+      recordArcjetDecision(result.conclusion, !afterResponse);
       return result;
     } catch (error) {
       span.recordException(error as Error);
