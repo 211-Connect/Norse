@@ -31,11 +31,16 @@ jobs:
     uses: ./.github/workflows/deploy-images.yaml
     with:
       environment: production
-      app_id_suffix: PROD
       umami_script_url: ${{ vars.PRODUCTION_UMAMI_SCRIPT_URL }}
       allow_search_engines: 'true'
       images_only: ${{ inputs.images_only == true }}
-    secrets: inherit
+    secrets:
+      DO_REGISTRY_NAME: ${{ secrets.DO_REGISTRY_NAME }}
+      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      MULTITENANT_CMS_APP_ID: ${{ secrets.DO_MULTITENANT_CMS_PROD_APP_ID }}
+      MBOA_CMS_APP_ID: ${{ secrets.DO_MBOA_CMS_PROD_APP_ID }}
+      MULTITENANT_APP_ID: ${{ secrets.DO_MULTITENANT_PROD_APP_ID }}
+      MBOA_APP_ID: ${{ secrets.DO_MBOA_PROD_APP_ID }}
 
   notify-deploy-failure:
     if: always() && needs.deploy.result == 'failure'
