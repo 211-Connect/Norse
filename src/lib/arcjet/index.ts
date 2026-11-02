@@ -8,6 +8,12 @@ import { hostname } from 'node:os';
 import { performance } from 'node:perf_hooks';
 
 import {
+  type Outcome,
+  recordDependency,
+  toOperation,
+} from '@/lib/telemetry/dependency';
+
+import {
   ARCJET_PROXIES,
   internalIpSrc,
   isMboaWithoutClientIp,
@@ -235,6 +241,25 @@ export function createArcjetProtect(
   const traceContext = options.traceContext ?? defaultTraceContext;
   let deniedSampledOut = 0;
 
+  /**
+   * One downstream sample per Arcjet decision. `SKIPPED`/`NO_CLIENT_IP`
+   * return before this is called: no call happened. A failed decision that
+   * reached the Decide API timeout is a timeout; any other failure is an
+   * error.
+   */
+  function recordDecision(timing: ArcjetTiming, failed: boolean): void {
+    let outcome: Outcome = 'ok';
+    if (failed) {
+      outcome = timing.durationMs >= ARCJET_TIMEOUT_MS ? 'timeout' : 'error';
+    }
+    recordDependency(
+      'arcjet',
+      toOperation('arcjet', 'decide'),
+      outcome,
+      timing.durationMs / 1000,
+    );
+  }
+
   function logFingerprintFailed(
     request: ArcjetRequestLike,
     pathName: string,
@@ -352,6 +377,7 @@ export function createArcjetProtect(
         },
         timing,
       );
+      recordDecision(timing, true);
       return { denied: false, conclusion: 'THREW', timing };
     }
     const timing = stopTimer();
@@ -369,6 +395,7 @@ export function createArcjetProtect(
         enforced,
       });
       if (!enforced) {
+        recordDecision(timing, false);
         return {
           denied: false,
           conclusion: 'DENIED_NOT_ENFORCED',
@@ -377,6 +404,7 @@ export function createArcjetProtect(
           timing,
         };
       }
+      recordDecision(timing, false);
       return {
         denied: true,
         conclusion: 'DENY',
@@ -400,6 +428,7 @@ export function createArcjetProtect(
         },
         timing,
       );
+      recordDecision(timing, true);
       return { denied: false, conclusion: 'ERROR', timing };
     }
 
@@ -411,6 +440,7 @@ export function createArcjetProtect(
       });
     }
 
+    recordDecision(timing, false);
     return {
       denied: false,
       conclusion: decision.conclusion === 'CHALLENGE' ? 'CHALLENGE' : 'ALLOW',

@@ -1,3 +1,6 @@
+import { API_URL } from '@/app/(app)/shared/lib/constants';
+import { instrumentedApiFetch } from '@/lib/telemetry/api-fetch';
+
 import { Analytics } from './generated/Analytics';
 import { BlockedTrafficInternal } from './generated/BlockedTrafficInternal';
 import { FavoriteList } from './generated/FavoriteList';
@@ -12,9 +15,8 @@ import { Search } from './generated/Search';
 import { ShortUrl } from './generated/ShortUrl';
 import { Suggestion } from './generated/Suggestion';
 import { TaxonomyScorecard } from './generated/TaxonomyScorecard';
-import { API_URL } from '@/app/(app)/shared/lib/constants';
 
-const clientArgs = {
+const baseArgs = {
   baseUrl: API_URL || '',
   baseApiParams: {
     headers: {
@@ -23,37 +25,47 @@ const clientArgs = {
   },
 };
 
-export const analyticsApiClient = new Analytics(clientArgs);
+/** Generated clients share the base config but get their own instrumented fetch. */
+const clientArgs = (clientName: string) => ({
+  ...baseArgs,
+  customFetch: instrumentedApiFetch(clientName),
+});
+
+export const analyticsApiClient = new Analytics(clientArgs('analytics'));
 
 export const blockedTrafficInternalApiClient = new BlockedTrafficInternal(
-  clientArgs,
+  clientArgs('blocked-traffic-internal'),
 );
 
-export const searchApiClient = new Search(clientArgs);
+export const searchApiClient = new Search(clientArgs('search'));
 
-export const shortUrlApiClient = new ShortUrl(clientArgs);
+export const shortUrlApiClient = new ShortUrl(clientArgs('short-url'));
 
-export const geocodingApiClient = new Geocoding(clientArgs);
+export const geocodingApiClient = new Geocoding(clientArgs('geocoding'));
 
 export const printableDirectoriesApiClient = new PrintableDirectories(
-  clientArgs,
+  clientArgs('printable-directories'),
 );
 
 export const printableDirectoriesPublicApiClient =
-  new PrintableDirectoriesPublic(clientArgs);
+  new PrintableDirectoriesPublic(clientArgs('printable-directories-public'));
 
 export const printableDirectoryDeliveriesApiClient =
-  new PrintableDirectoryDeliveries(clientArgs);
+  new PrintableDirectoryDeliveries(clientArgs('printable-directory-deliveries'));
 
 export const printableDirectoryDeliveriesInternalApiClient =
-  new PrintableDirectoryDeliveriesInternal(clientArgs);
+  new PrintableDirectoryDeliveriesInternal(
+    clientArgs('printable-directory-deliveries-internal'),
+  );
 
-export const taxonomyScorecardApiClient = new TaxonomyScorecard(clientArgs);
+export const taxonomyScorecardApiClient = new TaxonomyScorecard(
+  clientArgs('taxonomy-scorecard'),
+);
 
-export const favoriteListApiClient = new FavoriteList(clientArgs);
+export const favoriteListApiClient = new FavoriteList(clientArgs('favorite-list'));
 
-export const favoriteApiClient = new Favorite(clientArgs);
+export const favoriteApiClient = new Favorite(clientArgs('favorite'));
 
-export const resourceApiClient = new Resource(clientArgs);
+export const resourceApiClient = new Resource(clientArgs('resource'));
 
-export const suggestionApiClient = new Suggestion(clientArgs);
+export const suggestionApiClient = new Suggestion(clientArgs('suggestion'));

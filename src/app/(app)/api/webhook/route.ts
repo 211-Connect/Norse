@@ -61,6 +61,7 @@ export async function POST(request: Request) {
           },
         ],
       },
+      telemetry: { dependency: 'webhook', operation: 'alert' },
     });
 
     log.info({ hostname: validated.hostname }, 'Webhook forwarded to Discord');
@@ -90,6 +91,7 @@ export async function POST(request: Request) {
               },
             ],
           },
+          telemetry: { dependency: 'webhook', operation: 'alert' },
         });
         log.info('Fallback webhook sent to Discord');
       } catch (fallbackError) {

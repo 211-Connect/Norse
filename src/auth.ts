@@ -174,6 +174,7 @@ const createAuthOptions = ({
               'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: params,
+            telemetry: { dependency: 'keycloak', operation: 'token' },
           },
         );
 
@@ -237,6 +238,7 @@ const createAuthOptions = ({
             },
             body: params,
             parseResponse: false,
+            telemetry: { dependency: 'keycloak', operation: 'token' },
           },
         );
       } catch (err) {

@@ -194,6 +194,7 @@ async function findResourcesOrigin({
 
     data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
       headers: await getApiHeaders(tenantId, locale),
+      telemetry: { dependency: 'norse_api', operation: 'search_v1' },
     });
   } catch (err) {
     log.error(
@@ -311,6 +312,7 @@ async function findResourcesV2Origin(
         ...(await getApiHeaders(tenantId, locale)),
       },
       body: request.body,
+      telemetry: { dependency: 'norse_api', operation: 'search_v2' },
     });
   } catch (err) {
     log.error(
