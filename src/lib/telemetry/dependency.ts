@@ -68,8 +68,7 @@ export const OPERATIONS = {
   other: ['other'],
 } as const satisfies Record<Dependency, readonly string[]>;
 
-export type OperationFor<D extends Dependency> =
-  (typeof OPERATIONS)[D][number];
+export type OperationFor<D extends Dependency> = (typeof OPERATIONS)[D][number];
 
 /** Any operation value an instrumented call may report. */
 export type Operation = OperationFor<Dependency>;

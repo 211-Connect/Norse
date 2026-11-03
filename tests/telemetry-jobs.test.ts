@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { after, before, describe, it } from 'node:test';
 
-import { type Context, ROOT_CONTEXT, context, metrics, trace } from '@opentelemetry/api';
+import {
+  type Context,
+  ROOT_CONTEXT,
+  context,
+  metrics,
+  trace,
+} from '@opentelemetry/api';
 import {
   AggregationTemporality,
   DataPointType,
@@ -87,8 +93,9 @@ async function exportedMetrics(): Promise<ExportedMetric[]> {
   // Every flush appends a ResourceMetrics snapshot; the last one is cumulative.
   const snapshots = metricExporter.getMetrics();
   const latest = snapshots[snapshots.length - 1];
-  return (latest?.scopeMetrics.flatMap((scopeMetrics) => scopeMetrics.metrics) ??
-    []) as unknown as ExportedMetric[];
+  return (latest?.scopeMetrics.flatMap(
+    (scopeMetrics) => scopeMetrics.metrics,
+  ) ?? []) as unknown as ExportedMetric[];
 }
 
 function pointsFor(
@@ -109,7 +116,10 @@ function pointsFor(
 
 describe('jobResultFor', () => {
   it('treats a resolved run as success', () => {
-    assert.equal(jobResultFor('warmCache', { output: { success: true } }), 'success');
+    assert.equal(
+      jobResultFor('warmCache', { output: { success: true } }),
+      'success',
+    );
     assert.equal(jobResultFor('warmCache', undefined), 'success');
   });
 
@@ -198,10 +208,7 @@ describe('withJobTelemetry', () => {
       task: 'translate',
       result: 'failed',
     });
-    assert.equal(
-      (duration[0].value as { count: number }).count,
-      1,
-    );
+    assert.equal((duration[0].value as { count: number }).count, 1);
 
     assert.equal(
       pointsFor(exported, 'norse.jobs.last_success', {

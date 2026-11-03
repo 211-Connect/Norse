@@ -63,10 +63,7 @@ export async function fetchWrapper<T = any>(
 ): Promise<T | null> {
   const { parseResponse = true, body, telemetry, ...fetchOptions } = options;
   const dependency = telemetry?.dependency ?? 'other';
-  const operation = toOperation(
-    dependency,
-    telemetry?.operation ?? 'other',
-  );
+  const operation = toOperation(dependency, telemetry?.operation ?? 'other');
   const method = (fetchOptions.method ?? 'GET').toString().toUpperCase();
 
   const headers = new Headers(fetchOptions.headers);
