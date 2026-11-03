@@ -69,7 +69,8 @@ runs:
           echo "::error::No DigitalOcean app id for ${{ inputs.image }}. Add the app id secret, or run with images_only."
           exit 1
         fi
-        ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+        # Not grep: `shell: bash` sets pipefail, so finding no match would end the step.
+        ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | awk '$2 == "ACTIVE" && !found { print $1; found = 1 }')
         echo "deployment_id=$ACTIVE_DEPLOYMENT" >> "$GITHUB_OUTPUT"
         echo "Current active deployment (${{ inputs.image }}): $ACTIVE_DEPLOYMENT"
 
@@ -140,7 +141,9 @@ runs:
         MAX_ATTEMPTS=60
         SLEEP_SECONDS=30
         for i in $(seq 1 $MAX_ATTEMPTS); do
-          CURRENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+          # No deployment is ACTIVE for a moment while one replaces another, and a
+          # failed doctl call is worth retrying: neither may end the wait.
+          CURRENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | awk '$2 == "ACTIVE" && !found { print $1; found = 1 }') || true
 
           if [ -n "$CURRENT" ] && [ "$CURRENT" != "$OLD_DEPLOYMENT_ID" ]; then
             echo "New deployment is active: $CURRENT"
@@ -148,7 +151,7 @@ runs:
           fi
 
           # Check if latest deployment failed
-          LATEST_PHASE=$(doctl apps list-deployments "$APP_ID" --format Phase --no-header | head -n1)
+          LATEST_PHASE=$(doctl apps list-deployments "$APP_ID" --format Phase --no-header | awk 'NR == 1') || true
           if [ "$LATEST_PHASE" = "ERROR" ]; then
             echo "::error::Latest deployment failed with ERROR status"
             exit 1
