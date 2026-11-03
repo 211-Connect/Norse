@@ -323,6 +323,31 @@ describe('withCache onResult', () => {
     assert.deepEqual(hits, [false, true]);
   });
 
+  it('reports exactly once when the origin rejects, then rethrows', async () => {
+    clearMemoryCache();
+    const key = 'search_config:onresult-reject:en' as const;
+    const hits: boolean[] = [];
+    const error = new Error('upstream down');
+    let fetches = 0;
+
+    await assert.rejects(
+      withCache(
+        key,
+        async () => {
+          fetches += 1;
+          throw error;
+        },
+        { redis: false, memory: true, ttl: 60 },
+        undefined,
+        (hit) => hits.push(hit),
+      ),
+      error,
+    );
+
+    assert.equal(fetches, 1);
+    assert.deepEqual(hits, [false]);
+  });
+
   it('leaves callers without onResult unchanged', async () => {
     clearMemoryCache();
     const key = 'search_config:onresult-none:en' as const;

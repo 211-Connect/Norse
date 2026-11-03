@@ -178,7 +178,15 @@ export const withCache = async <T>(
     return { value, serialized };
   });
 
-  const result = await promise;
+  let result: Awaited<typeof promise>;
+  try {
+    result = await promise;
+  } catch (error) {
+    // The origin failed: still one report per call, then let the failure
+    // propagate. `false` = the value was not served from cache.
+    report(false);
+    throw error;
+  }
   report(false);
   // The caller that started the fetch keeps the original; joiners get their
   // own copy, like a cache hit.
