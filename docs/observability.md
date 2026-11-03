@@ -259,8 +259,9 @@ unit, `v8js.resource.type` attribute); it overlaps with
 ### Useful queries
 
 ```promql
-# one series per container, per environment
-count by (instance) (target_info{job="norse-app", env="dev"})
+# one series per container, per environment; target_info carries the environment
+# as the resource-derived deployment_environment_name label, not `env`
+count by (instance) (target_info{job="norse-app", deployment_environment_name="dev"})
 
 # downstream outcomes
 sum by (dependency, operation, outcome) (rate(norse_downstream_requests_total{job="norse-app", env="dev"}[5m]))
