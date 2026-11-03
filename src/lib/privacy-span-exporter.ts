@@ -1,6 +1,10 @@
 import type { Attributes } from '@opentelemetry/api';
 import type { ExportResult } from '@opentelemetry/core';
-import type { ReadableSpan, SpanExporter } from '@opentelemetry/sdk-trace-base';
+import type {
+  ReadableSpan,
+  SpanExporter,
+  TimedEvent,
+} from '@opentelemetry/sdk-trace-base';
 import {
   OTLPHttpJsonTraceExporter,
   OTLPHttpProtoTraceExporter,
@@ -44,11 +48,35 @@ function sanitizeAttributes(attributes: Attributes): Attributes {
   return sanitized;
 }
 
+/**
+ * Span events carry free-text of their own: `onRequestError` records the error
+ * with `recordException`, so `exception.message` and `exception.stacktrace`
+ * hold the message verbatim, URL and query string included.
+ */
+function sanitizeEvent(event: TimedEvent): TimedEvent {
+  const attributes: Attributes = {};
+  for (const [key, value] of Object.entries(event.attributes ?? {})) {
+    attributes[key] =
+      typeof value === 'string' ? stripQueryAndFragment(value) : value;
+  }
+  return {
+    ...event,
+    name: stripQueryAndFragment(event.name),
+    attributes,
+  };
+}
+
 function sanitizeSpan(span: ReadableSpan): ReadableSpan {
   return {
     ...span,
     name: stripQueryAndFragment(span.name),
     attributes: sanitizeAttributes(span.attributes),
+    events: span.events.map(sanitizeEvent),
+    // Dropped counts are not getters today, but they describe the payload and
+    // must survive the copy that replaces the span.
+    droppedAttributesCount: span.droppedAttributesCount,
+    droppedEventsCount: span.droppedEventsCount,
+    droppedLinksCount: span.droppedLinksCount,
     // Getters and methods live on the prototype, so spreading the span drops
     // them; delegate them to the recorded span.
     spanContext: () => span.spanContext(),

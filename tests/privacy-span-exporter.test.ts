@@ -47,3 +47,58 @@ test('exported spans carry no query string in the name or URL attributes', () =>
     assert.ok(!String(value).includes('?'), `attribute kept a query: ${value}`);
   }
 });
+
+test('exported span events (recordException) carry no query string', () => {
+  const memory = new InMemorySpanExporter();
+  const provider = new BasicTracerProvider({
+    spanProcessors: [new SimpleSpanProcessor(new PrivacySpanExporter(memory))],
+  });
+  const tracer = provider.getTracer('privacy-exporter-events-test');
+
+  const span = tracer.startSpan('GET /search');
+  span.recordException(new Error(`GET ${SEARCH_URL} failed`));
+  span.end();
+
+  const [exported] = memory.getFinishedSpans();
+  assert.ok(exported, 'the span reached the delegate exporter');
+  assert.equal(exported.events.length, 1);
+  assert.equal(exported.events[0].name, 'exception');
+
+  // `onRequestError` calls `recordException(err)`, so `exception.message`
+  // carries the error text — URL included — into Tempo unless the exporter
+  // scrubs events too (privacy rule 8).
+  const serialised = JSON.stringify({
+    name: exported.name,
+    attributes: exported.attributes,
+    events: exported.events,
+  });
+  assert.ok(
+    !serialised.includes(SECRET),
+    `event leaked the search text: ${serialised}`,
+  );
+  assert.ok(
+    !serialised.includes('?'),
+    `event kept a query string: ${serialised}`,
+  );
+});
+
+test('exported spans keep the dropped-attribute count', () => {
+  const memory = new InMemorySpanExporter();
+  const provider = new BasicTracerProvider({
+    spanProcessors: [new SimpleSpanProcessor(new PrivacySpanExporter(memory))],
+  });
+  const tracer = provider.getTracer('privacy-exporter-dropped-test');
+
+  const span = tracer.startSpan('too many attributes');
+  for (let index = 0; index < 200; index += 1) {
+    span.setAttribute(`attr.${index}`, index);
+  }
+  span.end();
+
+  const [exported] = memory.getFinishedSpans();
+  assert.ok(exported, 'the span reached the delegate exporter');
+  assert.ok(
+    exported.droppedAttributesCount > 0,
+    'the sanitised span must carry the dropped-attribute count',
+  );
+});
