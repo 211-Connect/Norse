@@ -15,6 +15,7 @@ import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
 import { API_URL } from '../lib/constants';
+import { FetchError } from '../lib/fetchError';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
 import { formatAddressForDisplay } from '../lib/utils';
@@ -196,7 +197,15 @@ async function findResourcesOrigin({
     });
   } catch (err) {
     log.error(
-      { err, api: 'v1', tenantId, page, locale, limit },
+      {
+        errName: err instanceof Error ? err.name : typeof err,
+        status: err instanceof FetchError ? err.response.status : undefined,
+        api: 'v1',
+        tenantId,
+        page,
+        locale,
+        limit,
+      },
       'Search API error',
     );
     return createEmptyResult(page);
@@ -305,7 +314,15 @@ async function findResourcesV2Origin(
     });
   } catch (err) {
     log.error(
-      { err, api: 'v2', tenantId, page, locale, limit },
+      {
+        errName: err instanceof Error ? err.name : typeof err,
+        status: err instanceof FetchError ? err.response.status : undefined,
+        api: 'v2',
+        tenantId,
+        page,
+        locale,
+        limit,
+      },
       'Search API error (V2)',
     );
     return createEmptyResult(page);

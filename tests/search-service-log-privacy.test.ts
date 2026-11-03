@@ -81,7 +81,10 @@ test('v1 error path logs no search text', async () => {
     assert.equal(entry.data.tenantId, 'tenant-1');
     assert.equal(entry.data.page, 2);
     assert.equal(entry.data.limit, 10);
-    assert.ok('err' in entry.data);
+    // The raw error object is never logged: FetchError's message embeds the
+    // request URL (search text, coordinates, location).
+    assert.ok(!('err' in entry.data));
+    assert.equal(typeof entry.data.errName, 'string');
   }
 });
 
@@ -112,7 +115,10 @@ test('v2 error path logs no search text', async () => {
     }
     assert.equal(entry.data.api, 'v2');
     assert.equal(entry.data.tenantId, 'tenant-2');
-    assert.ok('err' in entry.data);
+    // The raw error object is never logged: FetchError's message embeds the
+    // request URL (search text, coordinates, location).
+    assert.ok(!('err' in entry.data));
+    assert.equal(typeof entry.data.errName, 'string');
   }
 });
 
