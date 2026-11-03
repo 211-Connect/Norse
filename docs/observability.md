@@ -48,24 +48,37 @@ string: Next.js sets `http.target = req.url` (query string included) on every
 request span, `@vercel/otel` names a `fetch` span with the request URL and
 writes the same URL to `http.url`, and raw `fetch` call sites (e.g.
 `src/payload/utilities/keycloakAdmin.ts`) pass their query string through.
-The query string and fragment are removed in three layers:
+On exported spans the query string and fragment are removed in three layers
+(logs take a different path — see layer 1):
 
-1. **In-process, at export.** Every span goes through `PrivacySpanExporter`
-   (`src/lib/privacy-span-exporter.ts`): the span **name** and the
-   `http.target`, `http.url`, `http.url.full`, `url.full` and URL-shaped
-   `next.*` attributes are cut at the first `?` **or** `#`, and `url.query` is
-   deleted. This layer protects the app even when
-   `OTEL_EXPORTER_OTLP_ENDPOINT` points straight at Tempo, and it is the only
-   layer that removes a bare `#fragment` with no query string.
+1. **In-process, at span export.** Every span goes through
+   `PrivacySpanExporter` (`src/lib/privacy-span-exporter.ts`): the span
+   **name** and the `http.target`, `http.url`, `http.url.full`, `url.full` and
+   URL-shaped `next.*` attributes are cut at the first `?` **or** `#`, and
+   `url.query` is deleted. This layer protects the app even when
+   `OTEL_EXPORTER_OTLP_ENDPOINT` points straight at Tempo. It only ever sees
+   spans: it is the only layer that removes a bare `#fragment` from a **span**
+   URL, and it removes nothing from a log record (there is no in-process log
+   processor, only the OTLP `BatchLogRecordProcessor`).
+
+   **Logs are scrubbed by different code.** In process, the scrubber is pino's
+   URL serialiser — `stripUrlQueries` in `src/lib/logger.ts`, wired as the
+   `err`/`error` serialisers — which rewrites the error `message`, `stack`,
+   `url` and `response.url` fields; `onRequestError` additionally runs its
+   `errMessage` field through it. The other log barrier is the collector's
+   redaction transform in layer 2. Neither one strips a bare `#fragment` from
+   a non-error log field: a `#…` in `msg` or in any other field the error
+   serialiser does not touch reaches Loki as written.
 2. **Production collector, as a backstop.** Alloy's `privacy` transform
    (`otelcol.processor.transform` in the charts repo's `alloy-otlp`) repeats
    the span-name/URL-attribute work for anything that bypasses layer 1
    (`http.target`, `http.url`, `url.full`, span name), deletes `url.query`,
    and redacts `query=`, `q=`, `location=`, `coords=`, `lat=`/`lon=`/`lng=`,
    `key=`, `api_key=` and `token=` in log bodies and string attributes. Its
-   `replace_pattern(…, "\\?.*$", "")` statements cut from the first `?`
-   onward only — a bare `#fragment` with no query string is layer 1's job,
-   not the collector's.
+   `replace_pattern(…, "\\?.*$", "")` statements cut a span URL from the
+   first `?` onward only, and its log statements only replace `key=value`
+   values — a bare `#fragment` with no query string on a span is layer 1's
+   job, and on a log it is no layer's.
 3. **The local stack.** `observability/alloy/config.alloy` runs the same
    `privacy` transform statements as production (see
    [Local stack](#local-stack-composeyaml)), so a local trace or log carries
@@ -359,8 +372,11 @@ metadata. Typical queries:
 {service_name="norse-app"} | json | event="request_error"
 ```
 
-Search text must never appear: `{service_name="norse-app"} |~ "query="` returns
-nothing.
+Search text must never appear: the query
+`{service_name="norse-app"} |~ "query=" != "query=REDACTED"` returns nothing.
+The `!=` is required because the collector's redaction (layer 2) rewrites a
+leaked `query=…` to `query=REDACTED`, so without it a caught leak would look
+like a clean result.
 
 ## Reading Arcjet failures
 
@@ -481,9 +497,11 @@ grafana :3001  (datasources: prometheus, loki, tempo)
   `otelcol.processor.transform` (`env` from `deployment.environment.name`) →
   `otelcol.processor.batch` → Tempo (traces), Prometheus remote write with
   exemplars (metrics), Loki OTLP (logs). Local traces and logs therefore match
-  production. As in production, the collector statements only cut from `?`
-  onward; a bare `#fragment` with no query string is removed earlier, by the
-  in-process `PrivacySpanExporter`.
+  production. As in production, the collector statements only cut a span URL
+  from `?` onward and only redact `key=value` pairs in a log; a bare
+  `#fragment` with no query string on a span is removed earlier, by the
+  in-process `PrivacySpanExporter`, and one in a log field that the pino error
+  serialiser does not cover is removed by no layer.
 - `tempo` — [`tempo.yaml`](/tempo.yaml), monolithic Tempo 3 with the
   `service-graphs` and `span-metrics` processors remote-writing to Prometheus.
   Only its query API (3200) is published; OTLP goes through Alloy.
