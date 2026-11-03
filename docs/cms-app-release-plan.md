@@ -100,6 +100,7 @@ work on App Platform, and scheduled PDF delivery needs it.
 | `API_URL`, `INTERNAL_API_KEY` (Norse API)                                | ✓      | ✓   |
 | `CACHE_REDIS_URI` (same Redis within a pair)                             | ✓      | ✓   |
 | `KEYCLOAK_BASE_URL`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_INTERNAL_SECRET`    | ✓      | ✓   |
+| `OTEL_EXPORTER_OTLP_USERNAME`, `OTEL_EXPORTER_OTLP_PASSWORD`, `OTEL_SERVICE_NAME` (a different name per component) | ✓ | ✓ |
 | `PROMETHEUS_TOKEN`, `OTEL_*`, `NEXT_PUBLIC_LOG_LEVEL`                    | ✓      | ✓   |
 | `NEXTAUTH_SECRET` / `AUTH_SECRET`, `AUTH_TRUST_HOST`, `NEXTAUTH_URL`     | ✓      |     |
 | `ARCJET_*`                                                               | ✓      |     |
@@ -108,14 +109,17 @@ work on App Platform, and scheduled PDF delivery needs it.
 | `DATABASE_URI`, `DATABASE_POOL_MIN`, `DATABASE_POOL_MAX`, `PAYLOAD_SECRET` |        | ✓   |
 | `MEDIA_S3_*`, `MEDIA_DO_CDN_ENDPOINT`                                    |        | ✓   |
 | `SENDGRID_API_KEY`                                                       |        | ✓   |
+| `KEYCLOAK_ADMIN_CLIENT_ID`, `KEYCLOAK_ADMIN_SECRET`                     |        | ✓   |
+| `STRAPI_URL`, `STRAPI_TOKEN`                                             |        | ✓   |
 | `GOOGLE_TRANSLATE_CREDENTIALS_BASE64`, `AZURE_TRANSLATOR_*`              |        | ✓   |
 | `UMAMI_API_URL`, `UMAMI_USERNAME`, `UMAMI_PASSWORD`, `UMAMI_TEAM_ID`     |        | ✓   |
 | `PAYLOAD_APP_CONFIG_API_KEY`                                             |        | ✓   |
 
-This list comes from the variables each built image actually reads. If `norse-search`
-sets something not listed, it is probably unused; leave it off the new components
-and watch the logs. Build-time `NEXT_PUBLIC_*` values are set in GitHub, not on the
-components.
+This list comes from the variables each built image reads, plus a search of the
+source for the ones read indirectly (such as `KEYCLOAK_ADMIN_*`, which a scan of the
+image misses). `NEXT_PUBLIC_API_URL` is no longer read by anything. Leave anything
+else that `norse-search` sets and this table doesn't list off the new components,
+and watch the logs. `NEXT_PUBLIC_*` values are baked in from GitHub at build time.
 
 Do not set `NORSE_ROLE`: the role is baked into the images, and a different value
 makes the server refuse to start. `NEXT_PUBLIC_CUSTOM_BASE_PATH` and
