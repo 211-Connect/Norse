@@ -1,4 +1,4 @@
-import { trace } from '@opentelemetry/api';
+import { type Exception, SpanStatusCode, trace } from '@opentelemetry/api';
 
 import {
   type Dependency,
@@ -42,6 +42,20 @@ const toBody = (body: FetchWrapperOptions['body']) => {
   // Remaining values are primitives (or null) accepted by fetch as-is.
   return body as BodyInit | null | undefined;
 };
+
+/**
+ * `JSON.parse` messages embed a body excerpt in quotes
+ * (`Unexpected token '<', "<html>…" is not valid JSON`). The response body is
+ * untrusted content, so only the error name and the text before the first
+ * quote are recorded: the type of failure, never the body.
+ */
+function jsonParseException(error: unknown): Exception {
+  const name = error instanceof Error && error.name ? error.name : 'Error';
+  const raw = error instanceof Error ? error.message : '';
+  const message =
+    raw.split(/['"]/)[0].trim().slice(0, 120) || 'JSON parse failed';
+  return { name, message };
+}
 
 export async function fetchWrapper<T = any>(
   url: string,
@@ -112,6 +126,10 @@ export async function fetchWrapper<T = any>(
       (span) => {
         try {
           return JSON.parse(text) as T;
+        } catch (error) {
+          span.recordException(jsonParseException(error));
+          span.setStatus({ code: SpanStatusCode.ERROR });
+          throw error;
         } finally {
           span.end();
         }
