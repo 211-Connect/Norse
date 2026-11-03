@@ -60,6 +60,7 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
+            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -79,10 +80,12 @@ jobs:
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
-          umami-script-url: ${{ inputs.umami_script_url }}
+          # MBOA has no Umami.
+          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
+          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}
 
   deploy-app:
     needs: deploy-cms
@@ -97,6 +100,7 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
+            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -116,7 +120,9 @@ jobs:
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
-          umami-script-url: ${{ inputs.umami_script_url }}
+          # MBOA has no Umami.
+          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
+          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}

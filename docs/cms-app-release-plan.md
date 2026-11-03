@@ -5,9 +5,10 @@ Payload CMS component, for the multi-tenant deployment and MBOA at the same time
 All DigitalOcean changes are made by hand in the dashboard. What the split is and
 how the code works: [cms-app-separation-plan.md](/docs/cms-app-separation-plan.md).
 
-Development goes first and is the rehearsal for production. The existing
-`norse-search` component keeps serving until you flip the routing rule, and it
-stays in place afterwards, so rollback is flipping the rule back.
+Development goes first and is the rehearsal for production. The order is always:
+add the new components next to the existing one, verify them on a test domain, flip
+the routing rule, and only then remove the old component. Until it is removed,
+rollback is flipping the rule back.
 
 ## What you end up with
 
@@ -152,6 +153,13 @@ checks, alerts, and the Prometheus scrape list (`/api/metrics`, with
 
 - [ ] **Registry plan:** the release adds four repositories. Check your Container
       Registry plan's repository limit and storage.
+- [ ] **MBOA's build values:** MBOA's app builds from GitHub today, so its
+      `NEXT_PUBLIC_*` values come from its own spec. The images get them from
+      `deploy-images.yaml`: base path, trailing slashes and the geospatial filtering flag
+      on, no Umami. Compare with the MBOA production spec first, in particular
+      `NEXT_PUBLIC_ALLOW_SEARCH_ENGINES`, which CI sets to `true` on every production image.
+- [ ] **MBOA's production release trigger:** if MBOA production also builds from a
+      branch, then after the switch it deploys on a `v*` tag like multi-tenant.
 - [ ] **MBOA's routing rule:** the MBOA images expect requests with `/adresources`
       still in the path. Check that the rule pointing at `norse-search` preserves
       it. If it strips the prefix today, the rule pointing at `norse-app` must not.
@@ -182,8 +190,15 @@ MBOA URLs end in `/`):
 
 ### 3. Add `norse-app` to both dev apps
 
-Add the component and its variables. Give it no routing rule yet; if the dashboard
-requires one, use an unused path such as `/norse-app-test`.
+Add the component and its variables, plus a **test domain** routed to it (for example
+`stg-mboa-next.c211.io`), above the rule matching all domains. So the page can resolve
+a tenant, add that domain to the tenant's `trustedDomains` in the CMS admin. Remove it
+from both places after the flip. Sign-in on the test domain redirects to the domain in
+`NEXTAUTH_URL`, so test sign-in after the flip.
+
+While the old component is still there, turn off its autodeploy
+(`deploy_on_push: false`, on MBOA a GitHub source). Otherwise a push starts a deployment
+of its own, and CI can mistake that for the image deployment it is waiting for.
 
 **Check the private connection** from `norse-app`'s Console tab. It returns the
 tenant, and `401` without the header:
@@ -243,6 +258,11 @@ Steps 2 and 3 on both production apps. From this moment `norse-cms` runs Payload
 jobs and migrations against production too. `norse-search` runs the same jobs until
 you remove it; Payload locks queued jobs, as it already does across instances.
 
+From this moment any run of **Production Deploy** is a live deploy, because the
+components auto-deploy the `production` tag. The workflow only runs on `main` and
+`v*` tags. Don't tick **images_only** again: it skips the wait for the CMS, so the
+public images could go live before migrations finish.
+
 ### 9. Flip the traffic
 
 In a low-traffic window, MBOA first because it is a single tenant, then
@@ -262,6 +282,8 @@ check them specifically.
 - The next `v*` tag runs the full pipeline. Watch that first run.
 - After a few days without problems, remove `norse-search` from each app, and later
   the old `norse` repository.
+- Remove the `images_only` option from `production-deploy.yaml`. Nothing needs it
+  after this rollout.
 
 Remove `norse-search` soon rather than keeping it indefinitely: it restarts with
 every deployment of the app, runs `payload migrate` from its old image each time,
