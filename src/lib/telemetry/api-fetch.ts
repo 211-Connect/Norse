@@ -172,11 +172,26 @@ export function resolveApiRequest(
   pathname: string,
 ): { operation: Operation; template: string } {
   const upperMethod = method.toUpperCase();
-  const route = API_ROUTES.find(
-    (candidate) =>
-      candidate.method === upperMethod &&
-      matchesTemplate(candidate.template, pathname),
-  );
+
+  // The generated clients prepend `API_URL`, which in the cluster is the
+  // gateway path prefix (`https://<gateway>/norse-api/v1`). Try the exact
+  // pathname first, then successively shorter suffixes, so the fixed
+  // operation table stays effective behind that prefix.
+  const segments = splitPath(pathname);
+  const candidates = [pathname];
+  for (let drop = 1; drop < segments.length; drop += 1) {
+    candidates.push(`/${segments.slice(drop).join('/')}`);
+  }
+  const route = candidates
+    .map((candidatePath) =>
+      API_ROUTES.find(
+        (candidate) =>
+          candidate.method === upperMethod &&
+          matchesTemplate(candidate.template, candidatePath),
+      ),
+    )
+    .find((candidate) => candidate !== undefined);
+
   return route
     ? { operation: route.operation, template: route.template }
     : {

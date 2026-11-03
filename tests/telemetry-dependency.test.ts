@@ -317,6 +317,34 @@ describe('operation mapping', () => {
       '/unknown/{id}',
     );
   });
+
+  it('resolves operations behind the gateway path prefix', () => {
+    assert.deepEqual(resolveApiRequest('GET', '/norse-api/v1/search'), {
+      operation: 'search_v1',
+      template: '/search',
+    });
+    assert.deepEqual(
+      resolveApiRequest('GET', '/norse-api/v1/short-url/abc123'),
+      { operation: 'short_url', template: '/short-url/{id}' },
+    );
+    assert.deepEqual(
+      resolveApiRequest('GET', '/norse-api/v1/resource/abc123'),
+      { operation: 'resource_get', template: '/resource/{id}' },
+    );
+    assert.deepEqual(
+      resolveApiRequest('POST', '/norse-api/v1/resource/titles'),
+      { operation: 'resource_titles', template: '/resource/titles' },
+    );
+  });
+
+  it('shapes an unknown path behind the gateway prefix, not the prefix match', () => {
+    // The gateway segments stay in the fallback template, shaped like any
+    // other path, so no raw id reaches the span name.
+    assert.deepEqual(
+      resolveApiRequest('GET', '/norse-api/v1/unknown/deadbeefcafe'),
+      { operation: 'other', template: '/{id}/v1/unknown/{id}' },
+    );
+  });
 });
 
 describe('toOperation', () => {
