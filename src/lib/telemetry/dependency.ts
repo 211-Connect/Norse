@@ -136,23 +136,35 @@ export function recordResponseParseSize(
 }
 
 /**
- * Maps an HTTP status to an outcome. A `404` for `norse_api` `resource_get` is
- * a valid answer ("no such resource"), not a failure (plan N4 rule).
+ * Client-error statuses the calling code handles as normal control flow, so
+ * they are not dependency failures. Every other 4xx stays `error`: the metric
+ * feeds `NorseDependencyFailureRatioHigh`, and only an answer the call site
+ * treats as an expected outcome belongs here.
+ *
+ * - `norse_api/resource_get` 404 — "no such resource" is a valid answer
+ *   (plan N4 rule).
+ * - `umami/auth_verify` 401 — the cached token expired; `getUmamiToken` logs in
+ *   again (`payload/utilities/umamiAuth.ts`).
+ * - `umami/team_get` 404 — the team is not accessible; website creation is
+ *   skipped (`payload/collections/Tenants/hooks/createUmamiWebsite.ts`).
  */
+const EXPECTED_CLIENT_ERRORS: Partial<
+  Record<Dependency, Partial<Record<string, readonly number[]>>>
+> = {
+  norse_api: { resource_get: [404] },
+  umami: { auth_verify: [401], team_get: [404] },
+};
+
+/** Maps an HTTP status to an outcome. See `EXPECTED_CLIENT_ERRORS`. */
 export function classifyStatus(
   dependency: Dependency,
   operation: Operation,
   status: number,
 ): Outcome {
   if (status >= 500) return 'error';
-  if (status >= 400) {
-    return status === 404 &&
-      dependency === 'norse_api' &&
-      operation === 'resource_get'
-      ? 'ok'
-      : 'error';
-  }
-  return 'ok';
+  if (status < 400) return 'ok';
+  const expected = EXPECTED_CLIENT_ERRORS[dependency]?.[operation];
+  return expected !== undefined && expected.includes(status) ? 'ok' : 'error';
 }
 
 export function isTimeoutError(e: unknown): boolean {
