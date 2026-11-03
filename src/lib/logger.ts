@@ -32,9 +32,27 @@ const logLevel =
   process.env.NEXT_PUBLIC_LOG_LEVEL ?? (isDev ? 'debug' : 'info');
 
 /**
- * Matches any absolute URL inside free text (`message`, `stack`, …).
+ * Matches a whitespace-delimited token carrying a query string or fragment
+ * inside free text (`message`, `stack`, …). Wider than an absolute-URL match
+ * because a relative URL leaks the same search text: Next.js errors and
+ * `redirect()` calls carry `/search?query=…`, and libraries build
+ * `search?q=…` without a scheme.
  */
-const ABSOLUTE_URL = /\b[a-z][a-z0-9+.-]*:\/\/[^\s"'<>)]*/gi;
+const TOKEN_WITH_QUERY = /[^\s"'<>)]*[?#][^\s"'<>)]*/g;
+
+/**
+ * A bare `?` is often prose ("did it fail?"), so only drop the query of a token
+ * that is URL-shaped: a `/` precedes it (`/search?…`, `https://host/a?…`) or
+ * it is `key=value` shaped, which is what a bare relative reference such as
+ * `search?q=…` looks like.
+ */
+function stripTokenQuery(token: string): string {
+  const cut = token.search(/[?#]/);
+  if (cut === -1) return token;
+  const path = token.slice(0, cut);
+  const query = token.slice(cut + 1);
+  return path.includes('/') || /^[^\s=&]+=/.test(query) ? path : token;
+}
 
 /**
  * Drops a query string and fragment: everything from the first `?` or `#`.
@@ -49,7 +67,8 @@ export function stripQueryAndFragment(value: string): string {
 }
 
 /**
- * Drops the query string and fragment from every absolute URL in `value`.
+ * Drops the query string and fragment from every URL in `value` — absolute or
+ * relative (`/search?query=…`, `search?q=…`).
  *
  * Second barrier behind `FetchError`'s already-sanitised URL: an error raised
  * by a library, a raw `Response`, or a hand-built message can still embed a
@@ -57,7 +76,7 @@ export function stripQueryAndFragment(value: string): string {
  * coordinates, filters or API keys (privacy rule 8).
  */
 export function stripUrlQueries(value: string): string {
-  return value.replace(ABSOLUTE_URL, stripQueryAndFragment);
+  return value.replace(TOKEN_WITH_QUERY, stripTokenQuery);
 }
 
 function sanitizeTextField(value: unknown): unknown {

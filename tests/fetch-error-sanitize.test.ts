@@ -89,3 +89,18 @@ test('stripUrlQueries removes query strings and fragments from error text', asyn
   assertNoQueryText(stripped, 'stripped text');
   assert.ok(!stripped.includes('k=v'));
 });
+
+test('stripUrlQueries strips relative URLs and bare path+query tokens', async () => {
+  const { stripUrlQueries } = await import('../src/lib/logger');
+  const text =
+    `GET /search?query=${SECRET_QUERY} failed; ` +
+    `retry search?q=${SECRET_QUERY} against ${FAILING_URL} then ` +
+    'did it fail? no';
+
+  assert.equal(
+    stripUrlQueries(text),
+    'GET /search failed; ' +
+      'retry search against https://services.c211.io/norse-api/v1/search ' +
+      'then did it fail? no',
+  );
+});
