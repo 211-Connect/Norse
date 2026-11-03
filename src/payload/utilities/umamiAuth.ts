@@ -8,6 +8,8 @@ async function isTokenValid(
   token: string,
 ): Promise<boolean> {
   try {
+    // A 401 is the expected answer for an expired cached token — the caller
+    // logs in again — so `classifyStatus` records it as `ok`.
     const res = await trackDependency('umami', 'auth_verify', () =>
       fetch(`${umamiApiUrl}/api/auth/verify`, {
         method: 'POST',

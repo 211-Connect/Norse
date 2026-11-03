@@ -10,6 +10,8 @@ async function verifyUmamiTeam(
   teamId: string,
   token: string,
 ): Promise<boolean> {
+  // A 404 means the team is not accessible — website creation is skipped — so
+  // `classifyStatus` records it as `ok`.
   const res = await trackDependency('umami', 'team_get', () =>
     fetch(`${umamiApiUrl}/api/teams/${teamId}`, {
       headers: {

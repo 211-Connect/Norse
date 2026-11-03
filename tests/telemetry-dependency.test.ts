@@ -122,6 +122,23 @@ describe('classifyStatus', () => {
   it('does not apply the 404 rule to another dependency', () => {
     assert.equal(classifyStatus('keycloak', 'resource_get', 404), 'error');
   });
+
+  it('maps the expected umami 4xx answers to ok', () => {
+    // An expired cached token: `getUmamiToken` logs in again.
+    assert.equal(classifyStatus('umami', 'auth_verify', 401), 'ok');
+    // The team is not accessible: website creation is skipped.
+    assert.equal(classifyStatus('umami', 'team_get', 404), 'ok');
+  });
+
+  it('keeps every unlisted 4xx an error', () => {
+    assert.equal(classifyStatus('umami', 'auth_verify', 403), 'error');
+    assert.equal(classifyStatus('umami', 'auth_verify', 429), 'error');
+    assert.equal(classifyStatus('umami', 'team_get', 401), 'error');
+    assert.equal(classifyStatus('umami', 'auth_login', 401), 'error');
+    assert.equal(classifyStatus('umami', 'website_create', 400), 'error');
+    assert.equal(classifyStatus('umami', 'auth_verify', 500), 'error');
+    assert.equal(classifyStatus('umami', 'team_get', 503), 'error');
+  });
 });
 
 describe('operation mapping', () => {
@@ -540,4 +557,39 @@ describe('trackDependency outcome classification', () => {
     assert.ok(finished, 'expected the tracked span');
     assert.equal(finished.status.code, SpanStatusCode.ERROR);
   });
+
+  const expectedAnswers: [
+    dependency: 'umami',
+    operation: 'auth_verify' | 'team_get',
+    status: number,
+    spanName: string,
+  ][] = [
+    ['umami', 'auth_verify', 401, 'expected-401-verify'],
+    ['umami', 'team_get', 404, 'expected-404-team'],
+  ];
+
+  for (const [dependency, operation, status, spanName] of expectedAnswers) {
+    it(`records an expected ${status} from umami ${operation} as ok, without failing the span`, async () => {
+      const span = testTracer.startSpan(spanName);
+      await context.with(trace.setSpan(context.active(), span), async () => {
+        const response = await trackDependency(
+          dependency,
+          operation,
+          async () => new Response('expected answer', { status }),
+        );
+        assert.equal(response.status, status);
+      });
+      span.end();
+
+      assert.deepEqual(await recordedOutcomes(dependency, operation), {
+        ok: 1,
+      });
+
+      const finished = spanExporter
+        .getFinishedSpans()
+        .find((candidate) => candidate.name === spanName);
+      assert.ok(finished, 'expected the tracked span');
+      assert.notEqual(finished.status.code, SpanStatusCode.ERROR);
+    });
+  }
 });
