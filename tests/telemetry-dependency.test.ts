@@ -252,7 +252,12 @@ describe('operation mapping', () => {
         'taxonomy_scorecard',
         '/taxonomy-scorecard/tenants/{tenantId}/taxonomies/{hsisCode}/enable',
       ],
-      ['GET', '/tenant-config/acme', 'tenant_config', '/tenant-config/{tenantId}'],
+      [
+        'GET',
+        '/tenant-config/acme',
+        'tenant_config',
+        '/tenant-config/{tenantId}',
+      ],
       [
         'GET',
         '/tenant-config/acme/topics',
@@ -375,10 +380,7 @@ describe('traceparent injection', () => {
     withUnsampledSpan(() => {
       const headers = new Headers();
       injectTraceparent(headers, 'norse_api');
-      assert.equal(
-        headers.get('traceparent'),
-        `00-${TRACE_ID}-${SPAN_ID}-00`,
-      );
+      assert.equal(headers.get('traceparent'), `00-${TRACE_ID}-${SPAN_ID}-00`);
     });
   });
 
@@ -388,10 +390,7 @@ describe('traceparent injection', () => {
         traceparent: `00-${TRACE_ID}-${SPAN_ID}-01`,
       });
       injectTraceparent(headers, 'norse_api');
-      assert.equal(
-        headers.get('traceparent'),
-        `00-${TRACE_ID}-${SPAN_ID}-01`,
-      );
+      assert.equal(headers.get('traceparent'), `00-${TRACE_ID}-${SPAN_ID}-01`);
     });
   });
 

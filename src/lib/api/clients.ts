@@ -51,7 +51,9 @@ export const printableDirectoriesPublicApiClient =
   new PrintableDirectoriesPublic(clientArgs('printable-directories-public'));
 
 export const printableDirectoryDeliveriesApiClient =
-  new PrintableDirectoryDeliveries(clientArgs('printable-directory-deliveries'));
+  new PrintableDirectoryDeliveries(
+    clientArgs('printable-directory-deliveries'),
+  );
 
 export const printableDirectoryDeliveriesInternalApiClient =
   new PrintableDirectoryDeliveriesInternal(
@@ -62,7 +64,9 @@ export const taxonomyScorecardApiClient = new TaxonomyScorecard(
   clientArgs('taxonomy-scorecard'),
 );
 
-export const favoriteListApiClient = new FavoriteList(clientArgs('favorite-list'));
+export const favoriteListApiClient = new FavoriteList(
+  clientArgs('favorite-list'),
+);
 
 export const favoriteApiClient = new Favorite(clientArgs('favorite'));
 
