@@ -14,4 +14,6 @@ datasources:
           matcherType: label
           matcherRegex: trace_id
           datasourceUid: tempo
+          # `$$` escapes Grafana provisioning's env interpolation (same as production).
+          url: '$${__value.raw}'
           urlDisplayLabel: View trace

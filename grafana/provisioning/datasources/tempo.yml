@@ -16,7 +16,8 @@ datasources:
       tracesToLogsV2:
         datasourceUid: loki
         customQuery: true
-        query: '{service_name="${__span.tags["service.name"]}"} | trace_id="${__trace.traceId}"'
+        # `$$` escapes Grafana provisioning's env interpolation (same as production).
+        query: '{service_name="$${__span.tags["service.name"]}"} | trace_id="$${__trace.traceId}"'
         spanStartTimeShift: '-1h'
         spanEndTimeShift: '1h'
         filterByTraceID: false
@@ -27,6 +28,6 @@ datasources:
         spanEndTimeShift: '1h'
         queries:
           - name: Span rate
-            query: 'sum(rate(traces_spanmetrics_calls_total{$${__tags}}[$__rate_interval]))'
+            query: 'sum(rate(traces_spanmetrics_calls_total{$$__tags}[$$__rate_interval]))'
           - name: Request rate
-            query: 'sum(rate(traces_service_graph_request_total{$${__tags}}[$__rate_interval]))'
+            query: 'sum(rate(traces_service_graph_request_total{$$__tags}[$$__rate_interval]))'
