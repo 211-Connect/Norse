@@ -37,6 +37,18 @@ const logLevel =
 const ABSOLUTE_URL = /\b[a-z][a-z0-9+.-]*:\/\/[^\s"'<>)]*/gi;
 
 /**
+ * Drops a query string and fragment: everything from the first `?` or `#`.
+ *
+ * For fields known to hold a URL or path (span names, `http.target`,
+ * `url.full`, …) the first `?` is always the query delimiter. Free text needs
+ * `stripUrlQueries` instead, where a bare `?` can be prose.
+ */
+export function stripQueryAndFragment(value: string): string {
+  const cut = value.search(/[?#]/);
+  return cut === -1 ? value : value.slice(0, cut);
+}
+
+/**
  * Drops the query string and fragment from every absolute URL in `value`.
  *
  * Second barrier behind `FetchError`'s already-sanitised URL: an error raised
@@ -45,10 +57,7 @@ const ABSOLUTE_URL = /\b[a-z][a-z0-9+.-]*:\/\/[^\s"'<>)]*/gi;
  * coordinates, filters or API keys (privacy rule 8).
  */
 export function stripUrlQueries(value: string): string {
-  return value.replace(ABSOLUTE_URL, (url) => {
-    const cut = url.search(/[?#]/);
-    return cut === -1 ? url : url.slice(0, cut);
-  });
+  return value.replace(ABSOLUTE_URL, stripQueryAndFragment);
 }
 
 function sanitizeTextField(value: unknown): unknown {

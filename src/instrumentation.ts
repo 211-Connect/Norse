@@ -3,12 +3,17 @@ import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import {
+  BatchSpanProcessor,
   ParentBasedSampler,
   TraceIdRatioBasedSampler,
 } from '@opentelemetry/sdk-trace-base';
 import { registerOTel } from '@vercel/otel';
 
 import { createLogger, stripUrlQueries } from '@/lib/logger';
+import {
+  PrivacySpanExporter,
+  createOtlpTraceExporter,
+} from '@/lib/privacy-span-exporter';
 
 const log = createLogger('instrumentation');
 
@@ -82,6 +87,16 @@ export function register() {
     // Baggage is dropped on purpose; it is not used. Code-level
     // `propagators` overrides OTEL_PROPAGATORS.
     propagators: [new InjectOnlyTraceContextPropagator()],
+    // Every exported span passes through `PrivacySpanExporter`: query strings
+    // and fragments never leave the process (privacy rule 8). A sole
+    // `spanProcessors` entry, because `traceExporter` would leave
+    // `@vercel/otel`'s env-configured exporter installed as well whenever
+    // OTEL_EXPORTER_OTLP_ENDPOINT is set, exporting every span unchecked.
+    spanProcessors: [
+      new BatchSpanProcessor(
+        new PrivacySpanExporter(createOtlpTraceExporter()),
+      ),
+    ],
     instrumentations: [
       'auto',
       // A span per Redis command (`cacheService`). Needs ioredis in

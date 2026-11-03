@@ -14,6 +14,41 @@ otelcol.receiver.otlp "default" {
 
 	output {
 		metrics = [otelcol.processor.transform.env.input]
+		logs    = [otelcol.processor.transform.privacy.input]
+		traces  = [otelcol.processor.transform.privacy.input]
+	}
+}
+
+// Privacy backstop, same statements as production (charts C5/#20): the apps
+// strip query strings before exporting, this catches anything they miss.
+// Traces: drop the query string from every URL-ish attribute and from the span
+// name, and delete `url.query`. Logs: redact the sensitive query parameters in
+// the body and in string attributes.
+otelcol.processor.transform "privacy" {
+	error_mode = "ignore"
+
+	trace_statements {
+		context = "span"
+		statements = [
+			`replace_pattern(name, "\\?.*$", "")`,
+			`replace_pattern(attributes["http.target"], "\\?.*$", "") where attributes["http.target"] != nil`,
+			`replace_pattern(attributes["http.url"], "\\?.*$", "") where attributes["http.url"] != nil`,
+			`replace_pattern(attributes["url.full"], "\\?.*$", "") where attributes["url.full"] != nil`,
+			`delete_key(attributes, "url.query")`,
+			`delete_key(attributes, "http.request.header.x-api-key")`,
+		]
+	}
+
+	log_statements {
+		context = "log"
+		statements = [
+			`replace_all_patterns(attributes, "value", "(?i)\\b(query|q|location|coords|lat|lon|lng|key|api_key|token)=[^&\\s\"]*", "${1}=REDACTED")`,
+			`replace_pattern(body, "(?i)\\b(query|q|location|coords|lat|lon|lng|key|api_key|token)=[^&\\s\"]*", "${1}=REDACTED") where IsString(body)`,
+		]
+	}
+
+	output {
+		metrics = [otelcol.processor.transform.env.input]
 		logs    = [otelcol.processor.transform.env.input]
 		traces  = [otelcol.processor.transform.env.input]
 	}

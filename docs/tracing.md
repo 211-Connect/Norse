@@ -226,9 +226,11 @@ grafana :3001  (datasources: prometheus, loki, tempo)
 
 - `alloy` — [`observability/alloy/config.alloy`](/observability/alloy/config.alloy),
   the local equivalent of production's `alloy-otlp`: `otelcol.receiver.otlp`
-  (gRPC 4317, HTTP 4318) → `otelcol.processor.transform` (`env` from
-  `deployment.environment.name`) → `otelcol.processor.batch` → Tempo (traces),
-  Prometheus remote write with exemplars (metrics), Loki OTLP (logs).
+  (gRPC 4317, HTTP 4318) → `otelcol.processor.transform` (`privacy`, the same
+  query-string/label redaction as production) → `otelcol.processor.transform`
+  (`env` from `deployment.environment.name`) → `otelcol.processor.batch` →
+  Tempo (traces), Prometheus remote write with exemplars (metrics), Loki OTLP
+  (logs).
 - `tempo` — [`tempo.yaml`](/tempo.yaml), monolithic Tempo 3 with the
   `service-graphs` and `span-metrics` processors remote-writing to Prometheus.
   Only its query API (3200) is published; OTLP goes through Alloy.
