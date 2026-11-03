@@ -12,6 +12,31 @@ export type MarkerDef = {
 };
 
 // Shared helpers
+
+/** Share of locations left out at each edge when framing a map on where most of them are. */
+const OUTLIER_SHARE_PER_EDGE = 0.025;
+
+/** South-west and north-east corners around the central locations. */
+export function getCoreExtent(
+  coordinates: [number, number][],
+): [[number, number], [number, number]] {
+  const skip = Math.floor(coordinates.length * OUTLIER_SHARE_PER_EDGE);
+  const core = (axis: 0 | 1) => {
+    const sorted = coordinates
+      .map((coordinate) => coordinate[axis])
+      .sort((a, b) => a - b);
+
+    return [sorted[skip], sorted[sorted.length - 1 - skip]];
+  };
+  const [west, east] = core(0);
+  const [south, north] = core(1);
+
+  return [
+    [west, south],
+    [east, north],
+  ];
+}
+
 export function normalizeServiceArea(
   sa: ServiceAreaGeoJSON | { type: 'GeometryCollection'; geometries: any[] },
 ) {

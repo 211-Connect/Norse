@@ -22,10 +22,22 @@ import {
   MarkerDef,
   ServiceAreaGeoJSON,
   getBoundsFromServiceArea,
+  getCoreExtent,
   normalizeServiceArea,
 } from '../map-shared';
+import {
+  bindPointEvents,
+  removePointsLayer,
+  setPointsData,
+} from './points-layer';
 
 const log = createLogger('maplibre');
+
+const getCoreBounds = (coordinates: [number, number][]) => {
+  const [[west, south], [east, north]] = getCoreExtent(coordinates);
+
+  return new LngLatBounds([west, south], [east, north]);
+};
 
 type MapProps = {
   center?: [number, number];
@@ -34,6 +46,7 @@ type MapProps = {
   usersLocation: any[];
   disableUserLocation?: boolean;
   serviceArea?: ServiceAreaGeoJSON;
+  points?: MarkerDef[];
 };
 
 // Allows maplibre to load pmtiles from a single hosted file
@@ -48,12 +61,16 @@ export function Map({
   usersLocation,
   disableUserLocation,
   serviceArea,
+  points,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapLibreMap = useRef<any>(null);
   const _markers = useRef<maplibregl.Marker[]>([]);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const restoreFocusOnCloseRef = useRef(true);
+  const pointPopupRef = useRef<maplibregl.Popup | null>(null);
+  const pointsRef = useRef(points);
+  const lastFitKeyRef = useRef<string | null>(null);
 
   const [activePopup, setActivePopup] = useState<{
     element: HTMLElement;
@@ -63,6 +80,7 @@ export function Map({
     closePopup: () => void;
   } | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   const patchAttributionToggleAccessibility = () => {
     const attributionToggle = mapContainer.current?.querySelector<HTMLElement>(
@@ -118,6 +136,8 @@ export function Map({
         patchAttributionToggleAccessibility();
       });
 
+      mapLibreMap.current.once('load', () => setIsMapLoaded(true));
+
       mapLibreMap.current.on('error', (e: any) => {
         log.error({ err: e.error ?? e }, 'MapLibre error');
         if (e.error?.message?.includes('WebGL')) {
@@ -137,6 +157,8 @@ export function Map({
       // Remove and clear ref so other effects don't act on a torn-down map
       mapLibreMap.current?.remove();
       mapLibreMap.current = null;
+      lastFitKeyRef.current = null;
+      setIsMapLoaded(false);
     };
   }, [center, zoom]);
 
@@ -147,6 +169,38 @@ export function Map({
       closeButtonRef.current?.focus();
     });
   }, [activePopup]);
+
+  const createResourcePopup = (m: MarkerDef, restoreFocus: () => void) => {
+    const popupDiv = document.createElement('div');
+    popupDiv.style.minHeight = '200px';
+    popupDiv.style.width = '240px';
+    const popup = new Popup({
+      focusAfterOpen: false,
+      closeButton: false,
+    }).setDOMContent(popupDiv);
+
+    popup.on('open', () => {
+      setActivePopup({
+        element: popupDiv,
+        popup: m.popup,
+        popupId: `map-popup-${m.id}`,
+        label: m.label?.trim() || 'resource',
+        closePopup: () => {
+          restoreFocusOnCloseRef.current = true;
+          popup.remove();
+        },
+      });
+    });
+
+    popup.on('close', () => {
+      setActivePopup(null);
+      if (restoreFocusOnCloseRef.current) {
+        requestAnimationFrame(restoreFocus);
+      }
+    });
+
+    return popup;
+  };
 
   useEffect(() => {
     if (!mapLibreMap.current) return;
@@ -161,37 +215,11 @@ export function Map({
       const popupId = `map-popup-${m.id}`;
 
       if (m.popup) {
-        const popupDiv = document.createElement('div');
-        popupDiv.style.minHeight = '200px';
-        popupDiv.style.width = '240px';
-        const popup = new Popup({
-          focusAfterOpen: false,
-          closeButton: false,
-        }).setDOMContent(popupDiv);
-
-        popup.on('open', () => {
-          setActivePopup({
-            element: popupDiv,
-            popup: m.popup,
-            popupId,
-            label: markerLabel,
-            closePopup: () => {
-              restoreFocusOnCloseRef.current = true;
-              popup.remove();
-            },
-          });
-        });
-
-        popup.on('close', () => {
-          setActivePopup(null);
-          if (restoreFocusOnCloseRef.current) {
-            requestAnimationFrame(() => {
-              markerElement.focus();
-            });
-          }
-        });
-
-        marker.setPopup(popup);
+        marker.setPopup(
+          createResourcePopup(m, () => {
+            markerElement.focus();
+          }),
+        );
       }
 
       const hasValidCoordinates = isValidCoordinate(m.coordinates);
@@ -224,6 +252,7 @@ export function Map({
             listElement?.scrollIntoView();
           });
           restoreFocusOnCloseRef.current = false;
+          pointPopupRef.current?.remove();
           _markers.current?.forEach((otherMarker) => {
             if (otherMarker !== marker) {
               const otherPopup = otherMarker.getPopup();
@@ -256,6 +285,8 @@ export function Map({
       return marker;
     });
 
+    let userMarker: maplibregl.Marker | null = null;
+
     // Add users location as a map pin
     if (
       usersLocation?.length > 0 &&
@@ -271,6 +302,7 @@ export function Map({
       applyMarkerSemantics(markerElement, false);
       marker.addTo(mapLibreMap.current);
 
+      userMarker = marker;
       _markers.current.push(marker);
 
       if (!disableUserLocation) {
@@ -278,28 +310,89 @@ export function Map({
       }
     }
 
-    if (!bounds.isEmpty()) {
-      if (_markers.current.length > 0 && _markers.current.length <= 2) {
-        mapLibreMap.current.fitBounds(bounds, {
+    // Points hold every result, so turning the list's page only swaps which of
+    // them are pins: the same set, which must not move the map under the reader.
+    const fitKey = points
+      ? [...points, ...markers]
+          .map((m) => m.id)
+          .sort()
+          .concat(usersLocation ?? [])
+          .join()
+      : null;
+    const isSameSet = fitKey !== null && fitKey === lastFitKeyRef.current;
+    lastFitKeyRef.current = fitKey;
+    const fittedCount = _markers.current.length + (points?.length ?? 0);
+
+    // A few distant results shouldn't zoom every search out to the continent.
+    const fitTarget = points
+      ? getCoreBounds(
+          [...points, ...markers].flatMap((m) =>
+            isValidCoordinate(m.coordinates) ? [m.coordinates] : [],
+          ),
+        )
+      : bounds;
+
+    if (points && userMarker && !disableUserLocation) {
+      fitTarget.extend(usersLocation as LngLatLike);
+    }
+
+    if (!fitTarget.isEmpty() && !isSameSet) {
+      if (fittedCount > 0 && fittedCount <= 2) {
+        mapLibreMap.current.fitBounds(fitTarget, {
           padding: 50,
           animate: false,
           maxZoom: 15, // Zoom level for single or two markers
         });
-      } else if (_markers.current.length > 0) {
-        mapLibreMap.current.fitBounds(bounds, {
+      } else if (fittedCount > 0) {
+        mapLibreMap.current.fitBounds(fitTarget, {
           padding: 50,
           animate: false,
           maxZoom: 13, // Add maximum zoom constraint for multiple locations
         });
       } else {
-        mapLibreMap.current.fitBounds(bounds, {
+        mapLibreMap.current.fitBounds(fitTarget, {
           zoom: zoom,
           animate: false,
           maxZoom: 12, // Add maximum zoom constraint for fallback
         });
       }
     }
-  }, [markers, usersLocation, disableUserLocation, zoom]);
+  }, [markers, points, usersLocation, disableUserLocation, zoom]);
+
+  useEffect(() => {
+    pointsRef.current = points;
+  }, [points]);
+
+  useEffect(() => {
+    const map: maplibregl.Map | null = mapLibreMap.current;
+    if (!map || !isMapLoaded) return;
+
+    pointPopupRef.current?.remove();
+
+    if (points) setPointsData(map, points);
+    else removePointsLayer(map);
+  }, [points, isMapLoaded]);
+
+  useEffect(() => {
+    const map: maplibregl.Map | null = mapLibreMap.current;
+    if (!map) return;
+
+    return bindPointEvents(map, (id, coordinates) => {
+      const point = pointsRef.current?.find((candidate) => candidate.id === id);
+      if (!point?.popup) return;
+
+      restoreFocusOnCloseRef.current = false;
+      pointPopupRef.current?.remove();
+      _markers.current.forEach((marker) => marker.getPopup()?.remove());
+      restoreFocusOnCloseRef.current = true;
+
+      pointPopupRef.current = createResourcePopup(point, () => {
+        map.getCanvas().focus();
+      })
+        .setLngLat(coordinates)
+        .addTo(map);
+    });
+  }, [center, zoom]);
 
   // The map component displays a service area polygon when there are no valid markers.
   // normalizeServiceArea: Ensures all polygon rings are closed and supports Polygon, MultiPolygon, and GeometryCollection types. It modifies the geometry so it is valid for rendering.

@@ -1,7 +1,9 @@
 'use client';
 
+import { type TFunction } from 'i18next';
 import { useAtomValue } from 'jotai';
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
@@ -11,16 +13,69 @@ import {
   cn,
   distanceBetweenCoordsInMiles,
 } from '@/app/(app)/shared/lib/utils';
+import { type ResultType } from '@/app/(app)/shared/store/results';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { useSearchResults } from '../context/search-results-context';
-import { MapPopup } from './map-popup';
+import {
+  type PinSite,
+  type SearchPin,
+  groupPinsBySite,
+  omitPagePins,
+} from '../utils/map-pins';
+import { MapPopup, MapSitePopup } from './map-popup';
+
+const toPin = (result: ResultType): SearchPin => ({
+  id: result._id,
+  resourceId: result.id,
+  name: result.name,
+  address: result.address,
+  coordinates: result?.location?.coordinates as Coords | undefined,
+});
+
+const toMarker = (
+  site: PinSite,
+  userCoords: number[] | null | undefined,
+  t: TFunction,
+) => {
+  const [first] = site;
+  const { coordinates } = first;
+  const distance =
+    coordinates && userCoords?.length === 2
+      ? distanceBetweenCoordsInMiles(userCoords as Coords, coordinates)
+      : undefined;
+
+  return site.length === 1
+    ? {
+        id: first.id,
+        coordinates,
+        label: first.name ?? undefined,
+        popup: (
+          <MapPopup
+            distance={distance}
+            id={first.resourceId ?? ''}
+            name={first.name ?? ''}
+            address={first.address} // TODO: Add Waiver
+          />
+        ),
+      }
+    : {
+        id: first.id,
+        coordinates,
+        label: t('map_site_title', {
+          count: site.length,
+          defaultValue: '{{count}} resources at this location',
+        }),
+        popup: <MapSitePopup site={site} distance={distance} />,
+      };
+};
 
 export function MapContainer() {
   const appConfig = useAppConfig();
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  const { results } = useSearchResults();
+  const { t } = useTranslation('page-search');
+  const { results, pins } = useSearchResults();
   const coords = useAtomValue(userCoordinatesAtom);
 
   useEffect(() => {
@@ -30,36 +85,22 @@ export function MapContainer() {
     }
   }, []);
 
+  const pagePins = useMemo(() => results.map(toPin), [results]);
+
   // Memoize to prevent unecessary map re-renders
-  const mapMarkers = useMemo(() => {
-    return results.map((result) => {
-      const coordinates = result?.location?.coordinates as Coords | undefined;
-      const distance = (() => {
-        if (!coordinates || (coords?.length ?? 0) !== 2) {
-          return undefined;
-        }
+  const mapMarkers = useMemo(
+    () => pagePins.map((pin) => toMarker([pin], coords, t)),
+    [coords, pagePins, t],
+  );
 
-        return distanceBetweenCoordsInMiles(
-          coords as Coords,
-          coordinates as Coords,
-        );
-      })();
-
-      return {
-        id: result._id,
-        coordinates,
-        label: result.name,
-        popup: (
-          <MapPopup
-            distance={distance}
-            id={result.id}
-            name={result.name}
-            address={result.address} // TODO: Add Waiver
-          />
-        ),
-      };
-    });
-  }, [coords, results]);
+  const mapPoints = useMemo(
+    () =>
+      pins &&
+      groupPinsBySite(omitPagePins(pins, pagePins)).map((site) =>
+        toMarker(site, coords, t),
+      ),
+    [coords, pagePins, pins, t],
+  );
 
   if (headerHeight === 0) return null;
 
@@ -76,7 +117,7 @@ export function MapContainer() {
       }
     >
       <div className="h-full w-full rounded-lg">
-        <MapRenderer markers={mapMarkers} />
+        <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
       </div>
     </div>
   );

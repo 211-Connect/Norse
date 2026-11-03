@@ -9,7 +9,11 @@ import { useSearchResults } from '../context/search-results-context';
 export function ResultTotal() {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
-  const { totalResults: resultTotal, currentPage } = useSearchResults();
+  const {
+    totalResults: resultTotal,
+    isTotalCapped,
+    currentPage,
+  } = useSearchResults();
 
   const limit = appConfig?.search?.resultsLimit ?? 0;
 
@@ -35,6 +39,7 @@ export function ResultTotal() {
       {t('of')}
       {` `}
       {resultTotal.toLocaleString()}
+      {isTotalCapped && '+'}
     </div>
   );
 }

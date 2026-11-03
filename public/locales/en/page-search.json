@@ -9,6 +9,7 @@
   "no_query": "No query provided",
   "results_for": "results found for query",
   "of": "of",
+  "map_site_title_other": "{{count}} resources at this location",
   "no_results": {
     "title": "No results found matching your query",
     "subtitle": "We've provided some similar results below",

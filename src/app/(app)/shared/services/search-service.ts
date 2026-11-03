@@ -22,8 +22,16 @@ import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 import { getApiHeaders } from '@/lib/api';
+import { SearchPinsResponseDto } from '@/lib/api/generated/data-contracts';
+import {
+  SearchPin,
+  roundCoordinatesForPins,
+} from '@/app/(app)/features/search/utils/map-pins';
 
 const log = createLogger('search');
+
+/** How long the page waits for pins before rendering the current page's markers. */
+const PINS_WAIT_MS = 2000;
 
 export type FindResourcesQuery = {
   query?: string;
@@ -150,6 +158,38 @@ type FindResourcesOriginArgs = {
   searchEngine: SearchEngine;
 };
 
+/**
+ * The params that decide which resources a search matches, shared by the list
+ * and its map pins so the two cannot disagree.
+ */
+function toSearchParams({
+  query,
+  locale,
+  tenantId,
+  searchEngine,
+}: Omit<FindResourcesOriginArgs, 'page' | 'limit'>) {
+  const hasCoords = query.coordinates?.length === 2;
+
+  return {
+    ...(query.query?.trim() && { query: query.query.trim() }),
+    query_type: deriveQueryType({
+      searchEngine,
+      originQueryType: query.queryType,
+      query: query.query,
+    }),
+    ...(query.organizationId && { organization_id: query.organizationId }),
+    ...(Array.isArray(query.taxonomy) &&
+      query.taxonomy.length > 0 && { taxonomy: query.taxonomy.join(',') }),
+    ...(hasCoords && { coords: query.coordinates!.join(',') }),
+    ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+    locale,
+    ...(tenantId && { tenant_id: tenantId }),
+    ...(query.filters &&
+      Object.keys(query.filters).length > 0 && { filters: query.filters }),
+    ...(query.age !== undefined && { age: query.age }),
+  };
+}
+
 async function findResourcesOrigin({
   query,
   locale,
@@ -161,34 +201,15 @@ async function findResourcesOrigin({
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  const resolvedQueryType = deriveQueryType({
-    searchEngine,
-    originQueryType: query.queryType,
-    query: query.query,
-  });
-
-  const hasCoords = query.coordinates?.length === 2;
-
   let data: SearchApiResponse | null | undefined;
   try {
     const searchString = qs.stringify({
-      ...(query.query?.trim() && { query: query.query.trim() }),
+      ...toSearchParams({ query, locale, tenantId, searchEngine }),
       ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
-      query_type: resolvedQueryType,
-      ...(query.organizationId && { organization_id: query.organizationId }),
-      ...(Array.isArray(query.taxonomy) &&
-        query.taxonomy.length > 0 && { taxonomy: query.taxonomy.join(',') }),
       ...(query.location?.trim() && { location: query.location.trim() }),
-      ...(hasCoords && { coords: query.coordinates!.join(',') }),
-      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
       ...(query.sort && { sort: query.sort }),
       page,
-      locale,
       limit,
-      ...(tenantId && { tenant_id: tenantId }),
-      ...(query.filters &&
-        Object.keys(query.filters).length > 0 && { filters: query.filters }),
-      ...(query.age !== undefined && { age: query.age }),
     });
 
     data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
@@ -363,4 +384,78 @@ export async function findResourcesV2(
       (value) => value.results.length > 0,
     )) ?? createEmptyResult(page)
   );
+}
+
+async function findResourcePinsOrigin(
+  searchString: string,
+  locale: string,
+  tenantId: string,
+): Promise<SearchPin[] | null> {
+  try {
+    const data = await fetchWrapper<SearchPinsResponseDto>(
+      `${API_URL}/search/pins?${searchString}`,
+      { headers: await getApiHeaders(tenantId, locale) },
+    );
+
+    return (
+      data?.pins.map((pin) => ({
+        id: pin.id,
+        resourceId: pin.service_at_location_id,
+        name: pin.name,
+        address: formatAddressForDisplay(
+          pin.physical_address as Parameters<typeof formatAddressForDisplay>[0],
+        ),
+        coordinates: pin.coordinates as [number, number],
+      })) ?? null
+    );
+  } catch (err) {
+    log.error({ err, tenantId, locale }, 'Search pins API error');
+    return null;
+  }
+}
+
+/**
+ * Pins for every result of a search, or null when they aren't available in time;
+ * the map then shows the current page's markers. Never rejects, so the page can
+ * start it alongside the list and await it later.
+ *
+ * Page, limit and sort stay out of the request so that every page of a search
+ * shares one cache entry, and coordinates are rounded so nearby visitors do too.
+ * A slow request keeps running past the wait and still fills the cache.
+ */
+export async function findResourcePins(
+  query: FindResourcesQuery,
+  locale: string,
+  tenantId: string,
+  searchEngine: SearchEngine,
+): Promise<SearchPin[] | null> {
+  const params = toSearchParams({
+    query: {
+      ...query,
+      coordinates: roundCoordinatesForPins(query.coordinates),
+    },
+    locale,
+    tenantId,
+    searchEngine,
+  });
+
+  let timer: NodeJS.Timeout | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => {
+      log.warn({ tenantId, locale }, 'Search pins timed out');
+      resolve(null);
+    }, PINS_WAIT_MS);
+  });
+
+  const pins = withCache(
+    `search_pins:${tenantId}:${locale}:${stableHash(params)}`,
+    () => findResourcePinsOrigin(qs.stringify(params), locale, tenantId),
+    { redis: true, memory: false, ttl: ONE_HOUR },
+    (value) => Boolean(value?.length),
+  ).catch((err) => {
+    log.error({ err, tenantId, locale }, 'Search pins cache error');
+    return null;
+  });
+
+  return Promise.race([pins, timeout]).finally(() => clearTimeout(timer));
 }

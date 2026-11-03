@@ -31,6 +31,8 @@ type MapRendererProps = {
   disableUserLocation?: boolean;
   center?: [number, number];
   zoom?: number;
+  /** Small circles for what `markers` leaves out. Only the maplibre adapter, the one in use, draws them. */
+  points?: MarkerDef[];
 };
 
 const MapRenderer = (props: MapRendererProps) => {
@@ -69,6 +71,7 @@ const MapRenderer = (props: MapRendererProps) => {
           serviceArea={props.serviceArea}
           usersLocation={userCoords}
           disableUserLocation={props.disableUserLocation}
+          points={props.points}
         />
       </div>
     </div>

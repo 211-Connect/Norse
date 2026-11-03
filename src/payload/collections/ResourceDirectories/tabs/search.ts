@@ -322,6 +322,20 @@ export const search: Tab = {
           },
         },
         {
+          name: 'showAllResultsOnMap',
+          type: 'checkbox',
+          label: 'Show all results on the map',
+          defaultValue: false,
+          admin: {
+            description:
+              'Plots up to 1,000 results of a search on the map as small circles, with the current page as pins, instead of only the current page. The results list is capped at the same 1,000.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
           name: 'radiusSelectValues',
           type: 'array',
           labels: {

@@ -11,6 +11,8 @@
  */
 
 import {
+  SearchControllerGetPinsData,
+  SearchControllerGetPinsParams,
   SearchControllerGetResourcesData,
   SearchControllerGetResourcesParams,
   SearchControllerGetResourcesPostData,
@@ -62,6 +64,25 @@ export class Search<
       query: query,
       body: data,
       type: "application/json",
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description The locations of a search independent of list pagination, up to 1000. Takes the same params as GET /search; `page` and `limit` are ignored. Matches without coordinates count towards `total` but have no pin.
+   *
+   * @tags Search
+   * @name SearchControllerGetPins
+   * @summary Map pins for a search
+   * @request GET:/search/pins
+   */
+  searchControllerGetPins = (
+    query: SearchControllerGetPinsParams = {},
+    params: RequestParams = {},
+  ) =>
+    this.request<SearchControllerGetPinsData, any>({
+      path: `/search/pins`,
+      method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

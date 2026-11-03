@@ -13,12 +13,17 @@ import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import {
   FindResourcesQuery,
+  findResourcePins,
   findResources,
   findResourcesV2,
 } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { protectPage } from '@/lib/arcjet-page';
+import {
+  MAP_PINS_LIMIT,
+  lastPageWithinPinLimit,
+} from '@/app/(app)/features/search/utils/map-pins';
 import { createLogger } from '@/lib/logger';
 import { toBbox } from '@/app/(app)/shared/lib/utils';
 import { type FiltersMap } from '@/types/search';
@@ -69,8 +74,20 @@ const getPageData = cache(async function (
     skipLegacyLinkCheck: envelope.sllc === '1',
   });
 
-  const page = envelope.page !== undefined ? parseInt(envelope.page) || 1 : 1;
   const limit = appConfig.search.resultsLimit;
+  const { showAllResultsOnMap, searchEngine } = appConfig.search;
+  const requestedPage =
+    envelope.page !== undefined ? parseInt(envelope.page) || 1 : 1;
+  const page = showAllResultsOnMap
+    ? Math.min(requestedPage, lastPageWithinPinLimit(limit))
+    : requestedPage;
+
+  // Alongside the list, which it never fails or delays past its own short wait.
+  // The dialog that opens over a clarify URL hides the map, so nobody would see them.
+  const pinsRequest =
+    showAllResultsOnMap && !clarify?.autoOpenDialog
+      ? findResourcePins(searchQuery, locale, appConfig.tenantId, searchEngine)
+      : null;
 
   let useFindResourcesV2 = false;
   let results: ResultType[] = [];
@@ -139,6 +156,8 @@ const getPageData = cache(async function (
     }
   }
 
+  const pins = await pinsRequest;
+
   const { resources, t } = await initTranslations(
     locale,
     i18nNamespaces,
@@ -153,6 +172,8 @@ const getPageData = cache(async function (
     filters,
     results,
     totalResults,
+    pins,
+    page,
     resources,
     t,
     searchQuery,
@@ -236,10 +257,14 @@ export default async function SearchPage({
     clarify: legacyAiClarifyState,
     intent,
     cardLayout,
+    pins,
+    page: currentPage,
+    appConfig,
   } = await getPageData(locale, searchParamsResult);
   const aiSearchAlert = envelope.a;
-  const currentPage =
-    envelope.page !== undefined ? parseInt(envelope.page, 10) || 1 : 1;
+  const listTotal = appConfig.search.showAllResultsOnMap
+    ? Math.min(totalResults, MAP_PINS_LIMIT)
+    : totalResults;
 
   if (searchQuery.widgetId) {
     trackEvent(AnalyticsEvent.WidgetSearch, AnalyticsTools.Umami);
@@ -263,7 +288,9 @@ export default async function SearchPage({
       <SearchResultsProvider
         value={{
           results,
-          totalResults,
+          totalResults: listTotal,
+          isTotalCapped: listTotal < totalResults,
+          pins,
           currentPage,
           filters,
           sort: searchQuery.sort ?? 'relevance',

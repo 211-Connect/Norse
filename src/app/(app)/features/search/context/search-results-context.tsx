@@ -7,6 +7,8 @@ import { type SortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { type FiltersMap } from '@/types/search';
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
+import { type SearchPin } from '../utils/map-pins';
+
 /**
  * Read-only result of the `/search` request, rendered by the server page.
  *
@@ -19,6 +21,10 @@ import { isValidCoordinate } from '@/utils/isValidCoordinate';
 export type SearchResultsData = {
   results: ResultType[];
   totalResults: number;
+  /** `totalResults` was cut to the map's limit: more resources match than it says. */
+  isTotalCapped: boolean;
+  /** Every result's map pin, or null to map only the current page's `results`. */
+  pins: SearchPin[] | null;
   /** 1-based page of `results`. */
   currentPage: number;
   filters: FiltersMap;
