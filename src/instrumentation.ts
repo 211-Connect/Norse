@@ -8,7 +8,7 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { registerOTel } from '@vercel/otel';
 
-import { createLogger } from '@/lib/logger';
+import { createLogger, stripUrlQueries } from '@/lib/logger';
 
 const log = createLogger('instrumentation');
 
@@ -141,7 +141,11 @@ export async function onRequestError(
   }
   try {
     const errName = err instanceof Error ? err.name : 'unknown';
-    const errMessage = err instanceof Error ? err.message : String(err);
+    // Same barrier as the `err` serializer: an error message can embed a
+    // request URL, and this field is logged directly (privacy rule 8).
+    const errMessage = stripUrlQueries(
+      err instanceof Error ? err.message : String(err),
+    );
     const digest =
       err &&
       typeof err === 'object' &&
