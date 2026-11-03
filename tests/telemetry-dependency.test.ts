@@ -1,15 +1,29 @@
 import { strict as assert } from 'node:assert';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { before, describe, it } from 'node:test';
+import { after, before, describe, it } from 'node:test';
 
 import {
   type Context,
   ROOT_CONTEXT,
+  SpanStatusCode,
   TraceFlags,
   context,
+  metrics,
   propagation,
   trace,
 } from '@opentelemetry/api';
+import {
+  AggregationTemporality,
+  DataPointType,
+  InMemoryMetricExporter,
+  MeterProvider,
+  PeriodicExportingMetricReader,
+} from '@opentelemetry/sdk-metrics';
+import {
+  BasicTracerProvider,
+  InMemorySpanExporter,
+  SimpleSpanProcessor,
+} from '@opentelemetry/sdk-trace-base';
 
 import { InjectOnlyTraceContextPropagator } from '../src/instrumentation';
 import { resolveApiRequest } from '../src/lib/telemetry/api-fetch';
@@ -17,12 +31,32 @@ import {
   classifyStatus,
   isTimeoutError,
   toOperation,
+  trackDependency,
 } from '../src/lib/telemetry/dependency';
 import { injectTraceparent, spanOptionsFor } from '../src/lib/telemetry/fetch';
+import { markTelemetryReady } from '../src/lib/telemetry/meter';
 
 // N2 registers this propagator globally in `register()`; tests set it here so
 // the `-00` injection path is exercised with the real propagator.
 propagation.setGlobalPropagator(new InjectOnlyTraceContextPropagator());
+
+const metricExporter = new InMemoryMetricExporter(
+  AggregationTemporality.CUMULATIVE,
+);
+const meterProvider = new MeterProvider({
+  readers: [
+    new PeriodicExportingMetricReader({
+      exporter: metricExporter,
+      exportIntervalMillis: 60_000,
+    }),
+  ],
+});
+
+const spanExporter = new InMemorySpanExporter();
+const tracerProvider = new BasicTracerProvider({
+  spanProcessors: [new SimpleSpanProcessor(spanExporter)],
+});
+const testTracer = tracerProvider.getTracer('dependency-test');
 
 before(() => {
   // The API's default context manager is a no-op; the SDK installs a real one
@@ -40,6 +74,18 @@ before(() => {
       return this;
     },
   });
+
+  metrics.setGlobalMeterProvider(meterProvider);
+  markTelemetryReady();
+  trace.setGlobalTracerProvider(tracerProvider);
+});
+
+after(async () => {
+  await meterProvider.shutdown();
+  await tracerProvider.shutdown();
+  metrics.disable();
+  trace.disable();
+  context.disable();
 });
 
 const TRACE_ID = '4bf92f3577b34da6a3ce929d0e0e4736';
@@ -359,5 +405,112 @@ describe('fetch span privacy', () => {
       'fetch GET services.c211.io/resource/{id}',
     );
     assert.equal(JSON.stringify(opentelemetry).includes('?'), false);
+  });
+});
+
+type ExportedMetric = {
+  descriptor: { name: string };
+  dataPointType: DataPointType;
+  dataPoints: {
+    attributes: Record<string, unknown>;
+    value: number;
+  }[];
+};
+
+/** Recorded `outcome` values for one dependency/operation pair. */
+async function recordedOutcomes(
+  dependency: string,
+  operation: string,
+): Promise<Record<string, number>> {
+  await meterProvider.forceFlush();
+  const points = metricExporter
+    .getMetrics()
+    .flatMap((resourceMetrics) => resourceMetrics.scopeMetrics)
+    .flatMap((scopeMetrics) => scopeMetrics.metrics)
+    .filter(
+      (metric) =>
+        metric.descriptor.name === 'norse.downstream.requests' &&
+        metric.dataPointType === DataPointType.SUM,
+    )
+    .flatMap((metric) => (metric as unknown as ExportedMetric).dataPoints)
+    .filter(
+      (point) =>
+        point.attributes.dependency === dependency &&
+        point.attributes.operation === operation,
+    );
+
+  const outcomes: Record<string, number> = {};
+  for (const point of points) {
+    const outcome = String(point.attributes.outcome);
+    outcomes[outcome] = (outcomes[outcome] ?? 0) + point.value;
+  }
+  return outcomes;
+}
+
+describe('trackDependency outcome classification', () => {
+  it('records a 500 Response as outcome=error', async () => {
+    const response = await trackDependency(
+      'norse_api',
+      'resource_titles',
+      async () => new Response('upstream failed', { status: 500 }),
+    );
+    assert.equal(response.status, 500);
+    assert.deepEqual(await recordedOutcomes('norse_api', 'resource_titles'), {
+      error: 1,
+    });
+  });
+
+  it('records a 200 Response as outcome=ok', async () => {
+    await trackDependency(
+      'norse_api',
+      'search_v1',
+      async () => new Response('{}', { status: 200 }),
+    );
+    assert.deepEqual(await recordedOutcomes('norse_api', 'search_v1'), {
+      ok: 1,
+    });
+  });
+
+  it('uses an explicit classifier for a non-Response result', async () => {
+    await trackDependency(
+      'translation',
+      'azure',
+      async () => ({ unexpected: true }),
+      (result) => (result.unexpected ? 'error' : 'ok'),
+    );
+    assert.deepEqual(await recordedOutcomes('translation', 'azure'), {
+      error: 1,
+    });
+  });
+
+  it('keeps a thrown error as outcome=timeout for aborts', async () => {
+    const error = Object.assign(new Error('aborted'), { name: 'AbortError' });
+    await assert.rejects(
+      trackDependency('keycloak', 'users_count', async () => {
+        throw error;
+      }),
+      error,
+    );
+    assert.deepEqual(await recordedOutcomes('keycloak', 'users_count'), {
+      timeout: 1,
+    });
+  });
+
+  it('marks the active span ERROR for an error outcome', async () => {
+    const span = testTracer.startSpan('tracked-call');
+    await context.with(trace.setSpan(context.active(), span), async () => {
+      await trackDependency(
+        'umami',
+        'auth_login',
+        async () => new Response('nope', { status: 502 }),
+      );
+    });
+    span.end();
+
+    const finished = spanExporter
+      .getFinishedSpans()
+      .find((candidate) => candidate.name === 'tracked-call');
+    assert.ok(finished, 'expected the tracked span');
+    assert.equal(finished.status.code, SpanStatusCode.ERROR);
   });
 });
