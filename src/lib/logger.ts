@@ -103,7 +103,20 @@ const loggerOptions: pino.LoggerOptions = {
   }),
 };
 
-export const logger: pino.Logger = pino(loggerOptions, stream);
+let logger: pino.Logger = pino(loggerOptions, stream);
+
+/**
+ * Test-only seam: rebuilds the singleton logger on another destination so a
+ * test can assert the serialized line (serializers included) instead of
+ * writing to stdout. Call it before importing modules that call
+ * `createLogger`, because those keep a child of the logger that exists then.
+ */
+export function setLogDestination(
+  destination?: pino.DestinationStream,
+): Logger {
+  logger = pino(loggerOptions, destination ?? stream);
+  return logger;
+}
 
 /**
  * The server logger type. Consumers annotate with this name instead of a
