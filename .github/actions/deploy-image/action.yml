@@ -1,7 +1,8 @@
 name: Build, push and wait for deployment
 description: >
   Builds one Dockerfile target, pushes it to the DigitalOcean registry, and
-  waits for the DigitalOcean app that auto-deploys that image to go active.
+  waits for the DigitalOcean app with the component that auto-deploys that image
+  to go active.
 
 inputs:
   image:
@@ -16,7 +17,7 @@ inputs:
   registry-name:
     required: true
   app-id:
-    description: DigitalOcean app that auto-deploys this image
+    description: DigitalOcean app with the component that auto-deploys this image
     required: false
     default: ''
   do-token:
@@ -62,7 +63,7 @@ runs:
         APP_ID: ${{ inputs.app-id }}
       run: |
         if [ -z "$APP_ID" ]; then
-          echo "::error::No DigitalOcean app id for ${{ inputs.image }}. Create the app and add its secret, or run with images_only."
+          echo "::error::No DigitalOcean app id for ${{ inputs.image }}. Add the app id secret, or run with images_only."
           exit 1
         fi
         ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
