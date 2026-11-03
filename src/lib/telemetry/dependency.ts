@@ -1,3 +1,5 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
+
 import { lazy } from './meter';
 
 export type Outcome = 'ok' | 'error' | 'timeout';
@@ -159,17 +161,34 @@ export function isTimeoutError(e: unknown): boolean {
   );
 }
 
+/**
+ * Runs one downstream call and records its outcome.
+ *
+ * `classify` maps a successful result to an outcome for callers whose failure
+ * is inside the result rather than a throw (SDK responses). A `Response` is
+ * classified with `classifyStatus` by default, so `fetch` callers no longer
+ * report a 4xx/5xx reply as `ok`.
+ */
 export async function trackDependency<T>(
   dependency: Dependency,
   operation: Operation,
   fn: () => Promise<T>,
+  classify?: (result: T) => Outcome,
 ): Promise<T> {
   const start = performance.now();
   let outcome: Outcome = 'ok';
   try {
-    return await fn();
+    const result = await fn();
+    outcome = classify
+      ? classify(result)
+      : result instanceof Response
+        ? classifyStatus(dependency, operation, result.status)
+        : 'ok';
+    if (outcome === 'error') markActiveSpanError();
+    return result;
   } catch (e) {
     outcome = isTimeoutError(e) ? 'timeout' : 'error';
+    markActiveSpanError();
     throw e;
   } finally {
     recordDependency(
@@ -178,5 +197,14 @@ export async function trackDependency<T>(
       outcome,
       (performance.now() - start) / 1000,
     );
+  }
+}
+
+/** A downstream failure makes the enclosing span a failed span. */
+function markActiveSpanError(): void {
+  try {
+    trace.getActiveSpan()?.setStatus({ code: SpanStatusCode.ERROR });
+  } catch {
+    // Telemetry must never throw.
   }
 }

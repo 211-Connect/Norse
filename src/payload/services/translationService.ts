@@ -91,6 +91,8 @@ async function translateWithAzure(
           from: sourceLocale,
         },
       }),
+    // The Azure SDK resolves with the failure response instead of throwing.
+    (result) => (isUnexpected(result) ? 'error' : 'ok'),
   );
 
   if (isUnexpected(translateResponse)) {
