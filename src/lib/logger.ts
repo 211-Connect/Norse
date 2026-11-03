@@ -55,18 +55,6 @@ function stripTokenQuery(token: string): string {
 }
 
 /**
- * Drops a query string and fragment: everything from the first `?` or `#`.
- *
- * For fields known to hold a URL or path (span names, `http.target`,
- * `url.full`, …) the first `?` is always the query delimiter. Free text needs
- * `stripUrlQueries` instead, where a bare `?` can be prose.
- */
-export function stripQueryAndFragment(value: string): string {
-  const cut = value.search(/[?#]/);
-  return cut === -1 ? value : value.slice(0, cut);
-}
-
-/**
  * Drops the query string and fragment from every URL in `value` — absolute or
  * relative (`/search?query=…`, `search?q=…`).
  *

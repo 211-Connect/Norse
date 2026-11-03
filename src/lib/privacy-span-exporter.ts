@@ -10,7 +10,7 @@ import {
   OTLPHttpProtoTraceExporter,
 } from '@vercel/otel';
 
-import { stripQueryAndFragment } from '@/lib/logger';
+import { stripQueryAndFragment } from '@/lib/url-privacy';
 
 /**
  * Span attributes whose value is a request URL.
