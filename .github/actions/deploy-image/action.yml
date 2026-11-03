@@ -46,6 +46,9 @@ inputs:
   trailing-slashes:
     required: false
     default: ''
+  advanced-geospatial-filtering:
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -116,6 +119,7 @@ runs:
           NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=${{ inputs.allow-search-engines }}
           NEXT_PUBLIC_CUSTOM_BASE_PATH=${{ inputs.custom-base-path }}
           NEXT_PUBLIC_WITH_TRAILING_SLASHES=${{ inputs.trailing-slashes }}
+          NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG=${{ inputs.advanced-geospatial-filtering }}
         cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
         cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache-new,mode=max
 
