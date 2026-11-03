@@ -193,6 +193,44 @@ describe('operation mapping', () => {
     }
   });
 
+  it('resolves every favorite-list route in the generated client', () => {
+    const cases: [string, string, string][] = [
+      ['POST', '/favorite-list', '/favorite-list'],
+      ['GET', '/favorite-list', '/favorite-list'],
+      ['POST', '/favorite-list/sync', '/favorite-list/sync'],
+      ['GET', '/favorite-list/search', '/favorite-list/search'],
+      ['GET', '/favorite-list/42', '/favorite-list/{id}'],
+      ['PUT', '/favorite-list/42', '/favorite-list/{id}'],
+      ['DELETE', '/favorite-list/42', '/favorite-list/{id}'],
+      ['GET', '/favorite-list/42/favorites', '/favorite-list/{id}/favorites'],
+      // `favoriteListControllerPurge` — previously fell through to `other`.
+      [
+        'DELETE',
+        '/favorite-list/42/favorites',
+        '/favorite-list/{id}/favorites',
+      ],
+      [
+        'DELETE',
+        '/favorite-list/abc/favorites',
+        '/favorite-list/{id}/favorites',
+      ],
+      [
+        'DELETE',
+        '/norse-api/v1/favorite-list/abc/favorites',
+        '/favorite-list/{id}/favorites',
+      ],
+      ['POST', '/favorite', '/favorite'],
+      ['DELETE', '/favorite/1/2', '/favorite/{favoriteId}/{favoriteListId}'],
+    ];
+    for (const [method, path, template] of cases) {
+      assert.deepEqual(
+        resolveApiRequest(method, path),
+        { operation: 'favorite', template },
+        `${method} ${path}`,
+      );
+    }
+  });
+
   it('resolves the short-url, delivery, scorecard and tenant-config routes', () => {
     const cases: [string, string, string, string][] = [
       ['GET', '/short-url/abc123', 'short_url', '/short-url/{id}'],
@@ -304,40 +342,29 @@ describe('operation mapping', () => {
     }
   });
 
-  it('shapes an unknown path instead of returning it raw', () => {
-    // A static path with no IDs stays readable.
-    assert.deepEqual(resolveApiRequest('GET', '/health'), {
-      operation: 'other',
-      template: '/health',
-    });
-    // A short code after a known collection is an id even when it is not
-    // numeric and shorter than the generic id length threshold.
+  it('shapes an unknown path: only API_ROUTES literals survive', () => {
+    // A route in the table keeps its literal segments and its operation.
     assert.deepEqual(resolveApiRequest('GET', '/short-url/abc'), {
       operation: 'short_url',
       template: '/short-url/{id}',
     });
-    // A segment after a known collection name is an id even when it is not
-    // numeric and shorter than the generic id length threshold.
-    assert.deepEqual(resolveApiRequest('GET', '/orchestration-config/abc'), {
-      operation: 'other',
-      template: '/orchestration-config/{id}',
-    });
-    for (const id of [
-      '42',
-      '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
-      'deadbeefcafe',
-      'aB3xY9zKq',
-    ]) {
+    // Everything else is unbounded — an id, a short code, a literal the table
+    // does not know — and must never reach a span name.
+    const cases: [string, string][] = [
+      ['/unknown/abc', '/{other}/{other}'],
+      ['/unknown/42', '/{other}/{other}'],
+      ['/unknown/deadbeefcafe', '/{other}/{other}'],
+      ['/unknown/3f2504e0-4f89-11d3-9a0c-0305e82c3301', '/{other}/{other}'],
+      ['/health', '/{other}'],
+      ['/orchestration-config/abc', '/{other}/{other}'],
+    ];
+    for (const [path, template] of cases) {
       assert.deepEqual(
-        resolveApiRequest('GET', `/unknown/${id}`),
-        { operation: 'other', template: '/unknown/{id}' },
-        id,
+        resolveApiRequest('GET', path),
+        { operation: 'other', template },
+        path,
       );
     }
-    assert.equal(
-      resolveApiRequest('GET', '/unknown/aB3xY9zKq').template,
-      '/unknown/{id}',
-    );
   });
 
   it('resolves operations behind the gateway path prefix', () => {
@@ -360,11 +387,14 @@ describe('operation mapping', () => {
   });
 
   it('shapes an unknown path behind the gateway prefix, not the prefix match', () => {
-    // The gateway segments stay in the fallback template, shaped like any
-    // other path, so no raw id reaches the span name.
+    // Neither the gateway prefix nor the unknown path is a literal from the
+    // route table, so no raw segment reaches the span name.
     assert.deepEqual(
       resolveApiRequest('GET', '/norse-api/v1/unknown/deadbeefcafe'),
-      { operation: 'other', template: '/{id}/v1/unknown/{id}' },
+      {
+        operation: 'other',
+        template: '/{other}/{other}/{other}/{other}',
+      },
     );
   });
 });

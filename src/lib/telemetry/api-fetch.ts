@@ -59,6 +59,11 @@ const API_ROUTES: readonly ApiRoute[] = [
     template: '/favorite-list/{id}/favorites',
     operation: 'favorite',
   },
+  {
+    method: 'DELETE',
+    template: '/favorite-list/{id}/favorites',
+    operation: 'favorite',
+  },
   { method: 'GET', template: '/favorite-list/{id}', operation: 'favorite' },
   { method: 'PUT', template: '/favorite-list/{id}', operation: 'favorite' },
   { method: 'DELETE', template: '/favorite-list/{id}', operation: 'favorite' },
@@ -265,61 +270,31 @@ function matchesTemplate(template: string, pathname: string): boolean {
 }
 
 /**
- * Collection and sub-collection names. The segment after one of these is a
- * record id even when it is short and not numeric (`/short-url/abc`).
+ * Every static segment that appears in `API_ROUTES`; the only literals a
+ * fallback template may keep.
  */
-const COLLECTION_SEGMENTS: Record<string, true> = {
-  'cms-config': true,
-  favorite: true,
-  'favorite-list': true,
-  favorites: true,
-  'orchestration-config': true,
-  organization: true,
-  'printable-directories': true,
-  'printable-directory-deliveries': true,
-  resource: true,
-  sections: true,
-  service: true,
-  'short-url': true,
-  sources: true,
-  taxonomies: true,
-  taxonomy: true,
-  'taxonomy-scorecard': true,
-  'tenant-config': true,
-  tenants: true,
-};
-
-const NUMERIC_SEGMENT = /^\d+$/;
-const UUID_SEGMENT =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-/** Hex/base62-style ids longer than 8 characters. */
-const LONG_ID_SEGMENT = /^[A-Za-z0-9_-]{9,}$/;
+const KNOWN_LITERALS: Record<string, true> = {};
+for (const route of API_ROUTES) {
+  for (const segment of splitPath(route.template)) {
+    if (!segment.startsWith('{')) KNOWN_LITERALS[segment] = true;
+  }
+}
 
 /**
  * Fallback template for a request outside `API_ROUTES`. The raw pathname must
  * never reach a span name: Tempo's span-metrics processor turns every distinct
- * one into a permanent Prometheus series, and short codes/tenant/delivery ids
- * are unbounded. Every id-shaped segment, and every segment directly after a
- * collection name, becomes `{id}`; anything left is a literal from the
- * generated clients, which is a finite set.
+ * one into a permanent Prometheus series. Segments from `API_ROUTES` are a
+ * finite set and stay readable; everything else is unbounded — an id, a short
+ * code, a tenant slug or a gateway prefix — and becomes `{other}`, whether or
+ * not it looks like a number or a UUID.
  */
 function shapePathTemplate(pathname: string): string {
   const segments = splitPath(pathname);
   if (segments.length === 0) return '/';
 
-  const shaped = segments.map((segment, index) => {
-    if (COLLECTION_SEGMENTS[segment] === true) return segment;
-    const previous = segments[index - 1];
-    if (previous !== undefined && COLLECTION_SEGMENTS[previous] === true) {
-      return '{id}';
-    }
-    const idLike =
-      NUMERIC_SEGMENT.test(segment) ||
-      UUID_SEGMENT.test(segment) ||
-      LONG_ID_SEGMENT.test(segment);
-    return idLike ? '{id}' : segment;
-  });
-  return `/${shaped.join('/')}`;
+  return `/${segments
+    .map((segment) => (KNOWN_LITERALS[segment] === true ? segment : '{other}'))
+    .join('/')}`;
 }
 
 /**
