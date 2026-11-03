@@ -40,16 +40,18 @@ globalThis.fetch = (async (input: RequestInfo | URL) => {
   requestedUrls.push(input instanceof Request ? input.url : String(input));
   // Non-2xx on purpose: `fetchWrapper` turns it into a FetchError whose
   // message embeds the request URL with its query string.
-  return new Response(JSON.stringify({ error: 'upstream rejected the request' }), {
-    status: 400,
-    statusText: 'Bad Request',
-    headers: { 'content-type': 'application/json' },
-  });
+  return new Response(
+    JSON.stringify({ error: 'upstream rejected the request' }),
+    {
+      status: 400,
+      statusText: 'Bad Request',
+      headers: { 'content-type': 'application/json' },
+    },
+  );
 }) as typeof fetch;
 
-const { findResources, findResourcesV2 } = await import(
-  '../src/app/(app)/shared/services/search-service'
-);
+const { findResources, findResourcesV2 } =
+  await import('../src/app/(app)/shared/services/search-service');
 
 const FORBIDDEN = [SECRET_QUERY, 'coords=', 'location=', 'query='];
 
@@ -94,8 +96,15 @@ test('v1 failure logs no search text through the real logger', async () => {
 
   // Sanity check: the failing request URL really carried the secrets.
   const url = requestedUrls.at(-1) ?? '';
-  for (const secret of [`query=${SECRET_QUERY}`, 'coords=1%2C2', SECRET_LOCATION]) {
-    assert.ok(url.includes(secret), `expected request URL to contain ${secret}`);
+  for (const secret of [
+    `query=${SECRET_QUERY}`,
+    'coords=1%2C2',
+    SECRET_LOCATION,
+  ]) {
+    assert.ok(
+      url.includes(secret),
+      `expected request URL to contain ${secret}`,
+    );
   }
 
   const entries = parse(linesSince(before));
@@ -129,8 +138,15 @@ test('v2 failure logs no search text through the real logger', async () => {
   );
 
   const url = requestedUrls.at(-1) ?? '';
-  for (const secret of [`query=${SECRET_QUERY}`, 'coords=1%2C2', SECRET_LOCATION]) {
-    assert.ok(url.includes(secret), `expected request URL to contain ${secret}`);
+  for (const secret of [
+    `query=${SECRET_QUERY}`,
+    'coords=1%2C2',
+    SECRET_LOCATION,
+  ]) {
+    assert.ok(
+      url.includes(secret),
+      `expected request URL to contain ${secret}`,
+    );
   }
 
   const entries = parse(linesSince(before));
