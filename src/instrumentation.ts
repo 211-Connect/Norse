@@ -35,7 +35,11 @@ export class InjectOnlyTraceContextPropagator extends W3CTraceContextPropagator 
   }
 }
 
-export function register() {
+/**
+ * `registerOtel` is injectable so the wiring test can inspect the exact
+ * parameters handed to `@vercel/otel` (Next.js calls `register()` with none).
+ */
+export function register(registerOtel: typeof registerOTel = registerOTel) {
   if (!process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
     log.info('Tracing disabled: OTEL_EXPORTER_OTLP_ENDPOINT not set');
     return;
@@ -79,7 +83,7 @@ export function register() {
     log.warn('API_URL not set: traceparent will not be sent to the Norse API');
   }
 
-  registerOTel({
+  registerOtel({
     serviceName: 'norse-app',
     traceSampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
