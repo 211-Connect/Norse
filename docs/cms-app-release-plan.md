@@ -258,6 +258,11 @@ Steps 2 and 3 on both production apps. From this moment `norse-cms` runs Payload
 jobs and migrations against production too. `norse-search` runs the same jobs until
 you remove it; Payload locks queued jobs, as it already does across instances.
 
+From this moment any run of **Production Deploy** is a live deploy, because the
+components auto-deploy the `production` tag. The workflow only runs on `main` and
+`v*` tags. Don't tick **images_only** again: it skips the wait for the CMS, so the
+public images could go live before migrations finish.
+
 ### 9. Flip the traffic
 
 In a low-traffic window, MBOA first because it is a single tenant, then
@@ -277,6 +282,8 @@ check them specifically.
 - The next `v*` tag runs the full pipeline. Watch that first run.
 - After a few days without problems, remove `norse-search` from each app, and later
   the old `norse` repository.
+- Remove the `images_only` option from `production-deploy.yaml`. Nothing needs it
+  after this rollout.
 
 Remove `norse-search` soon rather than keeping it indefinitely: it restarts with
 every deployment of the app, runs `payload migrate` from its old image each time,

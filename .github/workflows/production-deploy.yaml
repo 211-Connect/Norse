@@ -29,6 +29,9 @@ on:
 # docs/bot-protection.md). E2E runs against the dev hosts, which stay unenforced.
 jobs:
   deploy:
+    # Components auto-deploy the production tag, so a run from any other branch
+    # would ship unreleased code.
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     uses: ./.github/workflows/deploy-images.yaml
     with:
       environment: production
