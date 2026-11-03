@@ -70,6 +70,25 @@ const API_ROUTES: readonly ApiRoute[] = [
   { method: 'GET', template: '/analytics/{endpoint}', operation: 'analytics' },
   { method: 'POST', template: '/cms-config/cache/clear/{tenantId}', operation: 'cms_config' },
   { method: 'POST', template: '/cms-config/cache/clear', operation: 'cms_config' },
+  { method: 'POST', template: '/resource/batch', operation: 'resource_get' },
+  { method: 'GET', template: '/short-url/{id}', operation: 'short_url' },
+  { method: 'POST', template: '/short-url', operation: 'short_url' },
+  { method: 'GET', template: '/printable-directories/{id}/deliveries', operation: 'printable_directory' },
+  { method: 'POST', template: '/printable-directories/{id}/deliveries', operation: 'printable_directory' },
+  { method: 'PATCH', template: '/printable-directories/{id}/deliveries/{deliveryId}', operation: 'printable_directory' },
+  { method: 'DELETE', template: '/printable-directories/{id}/deliveries/{deliveryId}', operation: 'printable_directory' },
+  { method: 'GET', template: '/internal/printable-directory-deliveries/due', operation: 'printable_directory' },
+  { method: 'GET', template: '/internal/printable-directory-deliveries/{deliveryId}/preview', operation: 'printable_directory' },
+  { method: 'POST', template: '/internal/printable-directory-deliveries/{deliveryId}/claim', operation: 'printable_directory' },
+  { method: 'POST', template: '/internal/printable-directory-deliveries/{deliveryId}/result', operation: 'printable_directory' },
+  { method: 'GET', template: '/taxonomy-scorecard/taxonomies', operation: 'taxonomy_scorecard' },
+  { method: 'GET', template: '/taxonomy-scorecard/tenants/{tenantId}/taxonomies/{hsisCode}', operation: 'taxonomy_scorecard' },
+  { method: 'PUT', template: '/taxonomy-scorecard/tenants/{tenantId}/taxonomies/{hsisCode}', operation: 'taxonomy_scorecard' },
+  { method: 'POST', template: '/taxonomy-scorecard/tenants/{tenantId}/taxonomies/{hsisCode}/enable', operation: 'taxonomy_scorecard' },
+  { method: 'GET', template: '/tenant-config/{tenantId}', operation: 'tenant_config' },
+  { method: 'GET', template: '/tenant-config/{tenantId}/topics', operation: 'tenant_config' },
+  { method: 'GET', template: '/tenant-config/{tenantId}/suggestions', operation: 'tenant_config' },
+  { method: 'POST', template: '/internal/blocked-traffic', operation: 'blocked_traffic' },
 ];
 
 function splitPath(pathname: string): string[] {
@@ -84,6 +103,64 @@ function matchesTemplate(template: string, pathname: string): boolean {
     (segment, index) =>
       segment.startsWith('{') || segment === actual[index],
   );
+}
+
+/**
+ * Collection and sub-collection names. The segment after one of these is a
+ * record id even when it is short and not numeric (`/short-url/abc`).
+ */
+const COLLECTION_SEGMENTS: Record<string, true> = {
+  'cms-config': true,
+  favorite: true,
+  'favorite-list': true,
+  favorites: true,
+  'orchestration-config': true,
+  organization: true,
+  'printable-directories': true,
+  'printable-directory-deliveries': true,
+  resource: true,
+  sections: true,
+  service: true,
+  'short-url': true,
+  sources: true,
+  taxonomies: true,
+  taxonomy: true,
+  'taxonomy-scorecard': true,
+  'tenant-config': true,
+  tenants: true,
+};
+
+const NUMERIC_SEGMENT = /^\d+$/;
+const UUID_SEGMENT =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** Hex/base62-style ids longer than 8 characters. */
+const LONG_ID_SEGMENT = /^[A-Za-z0-9_-]{9,}$/;
+
+/**
+ * Fallback template for a request outside `API_ROUTES`. The raw pathname must
+ * never reach a span name: Tempo's span-metrics processor turns every distinct
+ * one into a permanent Prometheus series, and short codes/tenant/delivery ids
+ * are unbounded. Every id-shaped segment, and every segment directly after a
+ * collection name, becomes `{id}`; anything left is a literal from the
+ * generated clients, which is a finite set.
+ */
+function shapePathTemplate(pathname: string): string {
+  const segments = splitPath(pathname);
+  if (segments.length === 0) return '/';
+
+  const shaped = segments.map((segment, index) => {
+    if (COLLECTION_SEGMENTS[segment] === true) return segment;
+    const previous = segments[index - 1];
+    if (previous !== undefined && COLLECTION_SEGMENTS[previous] === true) {
+      return '{id}';
+    }
+    const idLike =
+      NUMERIC_SEGMENT.test(segment) ||
+      UUID_SEGMENT.test(segment) ||
+      LONG_ID_SEGMENT.test(segment);
+    return idLike ? '{id}' : segment;
+  });
+  return `/${shaped.join('/')}`;
 }
 
 /**
@@ -102,7 +179,10 @@ export function resolveApiRequest(
   );
   return route
     ? { operation: route.operation, template: route.template }
-    : { operation: toOperation('norse_api', 'other'), template: pathname };
+    : {
+        operation: toOperation('norse_api', 'other'),
+        template: shapePathTemplate(pathname),
+      };
 }
 
 /**

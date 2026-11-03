@@ -130,15 +130,146 @@ describe('operation mapping', () => {
     }
   });
 
-  it('maps unknown paths to other', () => {
+  it('resolves the short-url, delivery, scorecard and tenant-config routes', () => {
+    const cases: [string, string, string, string][] = [
+      ['GET', '/short-url/abc123', 'short_url', '/short-url/{id}'],
+      ['POST', '/short-url', 'short_url', '/short-url'],
+      [
+        'GET',
+        '/printable-directories/42/deliveries',
+        'printable_directory',
+        '/printable-directories/{id}/deliveries',
+      ],
+      [
+        'POST',
+        '/printable-directories/42/deliveries',
+        'printable_directory',
+        '/printable-directories/{id}/deliveries',
+      ],
+      [
+        'PATCH',
+        '/printable-directories/42/deliveries/7',
+        'printable_directory',
+        '/printable-directories/{id}/deliveries/{deliveryId}',
+      ],
+      [
+        'DELETE',
+        '/printable-directories/42/deliveries/7',
+        'printable_directory',
+        '/printable-directories/{id}/deliveries/{deliveryId}',
+      ],
+      [
+        'GET',
+        '/internal/printable-directory-deliveries/due',
+        'printable_directory',
+        '/internal/printable-directory-deliveries/due',
+      ],
+      [
+        'GET',
+        '/internal/printable-directory-deliveries/7/preview',
+        'printable_directory',
+        '/internal/printable-directory-deliveries/{deliveryId}/preview',
+      ],
+      [
+        'POST',
+        '/internal/printable-directory-deliveries/7/claim',
+        'printable_directory',
+        '/internal/printable-directory-deliveries/{deliveryId}/claim',
+      ],
+      [
+        'POST',
+        '/internal/printable-directory-deliveries/7/result',
+        'printable_directory',
+        '/internal/printable-directory-deliveries/{deliveryId}/result',
+      ],
+      [
+        'GET',
+        '/taxonomy-scorecard/taxonomies',
+        'taxonomy_scorecard',
+        '/taxonomy-scorecard/taxonomies',
+      ],
+      [
+        'GET',
+        '/taxonomy-scorecard/tenants/acme/taxonomies/101',
+        'taxonomy_scorecard',
+        '/taxonomy-scorecard/tenants/{tenantId}/taxonomies/{hsisCode}',
+      ],
+      [
+        'PUT',
+        '/taxonomy-scorecard/tenants/acme/taxonomies/101',
+        'taxonomy_scorecard',
+        '/taxonomy-scorecard/tenants/{tenantId}/taxonomies/{hsisCode}',
+      ],
+      [
+        'POST',
+        '/taxonomy-scorecard/tenants/acme/taxonomies/101/enable',
+        'taxonomy_scorecard',
+        '/taxonomy-scorecard/tenants/{tenantId}/taxonomies/{hsisCode}/enable',
+      ],
+      ['GET', '/tenant-config/acme', 'tenant_config', '/tenant-config/{tenantId}'],
+      [
+        'GET',
+        '/tenant-config/acme/topics',
+        'tenant_config',
+        '/tenant-config/{tenantId}/topics',
+      ],
+      [
+        'GET',
+        '/tenant-config/acme/suggestions',
+        'tenant_config',
+        '/tenant-config/{tenantId}/suggestions',
+      ],
+      ['POST', '/resource/batch', 'resource_get', '/resource/batch'],
+      [
+        'POST',
+        '/internal/blocked-traffic',
+        'blocked_traffic',
+        '/internal/blocked-traffic',
+      ],
+    ];
+    for (const [method, path, operation, template] of cases) {
+      assert.deepEqual(
+        resolveApiRequest(method, path),
+        { operation, template },
+        `${method} ${path}`,
+      );
+    }
+  });
+
+  it('shapes an unknown path instead of returning it raw', () => {
+    // A static path with no IDs stays readable.
     assert.deepEqual(resolveApiRequest('GET', '/health'), {
       operation: 'other',
       template: '/health',
     });
+    // A short code after a known collection is an id even when it is not
+    // numeric and shorter than the generic id length threshold.
     assert.deepEqual(resolveApiRequest('GET', '/short-url/abc'), {
-      operation: 'other',
-      template: '/short-url/abc',
+      operation: 'short_url',
+      template: '/short-url/{id}',
     });
+    // A segment after a known collection name is an id even when it is not
+    // numeric and shorter than the generic id length threshold.
+    assert.deepEqual(resolveApiRequest('GET', '/orchestration-config/abc'), {
+      operation: 'other',
+      template: '/orchestration-config/{id}',
+    });
+    for (const id of [
+      '42',
+      '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+      'deadbeefcafe',
+      'aB3xY9zKq',
+    ]) {
+      assert.deepEqual(
+        resolveApiRequest('GET', `/unknown/${id}`),
+        { operation: 'other', template: '/unknown/{id}' },
+        id,
+      );
+    }
+    assert.equal(
+      resolveApiRequest('GET', '/unknown/aB3xY9zKq').template,
+      '/unknown/{id}',
+    );
   });
 });
 
