@@ -52,6 +52,9 @@ const nextConfig = {
   basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    // Inlined at build time: `app` builds drop every Payload code path
+    // (docs/cms-app-separation-plan.md). Unset = `all`.
+    NORSE_BUILD: process.env.NORSE_BUILD || 'all',
   },
   images: {
     remotePatterns: [

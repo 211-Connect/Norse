@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { shouldBlockCrawlers } from '@/app/(app)/shared/utils/shouldBlockCrawlers';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getTenantByHost } from '@/lib/cms/tenants';
 
 /**
  * Crawlers told to stay away entirely. A crawler that obeys robots.txt then
@@ -41,7 +41,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
 
   let tenantNoindex = false;
   try {
-    const tenant = await findTenantByHost(host);
+    const tenant = await getTenantByHost(host);
     tenantNoindex = tenant?.seo?.noindex ?? false;
   } catch {
     // On lookup failure, fall back to the global env gate only.

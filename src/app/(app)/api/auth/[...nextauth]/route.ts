@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server';
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { createAuthOptions } from '@/auth';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getTenantByHost } from '@/lib/cms/tenants';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 
@@ -21,7 +21,7 @@ const handlerFunction = async (req: NextRequest, ctx) => {
   const parsedHost = parseHost(host ?? '');
 
   const baseUrl = withOptionalCustomBasePath(`${protocol}://${host}`);
-  const tenant = await findTenantByHost(parsedHost);
+  const tenant = await getTenantByHost(parsedHost);
 
   return NextAuth(
     req,

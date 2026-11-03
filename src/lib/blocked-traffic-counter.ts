@@ -3,6 +3,7 @@ import { ROOT_CONTEXT, context } from '@opentelemetry/api';
 import type { BlockedTrafficBucketDto } from '@/lib/api/generated/data-contracts';
 import type { ArcjetLog } from '@/lib/arcjet';
 import type { BlockedTrafficClassification } from '@/lib/arcjet-classification';
+import { describeError } from '@/lib/describe-error';
 
 /**
  * ISS-2366: per-instance in-memory counters of Arcjet denials, pushed to
@@ -121,7 +122,7 @@ export function createBlockedTrafficCounter({
         tenantId,
         requeued,
         dropped,
-        error: error instanceof Error ? error.message : String(error),
+        ...describeError(error),
       });
     }
   }
@@ -148,9 +149,7 @@ export function createBlockedTrafficCounter({
   function flush(): Promise<void> {
     inFlight ??= runFlush()
       .catch((error) => {
-        log('warn', 'blocked_traffic_flush_failed', {
-          error: error instanceof Error ? error.message : String(error),
-        });
+        log('warn', 'blocked_traffic_flush_failed', describeError(error));
       })
       .finally(() => {
         inFlight = null;

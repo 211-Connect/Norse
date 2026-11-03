@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { Twilio } from 'twilio';
 
 import { createLogger } from '@/lib/logger';
-import { findTenantById } from '@/payload/collections/Tenants/actions';
+import { getTenantById } from '@/lib/cms/tenants';
 
 const log = createLogger('share');
 
@@ -114,7 +114,7 @@ export async function POST(
     );
   }
 
-  const tenant = await findTenantById(tenantId);
+  const tenant = await getTenantById(tenantId);
   if (!tenant) {
     return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
   }

@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { cache } from 'react';
 
 import { createAuthOptions } from '@/auth';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
+import { getTenantByHost } from '@/lib/cms/tenants';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 
@@ -24,7 +24,7 @@ async function getSessionOrigin() {
     'https';
 
   const parsedHost = parseHost(host);
-  const tenant = await findTenantByHost(parsedHost);
+  const tenant = await getTenantByHost(parsedHost);
   const baseUrl = withOptionalCustomBasePath(`${protocol}://${host}`);
 
   const authOptions = createAuthOptions({

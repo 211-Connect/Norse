@@ -32,7 +32,10 @@ font size, booklet) and up to 100 recipient emails. A directory can have up to
 - **Server-to-server**: `INTERNAL_API_KEY` (Norse API internal endpoints and
   the internal render route), `API_URL`. `INTERNAL_APP_URL` optionally
   overrides the loopback origin used to reach the render route (default
-  `http://127.0.0.1:$PORT`).
+  `http://127.0.0.1:$PORT`). The job, the render route and the email all run
+  in the CMS (`NORSE_ROLE=cms`); where loopback does not work (DigitalOcean
+  App Platform), set `INTERNAL_APP_URL` on the CMS to its own server-to-server
+  URL.
 
 ## Rules
 
@@ -127,7 +130,9 @@ Because a `pages/` directory exists, Next types `useSearchParams()` and
 - Server actions in `shared/serverActions/printableDirectories/`:
   `get|create|update|deletePrintableDirectoryDelivery(ies)` and
   `sendPrintableDirectoryDeliveryTest`, all gated by
-  `getScheduledDeliveryAccess()`.
+  `getScheduledDeliveryAccess()`. The test send checks access and the rate
+  limit in the app, then the CMS renders and emails it
+  (`send-delivery-test.ts`, `POST /api/internal/printable-directory-deliveries/test`).
 - Email copy is in `page-directories` (`scheduled_delivery_email_*`,
   `scheduled_delivery_failure_*`, `scheduled_delivery_reason_*`), in the
   delivery's language with the tenant's default as fallback.
