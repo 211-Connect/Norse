@@ -35,20 +35,48 @@ norse-app (Node, one OTLP/HTTP endpoint, no path)
   appends `/v1/traces`, `/v1/metrics`, `/v1/logs`.
 - Envoy terminates TLS, enforces basic auth, and forwards to Alloy. Alloy
   applies the `env` label, then exports traces → Tempo, metrics → Prometheus
-  (remote write, exemplar-capable), logs → Loki. The collector also strips
-  query strings from span names/URL attributes as a safety net; the app
-  already does not emit them.
+  (remote write, exemplar-capable), logs → Loki.
 - The Next.js **Edge** runtime only gets traces. Metrics, logs and the Node
   runtime instrumentation are Node-only and loaded via
   `import('./instrumentation.node')` from `register()` when
   `NEXT_RUNTIME === 'nodejs'`.
+
+### URL privacy: three layers
+
+The app does **not** avoid creating URL attributes that contain a query
+string: Next.js sets `http.target = req.url` (query string included) on every
+request span, `@vercel/otel` names a `fetch` span with the request URL and
+writes the same URL to `http.url`, and raw `fetch` call sites (e.g.
+`src/payload/utilities/keycloakAdmin.ts`) pass their query string through.
+The query string and fragment are removed in three layers:
+
+1. **In-process, at export.** Every span goes through `PrivacySpanExporter`
+   (`src/lib/privacy-span-exporter.ts`): the span **name** and the
+   `http.target`, `http.url`, `http.url.full`, `url.full` and URL-shaped
+   `next.*` attributes are cut at the first `?` **or** `#`, and `url.query` is
+   deleted. This layer protects the app even when
+   `OTEL_EXPORTER_OTLP_ENDPOINT` points straight at Tempo, and it is the only
+   layer that removes a bare `#fragment` with no query string.
+2. **Production collector, as a backstop.** Alloy's `privacy` transform
+   (`otelcol.processor.transform` in the charts repo's `alloy-otlp`) repeats
+   the span-name/URL-attribute work for anything that bypasses layer 1
+   (`http.target`, `http.url`, `url.full`, span name), deletes `url.query`,
+   and redacts `query=`, `q=`, `location=`, `coords=`, `lat=`/`lon=`/`lng=`,
+   `key=`, `api_key=` and `token=` in log bodies and string attributes. Its
+   `replace_pattern(…, "\\?.*$", "")` statements cut from the first `?`
+   onward only — a bare `#fragment` with no query string is layer 1's job,
+   not the collector's.
+3. **The local stack.** `observability/alloy/config.alloy` runs the same
+   `privacy` transform statements as production (see
+   [Local stack](#local-stack-composeyaml)), so a local trace or log carries
+   the same data as the production one.
 
 ### What is instrumented
 
 | Signal | Span / instrument | Where |
 | --- | --- | --- |
 | Traces | Next.js request/render/route spans (root span per request, RSC render spans, route-handler spans) | free once an OTel SDK is registered |
-| Traces | `fetch <METHOD> <host><path-template>` for outgoing HTTP, with query strings stripped | `@vercel/otel` fetch instrumentation, configured in `src/instrumentation.ts`; `propagateContextUrls` scoped to `API_URL` |
+| Traces | `fetch <METHOD> <host><path-template>` for wrapped outgoing calls (`fetch <METHOD> <url>` for raw `fetch` calls); the query string is removed at export | `@vercel/otel` fetch instrumentation + `spanOptionsFor()` in `src/lib/telemetry/fetch.ts`; `propagateContextUrls` scoped to `API_URL`; `PrivacySpanExporter` |
 | Traces | `response.parse` (JSON parse, `response.body.size`, `server.address`, `url.path`) | `src/app/(app)/shared/lib/fetchWrapper.ts` |
 | Traces | Redis client span per command (`db.system = redis`) | `@opentelemetry/instrumentation-ioredis`, `requireParentSpan: true` |
 | Traces | `arcjet.protect` (`url.path`, `arcjet.enforced`, `arcjet.conclusion`, `arcjet.decision_id`, `event_loop.utilization`, `arcjet.duration_ms`, `arcjet.reason_type` on a denial) | `src/lib/arcjet-page.ts` |
@@ -58,10 +86,14 @@ norse-app (Node, one OTLP/HTTP endpoint, no path)
 | Logs | pino JSON on stdout **and** OTLP log records, correlated with `trace_id`/`span_id` | `src/lib/logger.ts` + `@opentelemetry/instrumentation-pino` |
 
 Search text, location text, latitude/longitude pairs, client IP, cache keys,
-full URLs with query strings, emails and user IDs are **never** put in a span
-attribute, a metric attribute or a log field (the one exception is the opt-in,
-length-limited `user_agent.original` root-span attribute, see
-[Environment variables](#environment-variables)).
+full URLs with query strings, emails and user IDs are **never exported** in a
+span attribute, a metric attribute or a log field. Span names and URL
+attributes are scrubbed inside the process before export and again by the
+collector (see [URL privacy](#url-privacy-three-layers) above), so the
+attributes Next.js and `fetch` create at the source never reach Tempo,
+Prometheus or Loki. The one exception is the opt-in, length-limited
+`user_agent.original` root-span attribute, see
+[Environment variables](#environment-variables).
 
 ### Resource attributes → Prometheus labels
 
@@ -443,10 +475,15 @@ grafana :3001  (datasources: prometheus, loki, tempo)
 - `alloy` — [`observability/alloy/config.alloy`](/observability/alloy/config.alloy),
   the local equivalent of production's `alloy-otlp`: `otelcol.receiver.otlp`
   (gRPC 4317, HTTP 4318) → `otelcol.processor.transform` (`privacy`, the same
-  query-string/label redaction as production) → `otelcol.processor.transform`
-  (`env` from `deployment.environment.name`) → `otelcol.processor.batch` →
-  Tempo (traces), Prometheus remote write with exemplars (metrics), Loki OTLP
-  (logs).
+  statements as production: `http.target`/`http.url`/`url.full` and span names
+  cut at the first `?`, `url.query` deleted, and `query=`/`coords=`/`key=`/
+  `token=`-style values redacted in log bodies and attributes) →
+  `otelcol.processor.transform` (`env` from `deployment.environment.name`) →
+  `otelcol.processor.batch` → Tempo (traces), Prometheus remote write with
+  exemplars (metrics), Loki OTLP (logs). Local traces and logs therefore match
+  production. As in production, the collector statements only cut from `?`
+  onward; a bare `#fragment` with no query string is removed earlier, by the
+  in-process `PrivacySpanExporter`.
 - `tempo` — [`tempo.yaml`](/tempo.yaml), monolithic Tempo 3 with the
   `service-graphs` and `span-metrics` processors remote-writing to Prometheus.
   Only its query API (3200) is published; OTLP goes through Alloy.

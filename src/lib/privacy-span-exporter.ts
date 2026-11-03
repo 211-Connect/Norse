@@ -103,10 +103,10 @@ function sanitizeSpan(span: ReadableSpan): ReadableSpan {
 
 /**
  * Exporter decorator: removes query strings and fragments from every span the
- * SDK exports. The Alloy `privacy` transform is the production backstop, but
- * the app must not depend on it — pointing `OTEL_EXPORTER_OTLP_ENDPOINT`
- * straight at Tempo bypasses it, and the local stack has no equivalent
- * (privacy rule 8).
+ * SDK exports. The Alloy `privacy` transform is the backstop in production and
+ * in the local stack, but the app must not depend on it — pointing
+ * `OTEL_EXPORTER_OTLP_ENDPOINT` straight at Tempo bypasses it, and only this
+ * exporter removes a bare `#fragment` (privacy rule 8).
  */
 export class PrivacySpanExporter implements SpanExporter {
   constructor(private readonly delegate: SpanExporter) {}
