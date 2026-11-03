@@ -6,7 +6,7 @@ environment per app and the step-by-step rollout:
 
 ## Purpose
 
-Norse runs as two DigitalOcean apps built from **one image**:
+Norse runs as two components of one DigitalOcean app, built from one Dockerfile:
 
 | App     | `NORSE_ROLE` | Serves                                                                                       | Has access to                                                  |
 | ------- | ------------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -21,9 +21,9 @@ before the split. It keeps local dev and e2e working with no extra setup.
 
 ## Deployments
 
-Each environment has four DigitalOcean apps: a public app and a CMS for the
-multi-tenant deployment, and a public app and a CMS for MBOA. MBOA needs its
-own pair because `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
+Each environment has two DigitalOcean apps, multi-tenant and MBOA, and each has
+two components: `norse-app` (public) and `norse-cms`. MBOA needs its own images
+because `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
 `NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` are baked in at build time, in the
 browser code and in Next.js's routing. The CMS needs them too: it serves its
 routes under the base path and builds the links in emails and the widget
@@ -38,10 +38,11 @@ config from it.
 
 CI (`.github/workflows/deploy-images.yaml`, called by the development and
 production deploys) builds all four. It pushes the CMS images first and waits
-for both CMS apps to go active before it pushes the public images, because the
-CMS runs migrations and the public app may call endpoints of the same release.
+for each app's deployment to go active before it pushes the public images,
+because the CMS runs migrations and the public app may call endpoints of the
+same release. So a release is two deployments per app.
 
-The admin moves to the CMS's own host. Two things depended on the admin being
+The admin moves to its own hostname, routed to `norse-cms` by a routing rule. Two things depended on the admin being
 on a tenant's host:
 
 - **Password-reset links** use `CMS_ADMIN_URL`. The tenant lookup in
@@ -198,18 +199,17 @@ translation metering and test sends.
 
 ## Networking on DigitalOcean
 
-Two separate apps cannot use App Platform's internal networking, and
-loopback (`127.0.0.1`) does not work there, so every server-to-server call
-uses a URL from the environment. **That URL must not sit behind the
-Cloudflare WAF rules that answered 403 to the proxy's tenant config lookup**,
-or every page inherits the failure. In order of preference:
+Both components are in one app, so `norse-app` reaches `norse-cms` over the
+app's private network: `PAYLOAD_CMS_URL=${norse-cms.PRIVATE_URL}`. That traffic
+never leaves the app, so the Cloudflare WAF that answered 403 to the proxy's
+tenant config lookup can't touch it. `norse-cms` reaches its own PDF render route
+the same way (`INTERNAL_APP_URL=${_self.PRIVATE_URL}`), because loopback doesn't
+work there.
 
-1. `cms-internal.<domain>`: a DNS-only (grey cloud) record pointing at the
-   CMS app, used only server to server.
-2. A Cloudflare WAF skip rule for `/api/internal/*` and
-   `/api/getTenantBasicConfig` carrying the internal key header.
-
-The admin can stay on a Cloudflare-proxied `cms.<domain>`.
+The admin is browser traffic on its own public hostname. A routing rule for
+that domain, above the rule matching all domains, sends it to `norse-cms`. It
+can't share a tenant hostname by path, because the two builds' static files
+under `/_next` differ.
 
 ## Environment and rollout
 
@@ -239,6 +239,9 @@ Agreed 2026-10-30:
    or a CMS with the multi-tenant deployment.
 8. **CI builds only the four split images.** The Dockerfile's default combined
    target remains for local use; old `norse:<sha>` images remain for rollback.
+9. **The existing apps stay; the split is at component level.** That gives private
+   networking, one app id per deployment in CI, and rollback by flipping a routing
+   rule back to `norse-search`.
 
 ## Known gaps
 

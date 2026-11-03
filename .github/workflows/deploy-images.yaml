@@ -1,14 +1,16 @@
 name: Deploy Images
 
-# Shared by the development and production deploys. Each environment has four
-# DigitalOcean apps, which auto-deploy their image tag:
+# Shared by the development and production deploys. Each environment has two
+# DigitalOcean apps (multi-tenant and MBOA), and each app has two components
+# that auto-deploy their image tag:
 #
-#   multi-tenant CMS  norse-cms       multi-tenant public  norse-app
-#   MBOA CMS          norse-cms-mboa  MBOA public          norse-app-mboa
+#   multi-tenant app   norse-cms: norse-cms        norse-app: norse-app
+#   MBOA app           norse-cms: norse-cms-mboa   norse-app: norse-app-mboa
 #
-# The CMS apps go first and must become active before the public images are
-# pushed: the CMS runs migrations, and a public app may call CMS endpoints of
-# the same release. See docs/cms-app-release-plan.md.
+# The CMS images go first and their deployments must become active before the
+# public images are pushed: the CMS runs migrations, and a public component may
+# call CMS endpoints of the same release. So every release is two deployments
+# per app. See docs/cms-app-release-plan.md.
 
 on:
   workflow_call:
@@ -37,10 +39,6 @@ on:
         required: true
       DIGITALOCEAN_ACCESS_TOKEN:
         required: true
-      MULTITENANT_CMS_APP_ID:
-        required: false
-      MBOA_CMS_APP_ID:
-        required: false
       MULTITENANT_APP_ID:
         required: false
       MBOA_APP_ID:
@@ -57,7 +55,9 @@ jobs:
       matrix:
         include:
           - image: norse-cms
+            deployment: multitenant
           - image: norse-cms-mboa
+            deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
     steps:
@@ -73,7 +73,7 @@ jobs:
           registry-name: ${{ secrets.DO_REGISTRY_NAME }}
           # The last `''` keeps an unset secret empty (the action then fails with
           # a clear error) instead of falling through to the other app's id.
-          app-id: ${{ matrix.image == 'norse-cms' && secrets.MULTITENANT_CMS_APP_ID || matrix.image == 'norse-cms-mboa' && secrets.MBOA_CMS_APP_ID || '' }}
+          app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
           do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           images-only: ${{ inputs.images_only }}
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
@@ -92,7 +92,9 @@ jobs:
       matrix:
         include:
           - image: norse-app
+            deployment: multitenant
           - image: norse-app-mboa
+            deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
     steps:
@@ -106,7 +108,9 @@ jobs:
           target: app
           environment: ${{ inputs.environment }}
           registry-name: ${{ secrets.DO_REGISTRY_NAME }}
-          app-id: ${{ matrix.image == 'norse-app' && secrets.MULTITENANT_APP_ID || matrix.image == 'norse-app-mboa' && secrets.MBOA_APP_ID || '' }}
+          # The last `''` keeps an unset secret empty (the action then fails with
+          # a clear error) instead of falling through to the other app's id.
+          app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
           do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           images-only: ${{ inputs.images_only }}
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}

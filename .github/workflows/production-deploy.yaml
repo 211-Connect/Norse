@@ -21,8 +21,9 @@ on:
 
 # Note: the release has already shipped by the time a public image is active,
 # and nothing rolls back on failure: failures are alert-only (Slack). The one
-# exception is the order: public images are only pushed once both CMS apps are
-# active, so a failed CMS deploy leaves the public apps on the previous release.
+# exception is the order: public images are only pushed once both CMS deployments
+# are active, so a failed CMS deploy leaves the public components on the previous
+# release.
 # E2E does not run against production: production hosts are enforced by Arcjet
 # bot protection, which is expected to deny headless Chromium (see
 # docs/bot-protection.md). E2E runs against the dev hosts, which stay unenforced.
@@ -37,8 +38,6 @@ jobs:
     secrets:
       DO_REGISTRY_NAME: ${{ secrets.DO_REGISTRY_NAME }}
       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      MULTITENANT_CMS_APP_ID: ${{ secrets.DO_MULTITENANT_CMS_PROD_APP_ID }}
-      MBOA_CMS_APP_ID: ${{ secrets.DO_MBOA_CMS_PROD_APP_ID }}
       MULTITENANT_APP_ID: ${{ secrets.DO_MULTITENANT_PROD_APP_ID }}
       MBOA_APP_ID: ${{ secrets.DO_MBOA_PROD_APP_ID }}
 
@@ -60,7 +59,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":warning: *Production Deploy Failed*\nAn image could not be built or pushed, or its deployment did not become active. Public images are only pushed after both CMS apps are active. This is alert-only: nothing was rolled back.\n*Ref:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
+                    "text": ":warning: *Production Deploy Failed*\nAn image could not be built or pushed, or its deployment did not become active. Public images are only pushed after both CMS deployments are active. This is alert-only: nothing was rolled back.\n*Ref:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]

@@ -43,8 +43,6 @@ jobs:
     secrets:
       DO_REGISTRY_NAME: ${{ secrets.DO_REGISTRY_NAME }}
       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      MULTITENANT_CMS_APP_ID: ${{ secrets.DO_MULTITENANT_CMS_DEV_APP_ID }}
-      MBOA_CMS_APP_ID: ${{ secrets.DO_MBOA_CMS_DEV_APP_ID }}
       MULTITENANT_APP_ID: ${{ secrets.DO_MULTITENANT_DEV_APP_ID }}
       MBOA_APP_ID: ${{ secrets.DO_MBOA_DEV_APP_ID }}
 
@@ -74,7 +72,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Development Deploy Failed*\nAn image could not be built or pushed, or its deployment did not become active. Public images are only pushed after both CMS apps are active.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                    "text": ":x: *Development Deploy Failed*\nAn image could not be built or pushed, or its deployment did not become active. Public images are only pushed after both CMS deployments are active.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]
