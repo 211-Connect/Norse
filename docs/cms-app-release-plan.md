@@ -169,6 +169,63 @@ checks, alerts, and the Prometheus scrape list (`/api/metrics`, with
 - [ ] **Keycloak's domain check:** `/api/keycloak/domain-check` answers on both
       components, so its URL can stay as it is.
 
+## App spec changes
+
+Change each app's spec in three steps, so traffic only moves after the new components
+are tested. Download the current spec first and keep it: it is your rollback after
+version 3. Keep spec files out of the repository.
+
+| Version          | All domains  | Test domain  | CMS domain  | Components  |
+| ---------------- | ------------ | ------------ | ----------- | ----------- |
+| 1. Add           | old          | `norse-app`  | `norse-cms` | old + 2 new |
+| 2. Route traffic | `norse-app`  | old          | `norse-cms` | old + 2 new |
+| 3. Remove old    | `norse-app`  | removed      | `norse-cms` | 2 new       |
+
+Rollout steps 2 and 3 are version 1, step 4 is version 2, and removing `norse-search`
+is version 3. In version 2 the test domain keeps a route to the old component, so you
+can compare the two.
+
+**Version 1:**
+
+- Add `domains`: the CMS domain and a test domain, both `ALIAS`. Keep the `PRIMARY`.
+- Add `ingress` rules above the all-domains rule, each with its `authority.exact`. Umami
+  keeps its rule, first, and its component doesn't change. The rules use
+  the prefix `/`, so paths arrive unchanged.
+- Add `norse-cms` and `norse-app` to `services`, with the variables listed under
+  [Environment variables](#environment-variables). Copy `EV[...]` values only within the same app.
+- Generate one new `PAYLOAD_API_ROUTE_SECRET` for the app. Use the same value on both
+  components, with `type: SECRET`. Keep that value in versions 2 and 3 of the file.
+- Turn off the old component's autodeploy: `deploy_on_push: false`, or for an image
+  source `deploy_on_push: { enabled: false }`.
+
+Both new components use this shape. Only the repository, tag and health path differ:
+
+```yaml
+- name: norse-cms
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: apps-s-1vcpu-1gb-fixed
+  image:
+    registry: connect211-cr
+    registry_type: DOCR
+    repository: norse-cms # norse-cms-mboa, norse-app, norse-app-mboa
+    tag: production # development on the dev apps
+    deploy_on_push:
+      enabled: true
+  health_check:
+    http_path: /api/health # /adresources/api/health/ on MBOA
+    # norse-cms only, because it runs migrations on start:
+    initial_delay_seconds: 60
+    period_seconds: 10
+    failure_threshold: 9
+```
+
+**Version 2:** swap the components on two rules. The all-domains rule goes to `norse-app`
+and the test domain rule goes to the old component.
+
+**Version 3:** remove the old component, the test domain and its rule. Also remove the
+test domain from the tenant's `trustedDomains`.
+
 ## Rollout: development
 
 ### 1. Push the images
@@ -259,9 +316,10 @@ jobs and migrations against production too. `norse-search` runs the same jobs un
 you remove it; Payload locks queued jobs, as it already does across instances.
 
 From this moment any run of **Production Deploy** is a live deploy, because the
-components auto-deploy the `production` tag. The workflow only runs on `main` and
-`v*` tags. Don't tick **images_only** again: it skips the wait for the CMS, so the
-public images could go live before migrations finish.
+components auto-deploy the `production` tag. Don't run it by hand again: **images_only**
+skips the wait for the CMS, so the public images could go live before migrations
+finish. Releases now come only from `v*` tags. To retry a failed one, use **Re-run
+jobs** on the tag's run, or create a new tag if the fix needs new code.
 
 ### 9. Flip the traffic
 
@@ -282,8 +340,9 @@ check them specifically.
 - The next `v*` tag runs the full pipeline. Watch that first run.
 - After a few days without problems, remove `norse-search` from each app, and later
   the old `norse` repository.
-- Remove the `images_only` option from `production-deploy.yaml`. Nothing needs it
-  after this rollout.
+- Remove the manual trigger from `production-deploy.yaml`: `workflow_dispatch`, the
+  `images_only` input it passes, and the `if` on the `deploy` job. Step 7 was its only
+  use. After that only a `v*` tag can build production images.
 
 Remove `norse-search` soon rather than keeping it indefinitely: it restarts with
 every deployment of the app, runs `payload migrate` from its old image each time,
