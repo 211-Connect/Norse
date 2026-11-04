@@ -5,8 +5,9 @@
 By default the search map shows only the current page of results, so a search
 with 489 matches draws about 25 pins, and an agency on a later page looks
 unlisted (ISS-1747, P026). With this feature the map shows every result, up to
-1,000: the current list page as normal pins, and the rest as numbered clusters
-that split into small circles as you zoom in.
+1,000, as numbered clusters that split into small circles as you zoom in. A
+result looks and behaves the same whether or not it's on the list's current
+page.
 
 ## Where it is configured
 
@@ -27,8 +28,7 @@ does not check it.
 SearchResultsProvider { results, pins, totalResults, isTotalCapped }
         ↓
 MapContainer
-  ├ results → markers   DOM pins with keyboard support
-  └ pins - results, grouped by address → points   canvas clusters and circles
+  └ pins + results, grouped by address → points   canvas clusters and circles
 ```
 
 - **API.** `GET /search/pins` in Norse-API takes the same params as `GET /search`
@@ -59,19 +59,16 @@ MapContainer
   than as DOM elements, with an 8px click tolerance. Nearby locations (within
   40px) merge up to zoom 14. Clicking a cluster zooms until it splits.
 - **Counts are resources, not locations**, summed through `clusterProperties`.
-  They leave out the current page, which the list's pins show.
 - **Several resources at one address** are a numbered bubble like a cluster, but
   clicking it opens a popup that lists them, as zooming can't split them.
 - **Single locations** are small circles.
-- **Pins are compact** while circles are shown (72% of normal size) and grow on
-  hover and keyboard focus. Without the flag they keep their normal size.
-- **A legend** in the map's corner explains pins, the user's location, circles
-  and clusters.
+- **A legend** in the map's corner explains the user's location, circles and
+  clusters.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
-- **Turning the list's page** swaps which results are pins and leaves the map
-  where it is.
-- **Pins that fail or time out** leave the map as it is without the flag.
+- **Turning the list's page** leaves the map where it is.
+- **Pins that fail or time out** leave the map as it is without the flag: the
+  current page as DOM pins.
 
 ## List cap
 
@@ -82,9 +79,9 @@ reached. Analytics still receive the real total.
 
 ## Accessibility
 
-Circles and clusters can't take keyboard focus, as they are drawn on the canvas. Keyboard and
-screen reader users reach the same resources through the paginated list, whose
-current page keeps focusable pins.
+Circles and clusters can't take keyboard focus, as they are drawn on the canvas,
+so the map has no focusable results with the flag on. Keyboard and screen reader
+users reach the same resources through the paginated list.
 
 ## Known limits
 

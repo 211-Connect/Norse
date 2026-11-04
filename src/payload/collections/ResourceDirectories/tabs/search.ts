@@ -328,7 +328,7 @@ export const search: Tab = {
           defaultValue: false,
           admin: {
             description:
-              'Plots up to 1,000 results of a search on the map in numbered clusters that split as you zoom in, with the current page as pins, instead of only the current page. The results list is capped at the same 1,000.',
+              'Plots up to 1,000 results of a search on the map in numbered clusters that split as you zoom in, instead of only the current page. The results list is capped at the same 1,000.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,

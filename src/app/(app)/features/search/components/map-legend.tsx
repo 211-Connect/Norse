@@ -42,9 +42,6 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
       aria-label={t('map_legend_label', { defaultValue: 'Map legend' })}
       className="bg-card/95 text-card-foreground pointer-events-none absolute top-2 left-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
     >
-      <LegendRow icon={<LegendPin className="text-primary" />}>
-        {t('map_legend_list', { defaultValue: 'In the list' })}
-      </LegendRow>
       {showUserLocation && (
         <LegendRow icon={<LegendPin className="text-yellow-500" />}>
           {t('map_legend_user', { defaultValue: 'Your location' })}
@@ -55,7 +52,7 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
           <span className="bg-primary/70 size-2 rounded-full ring-1 ring-white" />
         }
       >
-        {t('map_legend_other', { defaultValue: 'Other locations' })}
+        {t('map_legend_single', { defaultValue: 'One location' })}
       </LegendRow>
       <LegendRow
         icon={

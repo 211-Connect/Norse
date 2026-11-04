@@ -91,15 +91,16 @@ export function MapContainer() {
 
   // Memoize to prevent unecessary map re-renders
   const mapMarkers = useMemo(
-    () => pagePins.map((pin) => toMarker([pin], coords, t)),
-    [coords, pagePins, t],
+    () => (pins ? [] : pagePins.map((pin) => toMarker([pin], coords, t))),
+    [coords, pagePins, pins, t],
   );
 
   const mapPoints = useMemo(
     () =>
       pins &&
-      groupPinsBySite(omitPagePins(pins, pagePins)).map((site) =>
-        toMarker(site, coords, t),
+      // Past the cap, the list's page may not be among the pins.
+      groupPinsBySite([...omitPagePins(pins, pagePins), ...pagePins]).map(
+        (site) => toMarker(site, coords, t),
       ),
     [coords, pagePins, pins, t],
   );
