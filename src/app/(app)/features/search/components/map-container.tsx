@@ -23,7 +23,6 @@ import {
   groupPinsBySite,
   omitPagePins,
 } from '../utils/map-pins';
-import { MapLegend } from './map-legend';
 import { MapPopup, MapSitePopup } from './map-popup';
 
 const toPin = (result: ResultType): SearchPin => ({
@@ -121,7 +120,6 @@ export function MapContainer() {
     >
       <div className="relative h-full w-full rounded-lg">
         <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
-        {mapPoints && <MapLegend showUserLocation={coords?.length === 2} />}
       </div>
     </div>
   );

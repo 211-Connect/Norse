@@ -62,8 +62,6 @@ MapContainer
 - **Several resources at one address** are a numbered bubble like a cluster, but
   clicking it opens a popup that lists them, as zooming can't split them.
 - **Single locations** are small circles.
-- **A legend** in the map's corner explains the user's location, circles and
-  clusters.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
 - **Turning the list's page** leaves the map where it is.
