@@ -4,7 +4,6 @@ import { type StepType, useTour } from '@reactour/tour';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Image } from '@/app/(app)/shared/components/image';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
@@ -165,13 +164,8 @@ export function HeroSection() {
 
   return (
     <div className="relative flex h-screen max-h-80 flex-col items-center justify-center gap-2 p-2 md:max-h-[28rem]">
-      <Image
-        fill
-        src={appConfig.heroUrl ?? ''}
-        priority
-        alt=""
-        style={{ objectFit: 'cover', zIndex: -1, objectPosition: 'center' }}
-      />
+      {/* Prototype: stands in for the tenant's hero photo. */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#a9d3dc] via-[#8fb3bd] to-[#20433f]" />
 
       <div
         className="bg-primary flex w-full max-w-[38rem] flex-col gap-3 rounded-lg p-5"

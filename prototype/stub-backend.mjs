@@ -35,7 +35,7 @@ const appConfig = {
   pages: { accessibilityPage: { enabled: false }, privacyPolicyPage: { enabled: false }, termsOfUsePage: { enabled: false } },
   resource: { layout: { leftColumn: [], rightColumn: [] } },
   search: { facets: [], map: { center: [-122.48, 48.75], zoom: 10 }, radiusOptions: [{ value: 10 }, { value: 25 }], defaultRadius: 0, searchEngine: 'ai_classification', resultsLimit: 25, pinnedResourcesMode: 'ignore', texts: { title: 'How can we help?', queryInputPlaceholder: 'Describe how you need help' } },
-  badges: [], suggestions: [{ value: 'Help finding food', taxonomies: 'BD' }], tenantId: '00000000-0000-4000-8000-000000000001', heroUrl: '/prototype-hero.png',
+  badges: [], suggestions: [{ value: 'Help finding food', taxonomies: 'BD' }], tenantId: '00000000-0000-4000-8000-000000000001',
   topics: { iconSize: 'small', list: [['Care', ['Child Care', 'Support Networks']], ['Emergency', ['Domestic Violence', 'Help Hotlines']], ['Food', ['Food Banks', 'Meal Programs']], ['Housing', ['Shelter', 'Help Pay for Housing']], ['Money', ['Financial Assistance']], ['Health', ['Medical', 'Dental']]].map(([name, s]) => ({ name, subtopics: s.map((n) => ({ name: n, queryType: 'text', query: n })) })) },
 };
 const basic = { enabledLocales: ['en'], defaultLocale: 'en', auth: { requiresLogin: false, allowedEmailDomains: [], publicPages: [] }, seo: { noindex: true } };
