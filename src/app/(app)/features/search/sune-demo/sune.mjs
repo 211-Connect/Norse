@@ -33,6 +33,22 @@ export const ADDABLE = [...byCode.values()]
     hint: entry.kind === 'need' ? entry.spoken : (entry.question ?? ''),
   }));
 
+/** Add's autocomplete. Words match by stem, so `disabled` finds "disability"; label hits come first. */
+export function matchAddable(typed, excluded = []) {
+  const stems = typed
+    .toLowerCase()
+    .split(/\W+/)
+    .filter(Boolean)
+    .map((word) => new RegExp(`\\b${word.slice(0, Math.max(4, word.length - 3))}`));
+  if (stems.length === 0) return [];
+  const hits = (text) => stems.every((stem) => stem.test(text.toLowerCase()));
+  const open = ADDABLE.filter((term) => !excluded.includes(term.code));
+  return [
+    ...open.filter((term) => hits(term.label)),
+    ...open.filter((term) => !hits(term.label) && hits(`${term.label} ${term.hint}`)),
+  ].slice(0, 5);
+}
+
 // [pattern, weights]. A broad word spreads its weight over a family; a specific phrase commits to a leaf.
 const NEED_RULES = [
   [/\b(food|hungry|groceries|nothing to eat|run(ning)? out of food)\b/i, { 'N-FOD-01': 0.55, 'N-FOD-04': 0.2, 'N-FOD-02': 0.2, 'N-FOD-03': 0.1 }],

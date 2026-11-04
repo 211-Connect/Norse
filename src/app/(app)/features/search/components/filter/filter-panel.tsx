@@ -27,6 +27,7 @@ import {
   SearchClassifierPeek,
   SearchRefineQuestion,
   SearchSituationTags,
+  SearchWrongLink,
 } from '../search-follow-up';
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
@@ -100,6 +101,7 @@ export function FilterPanel({
           belowSearch={<SearchSituationTags />}
           className="flex-1"
           inlineSearch
+          locationAside={<SearchWrongLink />}
           legacyAiClarifyState={legacyAiClarifyState}
           onLegacyAiClarifyAction={onLegacyAiClarifyAction}
           searchIntent={searchIntent}

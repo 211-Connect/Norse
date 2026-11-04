@@ -7,6 +7,7 @@ const ONE_DAY = 24 * ONE_HOUR;
  * @type {import('next').NextConfig}
  **/
 const nextConfig = {
+  devIndicators: false,
   async headers() {
     const isProduction = process.env.NODE_ENV === 'production';
 

@@ -1,20 +1,21 @@
 'use client';
 
-import { atom, useAtom, useAtomValue } from 'jotai';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ChevronDown, Phone, Plus, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState, useTransition } from 'react';
+import { useMemo, useRef, useState, useTransition } from 'react';
 
+import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 import {
-  ADDABLE,
   applyAnswer,
   classifySune,
   decideRefine,
   labelOf,
   lookup,
+  matchAddable,
 } from '../sune-demo/sune.mjs';
 
 type Answer = {
@@ -91,43 +92,74 @@ const TAG =
 const ADD_PILL =
   'bg-primary/10 text-primary border-primary/50 flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-dashed px-3 py-1.5 text-sm font-medium';
 const WRONG_PILL =
-  'flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-dashed border-amber-400 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-900';
+  'hidden shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-dashed border-amber-400 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-900 md:flex';
 
 /** Terms a person added that SUNE does not have: the data gaps. */
 const gapsAtom = atom<Record<string, string[]>>({});
+/** Terms a person looked for in Add and did not find. A stand-in for a real report to our system. */
+const flaggedAtom = atom<string[]>([]);
+const tagPanelAtom = atom<'none' | 'wrong' | 'add'>('none');
+
+/** Phone only: "Something is wrong" shares the location row, so the tags keep to one line. */
+export function SearchWrongLink() {
+  const { label } = useSuneSearch();
+  const [panel, setPanel] = useAtom(tagPanelAtom);
+  if (!label.trim()) return null;
+
+  return (
+    <button
+      type="button"
+      data-dismiss-keep
+      className="text-muted-foreground shrink-0 cursor-pointer text-sm underline md:hidden"
+      onClick={() => setPanel(panel === 'wrong' ? 'none' : 'wrong')}
+    >
+      Something is wrong
+    </button>
+  );
+}
 
 /** Prototype: what we think we know, under the search box. */
 export function SearchSituationTags() {
   const { label, codes, update } = useSuneSearch();
   const [gapsByQuery, setGaps] = useAtom(gapsAtom);
-  const [panel, setPanel] = useState<'none' | 'wrong' | 'add'>('none');
-  const [draft, setDraft] = useState('');
-  const [thanks, setThanks] = useState(false);
+  const setFlagged = useSetAtom(flaggedAtom);
+  const [panel, setPanel] = useAtom(tagPanelAtom);
+  const [drafts, setDrafts] = useState({ add: '', wrong: '' });
+  const [thanks, setThanks] = useState('');
+  const panelRef = useRef<HTMLDivElement>(null);
+  // Clicking away hides the box and keeps what was typed.
+  useDismissOutside(panelRef, panel !== 'none', () => setPanel('none'));
 
   if (!label.trim()) return null;
 
   const gaps = gapsByQuery[label] ?? [];
+  const draft = panel === 'none' ? '' : drafts[panel];
   const typed = draft.trim().toLowerCase();
-  const matches = typed
-    ? ADDABLE.filter(
-        (term: { code: string; label: string; hint: string }) =>
-          !codes.includes(term.code) &&
-          `${term.label} ${term.hint}`.toLowerCase().includes(typed),
-      ).slice(0, 5)
-    : [];
+  const matches = matchAddable(typed, codes) as {
+    code: string;
+    label: string;
+  }[];
 
   const closePanel = () => {
     setPanel('none');
-    setDraft('');
+    setDrafts({ add: '', wrong: '' });
   };
-  const addGap = () => {
-    if (draft.trim()) {
-      setGaps((prev) => ({ ...prev, [label]: [...gaps, draft.trim()] }));
-    }
+  const addTerm = (code: string) => {
+    update([...codes, code]);
+    setThanks('');
+    closePanel();
+  };
+  // A term SUNE lacks never becomes a tag: the person flags it and we look at it.
+  const flagMissing = () => {
+    const text = draft.trim();
+    setFlagged((prev) => [...prev, text]);
+    setThanks(`Thank you. We will look at adding “${text}”.`);
     closePanel();
   };
   const sendWrong = () => {
-    setThanks(Boolean(draft.trim()));
+    setThanks(
+      draft.trim() ? 'Thank you. We use this to fix our mistakes.' : '',
+    );
     closePanel();
   };
 
@@ -170,6 +202,7 @@ export function SearchSituationTags() {
         ))}
         <button
           type="button"
+          data-dismiss-keep
           className={ADD_PILL}
           onClick={() => setPanel(panel === 'add' ? 'none' : 'add')}
         >
@@ -178,6 +211,7 @@ export function SearchSituationTags() {
         </button>
         <button
           type="button"
+          data-dismiss-keep
           className={WRONG_PILL}
           onClick={() => setPanel(panel === 'wrong' ? 'none' : 'wrong')}
         >
@@ -185,7 +219,7 @@ export function SearchSituationTags() {
         </button>
       </div>
       {panel !== 'none' && (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1" ref={panelRef}>
           <input
             autoFocus
             aria-label={
@@ -194,58 +228,49 @@ export function SearchSituationTags() {
             value={draft}
             placeholder={
               panel === 'add'
-                ? 'Add a need or something about you'
+                ? 'Start typing, then pick one'
                 : 'What did we get wrong?'
             }
-            onChange={(event) => setDraft(event.target.value)}
+            onChange={(event) =>
+              setDrafts((prev) => ({ ...prev, [panel]: event.target.value }))
+            }
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
                 event.preventDefault();
                 if (panel === 'wrong') sendWrong();
-                else if (matches[0]) {
-                  update([...codes, matches[0].code]);
-                  closePanel();
-                } else addGap();
+                else if (matches[0]) addTerm(matches[0].code);
               }
               if (event.key === 'Escape') closePanel();
             }}
             className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
           />
-          {panel === 'add' && matches.length > 0 && (
+          {panel === 'add' && typed && (
             <ul className="bg-card rounded-lg border">
               {matches.map((term: { code: string; label: string }) => (
                 <li key={term.code}>
                   <button
                     type="button"
                     className="hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
-                    onClick={() => {
-                      update([...codes, term.code]);
-                      closePanel();
-                    }}
+                    onClick={() => addTerm(term.code)}
                   >
                     {term.label}
                   </button>
                 </li>
               ))}
+              <li className={cn(matches.length > 0 && 'border-t')}>
+                <button
+                  type="button"
+                  className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-medium"
+                  onClick={flagMissing}
+                >
+                  Don&apos;t see your option?
+                </button>
+              </li>
             </ul>
-          )}
-          {panel === 'add' && typed && matches.length === 0 && (
-            <button
-              type="button"
-              className="text-primary cursor-pointer self-start px-1 text-sm underline"
-              onClick={addGap}
-            >
-              We don&apos;t have &ldquo;{draft.trim()}&rdquo; yet. Add it, and
-              tell us it is missing.
-            </button>
           )}
         </div>
       )}
-      {thanks && (
-        <p className="text-muted-foreground text-sm">
-          Thank you. We use this to fix our mistakes.
-        </p>
-      )}
+      {thanks && <p className="text-muted-foreground text-sm">{thanks}</p>}
     </div>
   );
 }
@@ -264,8 +289,8 @@ const LEVELS = {
     button: 'border-orange-400 text-orange-900 bg-white',
   },
   helpful: {
-    card: 'bg-card',
-    label: 'text-muted-foreground',
+    card: 'border-primary/30 bg-primary/10',
+    label: 'text-primary',
     title: 'Help us refine your search',
     button: 'border-control-border bg-white',
   },
@@ -309,6 +334,8 @@ export function SearchRefineQuestion() {
   const [otherOpen, setOtherOpen] = useState(false);
   const [other, setOther] = useState('');
   const [gapsByQuery, setGaps] = useAtom(gapsAtom);
+  const otherRef = useRef<HTMLInputElement>(null);
+  useDismissOutside(otherRef, otherOpen, () => setOtherOpen(false));
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = decision.question ?? {
     id: 'done',
@@ -344,7 +371,8 @@ export function SearchRefineQuestion() {
   return (
     <div
       className={cn(
-        'mt-3 flex flex-col gap-3 rounded-lg border p-4',
+        'mt-3 flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
+        collapsed && 'max-md:py-0',
         style.card,
         isPending && 'opacity-70',
       )}
@@ -354,7 +382,7 @@ export function SearchRefineQuestion() {
       <button
         type="button"
         aria-expanded={!collapsed}
-        className="flex cursor-pointer items-center justify-between gap-2 text-left md:cursor-default"
+        className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:min-h-0 md:cursor-default"
         onClick={() => setCollapsed((prev) => !prev)}
       >
         <span className={cn('text-sm font-semibold', style.label)}>
@@ -362,21 +390,29 @@ export function SearchRefineQuestion() {
             ? 'Your search is vague. Help us help you.'
             : style.title}
         </span>
-        <ChevronDown
-          className={cn('size-5 md:hidden', collapsed && 'rotate-180')}
-          aria-hidden="true"
-        />
+        <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium md:hidden">
+          {collapsed ? 'Show' : 'Hide'}
+          <ChevronDown
+            className={cn('size-4', !collapsed && 'rotate-180')}
+            aria-hidden="true"
+          />
+        </span>
       </button>
-      <div className={cn('flex flex-col gap-3', collapsed && 'hidden md:flex')}>
-        <p className="text-lg font-semibold md:text-xl">{question.text}</p>
-        <div className="flex flex-wrap gap-2">
+      <div
+        className={cn(
+          'flex flex-col gap-2 md:gap-3',
+          collapsed && 'hidden md:flex',
+        )}
+      >
+        <p className="text-base font-semibold md:text-xl">{question.text}</p>
+        <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap">
           {question.answers.map((option) => (
             <button
               key={option.label}
               type="button"
               disabled={isPending}
               className={cn(
-                'flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm font-medium',
+                'flex min-h-11 cursor-pointer flex-col items-start justify-center rounded-lg border px-3 py-2 text-left text-sm font-medium',
                 style.button,
               )}
               onClick={() => answer(option)}
@@ -389,6 +425,7 @@ export function SearchRefineQuestion() {
           ))}
           <button
             type="button"
+            data-dismiss-keep
             className={cn(
               'flex min-h-11 cursor-pointer items-center rounded-lg border border-dashed px-3 py-2 text-sm font-medium',
               style.button,
@@ -397,9 +434,19 @@ export function SearchRefineQuestion() {
           >
             Other
           </button>
+          {decision.question && (
+            <button
+              type="button"
+              className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
+              onClick={() => answer()}
+            >
+              Skip
+            </button>
+          )}
         </div>
         {otherOpen && (
           <input
+            ref={otherRef}
             autoFocus
             aria-label="Tell us in your own words"
             placeholder="Tell us in your own words"
@@ -415,15 +462,6 @@ export function SearchRefineQuestion() {
             className="border-control-border focus:border-primary w-full rounded-lg border bg-white px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
           />
         )}
-        {decision.question && (
-          <button
-            type="button"
-            className="text-muted-foreground cursor-pointer self-start text-sm underline"
-            onClick={() => answer()}
-          >
-            Skip
-          </button>
-        )}
       </div>
     </div>
   );
@@ -432,11 +470,12 @@ export function SearchRefineQuestion() {
 /** Demo only: shows Skyler what drove the screen. Not part of the proposed design. */
 export function SearchClassifierPeek() {
   const { label, codes, decision } = useSuneSearch();
+  const flagged = useAtomValue(flaggedAtom);
   if (!label.trim()) return null;
   const read = classifySune(label);
 
   return (
-    <details className="text-muted-foreground mt-3 text-xs print:hidden">
+    <details className="text-muted-foreground mt-3 hidden text-xs md:block print:hidden">
       <summary className="cursor-pointer">
         Demo only: what the classifier saw
       </summary>
@@ -454,6 +493,7 @@ export function SearchClassifierPeek() {
         <p>
           Decision: {decision.kind}, {decision.level}. {decision.question?.why}
         </p>
+        {flagged.length > 0 && <p>Flagged as missing: {flagged.join(', ')}</p>}
       </div>
     </details>
   );

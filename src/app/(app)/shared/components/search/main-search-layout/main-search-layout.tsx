@@ -35,6 +35,8 @@ interface MainSearchLayoutProps {
   className?: string;
   /** Prototype: edit the search in place on the results page, with no full-page dialog. */
   inlineSearch?: boolean;
+  /** Inline search only: sits at the right end of the location row. */
+  locationAside?: ReactNode;
   legacyAiClarifyState?: LegacyAiClarifyState;
   onLegacyAiClarifyAction?: () => void;
   searchTriggerRef?: Ref<HTMLButtonElement>;
@@ -47,6 +49,7 @@ export function MainSearchLayout({
   belowSearch,
   className = '',
   inlineSearch = false,
+  locationAside,
   legacyAiClarifyState,
   onLegacyAiClarifyAction,
   searchTriggerRef: externalSearchTriggerRef,
@@ -108,7 +111,11 @@ export function MainSearchLayout({
   if (inlineSearch) {
     return (
       <MainSearchLayoutContextProvider>
-        <SearchInlineBox belowSearch={belowSearch} className={className} />
+        <SearchInlineBox
+          belowSearch={belowSearch}
+          className={className}
+          locationAside={locationAside}
+        />
       </MainSearchLayoutContextProvider>
     );
   }
