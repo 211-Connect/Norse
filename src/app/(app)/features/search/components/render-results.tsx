@@ -16,11 +16,10 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
     <>
       {results.length === 0 && <NoResultsCard />}
       {results.map((result) => (
-        <CardLayoutRenderer
-          key={result._id}
-          result={result}
-          layout={cardLayout}
-        />
+        // Prototype: a marker with no box, so the help button can find the 3rd card.
+        <div key={result._id} className="contents" data-search-result>
+          <CardLayoutRenderer result={result} layout={cardLayout} />
+        </div>
       ))}
     </>
   );

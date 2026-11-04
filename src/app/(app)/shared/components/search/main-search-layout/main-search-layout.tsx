@@ -22,7 +22,8 @@ import {
   AddMyLocationButton,
   AddMyLocationButtonProps,
 } from '../add-my-location-button';
-import { SearchDialog, SearchDialogProps } from '../search-dialog';
+import type { SearchDialogProps } from '../search-dialog';
+import { SearchGuide } from '../search-guide';
 import { SearchInlineBox } from '../search-inline-box';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
@@ -35,8 +36,6 @@ interface MainSearchLayoutProps {
   className?: string;
   /** Prototype: edit the search in place on the results page, with no full-page dialog. */
   inlineSearch?: boolean;
-  /** Inline search only: sits at the right end of the location row. */
-  locationAside?: ReactNode;
   legacyAiClarifyState?: LegacyAiClarifyState;
   onLegacyAiClarifyAction?: () => void;
   searchTriggerRef?: Ref<HTMLButtonElement>;
@@ -49,7 +48,6 @@ export function MainSearchLayout({
   belowSearch,
   className = '',
   inlineSearch = false,
-  locationAside,
   legacyAiClarifyState,
   onLegacyAiClarifyAction,
   searchTriggerRef: externalSearchTriggerRef,
@@ -111,11 +109,7 @@ export function MainSearchLayout({
   if (inlineSearch) {
     return (
       <MainSearchLayoutContextProvider>
-        <SearchInlineBox
-          belowSearch={belowSearch}
-          className={className}
-          locationAside={locationAside}
-        />
+        <SearchInlineBox belowSearch={belowSearch} className={className} />
       </MainSearchLayoutContextProvider>
     );
   }
@@ -163,18 +157,17 @@ export function MainSearchLayout({
           onClick={() => openSearchDialog('location')}
         />
       </div>
-      <SearchDialog
-        focusByDefault={focusByDefault}
-        onLegacyAiClarifyAction={onLegacyAiClarifyAction}
-        intent={searchIntent}
-        open={dialogOpened}
-        setOpen={setDialogOpened}
-        restoreFocusElement={
-          focusByDefault === 'location'
-            ? addMyLocationButtonRef.current
-            : searchTriggerRef.current
-        }
-      />
+      {dialogOpened && (
+        <SearchGuide
+          focusByDefault={focusByDefault}
+          setOpen={setDialogOpened}
+          restoreFocusElement={
+            focusByDefault === 'location'
+              ? addMyLocationButtonRef.current
+              : searchTriggerRef.current
+          }
+        />
+      )}
     </MainSearchLayoutContextProvider>
   );
 }

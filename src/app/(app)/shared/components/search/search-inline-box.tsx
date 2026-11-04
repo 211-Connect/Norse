@@ -1,7 +1,7 @@
 'use client';
 
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ArrowUp, MapPin } from 'lucide-react';
+import { ArrowUp, MapPin, Search } from 'lucide-react';
 import { ReactNode, useEffect, useRef, useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,12 +27,9 @@ import { useMainSearchLayoutContext } from './main-search-layout/main-search-lay
 export function SearchInlineBox({
   belowSearch,
   className,
-  locationAside,
 }: {
   belowSearch?: ReactNode;
   className?: string;
-  /** Sits at the right end of the location row. */
-  locationAside?: ReactNode;
 }) {
   const { i18n } = useTranslation('common');
   const appConfig = useAppConfig();
@@ -46,6 +43,16 @@ export function SearchInlineBox({
   const [editingLocation, setEditingLocation] = useState(false);
   const navigate = useNavigateAiSearch({ startTransition });
   const locationRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [scrolledPast, setScrolledPast] = useState(false);
+  useEffect(() => {
+    if (!formRef.current) return;
+    const observer = new IntersectionObserver(([entry]) =>
+      setScrolledPast(entry.boundingClientRect.bottom < 0),
+    );
+    observer.observe(formRef.current);
+    return () => observer.disconnect();
+  }, []);
   useDismissOutside(locationRef, editingLocation, () =>
     setEditingLocation(false),
   );
@@ -101,7 +108,24 @@ export function SearchInlineBox({
 
   return (
     <div className="flex w-full flex-col items-start gap-3">
+      {scrolledPast && (
+        <button
+          type="button"
+          className="border-control-border fixed inset-x-0 top-0 z-30 flex cursor-pointer items-center gap-2 border-b bg-white px-4 py-3 text-left text-sm shadow-sm print:hidden"
+          data-testid="search-sticky-bar"
+          onClick={() => {
+            window.scrollTo({ top: 0 });
+            document
+              .getElementById(SEARCH_INPUT_ID)
+              ?.focus({ preventScroll: true });
+          }}
+        >
+          <Search className="text-primary size-4 shrink-0" aria-hidden="true" />
+          <span className="truncate">{searchTerm || 'Search again'}</span>
+        </button>
+      )}
       <form
+        ref={formRef}
         className={cn('relative w-full', className)}
         onSubmit={(event) => {
           event.preventDefault();
@@ -137,21 +161,18 @@ export function SearchInlineBox({
       </form>
       {belowSearch}
       {editingLocation ? (
-        <div className="mt-2 w-full" ref={locationRef}>
+        <div className="w-full" ref={locationRef}>
           <LocationSearchBar inputId={LOCATION_INPUT_ID} className="w-full" />
         </div>
       ) : (
-        <div className="mt-2 flex w-full items-center justify-between gap-3">
-          <button
-            type="button"
-            className="text-primary flex cursor-pointer items-center gap-1.5 text-sm font-medium"
-            onClick={() => setEditingLocation(true)}
-          >
-            <MapPin className="size-4" aria-hidden="true" />
-            {searchLocation || 'Add your location'}
-          </button>
-          {locationAside}
-        </div>
+        <button
+          type="button"
+          className="text-primary flex cursor-pointer items-center gap-1.5 text-sm font-medium"
+          onClick={() => setEditingLocation(true)}
+        >
+          <MapPin className="size-4" aria-hidden="true" />
+          {searchLocation || 'Add your location'}
+        </button>
       )}
     </div>
   );

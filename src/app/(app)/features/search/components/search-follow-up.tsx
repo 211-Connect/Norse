@@ -1,9 +1,10 @@
 'use client';
 
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ChevronDown, Phone, Plus, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useRef, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 
 import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
@@ -91,191 +92,204 @@ const TAG =
   'bg-card border-primary flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm';
 const ADD_PILL =
   'bg-primary/10 text-primary border-primary/50 flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-dashed px-3 py-1.5 text-sm font-medium';
-const WRONG_PILL =
-  'hidden shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-dashed border-amber-400 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-900 md:flex';
 
-/** Terms a person added that SUNE does not have: the data gaps. */
-const gapsAtom = atom<Record<string, string[]>>({});
-/** Terms a person looked for in Add and did not find. A stand-in for a real report to our system. */
-const flaggedAtom = atom<string[]>([]);
-const tagPanelAtom = atom<'none' | 'wrong' | 'add'>('none');
+/** Terms a person could not find. A stand-in for a real report to our system. */
+export const flaggedAtom = atom<string[]>([]);
 
-/** Phone only: "Something is wrong" shares the location row, so the tags keep to one line. */
-export function SearchWrongLink() {
-  const { label } = useSuneSearch();
-  const [panel, setPanel] = useAtom(tagPanelAtom);
-  if (!label.trim()) return null;
-
-  return (
-    <button
-      type="button"
-      data-dismiss-keep
-      className="text-muted-foreground shrink-0 cursor-pointer text-sm underline md:hidden"
-      onClick={() => setPanel(panel === 'wrong' ? 'none' : 'wrong')}
-    >
-      Something is wrong
-    </button>
-  );
-}
-
-/** Prototype: what we think we know, under the search box. */
-export function SearchSituationTags() {
+/**
+ * Prototype: tags stay out of the way until a person says the results look wrong.
+ * The button appears after the 3rd result, or at once when there are fewer than 3.
+ */
+export function SearchResultsHelp() {
   const { label, codes, update } = useSuneSearch();
-  const [gapsByQuery, setGaps] = useAtom(gapsAtom);
   const setFlagged = useSetAtom(flaggedAtom);
-  const [panel, setPanel] = useAtom(tagPanelAtom);
-  const [drafts, setDrafts] = useState({ add: '', wrong: '' });
+  const [shown, setShown] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
+  const [note, setNote] = useState('');
   const [thanks, setThanks] = useState('');
-  const panelRef = useRef<HTMLDivElement>(null);
+  const addBoxRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
   // Clicking away hides the box and keeps what was typed.
-  useDismissOutside(panelRef, panel !== 'none', () => setPanel('none'));
+  useDismissOutside(addBoxRef, adding, () => setAdding(false));
 
-  if (!label.trim()) return null;
+  useEffect(() => {
+    setShown(false);
+    const check = () => {
+      const third = document.querySelectorAll('[data-search-result]')[2]
+        ?.firstElementChild;
+      if (!third || third.getBoundingClientRect().bottom < 120) setShown(true);
+    };
+    const settled = setTimeout(check, 1500);
+    window.addEventListener('scroll', check, { passive: true });
+    return () => {
+      clearTimeout(settled);
+      window.removeEventListener('scroll', check);
+    };
+  }, [label]);
 
-  const gaps = gapsByQuery[label] ?? [];
-  const draft = panel === 'none' ? '' : drafts[panel];
+  if (!label.trim() || !shown) return null;
+
   const typed = draft.trim().toLowerCase();
   const matches = matchAddable(typed, codes) as {
     code: string;
     label: string;
   }[];
 
-  const closePanel = () => {
-    setPanel('none');
-    setDrafts({ add: '', wrong: '' });
+  const closeAdd = () => {
+    setAdding(false);
+    setDraft('');
+    addButtonRef.current?.focus();
   };
   const addTerm = (code: string) => {
     update([...codes, code]);
     setThanks('');
-    closePanel();
+    closeAdd();
   };
   // A term SUNE lacks never becomes a tag: the person flags it and we look at it.
   const flagMissing = () => {
     const text = draft.trim();
     setFlagged((prev) => [...prev, text]);
     setThanks(`Thank you. We will look at adding “${text}”.`);
-    closePanel();
+    closeAdd();
   };
-  const sendWrong = () => {
-    setThanks(
-      draft.trim() ? 'Thank you. We use this to fix our mistakes.' : '',
-    );
-    closePanel();
+  const sendNote = () => {
+    if (!note.trim()) return;
+    setNote('');
+    setThanks('Thank you. We use this to fix our mistakes.');
   };
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-2">
-      <div
-        className="flex flex-wrap items-center gap-2"
-        data-testid="search-situation-tags"
+    <DialogPrimitive.Root modal={false}>
+      <DialogPrimitive.Trigger
+        className="fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg print:hidden"
+        data-testid="search-results-help"
       >
-        {codes.map((code: string) => (
-          <span key={code} className={TAG}>
-            {labelOf(code)}
-            <button
-              type="button"
-              aria-label={`Remove ${labelOf(code)}`}
-              className="cursor-pointer"
-              onClick={() => update(codes.filter((item) => item !== code))}
-            >
-              <X className="size-3.5" aria-hidden="true" />
-            </button>
-          </span>
-        ))}
-        {gaps.map((gap) => (
-          <span key={gap} className={cn(TAG, 'border-dashed')}>
-            {gap}
-            <button
-              type="button"
-              aria-label={`Remove ${gap}`}
-              className="cursor-pointer"
-              onClick={() =>
-                setGaps((prev) => ({
-                  ...prev,
-                  [label]: gaps.filter((item) => item !== gap),
-                }))
-              }
-            >
-              <X className="size-3.5" aria-hidden="true" />
-            </button>
-          </span>
-        ))}
-        <button
-          type="button"
-          data-dismiss-keep
-          className={ADD_PILL}
-          onClick={() => setPanel(panel === 'add' ? 'none' : 'add')}
+        Not getting the results you expected?
+      </DialogPrimitive.Trigger>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Content
+          className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl md:left-auto md:w-96"
+          data-testid="search-results-help-panel"
+          onEscapeKeyDown={(event) => {
+            if (adding) event.preventDefault();
+          }}
         >
-          <Plus className="size-3.5" aria-hidden="true" />
-          Add
-        </button>
-        <button
-          type="button"
-          data-dismiss-keep
-          className={WRONG_PILL}
-          onClick={() => setPanel(panel === 'wrong' ? 'none' : 'wrong')}
-        >
-          Something is wrong
-        </button>
-      </div>
-      {panel !== 'none' && (
-        <div className="flex flex-col gap-1" ref={panelRef}>
-          <input
-            autoFocus
-            aria-label={
-              panel === 'add' ? 'Add a need' : 'What did we get wrong?'
-            }
-            value={draft}
-            placeholder={
-              panel === 'add'
-                ? 'Start typing, then pick one'
-                : 'What did we get wrong?'
-            }
-            onChange={(event) =>
-              setDrafts((prev) => ({ ...prev, [panel]: event.target.value }))
-            }
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                if (panel === 'wrong') sendWrong();
-                else if (matches[0]) addTerm(matches[0].code);
-              }
-              if (event.key === 'Escape') closePanel();
-            }}
-            className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
-          />
-          {panel === 'add' && typed && (
-            <ul className="bg-card rounded-lg border">
-              {matches.map((term: { code: string; label: string }) => (
-                <li key={term.code}>
-                  <button
-                    type="button"
-                    className="hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
-                    onClick={() => addTerm(term.code)}
-                  >
-                    {term.label}
-                  </button>
-                </li>
-              ))}
-              <li className={cn(matches.length > 0 && 'border-t')}>
+          <div className="flex items-start justify-between gap-3">
+            <DialogPrimitive.Title className="text-lg font-semibold">
+              What we understood
+            </DialogPrimitive.Title>
+            <DialogPrimitive.Close
+              aria-label="Close"
+              className="flex size-8 cursor-pointer items-center justify-center"
+            >
+              <X className="size-5" aria-hidden="true" />
+            </DialogPrimitive.Close>
+          </div>
+          <DialogPrimitive.Description className="text-muted-foreground text-sm">
+            Remove what is not true. Add what we missed.
+          </DialogPrimitive.Description>
+          <div
+            className="flex flex-wrap items-center gap-2"
+            data-testid="search-situation-tags"
+          >
+            {codes.map((code: string) => (
+              <span key={code} className={TAG}>
+                {labelOf(code)}
                 <button
                   type="button"
-                  className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-medium"
-                  onClick={flagMissing}
+                  aria-label={`Remove ${labelOf(code)}`}
+                  className="cursor-pointer"
+                  onClick={() => update(codes.filter((item) => item !== code))}
                 >
-                  Don&apos;t see your option?
+                  <X className="size-3.5" aria-hidden="true" />
                 </button>
-              </li>
-            </ul>
+              </span>
+            ))}
+            <button
+              ref={addButtonRef}
+              type="button"
+              data-dismiss-keep
+              className={ADD_PILL}
+              onClick={() => setAdding((prev) => !prev)}
+            >
+              <Plus className="size-3.5" aria-hidden="true" />
+              Add
+            </button>
+          </div>
+          {adding && (
+            <div className="flex flex-col gap-1" ref={addBoxRef}>
+              <input
+                autoFocus
+                aria-label="Add a need"
+                value={draft}
+                placeholder="Start typing, then pick one"
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    if (matches[0]) addTerm(matches[0].code);
+                  }
+                  if (event.key === 'Escape') closeAdd();
+                }}
+                className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
+              />
+              {typed && (
+                <ul className="bg-card rounded-lg border">
+                  {matches.map((term) => (
+                    <li key={term.code}>
+                      <button
+                        type="button"
+                        className="hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
+                        onClick={() => addTerm(term.code)}
+                      >
+                        {term.label}
+                      </button>
+                    </li>
+                  ))}
+                  <li className={cn(matches.length > 0 && 'border-t')}>
+                    <button
+                      type="button"
+                      className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-medium"
+                      onClick={flagMissing}
+                    >
+                      Don&apos;t see your option?
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </div>
           )}
-        </div>
-      )}
-      {thanks && <p className="text-muted-foreground text-sm">{thanks}</p>}
-    </div>
+          <div className="flex gap-2">
+            <input
+              aria-label="Tell us what went wrong"
+              placeholder="Tell us what went wrong"
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  sendNote();
+                }
+              }}
+              className="border-control-border focus:border-primary min-w-0 flex-1 rounded-lg border bg-white px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
+            />
+            <button
+              type="button"
+              className="bg-primary text-primary-foreground cursor-pointer rounded-lg px-3 text-sm font-semibold"
+              onClick={sendNote}
+            >
+              Send
+            </button>
+          </div>
+          {thanks && <p className="text-muted-foreground text-sm">{thanks}</p>}
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
 
-const LEVELS = {
+export const LEVELS = {
   critical: {
     card: 'border-destructive bg-red-50',
     label: 'text-destructive',
@@ -333,8 +347,9 @@ export function SearchRefineQuestion() {
   const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
   const [otherOpen, setOtherOpen] = useState(false);
   const [other, setOther] = useState('');
-  const [gapsByQuery, setGaps] = useAtom(gapsAtom);
+  const setFlagged = useSetAtom(flaggedAtom);
   const otherRef = useRef<HTMLInputElement>(null);
+  const otherButtonRef = useRef<HTMLButtonElement>(null);
   useDismissOutside(otherRef, otherOpen, () => setOtherOpen(false));
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = decision.question ?? {
@@ -353,12 +368,7 @@ export function SearchRefineQuestion() {
     setOtherOpen(false);
     if (!text) return;
     const found = classifySune(text).codes as string[];
-    if (found.length === 0) {
-      setGaps((prev) => ({
-        ...prev,
-        [label]: [...(gapsByQuery[label] ?? []), text],
-      }));
-    }
+    if (found.length === 0) setFlagged((prev) => [...prev, text]);
     update([...new Set([...codes, ...found])], [...answered, question.id]);
   };
   const answer = (option?: Answer) => {
@@ -424,6 +434,7 @@ export function SearchRefineQuestion() {
             </button>
           ))}
           <button
+            ref={otherButtonRef}
             type="button"
             data-dismiss-keep
             className={cn(
@@ -457,7 +468,10 @@ export function SearchRefineQuestion() {
                 event.preventDefault();
                 submitOther();
               }
-              if (event.key === 'Escape') setOtherOpen(false);
+              if (event.key === 'Escape') {
+                setOtherOpen(false);
+                otherButtonRef.current?.focus();
+              }
             }}
             className="border-control-border focus:border-primary w-full rounded-lg border bg-white px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
           />

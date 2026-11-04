@@ -37,10 +37,13 @@ export const useNavigateAiSearch = ({
     ({
       scenario,
       taxonomies,
+      refined,
       locationPayload,
     }: {
       scenario?: AiClassificationScenario;
       taxonomies?: string[];
+      /** Prototype: questions the guide already asked, so the results page does not repeat them. */
+      refined?: string[];
       locationPayload: SearchLocationPayload;
     }) => {
       const query = (search.query || search.searchTerm || '').trim();
@@ -48,7 +51,7 @@ export const useNavigateAiSearch = ({
         return false;
       }
 
-      const url = withPrintableDirectoryContext(
+      const built = withPrintableDirectoryContext(
         buildSearchUrl({
           aiScenario: scenario,
           query,
@@ -62,6 +65,9 @@ export const useNavigateAiSearch = ({
         }),
         searchParams,
       );
+      const url = refined?.length
+        ? `${built}${built.includes('?') ? '&' : '?'}refined=${refined.join(',')}`
+        : built;
 
       persistSearchDistancePreference(distance);
       startTransition(() => {

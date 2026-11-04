@@ -26,8 +26,7 @@ import { useSearchResults } from '../../context/search-results-context';
 import {
   SearchClassifierPeek,
   SearchRefineQuestion,
-  SearchSituationTags,
-  SearchWrongLink,
+  SearchResultsHelp,
 } from '../search-follow-up';
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
@@ -98,10 +97,8 @@ export function FilterPanel({
     >
       <div className="flex items-center print:hidden">
         <MainSearchLayout
-          belowSearch={<SearchSituationTags />}
           className="flex-1"
           inlineSearch
-          locationAside={<SearchWrongLink />}
           legacyAiClarifyState={legacyAiClarifyState}
           onLegacyAiClarifyAction={onLegacyAiClarifyAction}
           searchIntent={searchIntent}
@@ -121,6 +118,7 @@ export function FilterPanel({
       </div>
       <SearchRefineQuestion />
       <SearchClassifierPeek />
+      <SearchResultsHelp />
       {hasSearchCoordinates && (
         <SearchLocationActions
           className="mt-3 print:hidden"
