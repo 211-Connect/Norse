@@ -24,7 +24,7 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
   return (
     <ul
       aria-label={t('map_legend_label', { defaultValue: 'Map legend' })}
-      className="bg-card/95 text-card-foreground pointer-events-none absolute bottom-2 left-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
+      className="bg-card/95 text-card-foreground pointer-events-none absolute top-2 left-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
     >
       <li className="flex items-center gap-1.5">
         <LegendPin className="text-primary" />

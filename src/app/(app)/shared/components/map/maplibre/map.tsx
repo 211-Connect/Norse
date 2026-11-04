@@ -224,19 +224,11 @@ export function Map({
       const markerLabel = m.label?.trim() || 'resource';
       const popupId = `map-popup-${m.id}`;
 
-      if (m.popup) {
-        marker.setPopup(
-          createResourcePopup(m, () => {
-            markerElement.focus();
-          }),
-        );
-      }
-
       const hasValidCoordinates = isValidCoordinate(m.coordinates);
 
       if (hasValidCoordinates) {
         marker.setLngLat(m.coordinates!);
-        if (marker.getPopup()) {
+        if (m.popup) {
           markerElement.style.cursor = 'pointer';
           markerElement.setAttribute('tabindex', '0');
           markerElement.setAttribute('role', 'button');
@@ -258,6 +250,16 @@ export function Map({
         markerElement.classList.add('custom-marker');
         markerElement.classList.toggle('compact-marker', !!points);
         markerElement.addEventListener('click', () => {
+          // Built on first use. MapLibre's click handler on the map runs after
+          // this one, as the event bubbles, and opens it.
+          if (m.popup && !marker.getPopup()) {
+            marker.setPopup(
+              createResourcePopup(m, () => {
+                markerElement.focus();
+              }),
+            );
+          }
+
           setTimeout(() => {
             const listElement = document.getElementById(m.id);
             listElement?.scrollIntoView();
@@ -275,7 +277,7 @@ export function Map({
           restoreFocusOnCloseRef.current = true;
         });
         markerElement.addEventListener('keydown', (event) => {
-          if (!marker.getPopup()) return;
+          if (!m.popup) return;
 
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
