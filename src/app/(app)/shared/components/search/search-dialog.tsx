@@ -36,7 +36,11 @@ import {
 import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchDialogHeaderActions } from './search-dialog-header-actions';
-import { SearchBar } from './search-bar';
+import {
+  SearchNeedInput,
+  SearchSafetyLinks,
+  SearchWhoFor,
+} from './search-need-form';
 import {
   useNavigateAiSearch,
   useUserLocationNavigator,
@@ -349,7 +353,7 @@ export function SearchDialog({
             {open && (
               <form
                 onSubmit={onSubmit}
-                className="flex w-full max-w-100 flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30"
+                className="flex w-full max-w-xl flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30"
               >
                 <div className="flex flex-row justify-between gap-4">
                   <SearchDialogHeaderActions
@@ -369,15 +373,15 @@ export function SearchDialog({
                   onFocusCapture={handleSearchFormFocusCapture}
                   onBlurCapture={handleSearchFormBlurCapture}
                 >
-                  <SearchBar
+                  <SearchNeedInput
                     inputId={SEARCH_INPUT_ID}
-                    hideOptions={clarifyVisible}
-                    onQueryInputChange={handleSearchInputChange}
+                    onChange={handleSearchInputChange}
                   />
                   <LocationSearchBar
                     inputId={LOCATION_INPUT_ID}
                     className="mt-4"
                   />
+                  <SearchWhoFor />
 
                   {showAiClassificationOptions && (
                     <AiClassificationOptions
@@ -389,6 +393,7 @@ export function SearchDialog({
                       disabled={disableSearchControls}
                     />
                   )}
+                  <SearchSafetyLinks />
                 </div>
               </form>
             )}

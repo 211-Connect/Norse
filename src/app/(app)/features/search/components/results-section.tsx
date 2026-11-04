@@ -28,6 +28,7 @@ import { PrintableDirectoryContextBanner } from './printable-directory-context-b
 import { RenderResults } from './render-results';
 import { ResultTotal } from './result-total';
 import { ResultsPagination } from './results-pagination';
+import { SearchFollowUp } from './search-follow-up';
 import { SortSelect } from './sort-select';
 import { SaveQueryToDirectoryButton } from './save-query-to-directory-button';
 
@@ -220,6 +221,7 @@ export function ResultsSection({
           </div>
         </div>
         {showSort && <SortSelect />}
+        {resultsCount > 0 && <SearchFollowUp total={resultsCount} />}
       </div>
 
       <div className="flex flex-col gap-6">

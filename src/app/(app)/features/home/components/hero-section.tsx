@@ -164,7 +164,7 @@ export function HeroSection() {
   };
 
   return (
-    <div className="relative flex h-screen max-h-64 flex-col items-center justify-center gap-2 p-2 md:max-h-96">
+    <div className="relative flex h-screen max-h-80 flex-col items-center justify-center gap-2 p-2 md:max-h-[28rem]">
       <Image
         fill
         src={appConfig.heroUrl ?? ''}
@@ -174,10 +174,10 @@ export function HeroSection() {
       />
 
       <div
-        className="bg-primary flex w-full max-w-[31rem] flex-col gap-2 rounded-lg p-3"
+        className="bg-primary flex w-full max-w-[38rem] flex-col gap-3 rounded-lg p-5"
         role="search"
       >
-        <h2 className="text-2xl font-medium text-white">
+        <h2 className="text-3xl font-semibold text-white md:text-4xl">
           {appConfig.search.texts?.title ||
             t('search.hero_title', { ns: 'common' })}
         </h2>

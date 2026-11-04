@@ -1,7 +1,7 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
-import { SearchIcon } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import {
   MutableRefObject,
   Ref,
@@ -111,7 +111,7 @@ export function MainSearchLayout({
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
             className={cn(
-              'search-box flex h-auto min-h-10 w-full justify-start rounded-lg border-[#00000080] bg-white py-2 pr-3 pl-[2.7rem] text-left text-xs font-normal shadow-sm hover:bg-white',
+              'search-box flex h-auto min-h-16 w-full items-start justify-start rounded-lg border-[#00000080] bg-white py-3 pr-14 pl-4 text-left text-base font-normal shadow-sm hover:bg-white',
             )}
           >
             <span
@@ -125,10 +125,12 @@ export function MainSearchLayout({
               {searchTriggerText}
             </span>
           </Button>
-          <SearchIcon
-            className="text-primary pointer-events-none absolute top-2 left-4 size-6"
+          <span
+            className="bg-primary text-primary-foreground pointer-events-none absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-full"
             aria-hidden="true"
-          />
+          >
+            <ArrowUp className="size-5" />
+          </span>
         </div>
         <AddMyLocationButton
           buttonRef={addMyLocationButtonRef}
