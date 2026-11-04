@@ -23,6 +23,7 @@ import {
   AddMyLocationButtonProps,
 } from '../add-my-location-button';
 import { SearchDialog, SearchDialogProps } from '../search-dialog';
+import { SearchInlineBox } from '../search-inline-box';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
@@ -32,6 +33,8 @@ interface MainSearchLayoutProps {
   /** Rendered between the search box and the location button. */
   belowSearch?: ReactNode;
   className?: string;
+  /** Prototype: edit the search in place on the results page, with no full-page dialog. */
+  inlineSearch?: boolean;
   legacyAiClarifyState?: LegacyAiClarifyState;
   onLegacyAiClarifyAction?: () => void;
   searchTriggerRef?: Ref<HTMLButtonElement>;
@@ -43,6 +46,7 @@ export function MainSearchLayout({
   addMyLocationButtonVariant,
   belowSearch,
   className = '',
+  inlineSearch = false,
   legacyAiClarifyState,
   onLegacyAiClarifyAction,
   searchTriggerRef: externalSearchTriggerRef,
@@ -100,6 +104,14 @@ export function MainSearchLayout({
       t('search.query_placeholder', { ns: 'common' })
     );
   }, [appConfig.search.texts?.queryInputPlaceholder, searchTerm, t]);
+
+  if (inlineSearch) {
+    return (
+      <MainSearchLayoutContextProvider>
+        <SearchInlineBox belowSearch={belowSearch} className={className} />
+      </MainSearchLayoutContextProvider>
+    );
+  }
 
   return (
     <MainSearchLayoutContextProvider>
