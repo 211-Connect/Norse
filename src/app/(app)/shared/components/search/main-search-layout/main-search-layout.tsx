@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 import { ArrowUp } from 'lucide-react';
 import {
   MutableRefObject,
+  ReactNode,
   Ref,
   useCallback,
   useMemo,
@@ -28,6 +29,8 @@ import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 interface MainSearchLayoutProps {
   addMyLocationButtonVariant?: AddMyLocationButtonProps['variant'];
+  /** Rendered between the search box and the location button. */
+  belowSearch?: ReactNode;
   className?: string;
   legacyAiClarifyState?: LegacyAiClarifyState;
   onLegacyAiClarifyAction?: () => void;
@@ -38,6 +41,7 @@ interface MainSearchLayoutProps {
 
 export function MainSearchLayout({
   addMyLocationButtonVariant,
+  belowSearch,
   className = '',
   legacyAiClarifyState,
   onLegacyAiClarifyAction,
@@ -132,6 +136,7 @@ export function MainSearchLayout({
             <ArrowUp className="size-5" />
           </span>
         </div>
+        {belowSearch}
         <AddMyLocationButton
           buttonRef={addMyLocationButtonRef}
           variant={addMyLocationButtonVariant}

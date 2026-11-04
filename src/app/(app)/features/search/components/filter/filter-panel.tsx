@@ -23,7 +23,7 @@ import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { useSearchResults } from '../../context/search-results-context';
-import { SearchSituation } from '../search-follow-up';
+import { SearchRefineQuestion, SearchSituationTags } from '../search-follow-up';
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
 import { useFacetUiConfig } from './use-facet-ui-config';
@@ -93,6 +93,7 @@ export function FilterPanel({
     >
       <div className="flex items-center print:hidden">
         <MainSearchLayout
+          belowSearch={<SearchSituationTags />}
           className="flex-1"
           legacyAiClarifyState={legacyAiClarifyState}
           onLegacyAiClarifyAction={onLegacyAiClarifyAction}
@@ -111,7 +112,7 @@ export function FilterPanel({
           {t('search.filter', 'Filter')}
         </Button>
       </div>
-      <SearchSituation />
+      <SearchRefineQuestion />
       {hasSearchCoordinates && (
         <SearchLocationActions
           className="mt-3 print:hidden"

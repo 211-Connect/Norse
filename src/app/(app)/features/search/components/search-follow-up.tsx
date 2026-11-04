@@ -1,6 +1,6 @@
 'use client';
 
-import { useAtomValue } from 'jotai';
+import { atom, useAtom, useAtomValue } from 'jotai';
 import { Plus, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -73,13 +73,16 @@ const TAG = 'bg-card border-primary rounded-lg border px-2 py-1 text-xs';
 const PILL_BUTTON =
   'bg-card flex cursor-pointer items-center gap-1 rounded-lg border border-dashed px-2 py-1 text-xs';
 
-/** Prototype: what we think we know, then the most useful next question. */
-export function SearchSituation() {
+const removedAtom = atom<string[]>([]);
+const addedAtom = atom<string[]>([]);
+const stepAtom = atom(0);
+
+/** Prototype: what we think we know, under the search box. */
+export function SearchSituationTags() {
   const label = useAtomValue(queryLabelAtom) ?? '';
   const situation = useMemo(() => readSituation(label), [label]);
-  const [removed, setRemoved] = useState<string[]>([]);
-  const [added, setAdded] = useState<string[]>([]);
-  const [step, setStep] = useState(0);
+  const [removed, setRemoved] = useAtom(removedAtom);
+  const [added, setAdded] = useAtom(addedAtom);
   const [panel, setPanel] = useState<'none' | 'wrong' | 'add'>('none');
   const [draft, setDraft] = useState('');
 
@@ -88,12 +91,6 @@ export function SearchSituation() {
   const tags = [...situation.tags, ...added].filter(
     (tag) => !removed.includes(tag),
   );
-  const question = situation.questions[step];
-
-  const answer = (tag?: string) => {
-    if (tag) setAdded((prev) => [...prev, tag]);
-    setStep((prev) => prev + 1);
-  };
   const closePanel = () => {
     setPanel('none');
     setDraft('');
@@ -123,78 +120,93 @@ export function SearchSituation() {
   );
 
   return (
-    <div className="mt-3 flex flex-col gap-4" data-testid="search-situation">
-      {question && (
-        <div className="bg-card flex flex-col gap-3 rounded-lg border p-4">
-          <p className="text-muted-foreground text-xs font-semibold">
-            Help us refine your search
-          </p>
-          <p className="text-xl font-semibold">{question.text}</p>
-          <div className="flex flex-wrap gap-2">
-            {question.answers.map((option) => (
-              <Button
-                key={option.label}
-                type="button"
-                variant="outline"
-                onClick={() => answer(option.tag)}
-              >
-                {option.label}
-              </Button>
-            ))}
-          </div>
+    <div
+      className="flex w-full flex-wrap items-center gap-1.5"
+      data-testid="search-situation-tags"
+    >
+      {tags.map((tag) => (
+        <span key={tag} className={`${TAG} flex items-center gap-1`}>
+          {tag}
           <button
             type="button"
-            className="text-muted-foreground cursor-pointer self-start text-xs underline"
-            onClick={() => answer()}
+            aria-label={`Remove ${tag}`}
+            className="cursor-pointer"
+            onClick={() => setRemoved((prev) => [...prev, tag])}
           >
-            Skip
+            <X className="size-3" aria-hidden="true" />
           </button>
-        </div>
+        </span>
+      ))}
+      {panel === 'add' ? (
+        pillInput('Type here')
+      ) : (
+        <button
+          type="button"
+          className={PILL_BUTTON}
+          onClick={() => setPanel('add')}
+        >
+          <Plus className="size-3" aria-hidden="true" />
+          Add
+        </button>
       )}
+      {panel === 'wrong' ? (
+        pillInput('What did we get wrong?')
+      ) : (
+        <button
+          type="button"
+          className={PILL_BUTTON}
+          onClick={() => setPanel('wrong')}
+        >
+          Something is wrong
+        </button>
+      )}
+    </div>
+  );
+}
 
-      <div className="flex flex-col gap-2">
-        <p className="text-muted-foreground text-xs font-semibold">
-          Looks like this is your situation
-        </p>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {tags.map((tag) => (
-            <span key={tag} className={`${TAG} flex items-center gap-1`}>
-              {tag}
-              <button
-                type="button"
-                aria-label={`Remove ${tag}`}
-                className="cursor-pointer"
-                onClick={() => setRemoved((prev) => [...prev, tag])}
-              >
-                <X className="size-3" aria-hidden="true" />
-              </button>
-            </span>
-          ))}
-          {panel === 'add' ? (
-            pillInput('Type here')
-          ) : (
-            <button
-              type="button"
-              className={PILL_BUTTON}
-              onClick={() => setPanel('add')}
-            >
-              <Plus className="size-3" aria-hidden="true" />
-              Add
-            </button>
-          )}
-          {panel === 'wrong' ? (
-            pillInput('What did we get wrong?')
-          ) : (
-            <button
-              type="button"
-              className={PILL_BUTTON}
-              onClick={() => setPanel('wrong')}
-            >
-              Something is wrong
-            </button>
-          )}
-        </div>
+/** Prototype: the most useful next question. */
+export function SearchRefineQuestion() {
+  const label = useAtomValue(queryLabelAtom) ?? '';
+  const situation = useMemo(() => readSituation(label), [label]);
+  const [, setAdded] = useAtom(addedAtom);
+  const [step, setStep] = useAtom(stepAtom);
+  const question = situation.questions[step];
+
+  if (!label.trim() || !question) return null;
+
+  const answer = (tag?: string) => {
+    if (tag) setAdded((prev) => [...prev, tag]);
+    setStep((prev) => prev + 1);
+  };
+
+  return (
+    <div
+      className="bg-card mt-3 flex flex-col gap-3 rounded-lg border p-4"
+      data-testid="search-refine-question"
+    >
+      <p className="text-muted-foreground text-xs font-semibold">
+        Help us refine your search
+      </p>
+      <p className="text-xl font-semibold">{question.text}</p>
+      <div className="flex flex-wrap gap-2">
+        {question.answers.map((option) => (
+          <Button
+            key={option.label}
+            type="button"
+            variant="outline"
+            onClick={() => answer(option.tag)}
+          >
+            {option.label}
+          </Button>
+        ))}
       </div>
+      <button
+        type="button"
+        className="text-muted-foreground cursor-pointer self-start text-xs underline"
+        onClick={() => answer()}
+      >
+        Skip
+      </button>
     </div>
   );
 }
