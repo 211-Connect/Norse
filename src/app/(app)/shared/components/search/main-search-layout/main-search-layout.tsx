@@ -126,7 +126,7 @@ export function MainSearchLayout({
             </span>
           </Button>
           <span
-            className="bg-primary text-primary-foreground pointer-events-none absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-full"
+            className="bg-primary text-primary-foreground pointer-events-none absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-lg"
             aria-hidden="true"
           >
             <ArrowUp className="size-5" />

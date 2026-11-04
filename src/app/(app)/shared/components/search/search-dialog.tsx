@@ -37,9 +37,8 @@ import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchDialogHeaderActions } from './search-dialog-header-actions';
 import {
+  SearchCrisisButton,
   SearchNeedInput,
-  SearchSafetyLinks,
-  SearchWhoFor,
 } from './search-need-form';
 import {
   useNavigateAiSearch,
@@ -353,9 +352,9 @@ export function SearchDialog({
             {open && (
               <form
                 onSubmit={onSubmit}
-                className="flex w-full max-w-xl flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30"
+                className="flex w-full flex-col gap-4 pb-6"
               >
-                <div className="flex flex-row justify-between gap-4">
+                <div className="sticky top-0 z-10 -mx-6 -mt-6 flex flex-row justify-between gap-4 border-b bg-white px-6 py-3">
                   <SearchDialogHeaderActions
                     clarifyVisible={clarifyVisible}
                     disableSearchControls={disableSearchControls}
@@ -369,7 +368,7 @@ export function SearchDialog({
                 </div>
                 <div
                   id="search-form-inputs"
-                  className="overflow-y-auto"
+                  className="mx-auto w-full max-w-xl pt-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-16"
                   onFocusCapture={handleSearchFormFocusCapture}
                   onBlurCapture={handleSearchFormBlurCapture}
                 >
@@ -381,7 +380,6 @@ export function SearchDialog({
                     inputId={LOCATION_INPUT_ID}
                     className="mt-4"
                   />
-                  <SearchWhoFor />
 
                   {showAiClassificationOptions && (
                     <AiClassificationOptions
@@ -393,7 +391,7 @@ export function SearchDialog({
                       disabled={disableSearchControls}
                     />
                   )}
-                  <SearchSafetyLinks />
+                  <SearchCrisisButton />
                 </div>
               </form>
             )}

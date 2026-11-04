@@ -23,6 +23,7 @@ import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { useSearchResults } from '../../context/search-results-context';
+import { SearchSituation } from '../search-follow-up';
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
 import { useFacetUiConfig } from './use-facet-ui-config';
@@ -110,6 +111,7 @@ export function FilterPanel({
           {t('search.filter', 'Filter')}
         </Button>
       </div>
+      <SearchSituation />
       {hasSearchCoordinates && (
         <SearchLocationActions
           className="mt-3 print:hidden"
