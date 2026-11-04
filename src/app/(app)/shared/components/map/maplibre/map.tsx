@@ -323,27 +323,27 @@ export function Map({
       }
     }
 
+    const fitCoordinates = points
+      ? [...points, ...markers].flatMap((m) =>
+          isValidCoordinate(m.coordinates) ? [m.coordinates] : [],
+        )
+      : [];
+
     // Points hold every result, so turning the list's page only swaps which of
-    // them are pins: the same set, which must not move the map under the reader.
+    // them are pins: the same places, which must not move the map under the
+    // reader. Compared by place, as a shared address's id changes with the page.
     const fitKey = points
-      ? [...points, ...markers]
-          .map((m) => m.id)
+      ? [...new Set(fitCoordinates.map((coordinates) => coordinates.join()))]
           .sort()
           .concat(usersLocation ?? [])
-          .join()
+          .join(';')
       : null;
     const isSameSet = fitKey !== null && fitKey === lastFitKeyRef.current;
     lastFitKeyRef.current = fitKey;
     const fittedCount = _markers.current.length + (points?.length ?? 0);
 
     // A few distant results shouldn't zoom every search out to the continent.
-    const fitTarget = points
-      ? getCoreBounds(
-          [...points, ...markers].flatMap((m) =>
-            isValidCoordinate(m.coordinates) ? [m.coordinates] : [],
-          ),
-        )
-      : bounds;
+    const fitTarget = points ? getCoreBounds(fitCoordinates) : bounds;
 
     if (points && userMarker && !disableUserLocation) {
       fitTarget.extend(usersLocation as LngLatLike);

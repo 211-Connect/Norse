@@ -48,3 +48,8 @@
     transition: none;
   }
 }
+
+/* Above hovered pins and the legend, which comes later in the page. */
+.maplibregl-popup {
+  z-index: 2;
+}
