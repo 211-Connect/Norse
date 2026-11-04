@@ -67,6 +67,7 @@ const toMarker = (
           count: site.length,
           defaultValue: '{{count}} resources at this location',
         }),
+        count: site.length,
         popup: <MapSitePopup site={site} distance={distance} />,
       };
 };

@@ -5,7 +5,8 @@
 By default the search map shows only the current page of results, so a search
 with 489 matches draws about 25 pins, and an agency on a later page looks
 unlisted (ISS-1747, P026). With this feature the map shows every result, up to
-1,000: the current list page as normal pins, and the rest as small circles.
+1,000: the current list page as normal pins, and the rest as numbered clusters
+that split into small circles as you zoom in.
 
 ## Where it is configured
 
@@ -27,7 +28,7 @@ SearchResultsProvider { results, pins, totalResults, isTotalCapped }
         ↓
 MapContainer
   ├ results → markers   DOM pins with keyboard support
-  └ pins - results, grouped by address → points   canvas circles
+  └ pins - results, grouped by address → points   canvas clusters and circles
 ```
 
 - **API.** `GET /search/pins` in Norse-API takes the same params as `GET /search`
@@ -53,12 +54,19 @@ MapContainer
 
 ## Map behavior
 
-- **Circles** are a MapLibre `circle` layer (`maplibre/points-layer.ts`), drawn
-  by the GPU rather than as DOM elements, with an 8px click tolerance.
-- **Several resources at one address** share a circle, whose popup lists them.
+- **Clusters** come from MapLibre's clustered GeoJSON source
+  (`maplibre/points-layer.ts`), computed in a worker and drawn by the GPU rather
+  than as DOM elements, with an 8px click tolerance. Nearby locations (within
+  40px) merge up to zoom 14. Clicking a cluster zooms until it splits.
+- **Counts are resources, not locations**, summed through `clusterProperties`.
+  They leave out the current page, which the list's pins show.
+- **Several resources at one address** are a numbered bubble like a cluster, but
+  clicking it opens a popup that lists them, as zooming can't split them.
+- **Single locations** are small circles.
 - **Pins are compact** while circles are shown (72% of normal size) and grow on
   hover and keyboard focus. Without the flag they keep their normal size.
-- **A legend** in the map's corner explains pins, the user's location and circles.
+- **A legend** in the map's corner explains pins, the user's location, circles
+  and clusters.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
 - **Turning the list's page** swaps which results are pins and leaves the map
@@ -74,7 +82,7 @@ reached. Analytics still receive the real total.
 
 ## Accessibility
 
-Circles can't take keyboard focus, as they are drawn on the canvas. Keyboard and
+Circles and clusters can't take keyboard focus, as they are drawn on the canvas. Keyboard and
 screen reader users reach the same resources through the paginated list, whose
 current page keeps focusable pins.
 

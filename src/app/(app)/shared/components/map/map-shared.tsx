@@ -9,6 +9,8 @@ export type MarkerDef = {
   coordinates?: [number, number];
   popup?: React.ReactElement;
   label?: string;
+  /** Resources this marker stands for, when several share its location. */
+  count?: number;
 };
 
 // Shared helpers

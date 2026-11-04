@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { getCoreExtent } from '../src/app/(app)/shared/components/map/map-shared';
+import { toFeatureCollection } from '../src/app/(app)/shared/components/map/maplibre/points-layer';
 import {
   MAP_PINS_LIMIT,
   SearchPin,
@@ -81,6 +82,22 @@ test('a small result set keeps every location in the frame', () => {
     [
       [-120, 25],
       [-70, 47],
+    ],
+  );
+});
+
+test('clustered points get a truthy id and count their resources', () => {
+  const { features } = toFeatureCollection([
+    { id: 'no-location' },
+    { id: 'one', coordinates: [-120, 46] },
+    { id: 'site', coordinates: [-121, 47], count: 3 },
+  ]);
+
+  assert.deepEqual(
+    features.map(({ id, properties }) => [id, properties]),
+    [
+      [1, { id: 'one', resources: 1 }],
+      [2, { id: 'site', resources: 3 }],
     ],
   );
 });
