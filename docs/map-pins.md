@@ -56,6 +56,9 @@ MapContainer
 - **Circles** are a MapLibre `circle` layer (`maplibre/points-layer.ts`), drawn
   by the GPU rather than as DOM elements, with an 8px click tolerance.
 - **Several resources at one address** share a circle, whose popup lists them.
+- **Pins are compact** while circles are shown (72% of normal size) and grow on
+  hover and keyboard focus. Without the flag they keep their normal size.
+- **A legend** in the map's corner explains pins, the user's location and circles.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
 - **Turning the list's page** swaps which results are pins and leaves the map

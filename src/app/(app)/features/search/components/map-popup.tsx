@@ -1,9 +1,11 @@
-import { ChevronRight, MapPin } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Badges } from '@/app/(app)/shared/components/badges';
 import { Link } from '@/app/(app)/shared/components/link';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
+import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { type PinSite } from '../utils/map-pins';
 
@@ -21,16 +23,13 @@ function MapPopupLocation({
 }: Pick<MapPopupProps, 'address' | 'distance'>) {
   const { t } = useTranslation('common');
 
-  if (!address) return null;
+  if (!address && !distance) return null;
 
   return (
-    <div className="flex flex-col gap-[10px]">
-      <div className="flex gap-[6px]">
-        <MapPin className="text-primary mt-[2px] size-4" />
-        <p className="flex-1 text-sm">{address}</p>
-      </div>
-      {distance && (
-        <p className="text-sm">{`${distance.toFixed(1)} ${t('search.miles_short', { ns: 'common' })}`}</p>
+    <div className="text-muted-foreground flex flex-col gap-0.5 text-xs leading-relaxed">
+      {address && <p>{address}</p>}
+      {!!distance && (
+        <p>{`${distance.toFixed(1)} ${t('search.miles_short', { ns: 'common' })}`}</p>
       )}
     </div>
   );
@@ -50,16 +49,15 @@ export function MapPopup({
     <Card className="shadow-md">
       <CardContent className="flex flex-col gap-3">
         {badges.length > 0 && <Badges items={badges} />}
-        <p className="text-sm font-medium">{name}</p>
+        <p className="pr-6 text-sm leading-snug font-semibold">{name}</p>
         <MapPopupLocation address={address} distance={distance} />
         <Link
           href={`/search/${id}`}
           aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
-          className="text-primary py-[5px] text-center text-sm font-medium hover:underline"
+          className={cn(buttonVariants({ variant: 'outline' }), 'w-full')}
           prefetch={false}
         >
           {t('learn_more', { ns: 'page-search' })}
-          <ChevronRight className="ml-1 inline-block size-4" />
         </Link>
       </CardContent>
     </Card>
@@ -79,7 +77,7 @@ export function MapSitePopup({
   return (
     <Card className="shadow-md">
       <CardContent className="flex flex-col gap-3">
-        <p className="pr-6 text-sm font-medium">
+        <p className="pr-6 text-sm leading-snug font-semibold">
           {t('map_site_title', {
             count: site.length,
             defaultValue: '{{count}} resources at this location',

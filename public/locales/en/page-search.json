@@ -10,6 +10,10 @@
   "results_for": "results found for query",
   "of": "of",
   "map_site_title_other": "{{count}} resources at this location",
+  "map_legend_label": "Map legend",
+  "map_legend_list": "In the list",
+  "map_legend_user": "Your location",
+  "map_legend_other": "Other locations",
   "no_results": {
     "title": "No results found matching your query",
     "subtitle": "We've provided some similar results below",

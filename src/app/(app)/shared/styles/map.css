@@ -19,3 +19,32 @@
   outline-offset: 2px;
   border-radius: 9999px;
 }
+
+/* The marker's own transform is MapLibre's, so hover scales the SVG inside it. */
+.compact-marker svg {
+  transform-origin: 50% 100%;
+  transition: transform 120ms ease-out;
+}
+
+.compact-marker:hover,
+.compact-marker:focus-visible {
+  z-index: 1;
+}
+
+.compact-marker:hover svg,
+.compact-marker:focus-visible svg {
+  transform: scale(1.35);
+}
+
+/* Keeps the smaller pin an easy target for a finger. */
+.compact-marker::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compact-marker svg {
+    transition: none;
+  }
+}

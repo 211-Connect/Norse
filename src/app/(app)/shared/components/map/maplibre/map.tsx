@@ -33,6 +33,9 @@ import {
 
 const log = createLogger('maplibre');
 
+/** Pins next to result circles: smaller so the two read as one layer of results. */
+const COMPACT_MARKER_SCALE = 0.72;
+
 const getCoreBounds = (coordinates: [number, number][]) => {
   const [[west, south], [east, north]] = getCoreExtent(coordinates);
 
@@ -66,7 +69,7 @@ export function Map({
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapLibreMap = useRef<any>(null);
   const _markers = useRef<maplibregl.Marker[]>([]);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const popupDialogRef = useRef<HTMLDivElement>(null);
   const restoreFocusOnCloseRef = useRef(true);
   const pointPopupRef = useRef<maplibregl.Popup | null>(null);
   const pointsRef = useRef(points);
@@ -78,6 +81,7 @@ export function Map({
     popupId: string;
     label: string;
     closePopup: () => void;
+    reposition: () => void;
   } | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -166,13 +170,16 @@ export function Map({
     if (!activePopup) return;
 
     requestAnimationFrame(() => {
-      closeButtonRef.current?.focus();
+      // MapLibre placed the popup while it was empty. Now it has a real size.
+      activePopup.reposition();
+      // Focus the dialog, not the close button: script focus on a button paints
+      // its focus ring even after a mouse click. Tab still reaches the button.
+      popupDialogRef.current?.focus();
     });
   }, [activePopup]);
 
   const createResourcePopup = (m: MarkerDef, restoreFocus: () => void) => {
     const popupDiv = document.createElement('div');
-    popupDiv.style.minHeight = '200px';
     popupDiv.style.width = '240px';
     const popup = new Popup({
       focusAfterOpen: false,
@@ -189,6 +196,7 @@ export function Map({
           restoreFocusOnCloseRef.current = true;
           popup.remove();
         },
+        reposition: () => popup.setLngLat(popup.getLngLat()),
       });
     });
 
@@ -208,8 +216,10 @@ export function Map({
 
     _markers.current?.forEach((m) => m.remove());
 
+    const markerOptions = points ? { scale: COMPACT_MARKER_SCALE } : undefined;
+
     _markers.current = markers.map((m) => {
-      const marker = new Marker();
+      const marker = new Marker(markerOptions);
       const markerElement = marker.getElement();
       const markerLabel = m.label?.trim() || 'resource';
       const popupId = `map-popup-${m.id}`;
@@ -246,6 +256,7 @@ export function Map({
           markerElement.setAttribute('aria-disabled', 'true');
         }
         markerElement.classList.add('custom-marker');
+        markerElement.classList.toggle('compact-marker', !!points);
         markerElement.addEventListener('click', () => {
           setTimeout(() => {
             const listElement = document.getElementById(m.id);
@@ -293,7 +304,7 @@ export function Map({
       !isNaN(usersLocation[0]) &&
       !isNaN(usersLocation[1])
     ) {
-      const marker = new Marker();
+      const marker = new Marker(markerOptions);
 
       marker.setLngLat(usersLocation as LngLatLike);
 
@@ -503,6 +514,9 @@ export function Map({
             createPortal(
               <div
                 id={activePopup.popupId}
+                ref={popupDialogRef}
+                tabIndex={-1}
+                className="outline-none"
                 role="dialog"
                 aria-modal="false"
                 aria-label={`${activePopup.label} details`}
@@ -514,17 +528,14 @@ export function Map({
                 }}
               >
                 <div className="relative">
-                  <div className="absolute top-2 right-2 z-10">
-                    <button
-                      ref={closeButtonRef}
-                      type="button"
-                      aria-label={`Close details for ${activePopup.label}`}
-                      className="text-foreground ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring rounded-md p-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                      onClick={activePopup.closePopup}
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    aria-label={`Close details for ${activePopup.label}`}
+                    className="text-muted-foreground ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring absolute top-1.5 right-1.5 z-10 flex size-7 items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                    onClick={activePopup.closePopup}
+                  >
+                    <X className="size-4" aria-hidden="true" />
+                  </button>
                   {activePopup.popup}
                 </div>
               </div>,
