@@ -67,6 +67,11 @@ MapContainer
 - **Turning the list's page** leaves the map where it is.
 - **Pins that fail or time out** leave the map as it is without the flag: the
   current page as DOM pins.
+- **A map that crashes** never replaces the page. It retries with the current
+  page's pins only, then shows a message beside the list, and tries again on the
+  next results. Each crash is still reported through the error webhook.
+- **No located results** leave the map on the user's location, or on the tenant's
+  default view without one.
 
 ## List cap
 

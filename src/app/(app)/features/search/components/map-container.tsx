@@ -5,6 +5,8 @@ import { useAtomValue } from 'jotai';
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
+import { MapErrorFallback } from '@/app/(app)/shared/components/map/map-error-fallback';
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
@@ -89,9 +91,14 @@ export function MapContainer() {
   const pagePins = useMemo(() => results.map(toPin), [results]);
 
   // Memoize to prevent unecessary map re-renders
+  const pageMarkers = useMemo(
+    () => pagePins.map((pin) => toMarker([pin], coords, t)),
+    [coords, pagePins, t],
+  );
+
   const mapMarkers = useMemo(
-    () => (pins ? [] : pagePins.map((pin) => toMarker([pin], coords, t))),
-    [coords, pagePins, pins, t],
+    () => (pins ? [] : pageMarkers),
+    [pageMarkers, pins],
   );
 
   const mapPoints = useMemo(
@@ -119,7 +126,23 @@ export function MapContainer() {
       }
     >
       <div className="relative h-full w-full rounded-lg">
-        <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
+        {/* A map that fails never costs the reader the list. It first drops
+            what the flag added, then falls back to a message. */}
+        <ErrorBoundary
+          appConfig={appConfig}
+          resetKey={results}
+          fallback={
+            <ErrorBoundary
+              appConfig={appConfig}
+              resetKey={results}
+              fallback={<MapErrorFallback error="Failed to load map" />}
+            >
+              <MapRenderer markers={pageMarkers} />
+            </ErrorBoundary>
+          }
+        >
+          <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
+        </ErrorBoundary>
       </div>
     </div>
   );

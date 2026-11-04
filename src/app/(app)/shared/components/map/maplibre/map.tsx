@@ -37,9 +37,9 @@ const log = createLogger('maplibre');
 const COMPACT_MARKER_SCALE = 0.72;
 
 const getCoreBounds = (coordinates: [number, number][]) => {
-  const [[west, south], [east, north]] = getCoreExtent(coordinates);
+  const extent = getCoreExtent(coordinates);
 
-  return new LngLatBounds([west, south], [east, north]);
+  return extent ? new LngLatBounds(extent[0], extent[1]) : new LngLatBounds();
 };
 
 type MapProps = {

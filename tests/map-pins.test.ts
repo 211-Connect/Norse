@@ -101,3 +101,7 @@ test('clustered points get a truthy id and count their resources', () => {
     ],
   );
 });
+
+test('no locations have no extent to fit', () => {
+  assert.equal(getCoreExtent([]), null);
+});
