@@ -70,6 +70,8 @@ function readSituation(text: string): { tags: string[]; questions: Question[] } 
 }
 
 const TAG = 'bg-card border-primary rounded-lg border px-2 py-1 text-xs';
+const PILL_BUTTON =
+  'bg-card flex cursor-pointer items-center gap-1 rounded-lg border border-dashed px-2 py-1 text-xs';
 
 /** Prototype: what we think we know, then the most useful next question. */
 export function SearchSituation() {
@@ -96,80 +98,32 @@ export function SearchSituation() {
     setPanel('none');
     setDraft('');
   };
+  const commit = () => {
+    if (panel === 'add' && draft.trim()) {
+      setAdded((prev) => [...prev, draft.trim()]);
+    }
+    closePanel();
+  };
+
+  const pillInput = (placeholder: string) => (
+    <input
+      autoFocus
+      aria-label={placeholder}
+      value={draft}
+      placeholder={placeholder}
+      size={Math.max(draft.length, placeholder.length) + 1}
+      onChange={(event) => setDraft(event.target.value)}
+      onBlur={commit}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') commit();
+        if (event.key === 'Escape') closePanel();
+      }}
+      className="bg-card border-primary max-w-full rounded-lg border px-2 py-1 text-xs outline-none focus:outline-none"
+    />
+  );
 
   return (
     <div className="mt-3 flex flex-col gap-4" data-testid="search-situation">
-      <div className="flex flex-col gap-2">
-        <p className="text-muted-foreground text-xs font-semibold">
-          Looks like this is your situation
-        </p>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {tags.map((tag) => (
-            <span key={tag} className={`${TAG} flex items-center gap-1`}>
-              {tag}
-              <button
-                type="button"
-                aria-label={`Remove ${tag}`}
-                className="cursor-pointer"
-                onClick={() => setRemoved((prev) => [...prev, tag])}
-              >
-                <X className="size-3" aria-hidden="true" />
-              </button>
-            </span>
-          ))}
-          <button
-            type="button"
-            className="bg-card flex cursor-pointer items-center gap-1 rounded-lg border border-dashed px-2 py-1 text-xs"
-            onClick={() => setPanel('add')}
-          >
-            <Plus className="size-3" aria-hidden="true" />
-            Add
-          </button>
-        </div>
-        <button
-          type="button"
-          className="text-primary cursor-pointer self-start text-xs underline"
-          onClick={() => setPanel('wrong')}
-        >
-          Something is wrong
-        </button>
-        {panel !== 'none' && (
-          <div className="bg-card flex flex-col gap-2 rounded-lg border p-2">
-            <input
-              autoFocus
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              placeholder={
-                panel === 'add' ? 'For example: Veteran' : 'What did we get wrong?'
-              }
-              className="border-control-border rounded-lg border p-2 text-sm"
-            />
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                type="button"
-                onClick={() => {
-                  if (panel === 'add' && draft.trim()) {
-                    setAdded((prev) => [...prev, draft.trim()]);
-                  }
-                  closePanel();
-                }}
-              >
-                {panel === 'add' ? 'Add' : 'Send'}
-              </Button>
-              <Button
-                size="sm"
-                type="button"
-                variant="ghost"
-                onClick={closePanel}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-
       {question && (
         <div className="bg-card flex flex-col gap-3 rounded-lg border p-4">
           <p className="text-muted-foreground text-xs font-semibold">
@@ -197,6 +151,50 @@ export function SearchSituation() {
           </button>
         </div>
       )}
+
+      <div className="flex flex-col gap-2">
+        <p className="text-muted-foreground text-xs font-semibold">
+          Looks like this is your situation
+        </p>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {tags.map((tag) => (
+            <span key={tag} className={`${TAG} flex items-center gap-1`}>
+              {tag}
+              <button
+                type="button"
+                aria-label={`Remove ${tag}`}
+                className="cursor-pointer"
+                onClick={() => setRemoved((prev) => [...prev, tag])}
+              >
+                <X className="size-3" aria-hidden="true" />
+              </button>
+            </span>
+          ))}
+          {panel === 'add' ? (
+            pillInput('Type here')
+          ) : (
+            <button
+              type="button"
+              className={PILL_BUTTON}
+              onClick={() => setPanel('add')}
+            >
+              <Plus className="size-3" aria-hidden="true" />
+              Add
+            </button>
+          )}
+          {panel === 'wrong' ? (
+            pillInput('What did we get wrong?')
+          ) : (
+            <button
+              type="button"
+              className={PILL_BUTTON}
+              onClick={() => setPanel('wrong')}
+            >
+              Something is wrong
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

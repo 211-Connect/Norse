@@ -3,6 +3,7 @@
 import { useAtomValue } from 'jotai';
 import { ArrowUp, Phone } from 'lucide-react';
 
+import { useAppConfig } from '../../hooks/use-app-config';
 import { searchTermAtom } from '../../store/search';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
@@ -16,6 +17,25 @@ export function SearchNeedInput({
 }) {
   const searchTerm = useAtomValue(searchTermAtom);
   const { setSearch } = useMainSearchLayoutContext();
+  const appConfig = useAppConfig();
+
+  // Short phrases get suggestions. A sentence gets out of the way.
+  const typed = searchTerm.trim().toLowerCase();
+  const matches =
+    typed && typed.split(/\s+/).length <= 3
+      ? [
+          ...appConfig.suggestions.map((option) => option.value),
+          ...appConfig.topics.list.flatMap((topic) =>
+            topic.subtopics.map((subtopic) => subtopic.name),
+          ),
+        ]
+          .filter(
+            (value) =>
+              value.toLowerCase().includes(typed) &&
+              value.toLowerCase() !== typed,
+          )
+          .slice(0, 5)
+      : [];
 
   const onChange = (value: string) => {
     notifyChange?.();
@@ -61,6 +81,21 @@ export function SearchNeedInput({
           <ArrowUp className="size-5" aria-hidden="true" />
         </button>
       </div>
+      {matches.length > 0 && (
+        <ul className="flex flex-col" data-testid="search-need-suggestions">
+          {matches.map((value) => (
+            <li key={value}>
+              <button
+                type="button"
+                className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
+                onClick={() => onChange(value)}
+              >
+                {value}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

@@ -354,7 +354,7 @@ export function SearchDialog({
                 onSubmit={onSubmit}
                 className="flex w-full flex-col gap-4 pb-6"
               >
-                <div className="sticky top-0 z-10 -mx-6 -mt-6 flex flex-row justify-between gap-4 border-b bg-white px-6 py-3">
+                <div className="sticky top-0 z-10 -mx-6 -mt-6 flex flex-row justify-between gap-4 border-b bg-white px-6 py-3 [&_button]:h-12 [&_button]:px-7 [&_button]:text-base">
                   <SearchDialogHeaderActions
                     clarifyVisible={clarifyVisible}
                     disableSearchControls={disableSearchControls}
