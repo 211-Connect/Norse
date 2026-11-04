@@ -36,10 +36,7 @@ import {
 import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchDialogHeaderActions } from './search-dialog-header-actions';
-import {
-  SearchCrisisButton,
-  SearchNeedInput,
-} from './search-need-form';
+import { SearchNeedInput } from './search-need-form';
 import {
   useNavigateAiSearch,
   useUserLocationNavigator,
@@ -391,7 +388,6 @@ export function SearchDialog({
                       disabled={disableSearchControls}
                     />
                   )}
-                  <SearchCrisisButton />
                 </div>
               </form>
             )}

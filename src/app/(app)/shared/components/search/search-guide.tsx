@@ -2,12 +2,13 @@
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ArrowLeft, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState, useTransition } from 'react';
 
 import {
   flaggedAtom,
   LEVELS,
+  OtherBox,
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
 import {
@@ -15,6 +16,8 @@ import {
   classifySune,
   decideRefine,
   lookup,
+  matchServices,
+  planQuestions,
 } from '@/app/(app)/features/search/sune-demo/sune.mjs';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 
@@ -33,18 +36,19 @@ import {
   userCoordinatesAtom,
 } from '../../store/search';
 import { LocationSearchBar } from './location-search-bar';
-import { SearchCrisisButton, SearchNeedInput } from './search-need-form';
+import { SearchNeedInput } from './search-need-form';
 
-/** More questions than this tires people out; the rest wait on the results page. */
-const MAX_QUESTIONS = 3;
+/** More steps than this tires people out; the rest wait on the results page. */
+const MAX_STEPS = 3;
 
-type Answer = { label: string; add: string[]; keeps: number };
-type View = {
-  step: 'need' | 'location' | 'question';
-  codes: string[];
-  answered: string[];
-  locationDone: boolean;
+type Answer = { label: string; add: string[]; remove?: string[] };
+type Question = {
+  id: string;
+  level: keyof typeof LEVELS;
+  text: string;
+  answers: Answer[];
 };
+type Step = 'location' | Question;
 
 const known = (text: string) =>
   (classifySune(text).codes as string[]).filter(
@@ -52,8 +56,9 @@ const known = (text: string) =>
   );
 
 /**
- * Prototype: one question at a time, under a header that stays in view.
- * Non-modal, so Quick exit and the nav still work. "See results" is on every step.
+ * Prototype: one question at a time in a floating card. The header stays clear of it.
+ * Non-modal, so Quick exit and the nav still work. The step list is fixed once the
+ * need is known, so an answer never changes how many questions are left.
  */
 export function SearchGuide({
   focusByDefault = 'search',
@@ -77,26 +82,25 @@ export function SearchGuide({
     startTransition,
   });
 
-  const [view, setView] = useState<View>({
-    step: focusByDefault === 'location' ? 'location' : 'need',
-    codes: [],
-    answered: [],
-    locationDone: false,
-  });
-  const [history, setHistory] = useState<View[]>([]);
+  // Null steps means the need box shows. A lone 'location' opens from the location link.
+  const [steps, setSteps] = useState<Step[] | null>(
+    focusByDefault === 'location' ? ['location'] : null,
+  );
+  const [at, setAt] = useState(0);
+  const [codes, setCodes] = useState<string[]>([]);
+  const [answered, setAnswered] = useState<string[]>([]);
+  const [locationDone, setLocationDone] = useState(false);
   const [needError, setNeedError] = useState(false);
   const [locationError, setLocationError] = useState(false);
-  const [otherOpen, setOtherOpen] = useState(false);
-  const [other, setOther] = useState('');
   const [top, setTop] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const query = searchTerm.trim();
-  const decision = decideRefine(query, view.codes, view.answered);
-  const question = decision.question;
-  const style = LEVELS[decision.level as keyof typeof LEVELS];
+  const step = steps?.[at];
+  const question = step && step !== 'location' ? step : undefined;
+  const style = question ? LEVELS[question.level] : undefined;
 
-  // The panel starts under the header, so the logo and nav never leave the screen.
+  // The dim layer starts under the header, so the logo and nav stay clear.
   useEffect(() => {
     const header = document.querySelector('header');
     setTop(Math.max(0, header?.getBoundingClientRect().bottom ?? 0));
@@ -105,27 +109,25 @@ export function SearchGuide({
   }, []);
 
   // A new step is an action the person took, so moving focus to it is expected.
-  const stepKey = `${view.step}:${view.answered.length}`;
+  const stepKey = steps ? `step:${at}` : 'need';
   const firstStep = useRef(stepKey);
   useEffect(() => {
     if (stepKey === firstStep.current) return;
     firstStep.current = '';
-    if (view.step === 'need') {
-      document.getElementById(SEARCH_INPUT_ID)?.focus();
-    } else {
-      headingRef.current?.focus();
-    }
-  }, [stepKey, view.step]);
+    if (stepKey === 'need') document.getElementById(SEARCH_INPUT_ID)?.focus();
+    else headingRef.current?.focus();
+  }, [stepKey]);
 
-  const finish = async (codes: string[], answered: string[]) => {
+  const finish = async (finalCodes: string[], finalAnswered: string[]) => {
     if (requireLocation && !searchLocation) {
-      setView((prev) => ({ ...prev, step: 'location' }));
+      setSteps(['location']);
+      setAt(0);
       setLocationError(true);
       return;
     }
     navigate({
-      taxonomies: codes,
-      refined: answered,
+      taxonomies: finalCodes,
+      refined: finalAnswered,
       locationPayload: await buildSearchLocationPayload(
         searchCoordinates,
         userCoordinates,
@@ -134,72 +136,84 @@ export function SearchGuide({
     });
   };
 
-  const advance = (
-    codes: string[],
-    answered: string[],
-    locationDone = view.locationDone,
-  ) => {
-    const next = { codes, answered, locationDone };
-    setOtherOpen(false);
-    setHistory((prev) => [...prev, view]);
-    if (!query) return setView({ ...next, step: 'need' });
-    const decided = decideRefine(query, codes, answered);
+  const plan = (needCodes: string[], hasLocation: boolean) => {
     // Crisis never waits behind a question: the results page opens with the crisis card.
-    if (decided.kind === 'crisis') return void finish(codes, answered);
-    if (!locationDone && !searchLocation) {
-      return setView({ ...next, step: 'location' });
+    if (decideRefine(query, needCodes, []).kind === 'crisis') {
+      return void finish(needCodes, []);
     }
-    if (decided.kind !== 'question' || answered.length >= MAX_QUESTIONS) {
-      return void finish(codes, answered);
-    }
-    setView({ ...next, step: 'question' });
+    const location: Step[] = hasLocation ? [] : ['location'];
+    const list = [
+      ...location,
+      ...(planQuestions(
+        query,
+        needCodes,
+        MAX_STEPS - location.length,
+      ) as Question[]),
+    ];
+    if (list.length === 0) return void finish(needCodes, []);
+    setCodes(needCodes);
+    setSteps(list);
+    setAt(0);
+  };
+
+  const next = (nextCodes: string[], nextAnswered: string[]) => {
+    setCodes(nextCodes);
+    setAnswered(nextAnswered);
+    if (steps && at + 1 < steps.length) return setAt(at + 1);
+    void finish(nextCodes, nextAnswered);
   };
 
   const submitNeed = (event: FormEvent) => {
     event.preventDefault();
     if (!query) return setNeedError(true);
     setNeedError(false);
-    advance(known(query), view.answered);
+    plan(known(query), locationDone || Boolean(searchLocation));
   };
 
-  const continueLocation = () => {
-    if (requireLocation && !searchLocation) return setLocationError(true);
+  const leaveLocation = () => {
+    setLocationDone(true);
     setLocationError(false);
-    advance(view.codes, view.answered, true);
+    // Opened from the location link, or sent back here: the need comes next.
+    if (steps?.length === 1 && codes.length === 0) {
+      if (!query) return setSteps(null);
+      return plan(known(query), true);
+    }
+    next(codes, answered);
   };
 
-  const seeResults = () => {
-    if (!query) return setNeedError(true);
-    void finish(
-      view.step === 'need' ? known(query) : view.codes,
-      view.answered,
-    );
+  // Picking a place moves on by itself, so the card needs only Skip and See results.
+  const lastLocation = useRef(searchLocation);
+  useEffect(() => {
+    if (lastLocation.current === searchLocation) return;
+    lastLocation.current = searchLocation;
+    if (step === 'location' && searchLocation) leaveLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchLocation]);
+
+  const seeResults = () => void finish(steps ? codes : known(query), answered);
+
+  const skip = () => {
+    if (step === 'location') return leaveLocation();
+    if (question) next(codes, [...answered, question.id]);
   };
 
-  const answer = (codes: string[]) =>
-    advance(codes, [...view.answered, question?.id ?? '']);
+  const pick = (nextCodes: string[]) => {
+    if (question) next(nextCodes, [...answered, question.id]);
+  };
 
-  const submitOther = () => {
-    const text = other.trim();
-    setOther('');
-    if (!text) return setOtherOpen(false);
+  const submitOther = (text: string) => {
     const found = known(text);
     if (found.length === 0) setFlagged((prev) => [...prev, text]);
-    answer([...new Set([...view.codes, ...found])]);
+    pick([...new Set([...codes, ...found])]);
   };
 
-  const back = () => {
-    const previous = history[history.length - 1];
-    if (!previous) return;
-    setHistory((prev) => prev.slice(0, -1));
-    setView(previous);
-  };
+  const canSkip = step === 'location' ? !requireLocation : Boolean(question);
 
   return (
     <DialogPrimitive.Root
       modal={false}
       open
-      onOpenChange={(next) => !next && setOpen(false)}
+      onOpenChange={(open) => !open && setOpen(false)}
     >
       <DialogPrimitive.Portal>
         <div
@@ -210,9 +224,9 @@ export function SearchGuide({
         <DialogPrimitive.Content
           id={SEARCH_DIALOG_ID}
           data-testid={SEARCH_DIALOG_ID}
-          data-step={view.step}
-          className="fixed inset-x-0 z-50 mx-auto flex w-full flex-col gap-4 overflow-y-auto bg-white p-5 shadow-lg max-md:bottom-0 md:max-w-2xl md:rounded-b-xl"
-          style={{ top, maxHeight: `calc(100dvh - ${top}px)` }}
+          data-step={question ? 'question' : (step ?? 'need')}
+          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl"
+          style={{ top: top + 24, maxHeight: `calc(100dvh - ${top + 48}px)` }}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             document
@@ -231,43 +245,15 @@ export function SearchGuide({
           <DialogPrimitive.Description className="sr-only">
             One question at a time. You can see your results at any step.
           </DialogPrimitive.Description>
+          <DialogPrimitive.Close
+            aria-label="Close"
+            className="absolute top-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-lg"
+          >
+            <X className="size-5" aria-hidden="true" />
+          </DialogPrimitive.Close>
 
-          <div className="flex items-center justify-between gap-3">
-            {history.length > 0 ? (
-              <button
-                type="button"
-                className="text-muted-foreground flex min-h-11 cursor-pointer items-center gap-1 text-sm font-medium"
-                onClick={back}
-              >
-                <ArrowLeft className="size-4" aria-hidden="true" />
-                Back
-              </button>
-            ) : (
-              <span />
-            )}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                disabled={isPending}
-                className="border-primary text-primary flex min-h-11 cursor-pointer items-center rounded-lg border px-4 text-sm font-semibold disabled:opacity-60"
-                data-testid="guide-see-results"
-                onClick={seeResults}
-              >
-                {view.step === 'question'
-                  ? `See ${decision.total} ${decision.total === 1 ? 'result' : 'results'}`
-                  : 'See results'}
-              </button>
-              <DialogPrimitive.Close
-                aria-label="Close"
-                className="flex size-11 cursor-pointer items-center justify-center rounded-lg"
-              >
-                <X className="size-5" aria-hidden="true" />
-              </DialogPrimitive.Close>
-            </div>
-          </div>
-
-          {view.step === 'need' && (
-            <form onSubmit={submitNeed} className="flex flex-col gap-2">
+          {!steps && (
+            <form onSubmit={submitNeed} className="flex flex-col gap-2 pt-8">
               <SearchNeedInput
                 inputId={SEARCH_INPUT_ID}
                 onChange={() => setNeedError(false)}
@@ -277,11 +263,34 @@ export function SearchGuide({
                   Tell us what you need help with first.
                 </p>
               )}
-              <SearchCrisisButton />
             </form>
           )}
 
-          {view.step === 'location' && (
+          {steps && (
+            <div className="flex flex-col gap-1 pr-10">
+              {query && (
+                <p className="text-muted-foreground text-sm">
+                  Your search:{' '}
+                  <span className="text-foreground font-medium">
+                    &ldquo;{query}&rdquo;
+                  </span>
+                </p>
+              )}
+              {steps.length > 1 || question ? (
+                <p
+                  className={cn(
+                    'text-sm font-semibold',
+                    style?.label ?? 'text-primary',
+                  )}
+                  data-testid="guide-progress"
+                >
+                  Question {at + 1} of {steps.length}
+                </p>
+              ) : null}
+            </div>
+          )}
+
+          {step === 'location' && (
             <div className="flex flex-col gap-3">
               <h2
                 ref={headingRef}
@@ -308,32 +317,11 @@ export function SearchGuide({
                   you are.
                 </p>
               )}
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  className="bg-primary text-primary-foreground min-h-11 cursor-pointer rounded-lg px-5 font-semibold"
-                  onClick={continueLocation}
-                >
-                  Continue
-                </button>
-                {!requireLocation && (
-                  <button
-                    type="button"
-                    className="text-muted-foreground min-h-11 cursor-pointer text-sm underline"
-                    onClick={() => advance(view.codes, view.answered, true)}
-                  >
-                    Skip for now
-                  </button>
-                )}
-              </div>
             </div>
           )}
 
-          {view.step === 'question' && question && (
+          {question && style && (
             <div className="flex flex-col gap-3">
-              <p className={cn('text-sm font-semibold', style.label)}>
-                Question {view.answered.length + 1}
-              </p>
               <h2
                 ref={headingRef}
                 tabIndex={-1}
@@ -342,59 +330,59 @@ export function SearchGuide({
                 {question.text}
               </h2>
               <div className="flex flex-col gap-2">
-                {question.answers.map((option: Answer) => (
-                  <button
-                    key={option.label}
-                    type="button"
-                    className={cn(
-                      'flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-lg border px-4 py-2 text-left font-medium',
-                      style.button,
-                    )}
-                    onClick={() => answer(applyAnswer(view.codes, option))}
-                  >
-                    {option.label}
-                    <span className="text-muted-foreground shrink-0 text-xs font-normal">
-                      {option.keeps} {option.keeps === 1 ? 'result' : 'results'}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {otherOpen ? (
-                <input
-                  autoFocus
-                  aria-label="Tell us in your own words"
-                  placeholder="Tell us in your own words"
-                  value={other}
-                  onChange={(event) => setOther(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      submitOther();
-                    }
-                    if (event.key === 'Escape') {
-                      event.stopPropagation();
-                      setOtherOpen(false);
-                    }
-                  }}
-                  className="border-control-border focus:border-primary w-full rounded-lg border bg-white px-3 py-2 text-base outline-none focus:outline-none"
+                {question.answers.map((option) => {
+                  const applied = applyAnswer(codes, option) as string[];
+                  const keeps = matchServices(applied).length;
+                  return (
+                    <button
+                      key={option.label}
+                      type="button"
+                      className={cn(
+                        'flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-lg border px-4 py-2 text-left font-medium',
+                        style.button,
+                      )}
+                      onClick={() => pick(applied)}
+                    >
+                      {option.label}
+                      <span className="text-muted-foreground shrink-0 text-xs font-normal">
+                        {keeps} {keeps === 1 ? 'result' : 'results'}
+                      </span>
+                    </button>
+                  );
+                })}
+                <OtherBox
+                  key={question.id}
+                  placeholder="Other: type your own"
+                  onSubmit={submitOther}
                 />
+              </div>
+            </div>
+          )}
+
+          {(canSkip || query) && (
+            <div className="flex min-h-11 items-center justify-between gap-3">
+              {canSkip ? (
+                <button
+                  type="button"
+                  className="text-muted-foreground min-h-11 cursor-pointer px-1 font-medium underline"
+                  data-testid="guide-skip"
+                  onClick={skip}
+                >
+                  Skip
+                </button>
               ) : (
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    className="text-primary min-h-11 cursor-pointer text-sm font-medium underline"
-                    onClick={() => setOtherOpen(true)}
-                  >
-                    Other
-                  </button>
-                  <button
-                    type="button"
-                    className="text-muted-foreground min-h-11 cursor-pointer text-sm underline"
-                    onClick={() => answer(view.codes)}
-                  >
-                    Skip this question
-                  </button>
-                </div>
+                <span />
+              )}
+              {query && (
+                <button
+                  type="button"
+                  disabled={isPending}
+                  className="bg-primary text-primary-foreground min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60"
+                  data-testid="guide-see-results"
+                  onClick={seeResults}
+                >
+                  See results
+                </button>
               )}
             </div>
           )}

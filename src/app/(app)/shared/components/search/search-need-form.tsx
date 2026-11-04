@@ -53,9 +53,12 @@ export function SearchNeedInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={inputId} className="text-2xl font-semibold">
-        What do you need help with?
-      </label>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <label htmlFor={inputId} className="text-2xl font-semibold">
+          What do you need help with?
+        </label>
+        <SearchCrisisButton />
+      </div>
       <div className="relative">
         <textarea
           id={inputId}
@@ -100,20 +103,15 @@ export function SearchNeedInput({
   );
 }
 
-/** Prototype: one obvious crisis entry. */
+/** Prototype: one obvious crisis entry, beside the first question. */
 export function SearchCrisisButton() {
   return (
-    <div className="mt-6 flex flex-col gap-2">
-      <a
-        href="tel:988"
-        className="bg-destructive text-destructive-foreground flex items-center justify-center gap-2 rounded-lg p-4 text-lg font-semibold no-underline"
-      >
-        <Phone className="size-5" aria-hidden="true" />
-        I&apos;m in a crisis right now
-      </a>
-      <p className="text-muted-foreground text-center text-xs">
-        If you are in danger right now, call 911.
-      </p>
-    </div>
+    <a
+      href="tel:988"
+      className="bg-destructive text-destructive-foreground flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold no-underline"
+    >
+      <Phone className="size-4" aria-hidden="true" />
+      I&apos;m in a crisis right now
+    </a>
   );
 }

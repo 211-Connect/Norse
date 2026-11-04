@@ -2,9 +2,10 @@
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { ChevronDown, Phone, Plus, X } from 'lucide-react';
+import { ArrowUp, ChevronDown, Phone, Plus, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
@@ -98,7 +99,7 @@ export const flaggedAtom = atom<string[]>([]);
 
 /**
  * Prototype: tags stay out of the way until a person says the results look wrong.
- * The button appears after the 3rd result, or at once when there are fewer than 3.
+ * The button appears as the 3rd result comes into view, or at once with fewer than 3.
  */
 export function SearchResultsHelp() {
   const { label, codes, update } = useSuneSearch();
@@ -118,7 +119,9 @@ export function SearchResultsHelp() {
     const check = () => {
       const third = document.querySelectorAll('[data-search-result]')[2]
         ?.firstElementChild;
-      if (!third || third.getBoundingClientRect().bottom < 120) setShown(true);
+      if (!third || third.getBoundingClientRect().top < window.innerHeight) {
+        setShown(true);
+      }
     };
     const settled = setTimeout(check, 1500);
     window.addEventListener('scroll', check, { passive: true });
@@ -159,7 +162,7 @@ export function SearchResultsHelp() {
     setThanks('Thank you. We use this to fix our mistakes.');
   };
 
-  return (
+  return createPortal(
     <DialogPrimitive.Root modal={false}>
       <DialogPrimitive.Trigger
         className="fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg print:hidden"
@@ -285,7 +288,53 @@ export function SearchResultsHelp() {
           {thanks && <p className="text-muted-foreground text-sm">{thanks}</p>}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+    </DialogPrimitive.Root>,
+    document.body,
+  );
+}
+
+/** A typed answer, in its own box beside the listed answers. */
+export function OtherBox({
+  className,
+  onSubmit,
+  placeholder,
+}: {
+  className?: string;
+  onSubmit: (text: string) => void;
+  placeholder: string;
+}) {
+  const [text, setText] = useState('');
+  const send = () => {
+    if (!text.trim()) return;
+    onSubmit(text.trim());
+    setText('');
+  };
+
+  return (
+    <div className={cn('relative w-full', className)}>
+      <input
+        aria-label={placeholder}
+        placeholder={placeholder}
+        value={text}
+        onChange={(event) => setText(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            send();
+          }
+        }}
+        className="border-control-border focus:border-primary min-h-12 w-full rounded-lg border bg-white py-2 pr-12 pl-4 text-base outline-none focus:outline-none"
+        data-testid="other-box"
+      />
+      <button
+        type="button"
+        aria-label="Send"
+        className="bg-primary text-primary-foreground absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-lg"
+        onClick={send}
+      >
+        <ArrowUp className="size-4" aria-hidden="true" />
+      </button>
+    </div>
   );
 }
 
@@ -345,12 +394,7 @@ export function SearchRefineQuestion() {
   const { label, codes, answered, decision, update, isPending } =
     useSuneSearch();
   const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
-  const [otherOpen, setOtherOpen] = useState(false);
-  const [other, setOther] = useState('');
   const setFlagged = useSetAtom(flaggedAtom);
-  const otherRef = useRef<HTMLInputElement>(null);
-  const otherButtonRef = useRef<HTMLButtonElement>(null);
-  useDismissOutside(otherRef, otherOpen, () => setOtherOpen(false));
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = decision.question ?? {
     id: 'done',
@@ -362,11 +406,7 @@ export function SearchRefineQuestion() {
   if (!label.trim()) return null;
   if (decision.kind === 'crisis') return <CrisisCard />;
   const style = LEVELS[decision.level];
-  const submitOther = () => {
-    const text = other.trim();
-    setOther('');
-    setOtherOpen(false);
-    if (!text) return;
+  const submitOther = (text: string) => {
     const found = classifySune(text).codes as string[];
     if (found.length === 0) setFlagged((prev) => [...prev, text]);
     update([...new Set([...codes, ...found])], [...answered, question.id]);
@@ -433,18 +473,15 @@ export function SearchRefineQuestion() {
               </span>
             </button>
           ))}
-          <button
-            ref={otherButtonRef}
-            type="button"
-            data-dismiss-keep
-            className={cn(
-              'flex min-h-11 cursor-pointer items-center rounded-lg border border-dashed px-3 py-2 text-sm font-medium',
-              style.button,
-            )}
-            onClick={() => setOtherOpen((prev) => !prev)}
-          >
-            Other
-          </button>
+          <OtherBox
+            className="col-span-2"
+            placeholder={
+              decision.question
+                ? 'Other: type your own'
+                : 'Tell us in your own words'
+            }
+            onSubmit={submitOther}
+          />
           {decision.question && (
             <button
               type="button"
@@ -455,27 +492,6 @@ export function SearchRefineQuestion() {
             </button>
           )}
         </div>
-        {otherOpen && (
-          <input
-            ref={otherRef}
-            autoFocus
-            aria-label="Tell us in your own words"
-            placeholder="Tell us in your own words"
-            value={other}
-            onChange={(event) => setOther(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                submitOther();
-              }
-              if (event.key === 'Escape') {
-                setOtherOpen(false);
-                otherButtonRef.current?.focus();
-              }
-            }}
-            className="border-control-border focus:border-primary w-full rounded-lg border bg-white px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
-          />
-        )}
       </div>
     </div>
   );

@@ -389,4 +389,15 @@ export function decideRefine(query, codes, answered = []) {
   return { kind: 'question', level: question.level, total: current.length, question };
 }
 
+/** The questions for this need, fixed up front: an answer never changes how many are left. */
+export function planQuestions(query, codes, max = 3) {
+  const plan = [];
+  while (plan.length < max) {
+    const { question } = decideRefine(query, codes, plan.map((item) => item.id));
+    if (!question) break;
+    plan.push(question);
+  }
+  return plan;
+}
+
 export { applyAnswer };
