@@ -16,10 +16,12 @@ export type MarkerDef = {
 /** Share of locations left out at each edge when framing a map on where most of them are. */
 const OUTLIER_SHARE_PER_EDGE = 0.025;
 
-/** South-west and north-east corners around the central locations. */
+/** South-west and north-east corners around the central locations, if any. */
 export function getCoreExtent(
   coordinates: [number, number][],
-): [[number, number], [number, number]] {
+): [[number, number], [number, number]] | null {
+  if (coordinates.length === 0) return null;
+
   const skip = Math.floor(coordinates.length * OUTLIER_SHARE_PER_EDGE);
   const core = (axis: 0 | 1) => {
     const sorted = coordinates

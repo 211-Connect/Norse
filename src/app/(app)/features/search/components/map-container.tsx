@@ -5,6 +5,8 @@ import { useAtomValue } from 'jotai';
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
+import { MapErrorFallback } from '@/app/(app)/shared/components/map/map-error-fallback';
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
@@ -118,8 +120,24 @@ export function MapContainer() {
       }
     >
       <div className="relative h-full w-full rounded-lg">
-        <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
-        {mapPoints && <MapLegend showUserLocation={coords?.length === 2} />}
+        {/* A map that fails never costs the reader the list. It first drops
+            what the flag added, then falls back to a message. */}
+        <ErrorBoundary
+          appConfig={appConfig}
+          resetKey={results}
+          fallback={
+            <ErrorBoundary
+              appConfig={appConfig}
+              resetKey={results}
+              fallback={<MapErrorFallback error="Failed to load map" />}
+            >
+              <MapRenderer markers={mapMarkers} />
+            </ErrorBoundary>
+          }
+        >
+          <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
+          {mapPoints && <MapLegend showUserLocation={coords?.length === 2} />}
+        </ErrorBoundary>
       </div>
     </div>
   );

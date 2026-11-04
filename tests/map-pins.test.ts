@@ -84,3 +84,7 @@ test('a small result set keeps every location in the frame', () => {
     ],
   );
 });
+
+test('no locations have no extent to fit', () => {
+  assert.equal(getCoreExtent([]), null);
+});
