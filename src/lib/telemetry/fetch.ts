@@ -42,17 +42,39 @@ export function urlParts(url: string): UrlParts {
 /**
  * Span options that keep query strings out of the span name and `http.url`,
  * while naming the span after the stable path template when one is known.
+ *
+ * Norse API paths are ours and the template strips their IDs, so the path is
+ * kept. A third-party path can carry ids and secrets (a Discord webhook token
+ * lives in `/api/webhooks/<id>/<token>`), so only the origin is exported.
+ * `resource.name` is always set: `@vercel/otel` spreads these attributes last
+ * and would otherwise name the span-metric series after the full URL.
  */
 export function spanOptionsFor(
   url: string,
   method: string,
+  dependency: Dependency,
   pathTemplate?: string,
 ): Pick<FetchInitWithTelemetry, 'opentelemetry'> {
   const { host, origin, pathname } = urlParts(url);
+  const upperMethod = method.toUpperCase();
+
+  if (dependency !== 'norse_api') {
+    return {
+      opentelemetry: {
+        spanName: `fetch ${upperMethod} ${host}`,
+        attributes: { 'http.url': origin, 'resource.name': origin },
+      },
+    };
+  }
+
+  const path = pathTemplate ?? pathname;
   return {
     opentelemetry: {
-      spanName: `fetch ${method.toUpperCase()} ${host}${pathTemplate ?? pathname}`,
-      attributes: { 'http.url': `${origin}${pathname}` },
+      spanName: `fetch ${upperMethod} ${host}${path}`,
+      attributes: {
+        'http.url': `${origin}${pathname}`,
+        'resource.name': `${origin}${path}`,
+      },
     },
   };
 }

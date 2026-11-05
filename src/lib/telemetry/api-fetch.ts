@@ -366,7 +366,7 @@ export function instrumentedApiFetch(_clientName: string): typeof fetch {
     try {
       const response = await fetch(url, {
         ...init,
-        ...spanOptionsFor(url, method, template),
+        ...spanOptionsFor(url, method, 'norse_api', template),
         headers,
       });
       outcome = classifyStatus(dependency, operation, response.status);
