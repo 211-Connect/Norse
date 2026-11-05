@@ -23,6 +23,7 @@ const PRUNE = {
   cms: [
     'src/app/(app)/[locale]',
     'src/app/(app)/api/auth',
+    'src/app/(app)/api/cms-admin-redirect',
     'src/app/(app)/api/resource-titles',
     'src/app/(app)/api/search-config',
     'src/app/(app)/api/share',

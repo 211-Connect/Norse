@@ -49,6 +49,18 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    // The public app has no admin: send it to the CMS's public host. Only here,
+    // because `cms` and `all` builds serve /admin themselves.
+    if (process.env.NORSE_BUILD !== 'app') return [];
+
+    return [
+      {
+        source: '/admin/:path*',
+        destination: '/api/cms-admin-redirect/:path*',
+      },
+    ];
+  },
   basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,

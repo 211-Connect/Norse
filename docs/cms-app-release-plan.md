@@ -87,8 +87,11 @@ openssl rand -base64 32
 | -------------------------- | ----------- | ---------------------------- | ------------------------------------------ |
 | `PAYLOAD_API_ROUTE_SECRET` | both        | new secret, same on both     | new secret, same on both                   |
 | `PAYLOAD_CMS_URL`          | `norse-app` | `${norse-cms.PRIVATE_URL}`   | `${norse-cms.PRIVATE_URL}/adresources`     |
-| `CMS_ADMIN_URL`            | `norse-cms` | `https://cms.c211.io`        | `https://mboa-cms.c211.io/adresources`     |
+| `CMS_ADMIN_URL`            | both        | `https://cms.c211.io`        | `https://mboa-cms.c211.io/adresources`     |
 | `INTERNAL_APP_URL`         | `norse-cms` | `${_self.PRIVATE_URL}`       | `${_self.PRIVATE_URL}` (no base path: the code adds it) |
+
+`CMS_ADMIN_URL` must be the public URL, because browsers follow it: password-reset
+links on `norse-cms`, and the redirect from `<tenant host>/admin` on `norse-app`.
 
 `INTERNAL_APP_URL` is required: its default is loopback, which you found doesn't
 work on App Platform, and scheduled PDF delivery needs it.
@@ -280,7 +283,8 @@ In Networking, point the rule that matches all domains at `norse-app` instead of
   language and a detail page.
 - Sign-in works on a tenant with accounts, a login-wall tenant still requires login,
   and MBOA sign-in works.
-- `<tenant host>/admin` and `/api/users/me` are 404.
+- `<tenant host>/admin` redirects to the same page on the CMS domain, and
+  `/api/users/me` is 404.
 - `/api/healthz` on a tenant host reports Postgres `disabled`.
 
 ### 5. Check what needs the CMS
