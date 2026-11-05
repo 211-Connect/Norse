@@ -26,11 +26,6 @@ on:
       allow_search_engines:
         type: string
         required: true
-      images_only:
-        description: Push images without waiting for deployments
-        type: boolean
-        required: false
-        default: false
     # Listed one by one, and read by name below, so each job only receives
     # these secrets. Don't use `secrets: inherit` or `secrets[...]` here: both
     # hand the runner every organization and repository secret.
@@ -40,9 +35,9 @@ on:
       DIGITALOCEAN_ACCESS_TOKEN:
         required: true
       MULTITENANT_APP_ID:
-        required: false
+        required: true
       MBOA_APP_ID:
-        required: false
+        required: true
 
 permissions:
   contents: read
@@ -76,7 +71,6 @@ jobs:
           # a clear error) instead of falling through to the other app's id.
           app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
           do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-          images-only: ${{ inputs.images_only }}
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
@@ -116,7 +110,6 @@ jobs:
           # a clear error) instead of falling through to the other app's id.
           app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
           do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-          images-only: ${{ inputs.images_only }}
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
