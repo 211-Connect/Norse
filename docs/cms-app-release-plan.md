@@ -159,7 +159,7 @@ checks, alerts, and the Prometheus scrape list (`/api/metrics`, with
 - [ ] **MBOA's build values:** MBOA's app builds from GitHub today, so its
       `NEXT_PUBLIC_*` values come from its own spec. The images get them from
       `deploy-images.yaml`: base path, trailing slashes and the geospatial filtering flag
-      on, no Umami. Compare with the MBOA production spec first, in particular
+      on, and Umami in production only. Compare with the MBOA production spec first, in particular
       `NEXT_PUBLIC_ALLOW_SEARCH_ENGINES`, which CI sets to `true` on every production image.
 - [ ] **MBOA's production release trigger:** if MBOA production also builds from a
       branch, then after the switch it deploys on a `v*` tag like multi-tenant.
