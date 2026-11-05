@@ -6,7 +6,7 @@ By default the search map shows only the current page of results, so a search
 with 489 matches draws about 25 pins, and an agency on a later page looks
 unlisted (ISS-1747, P026). With this feature the map shows every result, up to
 1,000, as small circles: the current list page in the tenant's primary colour,
-and the rest in a subtler tint of it.
+and the rest in a solid tint of it, halfway to white.
 
 ## Where it is configured
 

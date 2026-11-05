@@ -1,3 +1,4 @@
+import Color from 'color';
 import {
   type ExpressionSpecification,
   type GeoJSONSource,
@@ -46,6 +47,10 @@ export const toFeatureCollection = (
     })),
 });
 
+/** The colour of a circle outside the list: the primary, halfway to white. */
+export const toSubtleColor = (color: string) =>
+  Color(color).mix(Color('#ffffff'), 0.5).hex();
+
 /** A theme colour, in the comma form MapLibre's parser reads. */
 const getThemeColor = (variable: string, fallback: string) => {
   const [hue, saturation, lightness] = getComputedStyle(
@@ -76,8 +81,7 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
     source: SOURCE_ID,
     layout: { 'circle-sort-key': ABOVE_OTHERS },
     paint: {
-      'circle-color': color,
-      'circle-opacity': ['case', IN_LIST, 1, 0.5],
+      'circle-color': ['case', IN_LIST, color, toSubtleColor(color)],
       'circle-stroke-color': '#ffffff',
       'circle-stroke-width': 1,
       'circle-radius': [

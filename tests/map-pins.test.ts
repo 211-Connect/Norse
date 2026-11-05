@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { getCoreExtent } from '../src/app/(app)/shared/components/map/map-shared';
-import { toFeatureCollection } from '../src/app/(app)/shared/components/map/maplibre/points-layer';
+import {
+  toFeatureCollection,
+  toSubtleColor,
+} from '../src/app/(app)/shared/components/map/maplibre/points-layer';
 import {
   MAP_PINS_LIMIT,
   SearchPin,
@@ -104,4 +107,9 @@ test('circles know their resources and whether the list shows them', () => {
       { id: 'site', resources: 3, inList: true },
     ],
   );
+});
+
+test('a subtle circle is a solid colour halfway to white', () => {
+  assert.equal(toSubtleColor('#000000'), '#808080');
+  assert.equal(toSubtleColor('hsl(221, 83%, 53%)'), '#91B1F5');
 });
