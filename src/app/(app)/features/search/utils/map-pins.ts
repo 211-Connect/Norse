@@ -1,5 +1,5 @@
 /** Matches `SEARCH_PINS_LIMIT` in Norse-API. */
-export const MAP_PINS_LIMIT = 1000;
+export const MAP_PINS_LIMIT = 10_000;
 
 export type SearchPin = {
   /** The list hit's `_id`, which is also its card's DOM id. */

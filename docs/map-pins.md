@@ -5,7 +5,7 @@
 By default the search map shows only the current page of results, so a search
 with 489 matches draws about 25 pins, and an agency on a later page looks
 unlisted (ISS-1747, P026). With this feature the map shows every result, up to
-1,000, as small circles: the current list page in the tenant's primary colour,
+10,000, as small circles: the current list page in the tenant's primary colour,
 and the rest in a solid tint of it, halfway to white.
 
 ## Where it is configured
@@ -79,9 +79,9 @@ MapContainer
 
 ## List cap
 
-With the flag on, the list's count and pagination stop at 1,000 so that the list
-and map cover the same results. The count reads `1-25 of 1,000+` when more match,
-a `page` past the cap shows the last page, and results past 1,000 can't be
+With the flag on, the list's count and pagination stop at 10,000 so that the list
+and map cover the same results. The count reads `1-25 of 10,000+` when more match,
+a `page` past the cap shows the last page, and results past 10,000 can't be
 reached. Analytics still receive the real total.
 
 ## Accessibility
@@ -94,7 +94,8 @@ and screen reader users reach them by turning the list's page.
 ## Known limits
 
 - Pins are sent with the page, so they add to every page load and list page
-  change, even on a cache hit. 965 pins are about 270 KB uncompressed.
+  change, even on a cache hit. 965 pins are about 270 KB uncompressed, so
+  10,000 would be about 2.8 MB.
 - Hybrid search without a taxonomy scope matches the tenant's whole population:
   the query only ranks. Pins then show everything the filters allow, not only
   what is relevant to the query.

@@ -61,7 +61,7 @@ test('coordinates round to two decimals, so neighbours share a cache entry', () 
 
 test('the last list page still holds the last result within the limit', () => {
   assert.equal(lastPageWithinPinLimit(25), MAP_PINS_LIMIT / 25);
-  assert.equal(lastPageWithinPinLimit(30), 34);
+  assert.equal(lastPageWithinPinLimit(30), 334);
 });
 
 test('a few distant locations do not stretch the frame', () => {
