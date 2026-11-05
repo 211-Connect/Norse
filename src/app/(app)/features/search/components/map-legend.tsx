@@ -32,18 +32,18 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
         </span>
         {t('map_legend_list', { defaultValue: 'In the list' })}
       </li>
-      {showUserLocation && (
-        <li className="flex items-center gap-1.5">
-          <LegendPin className="text-yellow-500" />
-          {t('map_legend_user', { defaultValue: 'Your location' })}
-        </li>
-      )}
       <li className="flex items-center gap-1.5">
         <span className="flex w-[11px] justify-center">
           <span className="size-2.5 bg-[color-mix(in_srgb,hsl(var(--primary))_50%,white)] rounded-full ring-1 ring-white" />
         </span>
         {t('map_legend_other', { defaultValue: 'Other locations' })}
       </li>
+      {showUserLocation && (
+        <li className="flex items-center gap-1.5">
+          <LegendPin className="text-yellow-500" />
+          {t('map_legend_user', { defaultValue: 'Your location' })}
+        </li>
+      )}
     </ul>
   );
 }
