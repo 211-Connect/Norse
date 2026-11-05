@@ -1,12 +1,12 @@
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
-import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Metadata } from 'next/types';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { FetchError } from '@/app/(app)/shared/lib/fetchError';
+import { redirectIfRekeyed } from '@/app/(app)/shared/lib/rekeyedRedirect';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
@@ -93,16 +93,8 @@ export default async function ResourcePage({ params }) {
   try {
     resource = await getResource(id, locale, appConfig.tenantId);
   } catch (err) {
-    if (
-      err instanceof FetchError &&
-      err.response.status === 404 &&
-      err.response.data?.redirect
-    ) {
-      permanentRedirect(
-        `/${locale}${err.response.data.redirect}`,
-        RedirectType.replace,
-      );
-    }
+    // A re-keyed id: 308 to the record's new URL (ISS-2514).
+    redirectIfRekeyed(err, locale);
   }
 
   if (!resource) {
