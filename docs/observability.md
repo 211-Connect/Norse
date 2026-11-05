@@ -116,7 +116,7 @@ Derived once per process in `resourceAttributes()` (`src/instrumentation.node.ts
 | --- | --- |
 | `service.name` = `norse-app` | `job="norse-app"` |
 | `service.instance.id` = `os.hostname()` (random UUID if empty) | `instance` |
-| `deployment.environment.name` (`production` \| `dev` \| `local`) | `env` (datapoint attribute, set by the collector's `transform`) |
+| `deployment.environment.name` (`production` \| `dev` \| `local`, `unknown` when unset) | `env` (datapoint attribute, set by the collector's `transform`) |
 | `host.name`, `process.creation.time`, `service.version` | labels on `target_info` |
 
 `job`, `env` and `instance` are what every query below filters on. `norse-api`
@@ -194,6 +194,10 @@ APP_VERSION=${_self.COMMIT_HASH}    # App Platform bindable variable; verify the
 OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT=512
 # remove: OTEL_SERVICE_NAME, OTEL_PROPAGATORS, PROMETHEUS_TOKEN
 ```
+
+When `DEPLOYMENT_ENVIRONMENT` is unset or empty the resource attribute is
+`unknown` (never guessed as production) and `register()` logs
+`DEPLOYMENT_ENVIRONMENT is not set: telemetry is labelled unknown`.
 
 Also honoured by the code, when set:
 
