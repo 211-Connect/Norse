@@ -9,10 +9,15 @@ import {
   flaggedAtom,
   LEVELS,
   OtherBox,
+  PICKED,
+  PickMark,
+  resultCount,
+  useAnswerPicks,
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
 import {
   applyAnswer,
+  applyAnswers,
   classifySune,
   decideRefine,
   lookup,
@@ -46,6 +51,7 @@ type Question = {
   id: string;
   level: keyof typeof LEVELS;
   text: string;
+  multi?: boolean;
   answers: Answer[];
 };
 type Step = 'location' | Question;
@@ -99,6 +105,11 @@ export function SearchGuide({
   const step = steps?.[at];
   const question = step && step !== 'location' ? step : undefined;
   const style = question ? LEVELS[question.level] : undefined;
+  const { picks, toggle } = useAnswerPicks(question?.id);
+  const chosen = (question?.answers ?? []).filter((answer) =>
+    picks.includes(answer.label),
+  );
+  const withPicks = applyAnswers(codes, chosen) as string[];
 
   // The dim layer starts under the header, so the logo and nav stay clear.
   useEffect(() => {
@@ -181,7 +192,7 @@ export function SearchGuide({
     next(codes, answered);
   };
 
-  // Picking a place moves on by itself, so the card needs only Skip and See results.
+  // Picking a place moves on by itself, so the card needs only Skip to results.
   const lastLocation = useRef(searchLocation);
   useEffect(() => {
     if (lastLocation.current === searchLocation) return;
@@ -190,12 +201,12 @@ export function SearchGuide({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchLocation]);
 
-  const seeResults = () => void finish(steps ? codes : known(query), answered);
-
-  const skip = () => {
-    if (step === 'location') return leaveLocation();
-    if (question) next(codes, [...answered, question.id]);
-  };
+  // Picks made on this step count: leaving for the results must not drop them.
+  const seeResults = () =>
+    void finish(
+      steps ? withPicks : known(query),
+      question && picks.length ? [...answered, question.id] : answered,
+    );
 
   const pick = (nextCodes: string[]) => {
     if (question) next(nextCodes, [...answered, question.id]);
@@ -204,10 +215,8 @@ export function SearchGuide({
   const submitOther = (text: string) => {
     const found = known(text);
     if (found.length === 0) setFlagged((prev) => [...prev, text]);
-    pick([...new Set([...codes, ...found])]);
+    pick([...new Set([...withPicks, ...found])]);
   };
-
-  const canSkip = step === 'location' ? !requireLocation : Boolean(question);
 
   return (
     <DialogPrimitive.Root
@@ -322,31 +331,49 @@ export function SearchGuide({
 
           {question && style && (
             <div className="flex flex-col gap-3">
-              <h2
-                ref={headingRef}
-                tabIndex={-1}
-                className="text-2xl font-semibold outline-none"
+              <div>
+                <h2
+                  ref={headingRef}
+                  id="guide-question"
+                  tabIndex={-1}
+                  className="text-2xl font-semibold outline-none"
+                >
+                  {question.text}
+                </h2>
+                {question.multi && (
+                  <p className="text-muted-foreground">Pick all that fit.</p>
+                )}
+              </div>
+              <div
+                role="group"
+                aria-labelledby="guide-question"
+                className="flex flex-col gap-2"
               >
-                {question.text}
-              </h2>
-              <div className="flex flex-col gap-2">
                 {question.answers.map((option) => {
                   const applied = applyAnswer(codes, option) as string[];
-                  const keeps = matchServices(applied).length;
+                  const on = picks.includes(option.label);
                   return (
                     <button
                       key={option.label}
                       type="button"
+                      aria-pressed={question.multi ? on : undefined}
                       className={cn(
-                        'flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-lg border px-4 py-2 text-left font-medium',
+                        'flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left font-medium',
+                        !question.multi && 'justify-between',
                         style.button,
+                        on && PICKED,
                       )}
-                      onClick={() => pick(applied)}
+                      onClick={() =>
+                        question.multi ? toggle(option.label) : pick(applied)
+                      }
                     >
+                      {question.multi && <PickMark on={on} />}
                       {option.label}
-                      <span className="text-muted-foreground shrink-0 text-xs font-normal">
-                        {keeps} {keeps === 1 ? 'result' : 'results'}
-                      </span>
+                      {!question.multi && (
+                        <span className="text-muted-foreground shrink-0 text-xs font-normal">
+                          {resultCount(matchServices(applied).length)}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -355,35 +382,36 @@ export function SearchGuide({
                   placeholder="Other: type your own"
                   onSubmit={submitOther}
                 />
+                {picks.length > 0 && (
+                  <button
+                    type="button"
+                    className="bg-primary text-primary-foreground min-h-12 cursor-pointer rounded-lg px-5 font-semibold"
+                    data-testid="guide-continue"
+                    onClick={() => pick(withPicks)}
+                  >
+                    Continue: {resultCount(matchServices(withPicks).length)}
+                  </button>
+                )}
               </div>
             </div>
           )}
 
-          {(canSkip || query) && (
-            <div className="flex min-h-11 items-center justify-between gap-3">
-              {canSkip ? (
-                <button
-                  type="button"
-                  className="text-muted-foreground min-h-11 cursor-pointer px-1 font-medium underline"
-                  data-testid="guide-skip"
-                  onClick={skip}
-                >
-                  Skip
-                </button>
-              ) : (
-                <span />
-              )}
-              {query && (
-                <button
-                  type="button"
-                  disabled={isPending}
-                  className="bg-primary text-primary-foreground min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60"
-                  data-testid="guide-see-results"
-                  onClick={seeResults}
-                >
-                  See results
-                </button>
-              )}
+          {query && !(step === 'location' && requireLocation) && (
+            <div className="flex min-h-11 items-center justify-end">
+              <button
+                type="button"
+                disabled={isPending}
+                className={cn(
+                  'min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60',
+                  picks.length > 0
+                    ? 'border-primary text-primary border bg-white'
+                    : 'bg-primary text-primary-foreground',
+                )}
+                data-testid="guide-see-results"
+                onClick={seeResults}
+              >
+                Skip to results
+              </button>
             </div>
           )}
         </DialogPrimitive.Content>

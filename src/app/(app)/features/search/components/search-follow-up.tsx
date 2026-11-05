@@ -23,6 +23,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   ArrowUp,
+  Check,
   ChevronDown,
   GripVertical,
   Phone,
@@ -46,13 +47,14 @@ import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 import {
-  applyAnswer,
+  applyAnswers,
   classifySune,
   decideRefine,
   isRankToken,
   labelOf,
   lookup,
   matchAddable,
+  matchServices,
   orderToken,
   rankKinds,
   removedToken,
@@ -64,7 +66,13 @@ type Answer = {
   remove?: string[];
   keeps: number;
 };
-type Question = { id: string; text: string; why: string; answers: Answer[] };
+type Question = {
+  id: string;
+  text: string;
+  why: string;
+  multi?: boolean;
+  answers: Answer[];
+};
 type Kind = { key: string; label: string; description: string };
 type Decision = {
   kind: 'question' | 'crisis' | 'done';
@@ -743,6 +751,46 @@ function CrisisCard() {
   );
 }
 
+/** The answers ticked on a multi-select question. A new question starts empty. */
+export function useAnswerPicks(questionId?: string) {
+  const [state, setState] = useState<{ id?: string; labels: string[] }>({
+    labels: [],
+  });
+  const picks = state.id === questionId ? state.labels : [];
+  const toggle = (label: string) =>
+    setState((prev) => {
+      const labels = prev.id === questionId ? prev.labels : [];
+      return {
+        id: questionId,
+        labels: labels.includes(label)
+          ? labels.filter((pick) => pick !== label)
+          : [...labels, label],
+      };
+    });
+  return { picks, toggle };
+}
+
+/** The tick box on a multi-select answer, so a picked answer does not rely on color alone. */
+export function PickMark({ on }: { on: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'flex size-5 shrink-0 items-center justify-center rounded border',
+        on
+          ? 'bg-primary border-primary text-primary-foreground'
+          : 'border-control-border bg-white',
+      )}
+    >
+      {on && <Check className="size-3.5" />}
+    </span>
+  );
+}
+
+export const PICKED = 'border-primary bg-primary/10 text-foreground';
+export const resultCount = (count: number) =>
+  `${count} ${count === 1 ? 'result' : 'results'}`;
+
 /** Prototype: the refine question. It sits beside the results and never stops the person. */
 export function SearchRefineQuestion() {
   const { label, codes, answered, decision, update, isPending } =
@@ -756,6 +804,9 @@ export function SearchRefineQuestion() {
     why: 'Every question that changes the results is answered.',
     answers: [],
   };
+  const { picks, toggle } = useAnswerPicks(question.id);
+  const chosen = question.answers.filter((a) => picks.includes(a.label));
+  const withPicks = applyAnswers(codes, chosen) as string[];
 
   if (!label.trim()) return null;
   if (decision.kind === 'crisis') return <CrisisCard />;
@@ -763,10 +814,10 @@ export function SearchRefineQuestion() {
   const submitOther = (text: string) => {
     const found = classifySune(text).codes as string[];
     if (found.length === 0) setFlagged((prev) => [...prev, text]);
-    update([...new Set([...codes, ...found])], [...answered, question.id]);
+    update([...new Set([...withPicks, ...found])], [...answered, question.id]);
   };
-  const answer = (option?: Answer) => {
-    update(option ? applyAnswer(codes, option) : codes, [
+  const answer = (options: Answer[] = []) => {
+    update(applyAnswers(codes, options) as string[], [
       ...answered,
       question.id,
     ]);
@@ -808,25 +859,52 @@ export function SearchRefineQuestion() {
           collapsed && 'hidden md:flex',
         )}
       >
-        <p className="text-base font-semibold md:text-xl">{question.text}</p>
-        <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap">
-          {question.answers.map((option) => (
-            <button
-              key={option.label}
-              type="button"
-              disabled={isPending}
-              className={cn(
-                'flex min-h-11 cursor-pointer flex-col items-start justify-center rounded-lg border px-3 py-2 text-left text-sm font-medium',
-                style.button,
-              )}
-              onClick={() => answer(option)}
-            >
-              {option.label}
-              <span className="text-muted-foreground text-xs font-normal">
-                {option.keeps} {option.keeps === 1 ? 'result' : 'results'}
-              </span>
-            </button>
-          ))}
+        <div>
+          <p
+            id="refine-question"
+            className="text-base font-semibold md:text-xl"
+          >
+            {question.text}
+          </p>
+          {question.multi && (
+            <p className="text-muted-foreground text-sm">Pick all that fit.</p>
+          )}
+        </div>
+        <div
+          role="group"
+          aria-labelledby="refine-question"
+          className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
+        >
+          {question.answers.map((option) => {
+            const on = picks.includes(option.label);
+            return (
+              <button
+                key={option.label}
+                type="button"
+                disabled={isPending}
+                aria-pressed={question.multi ? on : undefined}
+                className={cn(
+                  'flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
+                  question.multi
+                    ? 'items-center gap-2'
+                    : 'flex-col items-start justify-center',
+                  style.button,
+                  on && PICKED,
+                )}
+                onClick={() =>
+                  question.multi ? toggle(option.label) : answer([option])
+                }
+              >
+                {question.multi && <PickMark on={on} />}
+                {option.label}
+                {!question.multi && (
+                  <span className="text-muted-foreground text-xs font-normal">
+                    {resultCount(option.keeps)}
+                  </span>
+                )}
+              </button>
+            );
+          })}
           <OtherBox
             className="col-span-2"
             placeholder={
@@ -836,13 +914,24 @@ export function SearchRefineQuestion() {
             }
             onSubmit={submitOther}
           />
-          {decision.question && (
+          {decision.question && picks.length === 0 && (
             <button
               type="button"
               className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
               onClick={() => answer()}
             >
               Skip
+            </button>
+          )}
+          {picks.length > 0 && (
+            <button
+              type="button"
+              disabled={isPending}
+              className="bg-primary text-primary-foreground col-span-2 min-h-11 cursor-pointer rounded-lg px-5 text-sm font-semibold disabled:opacity-60"
+              data-testid="refine-continue"
+              onClick={() => answer(chosen)}
+            >
+              Continue: {resultCount(matchServices(withPicks).length)}
             </button>
           )}
         </div>

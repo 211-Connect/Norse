@@ -275,11 +275,13 @@ const FAMILY_QUESTION = {
   'N-FOD': {
     text: 'What kind of food help do you need?',
     level: 'important',
+    multi: true,
     leaves: ['N-FOD-01', 'N-FOD-04', 'N-FOD-02', 'N-FOD-03'],
   },
   'N-HOU': {
     text: 'What is going on with your housing?',
     level: 'critical',
+    multi: true,
     leaves: ['N-HOU-01', 'N-HOU-02', 'N-HOU-04', 'N-HOU-03', 'N-HOU-05'],
   },
 };
@@ -305,6 +307,7 @@ function candidates(query, codes) {
       id: `leaf-${family}`,
       text: question.text,
       level: question.level,
+      multi: question.multi,
       why: `The classifier found ${familyDisplay(family)} but not which kind.`,
       answers: question.leaves.map((code) =>
         leaf(code, { remove: replaceFamily(family) }),
@@ -341,6 +344,7 @@ function candidates(query, codes) {
       id: 'barrier',
       text: 'What is getting in the way?',
       level: 'helpful',
+      multi: true,
       why: 'Help that comes to the person is a different set of services.',
       answers: ['E-BAR-ACCESS', 'E-BAR-COST', 'E-BAR-KNOW'].map((code) => leaf(code)),
     });
@@ -350,6 +354,7 @@ function candidates(query, codes) {
       id: 'household',
       text: 'Who is this for?',
       level: 'helpful',
+      multi: true,
       why: 'Some services are only for certain people.',
       answers: ['E-HH-01', 'E-AGE-06', 'E-VET-01'].map((code) => leaf(code)),
     });
@@ -360,6 +365,7 @@ function candidates(query, codes) {
       id: 'also',
       text: 'Is anything else making this hard?',
       level: 'helpful',
+      multi: true,
       always: true,
       why: 'People often have more than one need.',
       answers: also.filter((code) => !codes.includes(code)).map((code) => leaf(code)),
@@ -368,12 +374,18 @@ function candidates(query, codes) {
   return out;
 }
 
-const applyAnswer = (codes, answer) => [
-  ...new Set([
-    ...codes.filter((code) => !(answer.remove ?? []).includes(code)),
-    ...answer.add,
-  ]),
-];
+// All removes run before all adds. One at a time would be wrong: two leaf answers each remove the
+// family's codes, so the second answer would delete a code the first answer picked.
+const applyAnswers = (codes, answers) => {
+  const removed = answers.flatMap((answer) => answer.remove ?? []);
+  return [
+    ...new Set([
+      ...codes.filter((code) => !removed.includes(code)),
+      ...answers.flatMap((answer) => answer.add),
+    ]),
+  ];
+};
+const applyAnswer = (codes, answer) => applyAnswers(codes, [answer]);
 
 const entropy = (counts) => {
   const total = counts.reduce((sum, count) => sum + count, 0) || 1;
@@ -463,4 +475,4 @@ export function planQuestions(query, codes, max = 3) {
   return plan;
 }
 
-export { applyAnswer };
+export { applyAnswer, applyAnswers };

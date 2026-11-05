@@ -13,7 +13,7 @@ const appConfig = {
   accessibility: { fontSize: { allowedValues: ['100%', '125%'] } },
   brand: { name: 'Sample County Resources', theme: { primaryColor: '#0D6C68', secondaryColor: '#7DBFA7', borderRadius: '16px' } },
   contact: { number: '211' }, sms: null,
-  featureFlags: { enablePrintableDirectories: false, enableOrganizationSearch: false, requireUserLocation: false, showAgeFilter: false, showFeedbackButtonGlobal: false, showFeedbackButtonOnResourcePages: false, showHomePageTour: false, showPrintButton: true, showSearchAndResourceServiceName: true, showSuggestionListTaxonomyBadge: false, showOrganizationLocationBadge: false, showUseMyLocationButtonOnDesktop: true, turnResourceCardTaxonomiesIntoLinks: false, requireAuthenticationForFavorites: false },
+  featureFlags: { enablePrintableDirectories: false, enableOrganizationSearch: false, requireUserLocation: process.env.STUB_REQUIRE_LOCATION === '1', showAgeFilter: false, showFeedbackButtonGlobal: false, showFeedbackButtonOnResourcePages: false, showHomePageTour: false, showPrintButton: true, showSearchAndResourceServiceName: true, showSuggestionListTaxonomyBadge: false, showOrganizationLocationBadge: false, showUseMyLocationButtonOnDesktop: true, turnResourceCardTaxonomiesIntoLinks: false, requireAuthenticationForFavorites: false },
   printableDirectories: { accessMode: 'everyone', allowedEmails: [], allowedDomains: [], userGroups: [] },
   footer: { customMenu: [], copyright: 'Synthetic prototype data' },
   header: { customMenu: [{ name: 'Events', href: '#' }, { name: 'About Us', href: '#' }], position: 'static', safeExit: { enabled: true, text: 'Quick exit', url: 'https://www.weather.gov', target: '_self' } },
