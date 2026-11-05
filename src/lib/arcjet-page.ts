@@ -41,7 +41,7 @@ const tracer = trace.getTracer('norse-app');
 /**
  * The Arcjet SDK calls its API over a `node:http2` Connect RPC session, not
  * the global `fetch` that @vercel/otel instruments, so the call needs a
- * manual span to show up in traces (see docs/tracing.md).
+ * manual span to show up in traces (see docs/observability.md).
  */
 function tracedProtect(
   req: ArcjetRequestLike,
