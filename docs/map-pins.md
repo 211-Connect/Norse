@@ -61,8 +61,9 @@ MapContainer
   hover.
 - **Several resources at one address** share a circle, whose popup lists them
   without scrolling, moving the map to fit, unless the list is taller than the map.
-  Its count shows from zoom 9, where the circle is big enough to hold it. An address
-  counts as in the list if any of its resources is.
+  Its count shows from zoom 9, where the circle is big enough to hold it, and hides
+  while a circle above covers it. An address counts as in the list if any of its
+  resources is.
 - **Clicking a circle in the list** scrolls the list to that result.
 - **A legend** in the map's corner explains the two circles and the user's location.
 - **First load and new searches** fit the central 95% of locations

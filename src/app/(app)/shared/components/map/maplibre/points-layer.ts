@@ -16,6 +16,9 @@ const COUNT_LAYER_ID = 'result-points-counts';
 /** Circles grow to fit a count from here, so it's readable once it shows. */
 const COUNT_MIN_ZOOM = 9;
 
+/** A count hides once a higher circle is this close to covering it. */
+const COUNT_COLLISION_PADDING_PX = 4;
+
 /** Must exist on the style's glyph server, or the counts don't draw. */
 const COUNT_FONT = 'DIN Pro Medium';
 
@@ -28,7 +31,7 @@ const IS_HOVERED: ExpressionSpecification = [
   false,
 ];
 const IN_LIST: ExpressionSpecification = ['boolean', ['get', 'inList'], false];
-const ABOVE_OTHERS: ExpressionSpecification = ['case', IN_LIST, 1, 0];
+const STACK: ExpressionSpecification = ['get', 'stack'];
 
 export const toFeatureCollection = (
   points: MarkerDef[],
@@ -36,12 +39,14 @@ export const toFeatureCollection = (
   type: 'FeatureCollection',
   features: points
     .filter((point) => isValidCoordinate(point.coordinates))
-    .map((point) => ({
+    .map((point, index) => ({
       type: 'Feature',
       properties: {
         id: point.id,
         resources: point.count ?? 1,
         inList: !!point.inList,
+        // The list's circles go above the rest, whatever the source order.
+        stack: index + (point.inList ? points.length : 0),
       },
       geometry: { type: 'Point', coordinates: point.coordinates! },
     })),
@@ -79,7 +84,7 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
     id: LAYER_ID,
     type: 'circle',
     source: SOURCE_ID,
-    layout: { 'circle-sort-key': ABOVE_OTHERS },
+    layout: { 'circle-sort-key': STACK },
     paint: {
       'circle-color': ['case', IN_LIST, color, toSubtleColor(color)],
       'circle-stroke-color': '#ffffff',
@@ -97,21 +102,23 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
       ],
     },
   });
+  // A symbol layer always draws above the circles, so a count can't go behind a
+  // higher circle. Instead the counts collide, and the higher one keeps its place.
+  // Single resources take part invisibly, because their circles cover counts too.
   map.addLayer({
     id: COUNT_LAYER_ID,
     type: 'symbol',
     source: SOURCE_ID,
     minzoom: COUNT_MIN_ZOOM,
-    filter: ['>', ['get', 'resources'], 1],
     layout: {
-      'symbol-sort-key': ABOVE_OTHERS,
+      'symbol-sort-key': ['-', STACK],
       'text-field': ['to-string', ['get', 'resources']],
       'text-font': [COUNT_FONT],
       'text-size': 11,
-      'text-allow-overlap': true,
-      'text-ignore-placement': true,
+      'text-padding': COUNT_COLLISION_PADDING_PX,
     },
     paint: {
+      'text-opacity': ['case', ['>', ['get', 'resources'], 1], 1, 0],
       'text-color': [
         'case',
         IN_LIST,

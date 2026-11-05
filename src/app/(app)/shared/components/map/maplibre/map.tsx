@@ -157,6 +157,8 @@ export function Map({
         center: center ?? undefined,
         trackResize: true,
         attributionControl: false,
+        // Keeps the result counts from hiding the basemap's labels, or the reverse.
+        crossSourceCollisions: false,
       });
       mapLibreMap.current.addControl(
         new AttributionControl({

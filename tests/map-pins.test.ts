@@ -103,8 +103,8 @@ test('circles know their resources and whether the list shows them', () => {
   assert.deepEqual(
     features.map(({ properties }) => properties),
     [
-      { id: 'one', resources: 1, inList: false },
-      { id: 'site', resources: 3, inList: true },
+      { id: 'one', resources: 1, inList: false, stack: 0 },
+      { id: 'site', resources: 3, inList: true, stack: 4 },
     ],
   );
 });
