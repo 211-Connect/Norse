@@ -183,8 +183,71 @@ const conflicts = (service, codes) =>
     return stated.length > 0 && !stated.includes(needed);
   });
 
-/** Filter by exclusion: each answer removes what cannot fit, and a need keeps at least its best match. */
+// Stand-in for HSIS: plain kinds of help, because no code reaches the screen. The real list comes from
+// the scorecard. A service with no group below is its own kind, under its own name.
+const KINDS = [
+  ['pantries', 'Food pantries', 'Free groceries to take home.', [11, 12]],
+  ['delivered', 'Food that comes to you', 'Groceries brought to your door or neighborhood.', [13, 14]],
+  ['meals', 'Free hot meals', 'A cooked meal at a dining room or at home.', [19, 20]],
+  ['benefits', 'Food benefits', 'Help with SNAP and WIC.', [16, 17]],
+  ['beds', 'Emergency beds', 'A place to sleep tonight.', [31, 32, 33]],
+  ['outreach', 'Outreach for people outside', 'Support for people sleeping outside or in a car.', [34, 35]],
+  ['rent', 'Help keeping housing', 'Rent money and legal help to stop an eviction.', [36, 37]],
+  ['rehousing', 'Help finding housing', 'Finding a place and paying to move in.', [38, 39]],
+];
+const kindOf = (service) => {
+  const kind = KINDS.find(([, , , ids]) => ids.includes(Number(service.id)));
+  return kind
+    ? { key: kind[0], label: kind[1], description: kind[2] }
+    : { key: service.id, label: service.name, description: service.summary };
+};
+
+// Phase 2 of the help panel writes these into the URL beside the SUNE codes, so the fake backend
+// reruns the search with them: H- is the person's order, HX- is a kind they removed.
+export const isRankToken = (code) => /^HX?-/.test(code);
+export const orderToken = (key) => `H-${key}`;
+export const removedToken = (key) => `HX-${key}`;
+
+const applyRank = (services, tokens) => {
+  const order = tokens.filter((t) => t.startsWith('H-')).map((t) => t.slice(2));
+  const removed = tokens
+    .filter((t) => t.startsWith('HX-'))
+    .map((t) => t.slice(3));
+  const rank = (service) => {
+    const at = order.indexOf(kindOf(service).key);
+    return at === -1 ? order.length : at;
+  };
+  return services
+    .filter((service) => !removed.includes(kindOf(service).key))
+    .map((service, at) => ({ service, at }))
+    .sort((a, b) => rank(a.service) - rank(b.service) || a.at - b.at)
+    .map(({ service }) => service);
+};
+
+/** The kinds of help behind a search, best first, plus the ones the person removed. */
+export function rankKinds(codes) {
+  const distinct = (services) => {
+    const kinds = services.map(kindOf);
+    return [...new Map(kinds.map((kind) => [kind.key, kind])).values()];
+  };
+  const kept = distinct(matchServices(codes));
+  const all = distinct(baseServices(codes.filter((code) => !isRankToken(code))));
+  return {
+    kinds: kept,
+    removed: all.filter((kind) => !kept.some((k) => k.key === kind.key)),
+  };
+}
+
+/** Results for a search: what the terms match, then the person's own order on top. */
 export function matchServices(codes) {
+  return applyRank(
+    baseServices(codes.filter((code) => !isRankToken(code))),
+    codes.filter(isRankToken),
+  );
+}
+
+/** Filter by exclusion: each answer removes what cannot fit, and a need keeps at least its best match. */
+function baseServices(codes) {
   const needs = codes.filter(isNeed);
   if (needs.length === 0) {
     return CATALOG.filter((service) => FIRST_LOOK.includes(service.id));

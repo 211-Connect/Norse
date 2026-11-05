@@ -6,3 +6,4 @@ Open http://localhost:3100. Click the search box for the guided flow: need, loca
 The vocabulary is real SUNE v1 (ArchitectureDocs PR #75). The classifier is keyword rules and the services are synthetic:
 `src/app/(app)/features/search/sune-demo/sune.mjs`.
 Demo searches: `food`, `shelter`, `help`, `my child needs food and I don't have a car`, `I want to kill myself`.
+The orange button opens two steps: step 1 corrects the SUNE tags, step 2 ranks the kinds of help by drag. The kinds stand in for HSIS, in `KINDS` in `sune.mjs`; the order rides in the `taxonomy` URL key as `H-` and `HX-` tokens.

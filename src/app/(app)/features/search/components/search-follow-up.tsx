@@ -1,10 +1,44 @@
 'use client';
 
+import {
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { ArrowUp, ChevronDown, Phone, Plus, X } from 'lucide-react';
+import {
+  ArrowUp,
+  ChevronDown,
+  GripVertical,
+  Phone,
+  Plus,
+  X,
+} from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import {
+  type DOMAttributes,
+  type RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
@@ -15,9 +49,13 @@ import {
   applyAnswer,
   classifySune,
   decideRefine,
+  isRankToken,
   labelOf,
   lookup,
   matchAddable,
+  orderToken,
+  rankKinds,
+  removedToken,
 } from '../sune-demo/sune.mjs';
 
 type Answer = {
@@ -27,6 +65,7 @@ type Answer = {
   keeps: number;
 };
 type Question = { id: string; text: string; why: string; answers: Answer[] };
+type Kind = { key: string; label: string; description: string };
 type Decision = {
   kind: 'question' | 'crisis' | 'done';
   level: 'critical' | 'important' | 'helpful';
@@ -72,7 +111,14 @@ function useSuneSearch() {
     [label, codes, answered],
   );
 
-  const update = (nextCodes: string[], nextAnswered = answered) => {
+  // The person's order of the kinds of help. A change of tags drops it: the list is rebuilt from the tags.
+  const ranks = stated.filter((code) => isRankToken(code));
+
+  const update = (
+    nextCodes: string[],
+    nextAnswered = answered,
+    nextRanks: string[] = [],
+  ) => {
     const next = new URLSearchParams(params.toString());
     next.delete('taxonomy');
     next.delete('page');
@@ -80,13 +126,14 @@ function useSuneSearch() {
     for (const code of nextCodes.length ? nextCodes : ['U-X']) {
       next.append('taxonomy', code);
     }
+    for (const token of nextRanks) next.append('taxonomy', token);
     next.set('refined', nextAnswered.join(','));
     startTransition(() => {
       router.replace(`${pathname}?${next.toString()}`, { scroll: false });
     });
   };
 
-  return { label, codes, answered, decision, update, isPending };
+  return { label, codes, ranks, answered, decision, update, isPending };
 }
 
 const TAG =
@@ -96,18 +143,239 @@ const ADD_PILL =
 
 /** Terms a person could not find. A stand-in for a real report to our system. */
 export const flaggedAtom = atom<string[]>([]);
+/** Corrections kept for review. A stand-in: one person's correction never changes the shared mapping. */
+export const suggestionsAtom = atom<string[]>([]);
+
+const ROW_BUTTON =
+  'hover:bg-primary/5 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg';
+
+type Ranked = { key: string; label: string; description?: string };
+
+/** One ranked item. The whole row drags; the grip is the keyboard way in. */
+function RankRow({
+  item,
+  at,
+  onRemove,
+}: {
+  item: Ranked;
+  at: number;
+  onRemove: () => void;
+}) {
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    setActivatorNodeRef,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: item.key });
+  // The mouse and touch start on the row; the keyboard starts on the grip.
+  const handlers = listeners as DOMAttributes<HTMLElement> | undefined;
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      onMouseDown={handlers?.onMouseDown}
+      onTouchStart={handlers?.onTouchStart}
+      className={cn(
+        'bg-card flex cursor-grab touch-manipulation items-center gap-2 rounded-lg border py-1.5 pr-1 pl-1 select-none',
+        isDragging && 'border-primary relative z-10 cursor-grabbing shadow-lg',
+      )}
+    >
+      <button
+        ref={setActivatorNodeRef}
+        type="button"
+        {...attributes}
+        onKeyDown={handlers?.onKeyDown}
+        aria-label={`Rank ${item.label}, now number ${at + 1}. Press space, then the arrow keys.`}
+        className="text-muted-foreground flex h-9 w-6 shrink-0 cursor-grab items-center justify-center rounded-lg"
+      >
+        <GripVertical className="size-4" aria-hidden="true" />
+      </button>
+      <span
+        aria-hidden="true"
+        className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
+      >
+        {at + 1}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium">{item.label}</span>
+        {item.description && (
+          <span className="text-muted-foreground block text-xs">
+            {item.description}
+          </span>
+        )}
+      </span>
+      <button
+        type="button"
+        aria-label={`Remove ${item.label}`}
+        className={ROW_BUTTON}
+        onClick={onRemove}
+      >
+        <X className="size-4" aria-hidden="true" />
+      </button>
+    </li>
+  );
+}
+
+/** A list a person ranks by dragging. Step 1 ranks needs; step 2 ranks kinds of help. */
+function RankList({
+  items,
+  label,
+  listRef,
+  onRemove,
+  onReorder,
+  testId,
+}: {
+  items: Ranked[];
+  label: string;
+  listRef?: RefObject<HTMLOListElement | null>;
+  onRemove: (item: Ranked) => void;
+  onReorder: (items: Ranked[]) => void;
+  testId: string;
+}) {
+  const [said, setSaid] = useState('');
+  // A drop shows at once; the URL and the rerun catch up behind it.
+  const [list, setList] = useState(items);
+  const order = items.map((item) => item.key).join();
+  useEffect(() => {
+    setList(items);
+  }, [order]);
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 180, tolerance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+  const drop = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    const keys = list.map((item) => item.key);
+    const to = keys.indexOf(String(over.id));
+    const next = arrayMove(list, keys.indexOf(String(active.id)), to);
+    setList(next);
+    onReorder(next);
+    setSaid(`${next[to].label} is now number ${to + 1}.`);
+  };
+
+  return (
+    <DndContext
+      collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis]}
+      onDragEnd={drop}
+      sensors={sensors}
+    >
+      <SortableContext
+        items={list.map((item) => item.key)}
+        strategy={verticalListSortingStrategy}
+      >
+        <ol
+          ref={listRef}
+          tabIndex={-1}
+          aria-label={label}
+          className="flex flex-col gap-1 outline-none"
+          data-testid={testId}
+        >
+          {list.map((item, at) => (
+            <RankRow
+              key={item.key}
+              item={item}
+              at={at}
+              onRemove={() => onRemove(item)}
+            />
+          ))}
+        </ol>
+      </SortableContext>
+      <p className="sr-only" aria-live="polite">
+        {said}
+      </p>
+    </DndContext>
+  );
+}
+
+/** Phase 2 of the help panel: the kinds of help behind the search, in the order we rank them. */
+function RankStep({
+  kinds,
+  removed,
+  onChange,
+  onMissing,
+}: {
+  kinds: Kind[];
+  removed: Kind[];
+  onChange: (kinds: Kind[], removed: Kind[]) => void;
+  onMissing: (text: string) => void;
+}) {
+  // Remove and Put back delete the button in focus, so focus goes to the list.
+  const listRef = useRef<HTMLOListElement>(null);
+  const remove = (item: Ranked) => {
+    onChange(
+      kinds.filter((kind) => kind.key !== item.key),
+      [...removed, item as Kind],
+    );
+    listRef.current?.focus();
+  };
+  const putBack = (kind: Kind) => {
+    onChange(
+      [...kinds, kind],
+      removed.filter((item) => item.key !== kind.key),
+    );
+    listRef.current?.focus();
+  };
+
+  return (
+    <>
+      <RankList
+        items={kinds}
+        label="Kinds of help, ranked"
+        listRef={listRef}
+        onRemove={remove}
+        onReorder={(next) => onChange(next as Kind[], removed)}
+        testId="search-rank-list"
+      />
+      {kinds.length === 0 && (
+        <p className="text-muted-foreground text-sm">
+          Nothing left. Put one back or add what is missing.
+        </p>
+      )}
+      {removed.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-muted-foreground">Removed:</span>
+          {removed.map((kind) => (
+            <button
+              key={kind.key}
+              type="button"
+              aria-label={`Put back ${kind.label}`}
+              className={ADD_PILL}
+              onClick={() => putBack(kind)}
+            >
+              <Plus className="size-3.5" aria-hidden="true" />
+              {kind.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <OtherBox placeholder="Add what is missing" onSubmit={onMissing} />
+    </>
+  );
+}
 
 /**
  * Prototype: tags stay out of the way until a person says the results look wrong.
  * The button appears as the 3rd result comes into view, or at once with fewer than 3.
  */
 export function SearchResultsHelp() {
-  const { label, codes, update } = useSuneSearch();
+  const { label, codes, ranks, answered, update } = useSuneSearch();
   const setFlagged = useSetAtom(flaggedAtom);
+  const setSuggestions = useSetAtom(suggestionsAtom);
   const [shown, setShown] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [phase, setPhase] = useState<'tags' | 'rank' | 'done'>('tags');
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState('');
-  const [note, setNote] = useState('');
   const [thanks, setThanks] = useState('');
   const addBoxRef = useRef<HTMLDivElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -133,6 +401,43 @@ export function SearchResultsHelp() {
 
   if (!label.trim() || !shown) return null;
 
+  const { kinds, removed } = rankKinds([...codes, ...ranks]) as {
+    kinds: Kind[];
+    removed: Kind[];
+  };
+  const reorder = (nextKinds: Kind[], nextRemoved: Kind[]) =>
+    update(codes, answered, [
+      ...nextKinds.map((kind) => orderToken(kind.key)),
+      ...nextRemoved.map((kind) => removedToken(kind.key)),
+    ]);
+  const reportMissing = (text: string) => {
+    setFlagged((prev) => [...prev, text]);
+    setThanks(`Thank you. We will look at adding “${text}”.`);
+  };
+  // The search already changed for this person. The shared mapping waits for a review.
+  const finish = () => {
+    const tags = codes.map((code) => labelOf(code)).join(', ');
+    const order = kinds.map((kind) => kind.label).join(' > ');
+    setSuggestions((prev) => [...prev, `“${label}”: ${tags}: ${order}`]);
+    setThanks('');
+    setPhase('done');
+  };
+  const needs = codes.filter((code: string) => code.startsWith('N-'));
+  const others = codes.filter((code: string) => !code.startsWith('N-'));
+  const TITLES = {
+    tags: 'Did we get your needs right?',
+    rank: 'Do these solutions look right?',
+    done: 'Thank you',
+  };
+  const DESCRIPTIONS = {
+    tags:
+      needs.length > 1
+        ? 'Drag to rank. 1 matters most.'
+        : 'Remove or add what you need.',
+    rank: 'Drag to rank. 1 is the best fit.',
+    done: 'Your results are updated.',
+  };
+
   const typed = draft.trim().toLowerCase();
   const matches = matchAddable(typed, codes) as {
     code: string;
@@ -156,14 +461,17 @@ export function SearchResultsHelp() {
     setThanks(`Thank you. We will look at adding “${text}”.`);
     closeAdd();
   };
-  const sendNote = () => {
-    if (!note.trim()) return;
-    setNote('');
-    setThanks('Thank you. We use this to fix our mistakes.');
-  };
 
   return createPortal(
-    <DialogPrimitive.Root modal={false}>
+    <DialogPrimitive.Root
+      modal={false}
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) setPhase('tags');
+        setThanks('');
+      }}
+    >
       <DialogPrimitive.Trigger
         className="fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg print:hidden"
         data-testid="search-results-help"
@@ -179,9 +487,16 @@ export function SearchResultsHelp() {
           }}
         >
           <div className="flex items-start justify-between gap-3">
-            <DialogPrimitive.Title className="text-lg font-semibold">
-              What we understood
-            </DialogPrimitive.Title>
+            <div>
+              {phase !== 'done' && (
+                <p className="text-muted-foreground text-xs">
+                  Step {phase === 'tags' ? 1 : 2} of 2
+                </p>
+              )}
+              <DialogPrimitive.Title className="text-lg font-semibold">
+                {TITLES[phase]}
+              </DialogPrimitive.Title>
+            </div>
             <DialogPrimitive.Close
               aria-label="Close"
               className="flex size-8 cursor-pointer items-center justify-center"
@@ -190,102 +505,141 @@ export function SearchResultsHelp() {
             </DialogPrimitive.Close>
           </div>
           <DialogPrimitive.Description className="text-muted-foreground text-sm">
-            Remove what is not true. Add what we missed.
+            {DESCRIPTIONS[phase]}
           </DialogPrimitive.Description>
-          <div
-            className="flex flex-wrap items-center gap-2"
-            data-testid="search-situation-tags"
-          >
-            {codes.map((code: string) => (
-              <span key={code} className={TAG}>
-                {labelOf(code)}
-                <button
-                  type="button"
-                  aria-label={`Remove ${labelOf(code)}`}
-                  className="cursor-pointer"
-                  onClick={() => update(codes.filter((item) => item !== code))}
-                >
-                  <X className="size-3.5" aria-hidden="true" />
-                </button>
-              </span>
-            ))}
-            <button
-              ref={addButtonRef}
-              type="button"
-              data-dismiss-keep
-              className={ADD_PILL}
-              onClick={() => setAdding((prev) => !prev)}
-            >
-              <Plus className="size-3.5" aria-hidden="true" />
-              Add
-            </button>
-          </div>
-          {adding && (
-            <div className="flex flex-col gap-1" ref={addBoxRef}>
-              <input
-                autoFocus
-                aria-label="Add a need"
-                value={draft}
-                placeholder="Start typing, then pick one"
-                onChange={(event) => setDraft(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault();
-                    if (matches[0]) addTerm(matches[0].code);
-                  }
-                  if (event.key === 'Escape') closeAdd();
-                }}
-                className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
+          {phase === 'rank' && (
+            <RankStep
+              kinds={kinds}
+              removed={removed}
+              onChange={reorder}
+              onMissing={reportMissing}
+            />
+          )}
+          {phase === 'tags' && (
+            <>
+              <RankList
+                items={needs.map((code) => ({
+                  key: code,
+                  label: labelOf(code),
+                }))}
+                label="Your needs, ranked"
+                onRemove={(item) =>
+                  update(codes.filter((code) => code !== item.key))
+                }
+                onReorder={(next) =>
+                  update([...next.map((item) => item.key), ...others])
+                }
+                testId="search-need-list"
               />
-              {typed && (
-                <ul className="bg-card rounded-lg border">
-                  {matches.map((term) => (
-                    <li key={term.code}>
-                      <button
-                        type="button"
-                        className="hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
-                        onClick={() => addTerm(term.code)}
-                      >
-                        {term.label}
-                      </button>
-                    </li>
-                  ))}
-                  <li className={cn(matches.length > 0 && 'border-t')}>
+              <div
+                className="flex flex-wrap items-center gap-2"
+                data-testid="search-situation-tags"
+              >
+                {others.map((code: string) => (
+                  <span key={code} className={TAG}>
+                    {labelOf(code)}
                     <button
                       type="button"
-                      className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-medium"
-                      onClick={flagMissing}
+                      aria-label={`Remove ${labelOf(code)}`}
+                      className="cursor-pointer"
+                      onClick={() =>
+                        update(codes.filter((item) => item !== code))
+                      }
                     >
-                      Don&apos;t see your option?
+                      <X className="size-3.5" aria-hidden="true" />
                     </button>
-                  </li>
-                </ul>
+                  </span>
+                ))}
+                <button
+                  ref={addButtonRef}
+                  type="button"
+                  data-dismiss-keep
+                  className={ADD_PILL}
+                  onClick={() => setAdding((prev) => !prev)}
+                >
+                  <Plus className="size-3.5" aria-hidden="true" />
+                  Add
+                </button>
+              </div>
+              {adding && (
+                <div className="flex flex-col gap-1" ref={addBoxRef}>
+                  <input
+                    autoFocus
+                    aria-label="Add a need"
+                    value={draft}
+                    placeholder="Start typing, then pick one"
+                    onChange={(event) => setDraft(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        if (matches[0]) addTerm(matches[0].code);
+                      }
+                      if (event.key === 'Escape') closeAdd();
+                    }}
+                    className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
+                  />
+                  {typed && (
+                    <ul className="bg-card rounded-lg border">
+                      {matches.map((term) => (
+                        <li key={term.code}>
+                          <button
+                            type="button"
+                            className="hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
+                            onClick={() => addTerm(term.code)}
+                          >
+                            {term.label}
+                          </button>
+                        </li>
+                      ))}
+                      <li className={cn(matches.length > 0 && 'border-t')}>
+                        <button
+                          type="button"
+                          className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-medium"
+                          onClick={flagMissing}
+                        >
+                          Don&apos;t see your option?
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
               )}
+            </>
+          )}
+          {thanks && <p className="text-muted-foreground text-sm">{thanks}</p>}
+          {phase !== 'done' && (
+            <div className="flex items-center justify-between gap-2">
+              {phase === 'rank' ? (
+                <button
+                  type="button"
+                  className="text-primary cursor-pointer px-1 py-2 text-sm font-medium"
+                  onClick={() => {
+                    setThanks('');
+                    setPhase('tags');
+                  }}
+                >
+                  Back
+                </button>
+              ) : (
+                <span />
+              )}
+              <button
+                type="button"
+                data-testid="search-help-looks-good"
+                className="bg-primary text-primary-foreground cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold"
+                onClick={() => {
+                  if (phase === 'tags') {
+                    setThanks('');
+                    setPhase('rank');
+                  } else {
+                    finish();
+                  }
+                }}
+              >
+                Looks good
+              </button>
             </div>
           )}
-          <div className="flex gap-2">
-            <input
-              aria-label="Tell us what went wrong"
-              placeholder="Tell us what went wrong"
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  sendNote();
-                }
-              }}
-              className="border-control-border focus:border-primary min-w-0 flex-1 rounded-lg border bg-white px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
-            />
-            <button
-              type="button"
-              className="bg-primary text-primary-foreground cursor-pointer rounded-lg px-3 text-sm font-semibold"
-              onClick={sendNote}
-            >
-              Send
-            </button>
-          </div>
-          {thanks && <p className="text-muted-foreground text-sm">{thanks}</p>}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>,
@@ -501,6 +855,7 @@ export function SearchRefineQuestion() {
 export function SearchClassifierPeek() {
   const { label, codes, decision } = useSuneSearch();
   const flagged = useAtomValue(flaggedAtom);
+  const suggestions = useAtomValue(suggestionsAtom);
   if (!label.trim()) return null;
   const read = classifySune(label);
 
@@ -524,6 +879,9 @@ export function SearchClassifierPeek() {
           Decision: {decision.kind}, {decision.level}. {decision.question?.why}
         </p>
         {flagged.length > 0 && <p>Flagged as missing: {flagged.join(', ')}</p>}
+        {suggestions.map((suggestion) => (
+          <p key={suggestion}>Kept for review: {suggestion}</p>
+        ))}
       </div>
     </details>
   );

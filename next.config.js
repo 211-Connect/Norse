@@ -8,6 +8,8 @@ const ONE_DAY = 24 * ONE_HOUR;
  **/
 const nextConfig = {
   devIndicators: false,
+  // Prototype: lets a person open the dev server through an ngrok link.
+  allowedDevOrigins: ['*.ngrok-free.app'],
   async headers() {
     const isProduction = process.env.NODE_ENV === 'production';
 
