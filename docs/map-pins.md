@@ -22,7 +22,7 @@ does not check it.
 ```
 /search page (server)
   ├ GET /search         the list, as without the flag
-  └ GET /search/pins    in parallel; the page waits up to 2s, cached in Redis
+  └ GET /search/pins    in parallel; the page waits up to 5s, cached in Redis
         ↓
 SearchResultsProvider { results, pins, totalResults, isTotalCapped }
         ↓
@@ -42,7 +42,7 @@ MapContainer
   entry. `coords` are rounded to two decimals (about 1 km) so neighbours share
   one too. They cannot be dropped: they filter by service area even at
   `distance=0`.
-- **Timeout.** If pins take longer than 2 seconds the page renders the current
+- **Timeout.** If pins take longer than 5 seconds the page renders the current
   page's pins only. The request keeps running and fills the cache for the next
   visitor. `findResourcePins` never rejects, so pins cannot break the page.
 - **AI classification.** It needs no special handling: results load through

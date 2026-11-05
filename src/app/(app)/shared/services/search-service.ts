@@ -31,7 +31,7 @@ import {
 const log = createLogger('search');
 
 /** How long the page waits for pins before rendering the current page's markers. */
-const PINS_WAIT_MS = 2000;
+const PINS_WAIT_MS = 5000;
 
 export type FindResourcesQuery = {
   query?: string;
