@@ -80,8 +80,8 @@ jobs:
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
-          # MBOA has no Umami.
-          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
+          # MBOA only tracks Umami in production.
+          umami-script-url: ${{ (matrix.deployment == 'multitenant' || inputs.environment == 'production') && inputs.umami_script_url || '' }}
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
@@ -120,8 +120,8 @@ jobs:
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
-          # MBOA has no Umami.
-          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
+          # MBOA only tracks Umami in production.
+          umami-script-url: ${{ (matrix.deployment == 'multitenant' || inputs.environment == 'production') && inputs.umami_script_url || '' }}
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
