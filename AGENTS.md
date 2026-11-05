@@ -64,6 +64,7 @@ and the `mboa` tenant's special deployment).
 - No default `React` import in TSX (ESLint `no-restricted-imports`); use named imports only.
 - `tsconfig.json` has `strict: false` but `strictNullChecks: true` — null/undefined handling is checked, other strict rules are not.
 - ESLint ignores generated/vendored code: `src/payload/migrations`, `src/payload/payload-types.ts`, `src/lib/api/generated`, `.agents/`, `.claude/`, `widget/`. Don't hand-edit files under these paths — regenerate instead.
+- Before adding or upgrading a package, run `npm view <pkg> deprecated` and check peer ranges.
 
 ## Available Skills
 

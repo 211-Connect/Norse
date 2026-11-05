@@ -1,0 +1,19 @@
+apiVersion: 1
+
+datasources:
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    jsonData:
+      # trace_id arrives as structured metadata from the OTLP log pipeline.
+      derivedFields:
+        - name: trace_id
+          matcherType: label
+          matcherRegex: trace_id
+          datasourceUid: tempo
+          # `$$` escapes Grafana provisioning's env interpolation (same as production).
+          url: '$${__value.raw}'
+          urlDisplayLabel: View trace
