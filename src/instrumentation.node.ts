@@ -91,8 +91,9 @@ export function resourceAttributes({
     'host.name': instanceId,
     'process.creation.time': new Date(now - uptimeSeconds * 1000).toISOString(),
     // The environment is a resource attribute, never part of the service
-    // name: prod and dev are the same service, told apart by `env`.
-    'deployment.environment.name': env.DEPLOYMENT_ENVIRONMENT || 'production',
+    // name: prod and dev are the same service, told apart by `env`. An unset
+    // value is reported as `unknown` rather than guessed as production.
+    'deployment.environment.name': env.DEPLOYMENT_ENVIRONMENT || 'unknown',
     'service.version': env.APP_VERSION || packageVersion,
   };
 }
