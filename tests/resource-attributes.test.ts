@@ -38,7 +38,7 @@ describe('resourceAttributes', () => {
     assert.equal(attributes['service.version'], '2026.11.2-rc.1');
   });
 
-  it('defaults the environment to production and the version to package.json', () => {
+  it('defaults an unset environment to unknown and the version to package.json', () => {
     const attributes = resourceAttributes({
       env: {},
       hostname: 'norse-app-1',
@@ -47,11 +47,13 @@ describe('resourceAttributes', () => {
       packageVersion: '0.1.1',
     });
 
-    assert.equal(attributes['deployment.environment.name'], 'production');
+    // Never guess production: an unlabelled deployment must stay visible as
+    // unknown in dashboards (register() warns about it).
+    assert.equal(attributes['deployment.environment.name'], 'unknown');
     assert.equal(attributes['service.version'], '0.1.1');
   });
 
-  it('treats an empty environment as production', () => {
+  it('treats an empty environment as unknown', () => {
     const attributes = resourceAttributes({
       env: { DEPLOYMENT_ENVIRONMENT: '' },
       hostname: 'norse-app-1',
@@ -60,7 +62,7 @@ describe('resourceAttributes', () => {
       packageVersion: '0.1.1',
     });
 
-    assert.equal(attributes['deployment.environment.name'], 'production');
+    assert.equal(attributes['deployment.environment.name'], 'unknown');
   });
 
   it('falls back to a random id when the hostname is empty', () => {

@@ -108,14 +108,14 @@ export async function register(
     const basicAuthConfigured = configureOtlpBasicAuth();
     const traceSamplerArg = process.env.OTEL_TRACES_SAMPLER_ARG || '1.0';
     const apiUrl = process.env.API_URL;
-    const isNodeRuntime = process.env.NEXT_RUNTIME === 'nodejs';
 
     // Metrics and logs are Node-only: the exporters, the runtime
     // instrumentation and pino's require-hook cannot run on the Edge runtime.
-    // The dynamic import keeps them out of the Edge bundle entirely, and the
-    // module also builds the resource attributes shared by every signal.
+    // The literal comparison (not a boolean variable) is what lets Turbopack
+    // fold the branch and drop the import from the Edge bundle; the module
+    // also builds the resource attributes shared by every signal.
     let nodeConfiguration: NodeTelemetryConfiguration = {};
-    if (isNodeRuntime) {
+    if (process.env.NEXT_RUNTIME === 'nodejs') {
       try {
         const { createNodeTelemetryOptions } =
           await import('./instrumentation.node');
@@ -172,7 +172,10 @@ export async function register(
     // The meter provider is installed: instruments created from now on are
     // real. Without metrics (OTEL_METRICS_EXPORTER=none) there is no meter
     // provider to cache against, so the flag stays off.
-    if (nodeConfiguration.metricReaders?.length) {
+    if (
+      process.env.NEXT_RUNTIME === 'nodejs' &&
+      nodeConfiguration.metricReaders?.length
+    ) {
       markTelemetryReady();
       try {
         // Observable gauge: reads process.getActiveResourcesInfo() at
@@ -193,14 +196,25 @@ export async function register(
         endpoint,
         traceSamplerArg,
         basicAuth: basicAuthConfigured,
-        metrics: isNodeRuntime && process.env.OTEL_METRICS_EXPORTER !== 'none',
-        logs: isNodeRuntime && process.env.OTEL_LOGS_EXPORTER !== 'none',
+        metrics:
+          process.env.NEXT_RUNTIME === 'nodejs' &&
+          process.env.OTEL_METRICS_EXPORTER !== 'none',
+        logs:
+          process.env.NEXT_RUNTIME === 'nodejs' &&
+          process.env.OTEL_LOGS_EXPORTER !== 'none',
       },
       'Initialized telemetry',
     );
     if (!apiUrl) {
       log.warn(
         'API_URL not set: traceparent will not be sent to the Norse API',
+      );
+    }
+    // `resourceAttributes` labels an unset environment `unknown`; say so once,
+    // because every dashboard filters on `env`.
+    if (!process.env.DEPLOYMENT_ENVIRONMENT) {
+      log.warn(
+        'DEPLOYMENT_ENVIRONMENT is not set: telemetry is labelled unknown',
       );
     }
   } catch (error) {
