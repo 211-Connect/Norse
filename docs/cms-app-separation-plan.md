@@ -222,9 +222,9 @@ under `/_next` differ.
 
 ## Environment and rollout
 
-See [cms-app-release-plan.md](/docs/cms-app-release-plan.md): which variables
-each app needs, DNS, the CI change, and the rollout steps with checks and
-rollback.
+Rolled out to all four apps; production finished on 2026-11-05. See
+[cms-app-release-plan.md](/docs/cms-app-release-plan.md): which variables each
+app needs, hostnames, how CI deploys, checks and rollback.
 
 ## Decisions
 
@@ -247,10 +247,9 @@ Agreed 2026-10-30:
    and trailing slashes are baked into its builds, so it cannot share images
    or a CMS with the multi-tenant deployment.
 8. **CI builds only the four split images.** The Dockerfile's default combined
-   target remains for local use; old `norse:<sha>` images remain for rollback.
+   target remains for local use.
 9. **The existing apps stay; the split is at component level.** That gives private
-   networking, one app id per deployment in CI, and rollback by flipping a routing
-   rule back to `norse-search`.
+   networking and one app id per deployment in CI.
 
 ## Known gaps
 

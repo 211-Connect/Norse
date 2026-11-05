@@ -18,14 +18,9 @@ inputs:
     required: true
   app-id:
     description: DigitalOcean app with the component that auto-deploys this image
-    required: false
-    default: ''
+    required: true
   do-token:
     required: true
-  images-only:
-    description: Push the image and do not wait for a deployment
-    required: false
-    default: 'false'
   mapbox-api-key:
     required: false
     default: ''
@@ -60,13 +55,12 @@ runs:
 
     - name: Get active deployment before push
       id: before
-      if: inputs.images-only != 'true'
       shell: bash
       env:
         APP_ID: ${{ inputs.app-id }}
       run: |
         if [ -z "$APP_ID" ]; then
-          echo "::error::No DigitalOcean app id for ${{ inputs.image }}. Add the app id secret, or run with images_only."
+          echo "::error::No DigitalOcean app id for ${{ inputs.image }}. Add the app id secret."
           exit 1
         fi
         # Not grep: `shell: bash` sets pipefail, so finding no match would end the step.
@@ -131,7 +125,6 @@ runs:
         mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
 
     - name: Wait for the new deployment to become active
-      if: inputs.images-only != 'true'
       shell: bash
       env:
         APP_ID: ${{ inputs.app-id }}
