@@ -47,6 +47,19 @@ const createPointFocusTarget = () => {
   return element;
 };
 
+const POPUP_MAP_MARGIN_PX = 8;
+const POPUP_WIDTH_PX = 240;
+const SITE_POPUP_WIDTH_PX = 320;
+
+const getPopupOverflow = (
+  start: number,
+  end: number,
+  mapStart: number,
+  mapEnd: number,
+) =>
+  Math.max(0, end + POPUP_MAP_MARGIN_PX - mapEnd) ||
+  Math.min(0, start - POPUP_MAP_MARGIN_PX - mapStart);
+
 const scrollToResult = (id: string) => {
   setTimeout(() => {
     document.getElementById(id)?.scrollIntoView();
@@ -98,7 +111,7 @@ export function Map({
     popupId: string;
     label: string;
     closePopup: () => void;
-    reposition: () => void;
+    fitInMap: () => void;
   } | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -187,8 +200,7 @@ export function Map({
     if (!activePopup) return;
 
     requestAnimationFrame(() => {
-      // MapLibre placed the popup while it was empty. Now it has a real size.
-      activePopup.reposition();
+      activePopup.fitInMap();
       // Focus the dialog, not the close button: script focus on a button paints
       // its focus ring even after a mouse click. Tab still reaches the button.
       popupDialogRef.current?.focus();
@@ -197,10 +209,10 @@ export function Map({
 
   const createResourcePopup = (m: MarkerDef, restoreFocus: () => void) => {
     const popupDiv = document.createElement('div');
-    popupDiv.style.width = '240px';
     const popup = new Popup({
       focusAfterOpen: false,
       closeButton: false,
+      maxWidth: 'none',
     }).setDOMContent(popupDiv);
 
     popup.on('open', () => {
@@ -213,7 +225,40 @@ export function Map({
           restoreFocusOnCloseRef.current = true;
           popup.remove();
         },
-        reposition: () => popup.setLngLat(popup.getLngLat()),
+        fitInMap: () => {
+          const map = mapLibreMap.current;
+          if (!map) return;
+
+          const mapRect = map.getContainer().getBoundingClientRect();
+
+          // A wider popup wraps a site's resource names less, so its list stays
+          // short. A list longer than the map itself is the only one that scrolls.
+          const width =
+            (m.count ?? 1) > 1 ? SITE_POPUP_WIDTH_PX : POPUP_WIDTH_PX;
+          popupDiv.style.width = `${Math.min(width, mapRect.width - 2 * POPUP_MAP_MARGIN_PX)}px`;
+          popupDiv.style.setProperty(
+            '--map-popup-max-height',
+            `${mapRect.height - 2 * POPUP_MAP_MARGIN_PX}px`,
+          );
+          // MapLibre placed the popup while it was empty. Now it has a real size.
+          popup.setLngLat(popup.getLngLat());
+
+          const rect = popup.getElement().getBoundingClientRect();
+          const overflowX = getPopupOverflow(
+            rect.left,
+            rect.right,
+            mapRect.left,
+            mapRect.right,
+          );
+          const overflowY = getPopupOverflow(
+            rect.top,
+            rect.bottom,
+            mapRect.top,
+            mapRect.bottom,
+          );
+
+          if (overflowX || overflowY) map.panBy([overflowX, overflowY]);
+        },
       });
     });
 

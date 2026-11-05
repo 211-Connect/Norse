@@ -75,8 +75,8 @@ export function MapSitePopup({
   const { t } = useTranslation('page-search');
 
   return (
-    <Card className="shadow-md">
-      <CardContent className="flex flex-col gap-3">
+    <Card className="flex max-h-(--map-popup-max-height) flex-col shadow-md">
+      <CardContent className="flex min-h-0 flex-col gap-3">
         <p className="pr-6 text-sm leading-snug font-semibold">
           {t('map_site_title', {
             count: site.length,
@@ -84,12 +84,12 @@ export function MapSitePopup({
           })}
         </p>
         <MapPopupLocation address={site[0].address} distance={distance} />
-        <ul className="border-border -mx-1 flex max-h-44 flex-col divide-y overflow-y-auto border-t">
+        <ul className="border-border -mx-1 flex min-h-0 flex-col divide-y overflow-y-auto border-t">
           {site.map((pin) => (
             <li key={pin.id}>
               <Link
                 href={`/search/${pin.resourceId}`}
-                className="hover:bg-accent focus-visible:ring-ring flex items-start justify-between gap-2 rounded-sm px-1 py-2 text-sm no-underline transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                className="hover:bg-accent focus-visible:ring-ring flex items-start justify-between gap-2 rounded-sm px-1 py-1.5 text-sm no-underline transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 prefetch={false}
               >
                 <span className="min-w-0 flex-1 break-words">{pin.name}</span>

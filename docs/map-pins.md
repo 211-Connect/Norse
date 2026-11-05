@@ -59,8 +59,9 @@ MapContainer
 - **Circles are the same size** whether or not they're in the list. Only the
   colour differs, and the list's are drawn on top. They grow with the zoom and on
   hover.
-- **Several resources at one address** share a circle, whose popup lists them. Its
-  count shows from zoom 9, where the circle is big enough to hold it. An address
+- **Several resources at one address** share a circle, whose popup lists them
+  without scrolling, moving the map to fit, unless the list is taller than the map.
+  Its count shows from zoom 9, where the circle is big enough to hold it. An address
   counts as in the list if any of its resources is.
 - **Clicking a circle in the list** scrolls the list to that result.
 - **A legend** in the map's corner explains the two circles and the user's location.
