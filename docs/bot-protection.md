@@ -31,8 +31,8 @@ trailing dot. `x-forwarded-host` is ignored.
 | `norse2-prod-search-mboa` | MBOA production app |
 | `norse-dev-search`, `norse-dev-search-mboa` | Development apps. Keep `ARCJET_ENFORCED_HOSTS` unset here: e2e runs against these hosts with headless Chromium (see "Tests"). |
 
-To change a variable: DigitalOcean console → the app → **Settings** → the web
-component → **Environment Variables**, scope **Run time** → Save. App Platform
+To change a variable: DigitalOcean console → the app → **Settings** →
+`norse-app` → **Environment Variables**, scope **Run time** → Save. App Platform
 redeploys the app; the change is live after the redeploy, a few minutes.
 
 ## Architecture
