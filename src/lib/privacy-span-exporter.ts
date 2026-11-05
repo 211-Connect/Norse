@@ -10,7 +10,7 @@ import {
   OTLPHttpProtoTraceExporter,
 } from '@vercel/otel';
 
-import { stripQueryAndFragment } from '@/lib/logger';
+import { stripQueryAndFragment } from '@/lib/url-privacy';
 
 /**
  * Span attributes whose value is a request URL.
@@ -24,6 +24,7 @@ const URL_ATTRIBUTES = new Set([
   'http.target',
   'http.url',
   'http.url.full',
+  'resource.name',
   'url.full',
 ]);
 
@@ -34,6 +35,22 @@ const URL_ATTRIBUTES = new Set([
  */
 const NEXT_URL_ATTRIBUTE = /^next\..*(url|target|uri|href)$/i;
 
+/**
+ * A Discord webhook token authorises posting to the channel, and it sits in
+ * the path (`/api/webhooks/<id>/<token>`), where query stripping cannot reach
+ * it. The placeholder keeps the route recognisable.
+ */
+const WEBHOOK_PATH = /\/api\/webhooks\/[^/\s?#]+\/[^/\s?#]+/g;
+const WEBHOOK_PLACEHOLDER = '/api/webhooks/{id}/{token}';
+
+/** Shared by URL fields and free text: query/fragment first, then tokens. */
+function scrubUrlText(value: string): string {
+  return stripQueryAndFragment(value).replace(
+    WEBHOOK_PATH,
+    WEBHOOK_PLACEHOLDER,
+  );
+}
+
 function sanitizeAttributes(attributes: Attributes): Attributes {
   const sanitized: Attributes = {};
   for (const [key, value] of Object.entries(attributes)) {
@@ -42,7 +59,7 @@ function sanitizeAttributes(attributes: Attributes): Attributes {
     sanitized[key] =
       typeof value === 'string' &&
       (URL_ATTRIBUTES.has(key) || NEXT_URL_ATTRIBUTE.test(key))
-        ? stripQueryAndFragment(value)
+        ? scrubUrlText(value)
         : value;
   }
   return sanitized;
@@ -56,12 +73,11 @@ function sanitizeAttributes(attributes: Attributes): Attributes {
 function sanitizeEvent(event: TimedEvent): TimedEvent {
   const attributes: Attributes = {};
   for (const [key, value] of Object.entries(event.attributes ?? {})) {
-    attributes[key] =
-      typeof value === 'string' ? stripQueryAndFragment(value) : value;
+    attributes[key] = typeof value === 'string' ? scrubUrlText(value) : value;
   }
   return {
     ...event,
-    name: stripQueryAndFragment(event.name),
+    name: scrubUrlText(event.name),
     attributes,
   };
 }
@@ -69,7 +85,7 @@ function sanitizeEvent(event: TimedEvent): TimedEvent {
 function sanitizeSpan(span: ReadableSpan): ReadableSpan {
   return {
     ...span,
-    name: stripQueryAndFragment(span.name),
+    name: scrubUrlText(span.name),
     attributes: sanitizeAttributes(span.attributes),
     events: span.events.map(sanitizeEvent),
     // Dropped counts are not getters today, but they describe the payload and

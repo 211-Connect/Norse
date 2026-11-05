@@ -9,13 +9,38 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { registerOTel } from '@vercel/otel';
 
-import { createLogger, stripUrlQueries } from '@/lib/logger';
+import type { Logger } from '@/lib/logger';
 import {
   PrivacySpanExporter,
   createOtlpTraceExporter,
 } from '@/lib/privacy-span-exporter';
+import { markTelemetryReady } from '@/lib/telemetry/meter';
 
-const log = createLogger('instrumentation');
+import type {
+  NodeTelemetryConfiguration,
+  TelemetrySetupError,
+} from './instrumentation.node';
+
+type InstrumentationLogger = Pick<Logger, 'info' | 'warn' | 'error'>;
+
+let loggerPromise: Promise<InstrumentationLogger> | undefined;
+
+/**
+ * The app logger is loaded on demand rather than imported at module scope.
+ *
+ * `src/lib/logger.ts` creates its pino instance as soon as it is evaluated,
+ * and `@opentelemetry/instrumentation-pino` can only patch a pino module that
+ * is `require()`d after the instrumentation is enabled (inside `registerOTel`).
+ * A static import here would therefore give the whole app an unpatched logger:
+ * no `trace_id`/`span_id`, no OTLP log stream. Every log line in this file
+ * happens after registration, so loading the logger lazily is safe.
+ */
+function instrumentationLogger(): Promise<InstrumentationLogger> {
+  loggerPromise ??= import('@/lib/logger').then((module) =>
+    module.createLogger('instrumentation'),
+  );
+  return loggerPromise;
+}
 
 /**
  * Norse is the entry point of our system. Requests arrive with a `traceparent`
@@ -36,87 +61,181 @@ export class InjectOnlyTraceContextPropagator extends W3CTraceContextPropagator 
 }
 
 /**
+ * Turns `OTEL_EXPORTER_OTLP_USERNAME`/`PASSWORD` into the `Authorization`
+ * header the OTLP exporters read. Must run before the exporters are
+ * constructed (they read the environment once, at construction).
+ */
+function configureOtlpBasicAuth(): boolean {
+  const { OTEL_EXPORTER_OTLP_USERNAME, OTEL_EXPORTER_OTLP_PASSWORD } =
+    process.env;
+  if (!OTEL_EXPORTER_OTLP_USERNAME || !OTEL_EXPORTER_OTLP_PASSWORD) {
+    return false;
+  }
+
+  const basicAuth = Buffer.from(
+    `${OTEL_EXPORTER_OTLP_USERNAME}:${OTEL_EXPORTER_OTLP_PASSWORD}`,
+  ).toString('base64');
+  // OTEL_EXPORTER_OTLP_HEADERS is a comma-separated list of key=value
+  // pairs where each value must be URL-encoded, per the OTel spec.
+  const authHeader = `Authorization=${encodeURIComponent(`Basic ${basicAuth}`)}`;
+  const existingHeaders = (process.env.OTEL_EXPORTER_OTLP_HEADERS || '')
+    .split(',')
+    .filter((header) => header && !header.startsWith('Authorization='));
+  process.env.OTEL_EXPORTER_OTLP_HEADERS = [
+    ...existingHeaders,
+    authHeader,
+  ].join(',');
+  return true;
+}
+
+/**
  * `registerOtel` is injectable so the wiring test can inspect the exact
  * parameters handed to `@vercel/otel` (Next.js calls `register()` with none).
  */
-export function register(registerOtel: typeof registerOTel = registerOTel) {
-  if (!process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
-    log.info('Tracing disabled: OTEL_EXPORTER_OTLP_ENDPOINT not set');
-    return;
-  }
+export async function register(
+  registerOtel: typeof registerOTel = registerOTel,
+) {
+  const setupErrors: TelemetrySetupError[] = [];
 
-  const traceSamplerArg = process.env.OTEL_TRACES_SAMPLER_ARG || '1.0';
-  log.info(
-    { endpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT, traceSamplerArg },
-    'Initializing tracing',
-  );
+  try {
+    const endpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+    if (!endpoint) {
+      const log = await instrumentationLogger();
+      log.info('Tracing disabled: OTEL_EXPORTER_OTLP_ENDPOINT not set');
+      return;
+    }
 
-  const { OTEL_EXPORTER_OTLP_USERNAME, OTEL_EXPORTER_OTLP_PASSWORD } =
-    process.env;
-  if (OTEL_EXPORTER_OTLP_USERNAME && OTEL_EXPORTER_OTLP_PASSWORD) {
-    const basicAuth = Buffer.from(
-      `${OTEL_EXPORTER_OTLP_USERNAME}:${OTEL_EXPORTER_OTLP_PASSWORD}`,
-    ).toString('base64');
-    // OTEL_EXPORTER_OTLP_HEADERS is a comma-separated list of key=value
-    // pairs where each value must be URL-encoded, per the OTel spec.
-    const authHeader = `Authorization=${encodeURIComponent(`Basic ${basicAuth}`)}`;
-    const existingHeaders = (process.env.OTEL_EXPORTER_OTLP_HEADERS || '')
-      .split(',')
-      .filter((header) => header && !header.startsWith('Authorization='));
-    process.env.OTEL_EXPORTER_OTLP_HEADERS = [
-      ...existingHeaders,
-      authHeader,
-    ].join(',');
-    log.info(
-      { user: OTEL_EXPORTER_OTLP_USERNAME },
-      'OTLP basic auth configured',
-    );
-  }
+    const basicAuthConfigured = configureOtlpBasicAuth();
+    const traceSamplerArg = process.env.OTEL_TRACES_SAMPLER_ARG || '1.0';
+    const apiUrl = process.env.API_URL;
 
-  // `@vercel/otel` sets NEXT_OTEL_FETCH_DISABLED itself in its fetch
-  // instrumentation, disabling Next's built-in fetch span so the fetch
-  // instrumentation below (which propagates context, scoped by
-  // propagateContextUrls) is the only one tracing outgoing fetches.
+    // Metrics and logs are Node-only: the exporters, the runtime
+    // instrumentation and pino's require-hook cannot run on the Edge runtime.
+    // The literal comparison (not a boolean variable) is what lets Turbopack
+    // fold the branch and drop the import from the Edge bundle; the module
+    // also builds the resource attributes shared by every signal.
+    let nodeConfiguration: NodeTelemetryConfiguration = {};
+    if (process.env.NEXT_RUNTIME === 'nodejs') {
+      try {
+        const { createNodeTelemetryOptions } =
+          await import('./instrumentation.node');
+        const node = createNodeTelemetryOptions();
+        nodeConfiguration = node.configuration;
+        setupErrors.push(...node.errors);
+      } catch (error) {
+        setupErrors.push({ signal: 'node', error });
+      }
+    }
 
-  const apiUrl = process.env.API_URL;
-  if (!apiUrl) {
-    log.warn('API_URL not set: traceparent will not be sent to the Norse API');
-  }
+    const { instrumentations: nodeInstrumentations = [], ...nodeOptions } =
+      nodeConfiguration;
 
-  registerOtel({
-    serviceName: 'norse-app',
-    traceSampler: new ParentBasedSampler({
-      root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
-    }),
-    // Baggage is dropped on purpose; it is not used. Code-level
-    // `propagators` overrides OTEL_PROPAGATORS.
-    propagators: [new InjectOnlyTraceContextPropagator()],
-    // Every exported span passes through `PrivacySpanExporter`: query strings
-    // and fragments never leave the process (privacy rule 8). A sole
-    // `spanProcessors` entry, because `traceExporter` would leave
-    // `@vercel/otel`'s env-configured exporter installed as well whenever
-    // OTEL_EXPORTER_OTLP_ENDPOINT is set, exporting every span unchecked.
-    spanProcessors: [
-      new BatchSpanProcessor(
-        new PrivacySpanExporter(createOtlpTraceExporter()),
-      ),
-    ],
-    instrumentations: [
-      'auto',
-      // A span per Redis command (`cacheService`). Needs ioredis in
-      // serverExternalPackages (next.config.js). requireParentSpan: no
-      // orphan root spans from commands outside a request, such as the
-      // connect-time ready check.
-      new IORedisInstrumentation({ requireParentSpan: true }),
-    ],
-    instrumentationConfig: {
-      fetch: {
-        // Only inject `traceparent` for calls to the Norse API — not
-        // Keycloak, S3, Umami, Mapbox, Azure/Google Translate, etc.
-        propagateContextUrls: apiUrl ? [apiUrl] : [],
+    registerOtel({
+      serviceName: 'norse-app',
+      // Baggage is dropped on purpose; it is not used. Code-level
+      // `propagators` overrides OTEL_PROPAGATORS.
+      propagators: [new InjectOnlyTraceContextPropagator()],
+      // Every exported span passes through `PrivacySpanExporter`: query strings
+      // and fragments never leave the process (privacy rule 8). A sole
+      // `spanProcessors` entry, because `traceExporter` would leave
+      // `@vercel/otel`'s env-configured exporter installed as well whenever
+      // OTEL_EXPORTER_OTLP_ENDPOINT is set, exporting every span unchecked.
+      spanProcessors: [
+        new BatchSpanProcessor(
+          new PrivacySpanExporter(createOtlpTraceExporter()),
+        ),
+      ],
+      traceSampler: new ParentBasedSampler({
+        root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
+      }),
+      ...nodeOptions,
+      instrumentations: [
+        'auto',
+        // A span per Redis command (`cacheService`). Needs ioredis in
+        // serverExternalPackages (next.config.js). requireParentSpan: no
+        // orphan root spans from commands outside a request, such as the
+        // connect-time ready check.
+        new IORedisInstrumentation({ requireParentSpan: true }),
+        // Runtime-node (event loop, GC, heap) and pino (log correlation +
+        // OTLP log records), when those signals are enabled.
+        ...nodeInstrumentations,
+      ],
+      instrumentationConfig: {
+        fetch: {
+          // Only inject `traceparent` for calls to the Norse API — not
+          // Keycloak, S3, Umami, Mapbox, Azure/Google Translate, etc.
+          propagateContextUrls: apiUrl ? [apiUrl] : [],
+        },
       },
-    },
-  });
+    });
+
+    // The meter provider is installed: instruments created from now on are
+    // real. Without metrics (OTEL_METRICS_EXPORTER=none) there is no meter
+    // provider to cache against, so the flag stays off.
+    if (
+      process.env.NEXT_RUNTIME === 'nodejs' &&
+      nodeConfiguration.metricReaders?.length
+    ) {
+      markTelemetryReady();
+      try {
+        // Observable gauge: reads process.getActiveResourcesInfo() at
+        // collection time, so it must be created after the provider exists.
+        const { registerActiveResourcesGauge } =
+          await import('./instrumentation.node');
+        registerActiveResourcesGauge();
+      } catch (error) {
+        setupErrors.push({ signal: 'metrics', error });
+      }
+    }
+
+    // Logged only after registerOTel() so the lazy logger is created through
+    // the pino instrumentation (see instrumentationLogger above).
+    const log = await instrumentationLogger();
+    log.info(
+      {
+        endpoint,
+        traceSamplerArg,
+        basicAuth: basicAuthConfigured,
+        metrics:
+          process.env.NEXT_RUNTIME === 'nodejs' &&
+          process.env.OTEL_METRICS_EXPORTER !== 'none',
+        logs:
+          process.env.NEXT_RUNTIME === 'nodejs' &&
+          process.env.OTEL_LOGS_EXPORTER !== 'none',
+      },
+      'Initialized telemetry',
+    );
+    if (!apiUrl) {
+      log.warn(
+        'API_URL not set: traceparent will not be sent to the Norse API',
+      );
+    }
+    // `resourceAttributes` labels an unset environment `unknown`; say so once,
+    // because every dashboard filters on `env`.
+    if (!process.env.DEPLOYMENT_ENVIRONMENT) {
+      log.warn(
+        'DEPLOYMENT_ENVIRONMENT is not set: telemetry is labelled unknown',
+      );
+    }
+  } catch (error) {
+    setupErrors.push({ signal: 'register', error });
+  } finally {
+    // Telemetry must never break the app (plan rule 7). Each failed signal is
+    // reported once, after the rest of the SDK is up.
+    if (setupErrors.length > 0) {
+      try {
+        const log = await instrumentationLogger();
+        for (const { signal, error } of setupErrors) {
+          log.error(
+            { err: error, signal },
+            'telemetry setup failed; continuing without that signal',
+          );
+        }
+      } catch {
+        // Logging is best effort here: never throw out of register().
+      }
+    }
+  }
 }
 
 type RequestErrorContext = Readonly<{
@@ -153,15 +272,24 @@ export async function onRequestError(
       span.setStatus({ code: SpanStatusCode.ERROR });
     }
   } catch (hookError) {
-    log.warn(
-      { err: hookError },
-      'onRequestError: failed to record exception on the active span',
-    );
+    try {
+      const log = await instrumentationLogger();
+      log.warn(
+        { err: hookError },
+        'onRequestError: failed to record exception on the active span',
+      );
+    } catch {
+      // Never break the app because of telemetry.
+    }
   }
   try {
     const errName = err instanceof Error ? err.name : 'unknown';
-    // Same barrier as the `err` serializer: an error message can embed a
-    // request URL, and this field is logged directly (privacy rule 8).
+    // Loaded on demand for the same reason as `instrumentationLogger`: a
+    // static import of `@/lib/logger` would create pino before the
+    // instrumentation is enabled. Same barrier as the `err` serializer: an
+    // error message can embed a request URL, and this field is logged
+    // directly (privacy rule 8).
+    const { stripUrlQueries } = await import('@/lib/logger');
     const errMessage = stripUrlQueries(
       err instanceof Error ? err.message : String(err),
     );
@@ -172,6 +300,7 @@ export async function onRequestError(
       typeof err.digest === 'string'
         ? err.digest
         : undefined;
+    const log = await instrumentationLogger();
     log.error(
       {
         event: 'request_error',

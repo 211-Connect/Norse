@@ -35,6 +35,10 @@ const ALLOWED: Record<string, { count: number; why: string }> = {
     count: 1,
     why: 'recognises the search pathname, builds no URL',
   },
+  'lib/telemetry/api-fetch.ts': {
+    count: 2,
+    why: 'fixed path templates for dependency metrics, builds no URL',
+  },
 };
 
 // `/search` opening a literal, or straight after an interpolation (`/${locale}/search`, `${API_URL}/search`),

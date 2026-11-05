@@ -1,6 +1,7 @@
 import { Redis } from 'ioredis';
 
 import { createLogger } from '@/lib/logger';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 const log = createLogger('cache');
 
@@ -145,11 +146,12 @@ class CacheService {
         log.warn({ key }, 'Cache set skipped; Redis disabled');
         return;
       }
-      if (ttl !== undefined && ttl > 0) {
-        await this.client.setex(key, ttl, value);
-      } else {
-        await this.client.set(key, value);
-      }
+      const client = this.client;
+      await trackDependency('redis', 'set', () =>
+        ttl !== undefined && ttl > 0
+          ? client.setex(key, ttl, value)
+          : client.set(key, value),
+      );
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis set error');
     }
@@ -159,7 +161,8 @@ class CacheService {
     try {
       await this.ensureConnection();
       if (!this.client) return null;
-      return await this.client.get(key);
+      const client = this.client;
+      return await trackDependency('redis', 'get', () => client.get(key));
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis get error');
       return null;
@@ -174,11 +177,14 @@ class CacheService {
     try {
       await this.ensureConnection();
       if (!this.client) return null;
-      const count = await this.client.incr(key);
-      if (count === 1) {
-        await this.client.expire(key, ttl);
-      }
-      return count;
+      const client = this.client;
+      return await trackDependency('redis', 'incr', async () => {
+        const count = await client.incr(key);
+        if (count === 1) {
+          await client.expire(key, ttl);
+        }
+        return count;
+      });
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis incr error');
       return null;
@@ -189,7 +195,8 @@ class CacheService {
     try {
       await this.ensureConnection();
       if (!this.client) return;
-      await this.client.del(key);
+      const client = this.client;
+      await trackDependency('redis', 'del', () => client.del(key));
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis del error');
     }
