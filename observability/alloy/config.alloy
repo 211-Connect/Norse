@@ -22,8 +22,9 @@ otelcol.receiver.otlp "default" {
 // Privacy backstop, same statements as production (charts C5/#20): the apps
 // strip query strings before exporting, this catches anything they miss.
 // Traces: drop the query string from every URL-ish attribute and from the span
-// name, and delete `url.query`. Logs: redact the sensitive query parameters in
-// the body and in string attributes.
+// name, and delete `url.query` plus the network/identity attributes (IPs, user
+// agent). Logs: redact the sensitive query parameters in the body and in string
+// attributes.
 otelcol.processor.transform "privacy" {
 	error_mode = "ignore"
 
@@ -36,14 +37,23 @@ otelcol.processor.transform "privacy" {
 			`replace_pattern(attributes["url.full"], "\\?.*$", "") where attributes["url.full"] != nil`,
 			`delete_key(attributes, "url.query")`,
 			`delete_key(attributes, "http.request.header.x-api-key")`,
+			`delete_key(attributes, "peer.address")`,
+			`delete_key(attributes, "client.address")`,
+			`delete_key(attributes, "network.peer.address")`,
+			`delete_key(attributes, "network.peer.port")`,
+			`delete_key(attributes, "http.client_ip")`,
+			`delete_key(attributes, "net.peer.ip")`,
+			`delete_key(attributes, "user_agent")`,
+			`delete_key(attributes, "user_agent.original")`,
+			`delete_key(attributes, "http.user_agent")`,
 		]
 	}
 
 	log_statements {
 		context = "log"
 		statements = [
-			`replace_all_patterns(attributes, "value", "(?i)\\b(query|q|location|coords|lat|lon|lng|key|api_key|token)=[^&\\s\"]*", "${1}=REDACTED")`,
-			`replace_pattern(body, "(?i)\\b(query|q|location|coords|lat|lon|lng|key|api_key|token)=[^&\\s\"]*", "${1}=REDACTED") where IsString(body)`,
+			`replace_all_patterns(attributes, "value", "(?i)(^|[^a-z0-9])((?:[a-z0-9]+[_-])*(query|query_label|q|location|coords|lat|lon|lng|key|api_key|token))=[^&\\s\"]*", "${1}${2}=REDACTED")`,
+			`replace_pattern(body, "(?i)(^|[^a-z0-9])((?:[a-z0-9]+[_-])*(query|query_label|q|location|coords|lat|lon|lng|key|api_key|token))=[^&\\s\"]*", "${1}${2}=REDACTED") where IsString(body)`,
 		]
 	}
 
