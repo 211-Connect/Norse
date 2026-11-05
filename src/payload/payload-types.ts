@@ -904,7 +904,7 @@ export interface ResourceDirectory {
       pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
       resultsLimit: number;
       /**
-       * Plots up to 1,000 results of a search on the map as small circles, with the current page as pins, instead of only the current page. The results list is capped at the same 1,000.
+       * Plots up to 1,000 results of a search on the map as small circles, with the current page in the brand colour, instead of only the current page. The results list is capped at the same 1,000.
        */
       showAllResultsOnMap?: boolean | null;
       radiusSelectValues?:

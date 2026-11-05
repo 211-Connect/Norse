@@ -33,8 +33,25 @@ import {
 
 const log = createLogger('maplibre');
 
-/** Pins next to result circles: smaller so the two read as one layer of results. */
+/** The user's pin next to result circles: smaller, so it doesn't hide them. */
 const COMPACT_MARKER_SCALE = 0.72;
+
+/**
+ * Lets a keyboard reach a circle drawn on the canvas. It shows only as a focus
+ * ring, and the mouse goes through it to the canvas.
+ */
+const createPointFocusTarget = () => {
+  const element = document.createElement('div');
+  element.className = 'point-focus-target';
+
+  return element;
+};
+
+const scrollToResult = (id: string) => {
+  setTimeout(() => {
+    document.getElementById(id)?.scrollIntoView();
+  });
+};
 
 const getCoreBounds = (coordinates: [number, number][]) => {
   const extent = getCoreExtent(coordinates);
@@ -216,10 +233,10 @@ export function Map({
 
     _markers.current?.forEach((m) => m.remove());
 
-    const markerOptions = points ? { scale: COMPACT_MARKER_SCALE } : undefined;
-
     _markers.current = markers.map((m) => {
-      const marker = new Marker(markerOptions);
+      const marker = new Marker(
+        points ? { element: createPointFocusTarget() } : undefined,
+      );
       const markerElement = marker.getElement();
       const markerLabel = m.label?.trim() || 'resource';
       const popupId = `map-popup-${m.id}`;
@@ -248,7 +265,6 @@ export function Map({
           markerElement.setAttribute('aria-disabled', 'true');
         }
         markerElement.classList.add('custom-marker');
-        markerElement.classList.toggle('compact-marker', !!points);
         markerElement.addEventListener('click', () => {
           // Built on first use. MapLibre's click handler on the map runs after
           // this one, as the event bubbles, and opens it.
@@ -260,10 +276,7 @@ export function Map({
             );
           }
 
-          setTimeout(() => {
-            const listElement = document.getElementById(m.id);
-            listElement?.scrollIntoView();
-          });
+          scrollToResult(m.id);
           restoreFocusOnCloseRef.current = false;
           pointPopupRef.current?.remove();
           _markers.current?.forEach((otherMarker) => {
@@ -306,7 +319,9 @@ export function Map({
       !isNaN(usersLocation[0]) &&
       !isNaN(usersLocation[1])
     ) {
-      const marker = new Marker(markerOptions);
+      const marker = new Marker(
+        points ? { scale: COMPACT_MARKER_SCALE } : undefined,
+      );
 
       marker.setLngLat(usersLocation as LngLatLike);
 
@@ -394,6 +409,7 @@ export function Map({
       const point = pointsRef.current?.find((candidate) => candidate.id === id);
       if (!point?.popup) return;
 
+      scrollToResult(id);
       restoreFocusOnCloseRef.current = false;
       pointPopupRef.current?.remove();
       _markers.current.forEach((marker) => marker.getPopup()?.remove());

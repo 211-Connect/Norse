@@ -27,7 +27,9 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
       className="bg-card/95 text-card-foreground pointer-events-none absolute top-2 left-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
     >
       <li className="flex items-center gap-1.5">
-        <LegendPin className="text-primary" />
+        <span className="flex w-[11px] justify-center">
+          <span className="bg-primary size-2.5 rounded-full ring-1 ring-white" />
+        </span>
         {t('map_legend_list', { defaultValue: 'In the list' })}
       </li>
       {showUserLocation && (
@@ -38,7 +40,7 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
       )}
       <li className="flex items-center gap-1.5">
         <span className="flex w-[11px] justify-center">
-          <span className="bg-primary/70 size-2 rounded-full ring-1 ring-white" />
+          <span className="bg-primary/40 size-2.5 rounded-full ring-1 ring-white" />
         </span>
         {t('map_legend_other', { defaultValue: 'Other locations' })}
       </li>

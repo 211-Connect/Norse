@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { getCoreExtent } from '../src/app/(app)/shared/components/map/map-shared';
+import { toFeatureCollection } from '../src/app/(app)/shared/components/map/maplibre/points-layer';
 import {
   MAP_PINS_LIMIT,
   SearchPin,
@@ -87,4 +88,20 @@ test('a small result set keeps every location in the frame', () => {
 
 test('no locations have no extent to fit', () => {
   assert.equal(getCoreExtent([]), null);
+});
+
+test('circles know their resources and whether the list shows them', () => {
+  const { features } = toFeatureCollection([
+    { id: 'no-location', inList: true },
+    { id: 'one', coordinates: [-120, 46] },
+    { id: 'site', coordinates: [-121, 47], count: 3, inList: true },
+  ]);
+
+  assert.deepEqual(
+    features.map(({ properties }) => properties),
+    [
+      { id: 'one', resources: 1, inList: false },
+      { id: 'site', resources: 3, inList: true },
+    ],
+  );
 });

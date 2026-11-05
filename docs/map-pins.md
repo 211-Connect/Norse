@@ -5,7 +5,8 @@
 By default the search map shows only the current page of results, so a search
 with 489 matches draws about 25 pins, and an agency on a later page looks
 unlisted (ISS-1747, P026). With this feature the map shows every result, up to
-1,000: the current list page as normal pins, and the rest as small circles.
+1,000, as small circles: the current list page in the tenant's primary colour,
+and the rest in a subtler tint of it.
 
 ## Where it is configured
 
@@ -26,8 +27,8 @@ does not check it.
 SearchResultsProvider { results, pins, totalResults, isTotalCapped }
         ↓
 MapContainer
-  ├ results → markers   DOM pins with keyboard support
-  └ pins - results, grouped by address → points   canvas circles
+  ├ pins + results, grouped by address → points   canvas circles
+  └ the list's points → markers   invisible DOM targets for the keyboard
 ```
 
 - **API.** `GET /search/pins` in Norse-API takes the same params as `GET /search`
@@ -55,14 +56,18 @@ MapContainer
 
 - **Circles** are a MapLibre `circle` layer (`maplibre/points-layer.ts`), drawn
   by the GPU rather than as DOM elements, with an 8px click tolerance.
-- **Several resources at one address** share a circle, whose popup lists them.
-- **Pins are compact** while circles are shown (72% of normal size) and grow on
-  hover and keyboard focus. Without the flag they keep their normal size.
-- **A legend** in the map's corner explains pins, the user's location and circles.
+- **Circles are the same size** whether or not they're in the list. Only the
+  colour differs, and the list's are drawn on top. They grow with the zoom and on
+  hover.
+- **Several resources at one address** share a circle, whose popup lists them. Its
+  count shows from zoom 12, where the circle is big enough to hold it. An address
+  counts as in the list if any of its resources is.
+- **Clicking a circle in the list** scrolls the list to that result.
+- **A legend** in the map's corner explains the two circles and the user's location.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
-- **Turning the list's page** swaps which results are pins and leaves the map
-  where it is.
+- **Turning the list's page** recolours the circles and leaves the map where it
+  is.
 - **Pins that fail or time out** leave the map as it is without the flag.
 - **A map that crashes** never replaces the page. It retries with the current
   page's pins only, then shows a message beside the list, and tries again on the
@@ -79,9 +84,10 @@ reached. Analytics still receive the real total.
 
 ## Accessibility
 
-Circles can't take keyboard focus, as they are drawn on the canvas. Keyboard and
-screen reader users reach the same resources through the paginated list, whose
-current page keeps focusable pins.
+Circles can't take keyboard focus, as they are drawn on the canvas. Each circle
+on the list's current page has an invisible DOM marker over it, which takes focus,
+shows a focus ring and opens the same popup. The other circles have none: keyboard
+and screen reader users reach them by turning the list's page.
 
 ## Known limits
 

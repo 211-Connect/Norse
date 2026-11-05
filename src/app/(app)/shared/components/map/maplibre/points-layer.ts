@@ -1,4 +1,8 @@
-import { type GeoJSONSource, type Map as MapLibreMap } from 'maplibre-gl';
+import {
+  type ExpressionSpecification,
+  type GeoJSONSource,
+  type Map as MapLibreMap,
+} from 'maplibre-gl';
 
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
@@ -6,11 +10,26 @@ import { type MarkerDef } from '../map-shared';
 
 const SOURCE_ID = 'result-points';
 const LAYER_ID = 'result-points-circles';
+const COUNT_LAYER_ID = 'result-points-counts';
+
+/** Circles grow to fit a count from here, so it's readable once it shows. */
+const COUNT_MIN_ZOOM = 12;
+
+/** Must exist on the style's glyph server, or the counts don't draw. */
+const COUNT_FONT = 'DIN Pro Medium';
 
 /** Extra reach around the cursor, because a circle is smaller than a fingertip. */
 const HIT_TOLERANCE_PX = 8;
 
-const toFeatureCollection = (
+const IS_HOVERED: ExpressionSpecification = [
+  'boolean',
+  ['feature-state', 'hover'],
+  false,
+];
+const IN_LIST: ExpressionSpecification = ['boolean', ['get', 'inList'], false];
+const ABOVE_OTHERS: ExpressionSpecification = ['case', IN_LIST, 1, 0];
+
+export const toFeatureCollection = (
   points: MarkerDef[],
 ): GeoJSON.FeatureCollection => ({
   type: 'FeatureCollection',
@@ -18,21 +37,25 @@ const toFeatureCollection = (
     .filter((point) => isValidCoordinate(point.coordinates))
     .map((point) => ({
       type: 'Feature',
-      properties: { id: point.id },
+      properties: {
+        id: point.id,
+        resources: point.count ?? 1,
+        inList: !!point.inList,
+      },
       geometry: { type: 'Point', coordinates: point.coordinates! },
     })),
 });
 
-/** The tenant's brand colour, in the comma form MapLibre's parser reads. */
-const getPointColor = () => {
+/** A theme colour, in the comma form MapLibre's parser reads. */
+const getThemeColor = (variable: string, fallback: string) => {
   const [hue, saturation, lightness] = getComputedStyle(
     document.documentElement,
   )
-    .getPropertyValue('--primary')
+    .getPropertyValue(variable)
     .trim()
     .split(/\s+/);
 
-  return lightness ? `hsl(${hue}, ${saturation}, ${lightness})` : '#2563eb';
+  return lightness ? `hsl(${hue}, ${saturation}, ${lightness})` : fallback;
 };
 
 export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
@@ -44,14 +67,17 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
     return;
   }
 
+  const color = getThemeColor('--primary', '#2563eb');
+
   map.addSource(SOURCE_ID, { type: 'geojson', data, generateId: true });
   map.addLayer({
     id: LAYER_ID,
     type: 'circle',
     source: SOURCE_ID,
+    layout: { 'circle-sort-key': ABOVE_OTHERS },
     paint: {
-      'circle-color': getPointColor(),
-      'circle-opacity': 0.7,
+      'circle-color': color,
+      'circle-opacity': ['case', IN_LIST, 1, 0.4],
       'circle-stroke-color': '#ffffff',
       'circle-stroke-width': 1,
       'circle-radius': [
@@ -59,18 +85,45 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
         ['linear'],
         ['zoom'],
         5,
-        ['case', ['boolean', ['feature-state', 'hover'], false], 5, 3],
+        ['case', IS_HOVERED, 5, 3],
         10,
-        ['case', ['boolean', ['feature-state', 'hover'], false], 7, 5],
+        ['case', IS_HOVERED, 7, 5],
+        COUNT_MIN_ZOOM,
+        ['case', IS_HOVERED, 11, 9],
         15,
-        ['case', ['boolean', ['feature-state', 'hover'], false], 10, 8],
+        ['case', IS_HOVERED, 12, 10],
+      ],
+    },
+  });
+  map.addLayer({
+    id: COUNT_LAYER_ID,
+    type: 'symbol',
+    source: SOURCE_ID,
+    minzoom: COUNT_MIN_ZOOM,
+    filter: ['>', ['get', 'resources'], 1],
+    layout: {
+      'symbol-sort-key': ABOVE_OTHERS,
+      'text-field': ['to-string', ['get', 'resources']],
+      'text-font': [COUNT_FONT],
+      'text-size': 11,
+      'text-allow-overlap': true,
+      'text-ignore-placement': true,
+    },
+    paint: {
+      'text-color': [
+        'case',
+        IN_LIST,
+        getThemeColor('--primary-foreground', '#ffffff'),
+        color,
       ],
     },
   });
 };
 
 export const removePointsLayer = (map: MapLibreMap) => {
-  if (map.getLayer(LAYER_ID)) map.removeLayer(LAYER_ID);
+  [COUNT_LAYER_ID, LAYER_ID].forEach((layer) => {
+    if (map.getLayer(layer)) map.removeLayer(layer);
+  });
   if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
 };
 

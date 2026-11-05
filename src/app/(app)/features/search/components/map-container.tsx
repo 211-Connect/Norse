@@ -69,6 +69,7 @@ const toMarker = (
           count: site.length,
           defaultValue: '{{count}} resources at this location',
         }),
+        count: site.length,
         popup: <MapSitePopup site={site} distance={distance} />,
       };
 };
@@ -91,18 +92,29 @@ export function MapContainer() {
   const pagePins = useMemo(() => results.map(toPin), [results]);
 
   // Memoize to prevent unecessary map re-renders
-  const mapMarkers = useMemo(
+  const pageMarkers = useMemo(
     () => pagePins.map((pin) => toMarker([pin], coords, t)),
     [coords, pagePins, t],
   );
 
-  const mapPoints = useMemo(
-    () =>
-      pins &&
-      groupPinsBySite(omitPagePins(pins, pagePins)).map((site) =>
-        toMarker(site, coords, t),
-      ),
-    [coords, pagePins, pins, t],
+  const mapPoints = useMemo(() => {
+    if (!pins) return null;
+
+    const onPage = new Set(pagePins.map((pin) => pin.id));
+
+    // The page comes first, so a shared address is known by a result in the list.
+    return groupPinsBySite([...pagePins, ...omitPagePins(pins, pagePins)]).map(
+      (site) => ({
+        ...toMarker(site, coords, t),
+        inList: onPage.has(site[0].id),
+      }),
+    );
+  }, [coords, pagePins, pins, t]);
+
+  // With circles, the markers are only how a keyboard reaches the list's circles.
+  const mapMarkers = useMemo(
+    () => mapPoints?.filter((point) => point.inList) ?? pageMarkers,
+    [mapPoints, pageMarkers],
   );
 
   if (headerHeight === 0) return null;
@@ -131,7 +143,7 @@ export function MapContainer() {
               resetKey={results}
               fallback={<MapErrorFallback error="Failed to load map" />}
             >
-              <MapRenderer markers={mapMarkers} />
+              <MapRenderer markers={pageMarkers} />
             </ErrorBoundary>
           }
         >
