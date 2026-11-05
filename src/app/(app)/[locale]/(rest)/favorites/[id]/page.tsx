@@ -13,7 +13,7 @@ import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getF
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getTenantByHost } from '@/lib/cms/tenants';
 
 const i18nNamespaces = [
   'common',
@@ -85,7 +85,7 @@ export default async function FavoritesDetailsPage({ params }) {
         headersList.get('x-forwarded-host') ||
         headersList.get('host') ||
         'localhost';
-      const tenant = await findTenantByHost(parseHost(host));
+      const tenant = await getTenantByHost(parseHost(host));
 
       if (tenant?.auth?.requiresLogin) {
         redirect(

@@ -3,6 +3,10 @@
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
+import {
+  searchIntent,
+  serializeSearchUrl,
+} from '@/app/(app)/features/search/intent/serialize';
 import { Link } from '@/app/(app)/shared/components/link';
 import {
   Card,
@@ -12,6 +16,10 @@ import {
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
+
+const EMPTY_SEARCH_HREF = serializeSearchUrl(searchIntent({}), {
+  passThrough: [],
+});
 
 export function NoFavoritesCard() {
   const { t } = useTranslation('page-list');
@@ -33,7 +41,7 @@ export function NoFavoritesCard() {
       <CardHeader className="text-center">
         <CardTitle>{t('no_favorites.title')}</CardTitle>
         <CardDescription>
-          <Link href="/search" className="underline">
+          <Link href={EMPTY_SEARCH_HREF} className="underline">
             {t('no_favorites.subtitle')}
           </Link>
         </CardDescription>

@@ -1,10 +1,12 @@
 'use client';
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { useMachine } from '@xstate/react';
 import {
   FocusEvent,
   useCallback,
   useEffect,
+  useRef,
   useState,
   useTransition,
 } from 'react';
@@ -12,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useAppConfig } from '../../hooks/use-app-config';
+import { useFlag } from '../../hooks/use-flag';
 import {
   LOCATION_INPUT_ID,
   SEARCH_DIALOG_ID,
@@ -39,25 +42,44 @@ import {
   useUserLocationNavigator,
 } from '@/app/(app)/features/search/hooks';
 import { useOnSearchSubmit } from '@/app/(app)/features/search/hooks/useOnSearchSubmit';
+import {
+  searchIntent,
+  type SearchIntent,
+} from '@/app/(app)/features/search/intent';
+import {
+  searchPolicy,
+  searchResolverMachine,
+} from '@/app/(app)/features/search/resolver';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
-  initialAiState?: Partial<{
-    scenario: AiClassificationScenario;
-    clarifyOptions: AiPredictOption[];
-    selectedClarifyCodes: string[];
-  }>;
+  /** The search page's intent: a URL carrying clarify state opens with its options. */
+  intent?: SearchIntent;
   onLegacyAiClarifyAction?: () => void;
   open: boolean;
   setOpen?: (open: boolean) => void;
   restoreFocusElement?: HTMLElement | null;
 }
 
+/** The dialog's busy states, as `useOnSearchSubmit` reports and reads them. */
 export type AiAction = 'predict' | 'skip' | 'confirm';
+
+/** The effects the dialog's resolver actor performs, read through a ref so they are never stale. */
+type DialogEffects = {
+  clarifyActed: () => void;
+  /** Resolves false when there was nothing to navigate to. */
+  navigateSkipped: () => Promise<boolean>;
+  rerank: (
+    options: AiPredictOption[],
+    codes: string[],
+  ) => Promise<string[] | null>;
+  navigateConfirmed: (taxonomies: string[]) => Promise<void>;
+  notifyRerankFailed: () => void;
+};
 
 export function SearchDialog({
   focusByDefault = 'search',
-  initialAiState,
+  intent,
   onLegacyAiClarifyAction,
   open,
   setOpen,
@@ -67,152 +89,159 @@ export function SearchDialog({
   const [isPending, startTransition] = useTransition();
   const appConfig = useAppConfig();
 
+  const requireUserLocation = useFlag('requireUserLocation');
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
-
-  const [aiSearchScenario, setAiSearchScenario] = useState<
-    AiClassificationScenario | undefined
-  >(initialAiState?.scenario);
-  const [activeAiAction, setActiveAiAction] = useState<AiAction | null>(null);
   const [isLocationActive, setIsLocationActive] = useState(false);
-  const [clarifyOptions, setClarifyOptions] = useState<
-    AiPredictOption[] | null
-  >(
-    initialAiState?.clarifyOptions && initialAiState.clarifyOptions.length > 0
-      ? initialAiState.clarifyOptions
-      : null,
-  );
-  const [selectedClarifyCodes, setSelectedClarifyCodes] = useState<string[]>(
-    initialAiState?.selectedClarifyCodes ?? [],
-  );
-  const [clarifyValidationError, setClarifyValidationError] = useState('');
-
-  const clarifyVisible = clarifyOptions !== null;
-  const effectiveClarifyOptions = clarifyOptions ?? [];
-  const isPredictLoading = activeAiAction === 'predict';
-
-  const clearAiState = useCallback(() => {
-    setClarifyOptions(null);
-    setSelectedClarifyCodes([]);
-    setClarifyValidationError('');
-  }, []);
 
   const navigateAiSearch = useNavigateAiSearch({
     setDialogOpen: setOpen,
     startTransition,
   });
+
+  /** Where the visitor searched, for the search analytics event. */
+  const locationPayload = () =>
+    buildSearchLocationPayload(
+      searchCoordinates,
+      userCoordinates,
+      appConfig.tenantId,
+    );
+
+  const effects = useRef<DialogEffects | null>(null);
+  effects.current = {
+    clarifyActed: () => onLegacyAiClarifyAction?.(),
+    navigateSkipped: async () =>
+      navigateAiSearch({ locationPayload: await locationPayload() }),
+    rerank: async (options, codes) => {
+      const reRankResponse = await reRankSearchNeeds(
+        { need_weights: buildAiNeedWeights(options, codes) },
+        i18n.language,
+        appConfig.tenantId,
+      );
+      return reRankResponse ? reRankResponse.hsis_taxonomies : null;
+    },
+    navigateConfirmed: async (taxonomies) => {
+      navigateAiSearch({
+        taxonomies,
+        locationPayload: await locationPayload(),
+      });
+    },
+    notifyRerankFailed: () => {
+      toast.error(t('message.error'));
+    },
+  };
+
+  const [dialogMachine] = useState(() =>
+    searchResolverMachine.provide({
+      actions: {
+        clarifyActed: () => effects.current?.clarifyActed(),
+        navigateSkipped: ({ self }) => {
+          // A tick first, so the skip button shows its loading state before navigating.
+          void Promise.resolve().then(async () => {
+            if (!(await effects.current?.navigateSkipped())) {
+              self.send({ type: 'NAVIGATION_REFUSED' });
+            }
+          });
+        },
+        requestRerank: ({ context, self }) => {
+          void effects.current
+            ?.rerank(context.clarifyOptions ?? [], context.selectedCodes)
+            .then((taxonomies) =>
+              self.send({ type: 'RERANK_RESOLVED', taxonomies }),
+            );
+        },
+        navigateConfirmed: (_, { taxonomies }) => {
+          void effects.current?.navigateConfirmed(taxonomies);
+        },
+        notifyRerankFailed: () => effects.current?.notifyRerankFailed(),
+      },
+    }),
+  );
+  const [resolver, send] = useMachine(dialogMachine, {
+    input: {
+      intent: intent ?? searchIntent({}),
+      loopGuard: true,
+      policy: searchPolicy({
+        searchEngine: appConfig.search.searchEngine,
+        requireUserLocation,
+      }),
+      searchEngine: appConfig.search.searchEngine,
+    },
+  });
+
+  const activeAiAction: AiAction | null = resolver.matches('needs_prediction')
+    ? 'predict'
+    : resolver.matches('skipping')
+      ? 'skip'
+      : resolver.matches('confirming') || resolver.matches('confirmed')
+        ? 'confirm'
+        : null;
+  const { clarifyOptions, selectedCodes, scenario, needsSelection } =
+    resolver.context;
+  const clarifyValidationError = needsSelection
+    ? t('search.ai_validation_select_or_skip')
+    : '';
+
+  const clarifyVisible = clarifyOptions !== null;
+  const effectiveClarifyOptions = clarifyOptions ?? [];
+  const isPredictLoading = activeAiAction === 'predict';
+
+  // `useOnSearchSubmit` routes the submit on the same machine and reports each step here.
   const onSubmit = useOnSearchSubmit({
     activeAiAction,
     setDialogOpen: setOpen,
-    setActiveAiAction,
-    setClarifyValidationError,
-    setAiSearchScenario,
-    setClarifyOptions,
-    setSelectedClarifyCodes,
+    setActiveAiAction: useCallback(
+      (action: AiAction | null) =>
+        send(
+          action === 'predict'
+            ? { type: 'PREDICTION_REQUESTED' }
+            : { type: 'PREDICTION_SETTLED' },
+        ),
+      [send],
+    ),
+    setClarifyValidationError: useCallback(
+      () => send({ type: 'VALIDATION_CLEARED' }),
+      [send],
+    ),
+    setAiSearchScenario: useCallback(
+      (value: AiClassificationScenario | undefined) =>
+        send({ type: 'SCENARIO_RESOLVED', scenario: value }),
+      [send],
+    ),
+    setClarifyOptions: useCallback(
+      (options: AiPredictOption[]) =>
+        send({ type: 'OPTIONS_OFFERED', options }),
+      [send],
+    ),
+    setSelectedClarifyCodes: useCallback(
+      (codes: string[]) => send({ type: 'CODES_SELECTED', codes }),
+      [send],
+    ),
     startTransition,
   });
 
-  const handleToggleClarifyCode = useCallback((code: string) => {
-    setClarifyValidationError('');
-    setSelectedClarifyCodes((prev) =>
-      prev.includes(code)
-        ? prev.filter((value) => value !== code)
-        : [...prev, code],
-    );
-  }, []);
+  const handleToggleClarifyCode = useCallback(
+    (code: string) => send({ type: 'CODE_TOGGLED', code }),
+    [send],
+  );
 
-  const handleSkipClarify = useCallback(async () => {
-    if (activeAiAction || isPending) {
-      return;
-    }
+  const handleSkipClarify = useCallback(
+    () => send({ type: 'SKIPPED', pending: isPending }),
+    [isPending, send],
+  );
 
-    onLegacyAiClarifyAction?.();
-    setActiveAiAction('skip');
-    await Promise.resolve();
-    const locationPayload = await buildSearchLocationPayload(
-      searchCoordinates,
-      userCoordinates,
-      appConfig.tenantId,
-    );
-    const didNavigate = navigateAiSearch({ locationPayload });
-    if (!didNavigate) {
-      setActiveAiAction(null);
-    }
-  }, [
-    activeAiAction,
-    appConfig.tenantId,
-    isPending,
-    navigateAiSearch,
-    searchCoordinates,
-    userCoordinates,
-  ]);
-
-  const handleConfirmClarify = useCallback(async () => {
-    if (activeAiAction || isPending) {
-      return;
-    }
-
-    if (selectedClarifyCodes.length === 0) {
-      setClarifyValidationError(t('search.ai_validation_select_or_skip'));
-      return;
-    }
-
-    onLegacyAiClarifyAction?.();
-    const needWeights = buildAiNeedWeights(
-      effectiveClarifyOptions,
-      selectedClarifyCodes,
-    );
-
-    if (Object.keys(needWeights).length === 0) {
-      setClarifyValidationError(t('search.ai_validation_select_or_skip'));
-      return;
-    }
-
-    setClarifyValidationError('');
-    setActiveAiAction('confirm');
-
-    const reRankResponse = await reRankSearchNeeds(
-      { need_weights: needWeights },
-      i18n.language,
-      appConfig.tenantId,
-    );
-
-    if (!reRankResponse) {
-      setActiveAiAction(null);
-      toast.error(t('message.error'));
-      return;
-    }
-
-    const locationPayload = await buildSearchLocationPayload(
-      searchCoordinates,
-      userCoordinates,
-      appConfig.tenantId,
-    );
-
-    navigateAiSearch({
-      taxonomies: reRankResponse.hsis_taxonomies,
-      locationPayload,
-    });
-  }, [
-    activeAiAction,
-    appConfig.tenantId,
-    effectiveClarifyOptions,
-    isPending,
-    navigateAiSearch,
-    searchCoordinates,
-    userCoordinates,
-    selectedClarifyCodes,
-    t,
-    i18n.language,
-  ]);
+  const handleConfirmClarify = useCallback(
+    () => send({ type: 'CONFIRMED', pending: isPending }),
+    [isPending, send],
+  );
 
   useEffect(() => {
     if (isPending) {
       return;
     }
 
-    setActiveAiAction(null);
-  }, [isPending]);
+    send({ type: 'NAVIGATION_SETTLED' });
+  }, [isPending, send]);
 
   const isMainSearchLoading = isPredictLoading || isPending;
   const disableSearchControls = Boolean(activeAiAction) || isPending;
@@ -249,13 +278,10 @@ export function SearchDialog({
     });
   }, []);
 
-  const handleSearchInputChange = useCallback(() => {
-    if (!clarifyVisible) {
-      return;
-    }
-
-    clearAiState();
-  }, [clarifyVisible, clearAiState]);
+  const handleSearchInputChange = useCallback(
+    () => send({ type: 'QUERY_EDITED' }),
+    [send],
+  );
 
   useUserLocationNavigator({ isDialogOpen: open });
 
@@ -355,10 +381,10 @@ export function SearchDialog({
 
                   {showAiClassificationOptions && (
                     <AiClassificationOptions
-                      selectedCodes={selectedClarifyCodes}
+                      selectedCodes={selectedCodes}
                       options={effectiveClarifyOptions}
                       onToggle={handleToggleClarifyCode}
-                      scenario={aiSearchScenario}
+                      scenario={scenario}
                       validationMessage={clarifyValidationError}
                       disabled={disableSearchControls}
                     />

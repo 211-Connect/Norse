@@ -2,7 +2,7 @@
 
 import { DIRECTORY_IMAGE_MIME_TYPES } from '@/app/(app)/features/printable-directories/utils/constants';
 import { createLogger } from '@/lib/logger';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+import { uploadTenantMedia } from '@/lib/cms/tenant-media';
 
 import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
 import { PrintableDirectoryCapability } from '@/types/appConfig';
@@ -92,28 +92,14 @@ export async function uploadPrintableDirectoryImage(
   }
 
   try {
-    const payload = await getPayloadSingleton();
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const url = await uploadTenantMedia(tenantId, file);
 
-    const media = await payload.create({
-      collection: 'tenant-media',
-      data: {
-        tenant: tenantId,
-      },
-      file: {
-        data: buffer,
-        mimetype: file.type,
-        name: file.name,
-        size: buffer.length,
-      },
-    });
-
-    if (!media.url) {
+    if (!url) {
       log.error('Uploaded tenant-media document is missing a url');
       return null;
     }
 
-    return { url: media.url };
+    return { url };
   } catch (error) {
     log.error({ err: error }, 'Failed to upload printable directory image');
     return null;

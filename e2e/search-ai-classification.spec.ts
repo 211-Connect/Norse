@@ -16,7 +16,7 @@ import {
  * Real, unmocked coverage of the AI classification search flow (Decision
  * Table A/B/C/D) against a live AI-enabled tenant/environment.
  *
- * @see docs/ai-search-legacy-link-flow.md for the full flow this exercises.
+ * @see docs/search-intent.md ("Resolver") for the full flow this exercises.
  *
  * Only runs when the active tenant/env fixture has `aiSearchEnabled` (see
  * `e2e/fixtures/tenants.ts`) - currently WA dev, VA dev, and SCC (dev+prod).

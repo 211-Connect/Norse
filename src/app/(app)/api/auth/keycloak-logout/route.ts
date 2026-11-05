@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getTenantByHost } from '@/lib/cms/tenants';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 
 function normalizeNextPath(nextPath: string | null): string {
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     'https';
 
   const parsedHost = parseHost(host);
-  const tenant = await findTenantByHost(parsedHost);
+  const tenant = await getTenantByHost(parsedHost);
 
   const requestedNext = request.nextUrl.searchParams.get('next');
   const nextPath = normalizeNextPath(requestedNext);

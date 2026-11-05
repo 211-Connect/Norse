@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TypedLocale } from 'payload';
 
-import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { createLogger } from '@/lib/logger';
-import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions';
+import { getSearchConfig } from '@/lib/cms/search-config';
 import { locales } from '@/payload/i18n/locales';
-import { Tenant } from '@/payload/payload-types';
-import { SearchConfig } from '@/types/search-config';
 import { withCache } from '@/utilities/withCache';
 
 const log = createLogger('search-config');
@@ -39,55 +36,7 @@ export async function GET(
 
     const searchConfig = await withCache(
       `search_config:${tenantId}:${locale}`,
-      async () => {
-        const resourceDirectory = await findResourceDirectoryByTenantId(
-          tenantId,
-          locale as TypedLocale,
-        );
-
-        if (!resourceDirectory) {
-          return null;
-        }
-
-        const tenant = resourceDirectory.tenant as Tenant;
-        const domain = withOptionalCustomBasePath(
-          `${tenant?.trustedDomains?.[0]?.domain ?? ''}`,
-        );
-
-        const subtopics =
-          resourceDirectory.topics?.list?.flatMap((topic) =>
-            (topic.subtopics ?? []).map(
-              (subtopic): SearchConfig['subtopics'][number] => ({
-                name: subtopic.name,
-                topicName: topic.name,
-                queryType: subtopic.queryType ?? 'text',
-                query: subtopic.query || null,
-                openInNewTab: subtopic.openInNewTab || null,
-                href: subtopic.href || null,
-              }),
-            ),
-          ) ?? [];
-
-        const config: SearchConfig = {
-          primaryColor: resourceDirectory.brand.theme.primaryColor,
-          borderRadius: resourceDirectory.brand.theme.borderRadius,
-          domain,
-          texts: resourceDirectory.search.texts,
-          resultsLimit: resourceDirectory.search.searchSettings.resultsLimit,
-          radiusSelectValues:
-            resourceDirectory.search.searchSettings.radiusSelectValues?.map(
-              (r) => r.value,
-            ) ?? [],
-          defaultRadius:
-            resourceDirectory.search.searchSettings.defaultRadius ?? 10,
-          searchEngine:
-            resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
-          suggestions: resourceDirectory.suggestions,
-          subtopics,
-        };
-
-        return config;
-      },
+      () => getSearchConfig(tenantId, locale as TypedLocale),
       { redis: true, memory: true },
     );
 

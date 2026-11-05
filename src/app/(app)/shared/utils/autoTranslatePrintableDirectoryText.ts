@@ -1,5 +1,5 @@
 import type { TranslationMeter } from '@/app/(app)/shared/services/translation-usage/translation-meter';
-import { batchTranslate } from '@/payload/services/translationService';
+import { translateBatch } from '@/lib/cms/translation';
 import {
   PrintableDirectoryLocalizedTextResponseDto,
   PrintableDirectoryLocalizedValuesDto,
@@ -71,7 +71,7 @@ export async function autoTranslatePrintableDirectoryText(
     return null;
   }
 
-  const translations = await batchTranslate(
+  const translations = await translateBatch(
     'google',
     localesToTranslate.map((targetLocale) => ({
       text: sourceText,

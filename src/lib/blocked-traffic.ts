@@ -2,11 +2,12 @@ import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { blockedTrafficInternalApiClient, getInternalHeaders } from '@/lib/api';
 import type { ArcjetDeniedResult, ArcjetLog } from '@/lib/arcjet';
 import { classifyBlockedTraffic } from '@/lib/arcjet-classification';
+import { describeError } from '@/lib/describe-error';
 import {
   type BlockedTrafficCounter,
   createBlockedTrafficCounter,
 } from '@/lib/blocked-traffic-counter';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getTenantByHost } from '@/lib/cms/tenants';
 
 /** A push that takes longer is abandoned and retried on the next flush. */
 export const BLOCKED_TRAFFIC_PUSH_TIMEOUT_MS = 10_000;
@@ -88,7 +89,7 @@ export async function recordBlockedTraffic(
 ): Promise<void> {
   try {
     const host = parseHost(rawHost);
-    const tenant = await findTenantByHost(host);
+    const tenant = await getTenantByHost(host);
 
     const { classification } = classifyBlockedTraffic(result);
     getCounter(log).record(
@@ -97,8 +98,6 @@ export async function recordBlockedTraffic(
       result.conclusion === 'DENY',
     );
   } catch (error) {
-    log('warn', 'blocked_traffic_record_failed', {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    log('warn', 'blocked_traffic_record_failed', describeError(error));
   }
 }

@@ -5,6 +5,7 @@ import {
   RenderPrintableDirectoryPdfOptions,
 } from '@/app/(app)/shared/services/scheduled-pdf-delivery/render-printable-directory-pdf';
 import { createLogger } from '@/lib/logger';
+import { runsPayload } from '@/lib/norse-role';
 import { secretsMatch } from '@/lib/secrets';
 
 /**
@@ -15,7 +16,7 @@ import { secretsMatch } from '@/lib/secrets';
  * handlers, server actions, instrumentation, and everything the Payload
  * config reaches) is compiled for React Server Components, where the PDF
  * templates' context and hooks don't exist. Only this app calls it, over
- * loopback, with the internal API key (`requestPrintableDirectoryPdf`).
+ * `INTERNAL_APP_URL` (default loopback), with the internal API key (`requestPrintableDirectoryPdf`).
  */
 
 const log = createLogger('printableDirectoryPdfRoute');
@@ -40,6 +41,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  // Called by the scheduled-delivery job, which runs in the CMS only.
+  if (!runsPayload()) {
+    return res.status(404).end();
+  }
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).end();

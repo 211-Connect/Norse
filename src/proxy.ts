@@ -3,15 +3,20 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
-import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
-import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
+import {
+  withOptionalCustomBasePath,
+  withOptionalTrailingSlash,
+} from './app/(app)/shared/lib/utils';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { shouldBlockCrawlers } from './app/(app)/shared/utils/shouldBlockCrawlers';
 import {
   getPublicPageCategory,
   isShareLinkPath,
 } from './app/(app)/shared/utils/publicPageCategory';
-import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
+import { describeError, truncateBody } from './lib/describe-error';
+import { getNorseRole, servesPath } from './lib/norse-role';
+import { maskSecret, redactUrl } from './lib/redact';
+import type { TenantBasicConfigResponse } from './types/tenantBasicConfig';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
 
@@ -222,6 +227,54 @@ function getApiRoute(request: NextRequest, target: string) {
   return withOptionalCustomBasePath(`${proto}://${host}/api/${target}`);
 }
 
+/**
+ * URL of a Payload CMS API route. `PAYLOAD_CMS_URL` (origin plus any base
+ * path, e.g. `https://cms.example.org`) points at the CMS directly, so the
+ * request does not go out through Cloudflare on the tenant's public host,
+ * whose WAF can answer 403 to a server-side fetch. Without it, the tenant
+ * host is used.
+ */
+function getCmsApiRoute(request: NextRequest, target: string): string {
+  const cmsUrl = process.env.PAYLOAD_CMS_URL?.replace(/\/+$/, '');
+  return cmsUrl ? `${cmsUrl}/api/${target}` : getApiRoute(request, target);
+}
+
+class TenantConfigFetchError extends Error {
+  constructor(
+    message: string,
+    public details: Record<string, unknown>,
+  ) {
+    super(message);
+    this.name = 'TenantConfigFetchError';
+  }
+}
+
+/**
+ * Who answered a failed lookup: a Cloudflare block carries `cf-ray` /
+ * `cf-mitigated` and an HTML body, a Norse response a short text body.
+ */
+async function describeFailedResponse(
+  response: Response,
+): Promise<Record<string, unknown>> {
+  let body: string | undefined;
+  try {
+    body = truncateBody(await response.text());
+  } catch {
+    body = undefined;
+  }
+
+  return {
+    status: response.status,
+    statusText: response.statusText,
+    fetchUrl: redactUrl(response.url),
+    server: response.headers.get('server'),
+    cfRay: response.headers.get('cf-ray'),
+    cfMitigated: response.headers.get('cf-mitigated'),
+    contentType: response.headers.get('content-type'),
+    body,
+  };
+}
+
 function generateNonce() {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   return nonce;
@@ -254,7 +307,33 @@ async function hasActiveSession(request: NextRequest): Promise<boolean> {
   }
 }
 
+/** Read once: an invalid `NORSE_ROLE` fails the server at startup. */
+const NORSE_ROLE = getNorseRole();
+
+/**
+ * Pages the role does not serve. The matcher skips `/admin` and `/api`, so
+ * only pages reach this: in the CMS (`NORSE_ROLE=cms`) every public page is
+ * a 404 and `/` goes to the admin. `/admin` and Payload's REST API are not
+ * gated here: matching `/api` would make Next.js buffer every API request
+ * body for the proxy (10 MB limit), which breaks large media uploads.
+ */
+function roleGate(request: NextRequest): NextResponse | undefined {
+  const { pathname } = request.nextUrl;
+  if (servesPath(NORSE_ROLE, pathname)) return undefined;
+
+  if (NORSE_ROLE === 'cms' && pathname === '/') {
+    return NextResponse.redirect(
+      new URL(withOptionalCustomBasePath('/admin'), request.url),
+    );
+  }
+
+  return new NextResponse('Not Found', { status: 404 });
+}
+
 export async function proxy(request: NextRequest) {
+  const gated = roleGate(request);
+  if (gated) return gated;
+
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {
       url: request.url,
@@ -302,30 +381,36 @@ export async function proxy(request: NextRequest) {
       tenantConfig = cached;
     }
   } else {
-    const apiRoute = getApiRoute(request, 'getTenantBasicConfig');
     let timeoutId: NodeJS.Timeout | undefined;
 
     try {
       const controller = new AbortController();
       timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const tenantBasicConfig: TenantBasicConfigResponse | null =
-        await fetchWrapper(
-          `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
-          {
-            headers: {
-              host: rawHost,
-            },
-            signal: controller.signal,
-            cache: 'no-store',
+      const response = await fetch(
+        withOptionalTrailingSlash(
+          `${getCmsApiRoute(request, 'getTenantBasicConfig')}?host=${encodeURIComponent(host)}`,
+        ),
+        {
+          // No `host` override: the tenant goes in `?host=`, and the URL's
+          // own host must route the request to the CMS.
+          headers: {
+            'x-internal-api-key': process.env.PAYLOAD_API_ROUTE_SECRET ?? '',
           },
-        );
+          signal: controller.signal,
+          cache: 'no-store',
+        },
+      );
 
-      // fetchWrapper resolves to null on an abort or network error, which
-      // is a failed lookup, not a tenant without config.
-      if (tenantBasicConfig === null) {
-        throw new Error('Tenant basic config fetch returned no response');
+      if (!response.ok) {
+        throw new TenantConfigFetchError(
+          `HTTP ${response.status} ${response.statusText}`,
+          await describeFailedResponse(response),
+        );
       }
+
+      const tenantBasicConfig: TenantBasicConfigResponse =
+        await response.json();
 
       setCachedTenantData(host, tenantBasicConfig);
       tenantConfig = tenantBasicConfig;
@@ -353,7 +438,11 @@ export async function proxy(request: NextRequest) {
       // Cache the failure briefly so we don't retry on every request
       setCachedTenantData(host, null, TENANT_DATA_FAILURE_CACHE_TTL_MS);
       edgeLog('error', 'tenant_basic_config_fetch_failed', {
-        error: error instanceof Error ? error.message : String(error),
+        ...(error instanceof TenantConfigFetchError
+          ? { error: error.message, ...error.details }
+          : describeError(error)),
+        timedOut: error instanceof Error && error.name === 'AbortError',
+        secret: maskSecret(process.env.PAYLOAD_API_ROUTE_SECRET),
         url: request.url,
         method: request.method,
         host,

@@ -4,7 +4,7 @@ Requests that Arcjet denies in `protectPage` (`src/lib/arcjet-page.ts`) get a
 403 from `forbidden.tsx`, which renders no `PageWrapper`, so the Umami script
 never runs for them. Most of them are clients that run no JavaScript anyway
 (curl, scrapers, AI crawlers), so Umami never saw them. This feature counts
-them on the server and shows the count, by classification, in a **Blocked
+them on the server and shows the count in a **Blocked
 Bots** widget in the Payload analytics dashboard, next to Page Views. A
 tenant sees "N page views, and M requests were blocked bots" instead of an
 unexplained change. Blocked requests are **not** in Page Views or any other
@@ -23,7 +23,7 @@ already in the `arcjet_denied` logs and the Arcjet console (`decisionId`).
 ## Where it is configured
 
 - Nothing per tenant. A tenant's denials are attributed by host with
-  `findTenantByHost` (`trustedDomains`), like the rest of the app. A denial
+  `getTenantByHost` (`@/lib/cms`) (`trustedDomains`), like the rest of the app. A denial
   on a host that matches no tenant is counted for the shared "unknown"
   tenant `UNKNOWN_TENANT_ID` (`00000000-0000-0000-0000-000000000000`),
   pushed with the internal key only (it has no Payload document or Norse
@@ -44,7 +44,7 @@ arcjetProtect → DENY / DENIED_NOT_ENFORCED
   ├ after(recordBlockedTraffic)  registered before forbidden()
   │ forbidden() → 403 (DENY only)
   └ recordBlockedTraffic, after the response
-      ├ findTenantByHost(host)  ← cached per host
+      ├ getTenantByHost(host)   ← cached per host
       ├ classifyBlockedTraffic → seo | nefarious | unknown
       └ counter.record(tenant, class, enforced)   Map increment, current UTC hour
 
@@ -67,7 +67,7 @@ Files:
 | `src/lib/blocked-traffic-counter.ts` | `createBlockedTrafficCounter`: the in-memory buckets, the 60 s flush timer (started on the first denial, `unref`'d), requeue on failure. Pure, unit-tested in `tests/blocked-traffic-counter.test.ts`. |
 | `src/lib/arcjet-classification.ts` | `classifyBlockedTraffic` — the rules, as a table in [architecture.md](/docs/architecture.md#blocked-traffic-analytics-iss-2366). |
 | `src/payload/endpoints/analyticsProxy.ts` | `/analytics/blocked-traffic` proxy (tenant analytics key, like every widget; website selection does not apply). |
-| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | The widget (`WidgetSlug.BlockedBots`): headline = blocked requests; pie by classification; observe-only denials as a separate **Detected, not blocked** slice, because those requests were served. |
+| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | The widget (`WidgetSlug.BlockedBots`): a stat card, like Page Views, showing blocked requests. Observe-only denials are not counted, because those requests were served. No trend: the endpoint has no previous-period comparison. |
 
 Norse-API side (storage, endpoints, validation): `docs/blocked-traffic.md`
 in the Norse-API repo.
@@ -76,7 +76,7 @@ in the Norse-API repo.
 
 | Key | Values |
 | --- | --- |
-| tenant | from the request host (`findTenantByHost`); `UNKNOWN_TENANT_ID` when no tenant matches |
+| tenant | from the request host (`getTenantByHost`); `UNKNOWN_TENANT_ID` when no tenant matches |
 | `hour` | start of the UTC hour the denial happened in |
 | `classification` | `seo` \| `nefarious` \| `unknown` |
 | `enforced` | `true` for a DENY (403); `false` for an observe-only host (not in `ARCJET_ENFORCED_HOSTS`, or in `ARCJET_UNENFORCED_HOSTS`, e.g. MBOA), so those denials are counted too, separately |

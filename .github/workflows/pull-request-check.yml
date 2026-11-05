@@ -30,5 +30,46 @@ jobs:
       - name: Run formatter check
         run: npm run format:check
 
+      - name: Run unit tests
+        run: npm run test:unit
+
       - name: Build project
         run: npm run build
+
+  # The Dockerfile's app and cms targets delete routes before building, so a
+  # stray import of a deleted file only fails here. The public app's bundle
+  # must also stay free of Payload (docs/cms-app-separation-plan.md).
+  build-target:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [app, cms]
+    env:
+      NORSE_BUILD: ${{ matrix.target }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Remove the routes this target does not serve
+        run: node bin/prepare-build-target.mjs ${{ matrix.target }} --yes
+
+      - name: Build target
+        run: npm run build
+
+      - name: Check the public app's bundle has no Payload
+        if: matrix.target == 'app'
+        run: |
+          if grep -rl 'cannot connect to Postgres' .next/standalone/.next/server; then
+            echo "::error::Payload is in the public app's bundle: in-process branches must be an inline import() under process.env.NORSE_BUILD !== 'app'."
+            exit 1
+          fi

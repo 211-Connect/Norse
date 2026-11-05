@@ -1,0 +1,128 @@
+name: Deploy Images
+
+# Shared by the development and production deploys. Each environment has two
+# DigitalOcean apps (multi-tenant and MBOA), and each app has two components
+# that auto-deploy their image tag:
+#
+#   multi-tenant app   norse-cms: norse-cms        norse-app: norse-app
+#   MBOA app           norse-cms: norse-cms-mboa   norse-app: norse-app-mboa
+#
+# The CMS images go first and their deployments must become active before the
+# public images are pushed: the CMS runs migrations, and a public component may
+# call CMS endpoints of the same release. So every release is two deployments
+# per app. See docs/cms-app-release-plan.md.
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Moving image tag, development or production
+        type: string
+        required: true
+      umami_script_url:
+        type: string
+        required: false
+        default: ''
+      allow_search_engines:
+        type: string
+        required: true
+      images_only:
+        description: Push images without waiting for deployments
+        type: boolean
+        required: false
+        default: false
+    # Listed one by one, and read by name below, so each job only receives
+    # these secrets. Don't use `secrets: inherit` or `secrets[...]` here: both
+    # hand the runner every organization and repository secret.
+    secrets:
+      DO_REGISTRY_NAME:
+        required: true
+      DIGITALOCEAN_ACCESS_TOKEN:
+        required: true
+      MULTITENANT_APP_ID:
+        required: false
+      MBOA_APP_ID:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-cms:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: norse-cms
+            deployment: multitenant
+          - image: norse-cms-mboa
+            deployment: mboa
+            custom_base_path: /adresources
+            trailing_slashes: 'true'
+            advanced_geospatial_filtering: 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build, push and wait
+        uses: ./.github/actions/deploy-image
+        with:
+          image: ${{ matrix.image }}
+          target: cms
+          environment: ${{ inputs.environment }}
+          registry-name: ${{ secrets.DO_REGISTRY_NAME }}
+          # The last `''` keeps an unset secret empty (the action then fails with
+          # a clear error) instead of falling through to the other app's id.
+          app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
+          do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          images-only: ${{ inputs.images_only }}
+          mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
+          mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
+          maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
+          # MBOA has no Umami.
+          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
+          allow-search-engines: ${{ inputs.allow_search_engines }}
+          custom-base-path: ${{ matrix.custom_base_path }}
+          trailing-slashes: ${{ matrix.trailing_slashes }}
+          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}
+
+  deploy-app:
+    needs: deploy-cms
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: norse-app
+            deployment: multitenant
+          - image: norse-app-mboa
+            deployment: mboa
+            custom_base_path: /adresources
+            trailing_slashes: 'true'
+            advanced_geospatial_filtering: 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build, push and wait
+        uses: ./.github/actions/deploy-image
+        with:
+          image: ${{ matrix.image }}
+          target: app
+          environment: ${{ inputs.environment }}
+          registry-name: ${{ secrets.DO_REGISTRY_NAME }}
+          # The last `''` keeps an unset secret empty (the action then fails with
+          # a clear error) instead of falling through to the other app's id.
+          app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
+          do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          images-only: ${{ inputs.images_only }}
+          mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
+          mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
+          maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
+          # MBOA has no Umami.
+          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
+          allow-search-engines: ${{ inputs.allow_search_engines }}
+          custom-base-path: ${{ matrix.custom_base_path }}
+          trailing-slashes: ${{ matrix.trailing_slashes }}
+          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}

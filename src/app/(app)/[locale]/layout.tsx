@@ -1,6 +1,7 @@
 import color from 'color';
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+
 import { Metadata } from 'next/types';
 
 import { fontSans } from '@/app/(app)/shared/styles/fonts';

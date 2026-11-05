@@ -3,15 +3,12 @@
 import { headers } from 'next/headers';
 
 import { getDeliveryClock } from '@/app/(app)/features/printable-directories/utils/deliveryClock';
-import { deliverPrintableDirectoryPdf } from '@/app/(app)/shared/services/scheduled-pdf-delivery/deliver-printable-directory-pdf';
-import { loadDeliveryPreview } from '@/app/(app)/shared/services/scheduled-pdf-delivery/internal-delivery-api';
-import { getTenantDeliveryContext } from '@/app/(app)/shared/services/scheduled-pdf-delivery/tenant-delivery-context';
 import {
   getApiHeaders,
   printableDirectoriesApiClient,
   printableDirectoryDeliveriesApiClient,
 } from '@/lib/api';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+import { sendDeliveryTest } from '@/lib/cms/printable-directory-deliveries';
 
 import { getSession } from '../../utils/getServerSession';
 import {
@@ -66,17 +63,16 @@ export async function sendPrintableDirectoryDeliveryTest(
       return { success: false, error: 'not_found' };
     }
 
-    const context = await getTenantDeliveryContext(
-      await getPayloadSingleton(),
+    const outcome = await sendDeliveryTest({
+      tenantId,
       host,
-    );
-    if (context.tenantId !== tenantId) {
-      return { success: false, error: 'unauthorized' };
-    }
-
-    const outcome = await deliverPrintableDirectoryPdf({
-      context,
-      delivery,
+      userEmail,
+      delivery: {
+        id: delivery.id,
+        print: delivery.print,
+        recipients: delivery.recipients,
+        createdByEmail: delivery.createdByEmail,
+      },
       directory: {
         id: directory.id,
         name: directory.name,
@@ -85,11 +81,11 @@ export async function sendPrintableDirectoryDeliveryTest(
         locales: directory.locales,
       },
       date: getDeliveryClock().date,
-      testRecipient: userEmail,
-      loadPreview: (locale) =>
-        loadDeliveryPreview(tenantId, delivery.id, locale),
     });
 
+    if (outcome.status === 'wrong_tenant') {
+      return { success: false, error: 'unauthorized' };
+    }
     if (outcome.status === 'skipped') {
       return { success: false, error: 'empty' };
     }

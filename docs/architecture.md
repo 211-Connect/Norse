@@ -61,6 +61,18 @@ enforcement is set by env vars, not in Payload. See
 [bot-protection.md](/docs/bot-protection.md) for the covered routes, the
 config, the rollout and the recovery runbook.
 
+`src/proxy.ts` resolves each host's locales, login wall and `noindex` from
+`/api/getTenantBasicConfig`, cached in memory for 10 minutes (10 seconds after
+a failure). It calls the route on `PAYLOAD_CMS_URL` when set, otherwise on the
+tenant's own public host, which goes out through Cloudflare, whose WAF can
+answer `403`. The tenant is passed as `?host=`, and `PAYLOAD_API_ROUTE_SECRET`
+travels in the `x-internal-api-key` header, never in the URL. A failed
+lookup logs `tenant_basic_config_fetch_failed` with the status, `fetchUrl`,
+`server`, `cf-ray`, `cf-mitigated` and the start of the body: a Cloudflare
+block shows a `cf-ray` and an HTML body.
+While a lookup is failing that host gets default locales and **no login
+wall**.
+
 `shared/` holds code used by more than one feature:
 
 | Folder            | Contents                                                          |
@@ -212,9 +224,10 @@ locales (`locales`, `defaultLocale`) used by both systems.
 ### mboa — a specific tenant deployment
 
 `mboa` is a real client with its own separate deployment, not just a generic
-tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
-`NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` (see the commented-out block in
-`.env.examples`), and its inbound requests arrive through the mn.gov proxy
+tenant: its images (`norse-app-mboa`, `norse-cms-mboa`) are built with
+`NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
+`NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` (see `deploy-images.yaml` and
+[cms-app-separation-plan.md](/docs/cms-app-separation-plan.md)), and its inbound requests arrive through the mn.gov proxy
 (`MBOA_PROXY_IP` in `src/lib/arcjet/client-ip.ts`). That IP is in Arcjet's trusted
 `proxies` list, so Arcjet resolves the real client from `x-forwarded-for`
 instead of treating every MBOA visitor as one address. The proxy IP is not

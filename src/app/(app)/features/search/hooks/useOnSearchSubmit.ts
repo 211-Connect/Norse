@@ -1,5 +1,11 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { FormEvent, TransitionStartFunction, useCallback } from 'react';
+import { initialTransition, transition } from 'xstate';
+import { searchIntent } from '@/app/(app)/features/search/intent';
+import {
+  searchPolicy,
+  searchResolverMachine,
+} from '@/app/(app)/features/search/resolver';
 import {
   searchCoordinatesAtom,
   userCoordinatesAtom,
@@ -61,7 +67,30 @@ export const useOnSearchSubmit = ({
         return;
       }
 
-      if (search.queryType === 'link' && search.href) {
+      const query = (search.query || search.searchTerm || '').trim();
+      // The resolver routes the submit; this hook performs what it decides.
+      const [resting] = initialTransition(searchResolverMachine, {
+        intent: searchIntent({}),
+        loopGuard: true,
+        policy: searchPolicy({
+          searchEngine: appConfig.search.searchEngine,
+          requireUserLocation,
+        }),
+        searchEngine: appConfig.search.searchEngine,
+      });
+      let [routed] = transition(searchResolverMachine, resting, {
+        type: 'SUBMIT',
+        submission: {
+          query,
+          queryType: search.queryType,
+          organizationId: search.organizationId,
+          href: search.href,
+          target: search.target,
+          location: search.searchLocation,
+        },
+      });
+
+      if (routed.value === 'following_link') {
         const opensInNewTab = search.target === '_blank';
         setDialogOpen?.(false);
 
@@ -74,7 +103,7 @@ export const useOnSearchSubmit = ({
         return;
       }
 
-      if (requireUserLocation && search.searchLocation.trim().length === 0) {
+      if (routed.value === 'location_required') {
         setSearch((prev) => ({
           ...prev,
           searchLocationValidationError: 'Address is required.',
@@ -82,17 +111,7 @@ export const useOnSearchSubmit = ({
         return;
       }
 
-      const query = (search.query || search.searchTerm || '').trim();
-      const isClassicSearch =
-        appConfig.search.searchEngine !== 'ai_classification' ||
-        search.queryType === 'taxonomy' ||
-        // An organization scope is a filter, not a classifiable text query —
-        // never route it through AI classification (which would drop the
-        // scope and classify the org name as free text).
-        Boolean(search.organizationId) ||
-        !query;
-
-      if (isClassicSearch) {
+      if (routed.value === 'navigating_classic') {
         startTransition(async () => {
           const locationPayload = await buildSearchLocationPayload(
             searchCoordinates,
@@ -114,8 +133,12 @@ export const useOnSearchSubmit = ({
       );
 
       setActiveAiAction(null);
+      [routed] = transition(searchResolverMachine, routed, {
+        type: 'PREDICTION_RESOLVED',
+        prediction: predictResponse,
+      });
 
-      if (!predictResponse) {
+      if (routed.value === 'navigating_classic') {
         const locationPayload = await buildSearchLocationPayload(
           searchCoordinates,
           userCoordinates,
@@ -125,38 +148,24 @@ export const useOnSearchSubmit = ({
         return;
       }
 
-      const scenario = predictResponse.scenario;
-      setAiSearchScenario(scenario);
+      setAiSearchScenario(routed.context.scenario);
 
-      if (
-        [
-          'search',
-          'search_and_notify_low_confidence',
-          'search_and_notify_low_info',
-        ].includes(scenario)
-      ) {
+      if (routed.value === 'navigating_ai') {
         const locationPayload = await buildSearchLocationPayload(
           searchCoordinates,
           userCoordinates,
           appConfig.tenantId,
         );
         navigateAiSearch({
-          taxonomies: predictResponse.hsis_taxonomies,
-          scenario,
+          taxonomies: predictResponse?.hsis_taxonomies,
+          scenario: routed.context.scenario,
           locationPayload,
         });
         return;
       }
 
-      const options = Array.isArray(predictResponse.options)
-        ? predictResponse.options
-        : [];
-      setClarifyOptions(options);
-      setSelectedClarifyCodes(
-        options
-          .filter((option) => option.pre_selected)
-          .map((option) => option.code),
-      );
+      setClarifyOptions(routed.context.clarifyOptions ?? []);
+      setSelectedClarifyCodes(routed.context.selectedCodes);
     },
     [
       appConfig.search.searchEngine,

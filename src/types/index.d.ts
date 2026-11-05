@@ -27,8 +27,18 @@ declare global {
       STRAPI_URL?: string;
       STRAPI_TOKEN?: string;
 
+      /** app | cms | all (default); see src/lib/norse-role.ts. */
+      NORSE_ROLE?: 'app' | 'cms' | 'all';
+      /** Build target, inlined at build time; see bin/prepare-build-target.mjs. */
+      NORSE_BUILD?: 'app' | 'cms' | 'all';
+
       // Payload
       PAYLOAD_APP_CONFIG_API_KEY?: string;
+      /** Payload CMS origin (plus base path) for /api/internal/*; see src/lib/cms. */
+      PAYLOAD_CMS_URL?: string;
+      /** Admin origin plus base path on a separate CMS app (password-reset links). */
+      CMS_ADMIN_URL?: string;
+      /** Shared secret for /api/internal/* (x-internal-api-key header). */
       PAYLOAD_API_ROUTE_SECRET?: string;
       PAYLOAD_SECRET?: string;
       DATABASE_URI?: string;

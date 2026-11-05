@@ -248,6 +248,7 @@ export interface Config {
     'analytics-highlight-clicks': AnalyticsHighlightClicksWidget;
     'analytics-alert-clicks': AnalyticsAlertClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
+    'analytics-blocked-bots': AnalyticsBlockedBotsWidget;
     'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
@@ -775,6 +776,9 @@ export interface ResourceDirectory {
                   | 'map'
                   | 'getDirections'
                   | 'organization'
+                  | 'organizationName'
+                  | 'organizationNameAndAlternateName'
+                  | 'organizationNameAndDescription'
                   | 'quality'
                   | 'alert'
                   | 'facets'
@@ -836,6 +840,9 @@ export interface ResourceDirectory {
                   | 'map'
                   | 'getDirections'
                   | 'organization'
+                  | 'organizationName'
+                  | 'organizationNameAndAlternateName'
+                  | 'organizationNameAndDescription'
                   | 'quality'
                   | 'alert'
                   | 'facets'
@@ -2344,6 +2351,16 @@ export interface AnalyticsAlertClicksWidget {
  * via the `definition` "analytics-page-views_widget".
  */
 export interface AnalyticsPageViewsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-blocked-bots_widget".
+ */
+export interface AnalyticsBlockedBotsWidget {
   data?: {
     [k: string]: unknown;
   };

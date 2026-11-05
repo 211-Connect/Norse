@@ -88,6 +88,19 @@ export const componentRegistry: Record<
   [ResourceComponentId.MAP]: MapComponent,
   [ResourceComponentId.GET_DIRECTIONS]: GetDirectionsComponent,
   [ResourceComponentId.ORGANIZATION]: OrganizationComponent,
+  [ResourceComponentId.ORGANIZATION_NAME]: ({ resource }) => (
+    <OrganizationComponent
+      resource={resource}
+      showAlternateName={false}
+      showDescription={false}
+    />
+  ),
+  [ResourceComponentId.ORGANIZATION_NAME_AND_ALTERNATE_NAME]: ({
+    resource,
+  }) => <OrganizationComponent resource={resource} showDescription={false} />,
+  [ResourceComponentId.ORGANIZATION_NAME_AND_DESCRIPTION]: ({ resource }) => (
+    <OrganizationComponent resource={resource} showAlternateName={false} />
+  ),
   [ResourceComponentId.FACETS]: FacetsComponent,
   [ResourceComponentId.SEPARATOR]: SeparatorComponent,
   [ResourceComponentId.CUSTOM_ATTRIBUTE]: CustomAttributeComponent,
@@ -198,7 +211,11 @@ export function shouldComponentRender(
 
       return Boolean(facets);
     }
+    case ResourceComponentId.ORGANIZATION_NAME:
+    case ResourceComponentId.ORGANIZATION_NAME_AND_ALTERNATE_NAME:
+      return Boolean(resource.organizationName);
     case ResourceComponentId.ORGANIZATION:
+    case ResourceComponentId.ORGANIZATION_NAME_AND_DESCRIPTION:
       return Boolean(
         resource.organizationName || resource.organizationDescription,
       );

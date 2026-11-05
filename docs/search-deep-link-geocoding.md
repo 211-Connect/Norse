@@ -6,8 +6,8 @@ This document explains how the search page handles deep links that arrive
 with a human-readable `location` but no `coords` — e.g. shared links, older
 bookmarks, or external referrers that only know a place name.
 
-This is a separate flow from the AI classification legacy-link flow (see
-[docs/ai-search-legacy-link-flow.md](/docs/ai-search-legacy-link-flow.md)):
+This is a separate flow from the AI classification deep-link gate (see the
+resolver in [docs/search-intent.md](/docs/search-intent.md)):
 it runs for **every** tenant regardless of `search.searchEngine`, and it
 concerns the `location`/`coords` params, not `query_type`/`taxonomy`.
 
