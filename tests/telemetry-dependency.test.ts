@@ -455,6 +455,7 @@ describe('fetch span privacy', () => {
     const { opentelemetry } = spanOptionsFor(
       'https://services.c211.io/norse-api/v1/search?query=crisis&coords=1,2',
       'get',
+      'norse_api',
     );
     assert.ok(opentelemetry);
     assert.equal(
@@ -463,6 +464,7 @@ describe('fetch span privacy', () => {
     );
     assert.deepEqual(opentelemetry.attributes, {
       'http.url': 'https://services.c211.io/norse-api/v1/search',
+      'resource.name': 'https://services.c211.io/norse-api/v1/search',
     });
     assert.equal(JSON.stringify(opentelemetry).includes('?'), false);
   });
@@ -471,6 +473,7 @@ describe('fetch span privacy', () => {
     const { opentelemetry } = spanOptionsFor(
       'https://services.c211.io/norse-api/v1/resource/abc?tenant=1',
       'GET',
+      'norse_api',
       '/resource/{id}',
     );
     assert.ok(opentelemetry);
@@ -478,7 +481,48 @@ describe('fetch span privacy', () => {
       opentelemetry.spanName,
       'fetch GET services.c211.io/resource/{id}',
     );
+    assert.equal(
+      opentelemetry.attributes?.['resource.name'],
+      'https://services.c211.io/resource/{id}',
+    );
     assert.equal(JSON.stringify(opentelemetry).includes('?'), false);
+  });
+
+  it('exports only the origin for a third-party dependency', () => {
+    const { opentelemetry } = spanOptionsFor(
+      'https://discord.com/api/webhooks/123/SECRET',
+      'POST',
+      'webhook',
+    );
+    assert.ok(opentelemetry);
+    assert.equal(opentelemetry.spanName, 'fetch POST discord.com');
+
+    const serialized = JSON.stringify(opentelemetry);
+    assert.equal(serialized.includes('SECRET'), false);
+    assert.equal(serialized.includes('123'), false);
+    assert.equal(serialized.includes('/api/webhooks'), false);
+    assert.equal(serialized.includes('discord.com/api'), false);
+    assert.deepEqual(opentelemetry.attributes, {
+      'http.url': 'https://discord.com',
+      'resource.name': 'https://discord.com',
+    });
+  });
+
+  it('keeps the norse_api naming without a template', () => {
+    const { opentelemetry } = spanOptionsFor(
+      'https://api.example/norse-api/v1/resource/abc',
+      'GET',
+      'norse_api',
+    );
+    assert.ok(opentelemetry);
+    assert.equal(
+      opentelemetry.spanName,
+      'fetch GET api.example/norse-api/v1/resource/abc',
+    );
+    assert.deepEqual(opentelemetry.attributes, {
+      'http.url': 'https://api.example/norse-api/v1/resource/abc',
+      'resource.name': 'https://api.example/norse-api/v1/resource/abc',
+    });
   });
 });
 

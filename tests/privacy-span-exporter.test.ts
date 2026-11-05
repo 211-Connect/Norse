@@ -27,6 +27,7 @@ test('exported spans carry no query string in the name or URL attributes', () =>
   span.setAttribute('url.full', SEARCH_URL);
   span.setAttribute('url.query', `query=${SECRET}`);
   span.setAttribute('next.url', `/search?query=${SECRET}`);
+  span.setAttribute('resource.name', `${SEARCH_URL}#fragment`);
   span.setAttribute('http.route', '/search');
   span.end();
 
@@ -39,6 +40,7 @@ test('exported spans carry no query string in the name or URL attributes', () =>
   assert.equal(exported.attributes['url.full'], SAFE_URL);
   assert.equal(exported.attributes['url.query'], undefined);
   assert.equal(exported.attributes['next.url'], '/search');
+  assert.equal(exported.attributes['resource.name'], SAFE_URL);
   // Not URL-valued: left alone.
   assert.equal(exported.attributes['http.route'], '/search');
 
@@ -101,4 +103,38 @@ test('exported spans keep the dropped-attribute count', () => {
     exported.droppedAttributesCount > 0,
     'the sanitised span must carry the dropped-attribute count',
   );
+});
+
+// The alert webhook named in the span used to put the Discord token into Tempo
+// span-metrics (`span_name`); query stripping alone cannot remove it.
+test('exported spans replace a Discord webhook id and token', () => {
+  const memory = new InMemorySpanExporter();
+  const provider = new BasicTracerProvider({
+    spanProcessors: [new SimpleSpanProcessor(new PrivacySpanExporter(memory))],
+  });
+  const tracer = provider.getTracer('privacy-exporter-webhook-test');
+
+  const webhookUrl = 'https://discord.com/api/webhooks/123/SECRET';
+  const span = tracer.startSpan(`fetch POST ${webhookUrl}`);
+  span.setAttribute('http.url', webhookUrl);
+  span.setAttribute('resource.name', webhookUrl);
+  span.recordException(new Error(`POST ${webhookUrl} failed`));
+  span.end();
+
+  const [exported] = memory.getFinishedSpans();
+  assert.ok(exported, 'the span reached the delegate exporter');
+
+  const placeholder = 'https://discord.com/api/webhooks/{id}/{token}';
+  assert.equal(exported.name, `fetch POST ${placeholder}`);
+  assert.equal(exported.attributes['http.url'], placeholder);
+  assert.equal(exported.attributes['resource.name'], placeholder);
+
+  const serialised = JSON.stringify({
+    name: exported.name,
+    attributes: exported.attributes,
+    events: exported.events,
+  });
+  assert.equal(serialised.includes('SECRET'), false);
+  assert.equal(serialised.includes('/api/webhooks/123'), false);
+  assert.equal(serialised.includes(placeholder), true);
 });

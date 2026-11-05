@@ -1,5 +1,6 @@
 import { type Exception, SpanStatusCode, trace } from '@opentelemetry/api';
 
+import { resolveApiRequest } from '@/lib/telemetry/api-fetch';
 import {
   type Dependency,
   type Operation,
@@ -72,10 +73,17 @@ export async function fetchWrapper<T = any>(
   const start = performance.now();
   let outcome: Outcome = 'error';
 
+  // Same resolution as the generated clients: the template keeps resource IDs
+  // out of the span name.
+  const pathTemplate =
+    dependency === 'norse_api'
+      ? resolveApiRequest(method, urlParts(url).pathname).template
+      : undefined;
+
   try {
     const response = await fetch(url, {
       ...fetchOptions,
-      ...spanOptionsFor(url, method),
+      ...spanOptionsFor(url, method, dependency, pathTemplate),
       headers,
       body: toBody(body),
     });
