@@ -52,6 +52,14 @@ on a tenant's host:
   CMS host matches no tenant, so nothing is preselected and Payload's tenant
   selector starts from its default.
 
+Admins may still open `/admin` on their tenant's host, for example
+`https://search.wa211.org/admin`. In `app` builds, `next.config.js` rewrites
+`/admin` and everything under it to `/api/cms-admin-redirect`, which answers with
+a temporary redirect to the same page and query on `CMS_ADMIN_URL`. Without that
+variable it is a 404. The rewrite exists so the proxy matcher can keep skipping
+`/admin`, and the variable is read at runtime, so changing the URL needs no new
+image. Payload's REST API on a tenant's host stays a 404.
+
 ## Builds (`NORSE_BUILD`, Dockerfile targets)
 
 The Dockerfile has three targets: `app`, `cms`, and the default combined
@@ -62,7 +70,7 @@ image. The `app` and `cms` targets build with `NORSE_BUILD` set, which
 | Target | Deleted before `next build`                                                              |
 | ------ | ---------------------------------------------------------------------------------------- |
 | `app`  | `src/app/(payload)` (admin, Payload REST, CMS internal API), `src/pages` (PDF render)    |
-| `cms`  | `src/app/(app)/[locale]` (public pages), the app's own `/api/auth`, `share`, `resource-titles`, `search-config`, `webhook` |
+| `cms`  | `src/app/(app)/[locale]` (public pages), the app's own `/api/auth`, `cms-admin-redirect`, `share`, `resource-titles`, `search-config`, `webhook` |
 
 Every in-process Payload path in the bridge (and in `/api/healthz`) is a
 dynamic `import()` inside `if (process.env.NORSE_BUILD !== 'app')`, so the
