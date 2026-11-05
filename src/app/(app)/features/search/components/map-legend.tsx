@@ -40,7 +40,7 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
       )}
       <li className="flex items-center gap-1.5">
         <span className="flex w-[11px] justify-center">
-          <span className="bg-primary/40 size-2.5 rounded-full ring-1 ring-white" />
+          <span className="bg-primary/50 size-2.5 rounded-full ring-1 ring-white" />
         </span>
         {t('map_legend_other', { defaultValue: 'Other locations' })}
       </li>

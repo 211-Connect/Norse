@@ -13,7 +13,7 @@ const LAYER_ID = 'result-points-circles';
 const COUNT_LAYER_ID = 'result-points-counts';
 
 /** Circles grow to fit a count from here, so it's readable once it shows. */
-const COUNT_MIN_ZOOM = 12;
+const COUNT_MIN_ZOOM = 9;
 
 /** Must exist on the style's glyph server, or the counts don't draw. */
 const COUNT_FONT = 'DIN Pro Medium';
@@ -77,7 +77,7 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
     layout: { 'circle-sort-key': ABOVE_OTHERS },
     paint: {
       'circle-color': color,
-      'circle-opacity': ['case', IN_LIST, 1, 0.4],
+      'circle-opacity': ['case', IN_LIST, 1, 0.5],
       'circle-stroke-color': '#ffffff',
       'circle-stroke-width': 1,
       'circle-radius': [
@@ -85,13 +85,11 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
         ['linear'],
         ['zoom'],
         5,
-        ['case', IS_HOVERED, 5, 3],
-        10,
         ['case', IS_HOVERED, 7, 5],
         COUNT_MIN_ZOOM,
         ['case', IS_HOVERED, 11, 9],
         15,
-        ['case', IS_HOVERED, 12, 10],
+        ['case', IS_HOVERED, 13, 11],
       ],
     },
   });
@@ -114,7 +112,7 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
         'case',
         IN_LIST,
         getThemeColor('--primary-foreground', '#ffffff'),
-        color,
+        '#ffffff',
       ],
     },
   });
