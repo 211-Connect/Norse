@@ -136,7 +136,7 @@ export class Analytics<
    *
    * @tags Analytics
    * @name AnalyticsControllerGetResourceMetrics
-   * @summary Get pageview metrics per resource
+   * @summary Get number of views per resource
    * @request GET:/analytics/resource-metrics
    * @secure
    */
@@ -279,11 +279,11 @@ export class Analytics<
       ...params,
     });
   /**
-   * No description
+   * @description Weights use Umami visits from pageview events. Each website contributes at most 500 location groups.
    *
    * @tags Analytics
    * @name AnalyticsControllerGetHeatmap
-   * @summary Get search heatmap points
+   * @summary Get visitor traffic heatmap points
    * @request GET:/analytics/heatmap
    * @secure
    */

@@ -294,6 +294,7 @@ export async function buildAppConfig(
         radiusOptions: [],
         searchEngine: 'classic',
         resultsLimit: 25,
+        showAllResultsOnMap: false,
         pinnedResourcesMode: 'boost',
       },
       badges: [],
@@ -547,6 +548,8 @@ export async function buildAppConfig(
       searchEngine:
         resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
+      showAllResultsOnMap:
+        resourceDirectory.search.searchSettings.showAllResultsOnMap ?? false,
       pinnedResourcesMode:
         resourceDirectory.search.searchSettings.pinnedResourcesMode ?? 'boost',
       texts: {
