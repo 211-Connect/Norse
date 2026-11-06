@@ -111,6 +111,9 @@ export function SearchGuide({
     picks.includes(answer.label),
   );
   const withPicks = applyAnswers(codes, chosen) as string[];
+  // A required location step offers neither: both could only end in an error.
+  const canDeferLocation = step === 'location' && !requireLocation;
+  const canSkip = Boolean(query) && (step !== 'location' || !requireLocation);
 
   // The dim layer starts under the header, so the logo and nav stay clear.
   useEffect(() => {
@@ -195,7 +198,7 @@ export function SearchGuide({
     next(codes, answered);
   };
 
-  // Picking a place moves on by itself, so the card needs only Skip to results.
+  // Picking a place moves on by itself. "Not now" moves on without one.
   const lastLocation = useRef(searchLocation);
   useEffect(() => {
     if (lastLocation.current === searchLocation) return;
@@ -237,8 +240,12 @@ export function SearchGuide({
           id={SEARCH_DIALOG_ID}
           data-testid={SEARCH_DIALOG_ID}
           data-step={question ? 'question' : (step ?? 'need')}
-          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl"
-          style={{ top: top + 24, maxHeight: `calc(100dvh - ${top + 48}px)` }}
+          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem]"
+          style={{
+            top: top + 24,
+            // Below xl the floating Quick exit holds the bottom edge.
+            maxHeight: `calc(100dvh - ${top + 48}px - var(--exit-room, 0px))`,
+          }}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             document
@@ -411,22 +418,34 @@ export function SearchGuide({
             </div>
           )}
 
-          {query && !(step === 'location' && requireLocation) && (
-            <div className="flex min-h-11 items-center justify-end">
-              <button
-                type="button"
-                disabled={isPending}
-                className={cn(
-                  'min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60',
-                  picks.length > 0
-                    ? 'border-primary text-primary border bg-white'
-                    : 'bg-primary text-primary-foreground',
-                )}
-                data-testid="guide-see-results"
-                onClick={seeResults}
-              >
-                Skip to results
-              </button>
+          {(canSkip || canDeferLocation) && (
+            <div className="flex min-h-11 items-center justify-between gap-3">
+              {canDeferLocation && (
+                <button
+                  type="button"
+                  className="border-primary text-primary min-h-11 cursor-pointer rounded-lg border bg-white px-5 font-semibold"
+                  data-testid="guide-location-not-now"
+                  onClick={leaveLocation}
+                >
+                  Not now
+                </button>
+              )}
+              {canSkip && (
+                <button
+                  type="button"
+                  disabled={isPending}
+                  className={cn(
+                    'ml-auto min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60',
+                    picks.length > 0
+                      ? 'border-primary text-primary border bg-white'
+                      : 'bg-primary text-primary-foreground',
+                  )}
+                  data-testid="guide-see-results"
+                  onClick={seeResults}
+                >
+                  Skip to results
+                </button>
+              )}
             </div>
           )}
         </DialogPrimitive.Content>

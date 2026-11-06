@@ -13,6 +13,7 @@ import { Footer } from './footer';
 import { GlobalDialogs } from './global-dialogs/global-dialogs';
 import { Header } from './header';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
+import { QuickExitButton } from './quick-exit-button';
 import { PageSearchState, SearchStateSync } from './search-state-sync';
 import { SyncLocalFavoritesOnAuthEffect } from './sync-local-favorites-on-auth-effect';
 import { Toaster } from './ui/sonner';
@@ -57,6 +58,7 @@ export const PageWrapper = ({
           Skip to content
         </a>
         <Header />
+        <QuickExitButton />
         <main id={MAIN_CONTENT_ID} className="flex flex-1 flex-col">
           {children}
         </main>

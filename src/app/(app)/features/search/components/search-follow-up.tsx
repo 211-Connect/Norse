@@ -553,7 +553,8 @@ export function SearchResultsHelp() {
     >
       <DialogPrimitive.Trigger
         className={cn(
-          'fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg print:hidden',
+          // Below xl the floating Quick exit holds the bottom edge.
+          'fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg max-xl:bottom-20 print:hidden',
           // Before it appears it stays in the tab order, so a keyboard user can still reach it.
           !shown &&
             'pointer-events-none opacity-0 focus:pointer-events-auto focus:opacity-100',
@@ -564,7 +565,7 @@ export function SearchResultsHelp() {
       </DialogPrimitive.Trigger>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Content
-          className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl md:left-auto md:w-96"
+          className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl max-xl:bottom-20 max-xl:max-h-[calc(100dvh-6rem)] md:left-auto md:w-96"
           data-testid="search-results-help-panel"
           onEscapeKeyDown={(event) => {
             // Escape cancels a keyboard drag or the Add box, not the whole panel.
