@@ -89,6 +89,10 @@ type Decision = {
 /** True from the moment the box is emptied until the next search: tags and refine go with it. */
 export const searchClearedAtom = atom(false);
 const refineCollapsedAtom = atom(false);
+/** The height of the sticky search bar. Below it, a phone pins the refine row. */
+const PIN_TOP = 48;
+const PINNED =
+  'fixed inset-x-0 top-12 z-30 flex max-h-[calc(100dvh-8rem)] flex-col gap-1 overflow-y-auto overscroll-contain border-b bg-white px-2.5 py-1 shadow-sm print:hidden';
 /**
  * The search a person called an emergency. It stays in memory, never in the URL:
  * the URL lands in browser history, and a copied link must not answer for someone else.
@@ -947,6 +951,92 @@ export function EmergencyBox({
   );
 }
 
+/** The numbers in one thin row, for the pinned block on a phone. */
+function PinnedNumbers() {
+  return (
+    <div className="flex gap-2" data-testid="search-hotline-pinned">
+      <a
+        href="tel:988"
+        className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-red-700 px-3 text-sm font-semibold text-white no-underline"
+      >
+        <Phone className="size-4" aria-hidden="true" />
+        Call 988
+      </a>
+      <a
+        href="tel:911"
+        className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-red-700 bg-white px-3 text-sm font-semibold text-red-700 no-underline"
+      >
+        Call 911
+      </a>
+    </div>
+  );
+}
+
+/**
+ * Prototype: on a phone the refine card pins under the search bar once the page scrolls
+ * to it, and compacts to one line. A tap opens it, and more scrolling compacts it again.
+ */
+function usePhonePin(
+  collapsed: boolean,
+  setCollapsed: (next: boolean) => void,
+) {
+  const holderRef = useRef<HTMLDivElement>(null);
+  const [pinned, setPinned] = useState(false);
+  const [height, setHeight] = useState<number>();
+  const live = useRef({ pinned, collapsed, before: false, openedAt: 0 });
+  live.current.pinned = pinned;
+  live.current.collapsed = collapsed;
+
+  useEffect(() => {
+    const phone = window.matchMedia('(max-width: 767.98px)');
+    const read = () => {
+      const holder = holderRef.current;
+      if (!holder) return;
+      const state = live.current;
+      const next =
+        phone.matches && holder.getBoundingClientRect().top < PIN_TOP;
+      if (next !== state.pinned) {
+        state.pinned = next;
+        if (next) {
+          state.before = state.collapsed;
+          setHeight(holder.offsetHeight);
+          setCollapsed(true);
+        } else {
+          setHeight(undefined);
+          setCollapsed(state.before);
+        }
+        setPinned(next);
+        return;
+      }
+      // Typing opens the keyboard, and the keyboard scrolls the page.
+      const typing =
+        holder.contains(document.activeElement) &&
+        /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? '');
+      if (
+        state.pinned &&
+        !state.collapsed &&
+        !typing &&
+        Math.abs(window.scrollY - state.openedAt) > PIN_TOP
+      ) {
+        setCollapsed(true);
+      }
+    };
+    read();
+    window.addEventListener('scroll', read, { passive: true });
+    window.addEventListener('resize', read);
+    return () => {
+      window.removeEventListener('scroll', read);
+      window.removeEventListener('resize', read);
+    };
+  }, [setCollapsed]);
+
+  const toggle = () => {
+    live.current.openedAt = window.scrollY;
+    setCollapsed(!collapsed);
+  };
+  return { holderRef, pinned, height, toggle };
+}
+
 /** The answers ticked on a multi-select question. A new question starts empty. */
 export function useAnswerPicks(questionId?: string) {
   const [state, setState] = useState<{ id?: string; labels: string[] }>({
@@ -1029,6 +1119,12 @@ export function SearchRefineQuestion() {
   const chosen = question.answers.filter((a) => picks.includes(a.label));
   const withPicks = applyAnswers(codes, chosen) as string[];
   const [noted, setNoted] = useState('');
+  const pin = usePhonePin(collapsed, setCollapsed);
+  // A new question must not arrive hidden at the top of the page.
+  useEffect(() => {
+    if (!pin.pinned) setCollapsed(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.id]);
   // An answer removes the control in focus, so focus goes to the next question.
   const questionRef = useRef<HTMLHeadingElement>(null);
   const moveFocus = useRef(false);
@@ -1084,160 +1180,184 @@ export function SearchRefineQuestion() {
   // A person in an emergency gets the numbers and the results, and no more questions.
   if (emergency) {
     return (
-      <div className="mt-3">
+      <div ref={pin.holderRef} className="mt-3">
         <EmergencyBox hotline />
+        {pin.pinned && (
+          <div className={PINNED}>
+            <PinnedNumbers />
+          </div>
+        )}
       </div>
     );
   }
 
+  // The emergency question never compacts. Scrolled away, a row leads back to it.
   if (decision.type === 'emergency') {
     return (
-      <div className="mt-3">
+      <div ref={pin.holderRef} className="mt-3">
         <EmergencyBox
           question={question}
           hotline={hotline}
           onAnswer={answerEmergency}
           onSkip={() => answer()}
         />
+        {pin.pinned && (
+          <div className={PINNED}>
+            {hotline && <PinnedNumbers />}
+            <button
+              type="button"
+              className="min-h-11 cursor-pointer text-left text-sm font-semibold text-red-700 underline"
+              data-testid="pinned-emergency-question"
+              onClick={() => window.scrollTo({ top: 0 })}
+            >
+              {question.text}
+            </button>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <>
-      {hotline && (
-        <div className="mt-3">
-          <EmergencyBox hotline />
-        </div>
-      )}
-      <section
-        aria-label="Refine your search"
-        className={cn(
-          'mt-3 flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
-          collapsed && 'max-md:py-0',
-          style.card,
-          isPending && 'opacity-70',
-        )}
-        data-type={decision.type}
-        data-testid="search-refine-question"
-      >
-        <button
-          type="button"
-          aria-expanded={!collapsed}
-          className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:hidden"
-          onClick={() => setCollapsed((prev) => !prev)}
-        >
-          <span className={cn('text-sm font-semibold', style.label)}>
-            {cardTitle}
-          </span>
-          <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium">
-            {collapsed ? 'Show' : 'Hide'}
-            <ChevronDown
-              className={cn('size-4', !collapsed && 'rotate-180')}
-              aria-hidden="true"
-            />
-          </span>
-        </button>
-        <p className={cn('hidden text-sm font-semibold md:block', style.label)}>
-          {cardTitle}
-        </p>
-        <div
+    <div
+      ref={pin.holderRef}
+      className="mt-3 flex flex-col gap-3"
+      style={{ height: pin.height }}
+    >
+      {hotline && <EmergencyBox hotline />}
+      <div className={cn(pin.pinned && PINNED)}>
+        {pin.pinned && hotline && <PinnedNumbers />}
+        <section
+          aria-label="Refine your search"
           className={cn(
-            'flex flex-col gap-2 md:gap-3',
-            collapsed && 'hidden md:flex',
+            'flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
+            collapsed && 'max-md:py-0',
+            style.card,
+            isPending && 'opacity-70',
           )}
+          data-type={decision.type}
+          data-testid="search-refine-question"
         >
-          <div>
-            <h2
-              ref={questionRef}
-              id="refine-question"
-              aria-describedby={question.multi ? 'refine-hint' : undefined}
-              tabIndex={-1}
-              className="text-base font-semibold outline-none md:text-xl"
-            >
-              {question.text}
-            </h2>
-            {question.multi && (
-              <p id="refine-hint" className="text-muted-foreground text-sm">
-                Pick all that fit.
-              </p>
-            )}
-          </div>
-          <div
-            role="group"
-            aria-labelledby="refine-question"
-            className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
+          <button
+            type="button"
+            aria-expanded={!collapsed}
+            className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:hidden"
+            onClick={pin.toggle}
           >
-            {question.answers.map((option) => {
-              const on = picks.includes(option.label);
-              return (
+            <span className={cn('text-sm font-semibold', style.label)}>
+              {cardTitle}
+            </span>
+            <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium">
+              {collapsed ? 'Show' : 'Hide'}
+              <ChevronDown
+                className={cn('size-4', !collapsed && 'rotate-180')}
+                aria-hidden="true"
+              />
+            </span>
+          </button>
+          <p
+            className={cn('hidden text-sm font-semibold md:block', style.label)}
+          >
+            {cardTitle}
+          </p>
+          <div
+            className={cn(
+              'flex flex-col gap-2 md:gap-3',
+              collapsed && 'hidden md:flex',
+            )}
+          >
+            <div>
+              <h2
+                ref={questionRef}
+                id="refine-question"
+                aria-describedby={question.multi ? 'refine-hint' : undefined}
+                tabIndex={-1}
+                className="text-base font-semibold outline-none md:text-xl"
+              >
+                {question.text}
+              </h2>
+              {question.multi && (
+                <p id="refine-hint" className="text-muted-foreground text-sm">
+                  Pick all that fit.
+                </p>
+              )}
+            </div>
+            <div
+              role="group"
+              aria-labelledby="refine-question"
+              className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
+            >
+              {question.answers.map((option) => {
+                const on = picks.includes(option.label);
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    disabled={isPending}
+                    aria-pressed={question.multi ? on : undefined}
+                    className={cn(
+                      'flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
+                      question.multi
+                        ? 'items-center gap-2'
+                        : 'flex-col items-start justify-center',
+                      style.button,
+                      on && PICKED,
+                    )}
+                    onClick={() =>
+                      question.multi ? toggle(option.label) : answer([option])
+                    }
+                  >
+                    {question.multi && <PickMark on={on} />}
+                    {option.label}
+                    {!question.multi && (
+                      <span className="text-muted-foreground text-xs font-normal">
+                        {resultCount(option.keeps ?? 0)}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+              <OtherBox
+                className="col-span-2"
+                placeholder={
+                  decision.question
+                    ? 'Other: type your own'
+                    : 'Tell us in your own words'
+                }
+                onSubmit={submitOther}
+              />
+              <PicksStatus
+                count={picks.length}
+                total={matchServices(withPicks).length}
+              />
+              {decision.question && picks.length === 0 && (
                 <button
-                  key={option.label}
+                  type="button"
+                  className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
+                  onClick={() => answer()}
+                >
+                  Skip
+                </button>
+              )}
+              {picks.length > 0 && (
+                <button
                   type="button"
                   disabled={isPending}
-                  aria-pressed={question.multi ? on : undefined}
-                  className={cn(
-                    'flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
-                    question.multi
-                      ? 'items-center gap-2'
-                      : 'flex-col items-start justify-center',
-                    style.button,
-                    on && PICKED,
-                  )}
-                  onClick={() =>
-                    question.multi ? toggle(option.label) : answer([option])
-                  }
+                  className="bg-primary text-primary-foreground col-span-2 min-h-11 cursor-pointer rounded-lg px-5 text-sm font-semibold disabled:opacity-60"
+                  data-testid="refine-continue"
+                  onClick={() => answer(chosen)}
                 >
-                  {question.multi && <PickMark on={on} />}
-                  {option.label}
-                  {!question.multi && (
-                    <span className="text-muted-foreground text-xs font-normal">
-                      {resultCount(option.keeps ?? 0)}
-                    </span>
-                  )}
+                  Continue: {resultCount(matchServices(withPicks).length)}
                 </button>
-              );
-            })}
-            <OtherBox
-              className="col-span-2"
-              placeholder={
-                decision.question
-                  ? 'Other: type your own'
-                  : 'Tell us in your own words'
-              }
-              onSubmit={submitOther}
-            />
-            <PicksStatus
-              count={picks.length}
-              total={matchServices(withPicks).length}
-            />
-            {decision.question && picks.length === 0 && (
-              <button
-                type="button"
-                className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
-                onClick={() => answer()}
-              >
-                Skip
-              </button>
-            )}
-            {picks.length > 0 && (
-              <button
-                type="button"
-                disabled={isPending}
-                className="bg-primary text-primary-foreground col-span-2 min-h-11 cursor-pointer rounded-lg px-5 text-sm font-semibold disabled:opacity-60"
-                data-testid="refine-continue"
-                onClick={() => answer(chosen)}
-              >
-                Continue: {resultCount(matchServices(withPicks).length)}
-              </button>
-            )}
+              )}
+            </div>
+            <p className="text-sm empty:hidden" role="status">
+              {noted}
+            </p>
           </div>
-          <p className="text-sm empty:hidden" role="status">
-            {noted}
-          </p>
-        </div>
-      </section>
-    </>
+        </section>
+      </div>
+    </div>
   );
 }
 

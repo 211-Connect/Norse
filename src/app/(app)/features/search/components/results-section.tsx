@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { cn } from '@/app/(app)/shared/lib/utils';
 import { usePrintableDirectorySearchContext } from '@/app/(app)/shared/hooks/use-printable-directory-search-context';
 import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
@@ -39,6 +40,7 @@ export type AiAlertType = 'low_info' | 'low_confidence' | 'general';
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
   aiSearchAlert?: string;
+  className?: string;
 };
 
 const getAiAlertMessageKey = (aiSearchAlert?: string): string | undefined => {
@@ -86,6 +88,7 @@ const parseDistanceParam = (value?: string): number | undefined => {
 export function ResultsSection({
   cardLayout,
   aiSearchAlert,
+  className,
 }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
@@ -175,7 +178,10 @@ export function ResultsSection({
     <section
       id="search-container"
       aria-labelledby={SEARCH_RESULTS_HEADING_ID}
-      className="flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5"
+      className={cn(
+        'flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5',
+        className,
+      )}
     >
       <h2
         id={SEARCH_RESULTS_HEADING_ID}

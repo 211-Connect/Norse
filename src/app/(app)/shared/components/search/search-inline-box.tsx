@@ -58,7 +58,7 @@ export function SearchInlineBox({
   // Tabbing must not land a focused control under the sticky bar or the floating button.
   useEffect(() => {
     const { style } = document.documentElement;
-    style.scrollPaddingTop = scrolledPast ? '4rem' : '';
+    style.scrollPaddingTop = scrolledPast ? '7rem' : '';
     style.scrollPaddingBottom = '5rem';
     return () => {
       style.scrollPaddingTop = '';
@@ -138,7 +138,7 @@ export function SearchInlineBox({
           aria-label={
             searchTerm ? `Edit your search: ${searchTerm}` : 'Search again'
           }
-          className="border-control-border fixed inset-x-0 top-0 z-30 flex cursor-pointer items-center gap-2 border-b bg-white px-4 py-3 text-left text-sm shadow-sm print:hidden"
+          className="border-control-border fixed inset-x-0 top-0 z-30 flex h-12 cursor-pointer items-center gap-2 border-b bg-white px-4 text-left text-sm shadow-sm print:hidden"
           data-testid="search-sticky-bar"
           onClick={() => {
             window.scrollTo({ top: 0 });

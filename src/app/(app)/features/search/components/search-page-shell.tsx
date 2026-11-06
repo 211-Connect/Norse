@@ -1,14 +1,19 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
 import { useCallback, useState } from 'react';
 
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
+import { useBreakpoint } from '@/app/(app)/shared/hooks/use-breakpoint';
+import { resultsViewAtom } from '@/app/(app)/shared/store/results';
 
+import { useSearchResults } from '../context/search-results-context';
 import { FilterPanel } from './filter/filter-panel';
 import { MapContainer } from './map-container';
 import { ResultsSection } from './results-section';
+import { ResultsViewToggle } from './results-view-toggle';
 
 type SearchPageShellProps = {
   aiSearchAlert?: string;
@@ -28,6 +33,12 @@ export function SearchPageShell({
     Boolean(legacyAiClarifyState?.autoOpenDialog),
   );
 
+  // A phone shows one view at a time, and loads the map only when the person asks for it.
+  const wide = useBreakpoint(768);
+  const { results } = useSearchResults();
+  const mapChosen =
+    useAtomValue(resultsViewAtom) === 'map' && results.length > 0;
+
   const handleLegacyDialogClose = useCallback(() => {
     setHideSupplementaryContent(false);
   }, []);
@@ -44,8 +55,12 @@ export function SearchPageShell({
           <ResultsSection
             cardLayout={cardLayout}
             aiSearchAlert={aiSearchAlert}
+            className={mapChosen ? 'max-md:hidden' : undefined}
           />
-          <MapContainer />
+          {(wide || mapChosen) && (
+            <MapContainer phoneView={mapChosen && !wide} />
+          )}
+          <ResultsViewToggle />
         </>
       )}
     </div>
