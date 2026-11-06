@@ -27,7 +27,14 @@ function LegendSymbol({ children }: { children: ReactNode }) {
   return <span className="flex w-4 shrink-0 justify-center">{children}</span>;
 }
 
-export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
+export function MapLegend({
+  showUserLocation,
+  isLoadingPins,
+}: {
+  showUserLocation: boolean;
+  /** The rest of the search's circles are on their way: says so as the last row. */
+  isLoadingPins: boolean;
+}) {
   const { t } = useTranslation('page-search');
 
   return (
@@ -75,21 +82,17 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
           {t('map_legend_user', { defaultValue: 'Your location' })}
         </li>
       )}
+      {isLoadingPins && (
+        <li
+          role="status"
+          className="text-muted-foreground mt-0.5 flex items-center gap-1.5 border-t pt-1"
+        >
+          <LegendSymbol>
+            <Loader2 aria-hidden className="size-3 animate-spin" />
+          </LegendSymbol>
+          {t('map_pins_loading', { defaultValue: 'Loading all locations…' })}
+        </li>
+      )}
     </ul>
-  );
-}
-
-/** Where the legend appears, while the map is still fetching every result's pin. */
-export function MapPinsLoading() {
-  const { t } = useTranslation('page-search');
-
-  return (
-    <p
-      role="status"
-      className="bg-card/95 text-muted-foreground pointer-events-none absolute top-2 left-2 flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
-    >
-      <Loader2 aria-hidden className="size-3.5 shrink-0 animate-spin" />
-      {t('map_pins_loading', { defaultValue: 'Loading all locations…' })}
-    </p>
   );
 }

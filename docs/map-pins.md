@@ -40,8 +40,9 @@ MapContainer
   limit, where pins are ordered lexically and can differ from the list.
 - **Client fetch.** The page renders the list without waiting for pins and
   passes the map a query string (`toPinsQuery`). The map fetches it from
-  `/api/search-pins` with React Query, showing a "Loading all locations…" note
-  where the legend appears. The route takes the tenant from the host, never the
+  `/api/search-pins` with React Query, showing "Loading all locations…" as the
+  legend's last row. The page's own results are circles from the
+  first render, so nothing changes shape when the rest arrive. The route takes the tenant from the host, never the
   query, and keeps only the params a search matches on (`parsePinsQuery`).
 - **Cache.** Three levels, all keyed without `page`, `limit` and `sort`, so every
   page of a search shares them: React Query in memory (fresh for an hour, kept
@@ -54,7 +55,7 @@ MapContainer
   `distance=0`.
 - **No timeout.** Pins never hold up the page, so there is no wait to cut
   short. Until they arrive, and if they fail (after one retry), the map shows
-  the current page's results as without the flag. A new search drops the
+  the current page's results as circles, with the legend. A new search drops the
   previous search's pins straight away rather than colouring them for the new
   list.
 - **AI classification.** It needs no special handling: results load through
@@ -75,8 +76,10 @@ MapContainer
   without scrolling, moving the map to fit, unless the list is taller than the map.
   Its count shows from zoom 9, where the circle is big enough to hold it, and hides
   while a circle above covers it. An address counts as in the list if any of its
-  resources is.
-- **Clicking a circle in the list** scrolls the list to that result.
+  resources is, and its popup marks those resources with the same dark dot and a
+  faint tint, listing them first.
+- **Clicking a circle in the list** scrolls the list to that result, just below
+  the header when the tenant's header is sticky.
 - **A legend** in the map's corner explains the two circles, the count on a shared
   address and the user's location.
 - **First load and new searches** fit the central 95% of locations
@@ -86,14 +89,15 @@ MapContainer
 - **Every result on the list's page is on the map**, dark, even if the pins
   leave it out: the page's results come from `GET /search` and go in first, and
   pins with the same id are dropped. Results without coordinates have no circle.
-- **Pins that are loading or fail** leave the map as it is without the flag.
+- **Pins that are loading or fail** leave the page's circles on their own.
+  Without the flag the map keeps its classic pins.
 - **A map that crashes** never replaces the page. It retries with the current
   page's pins only, then shows a message beside the list, and tries again on the
   next results. Each crash is still reported through the error webhook.
 - **No located results** leave the map on the user's location, or on the tenant's
   default view without one, and show no legend.
 - **Pins arriving after the reader has used the map** (a drag, wheel, tap or key
-  on it) colour the circles without refitting, so the map doesn't move under
+  on it) add their circles without refitting, so the map doesn't move under
   them. Otherwise the map fits the whole search once the pins arrive.
 
 ## List cap

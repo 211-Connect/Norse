@@ -13,7 +13,10 @@ import { Protocol } from 'pmtiles';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
+import {
+  HEADER_ID,
+  MAPLIBRE_STYLE_URL,
+} from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
@@ -63,9 +66,28 @@ const getPopupOverflow = (
   Math.max(0, end + POPUP_MAP_MARGIN_PX - mapEnd) ||
   Math.min(0, start - POPUP_MAP_MARGIN_PX - mapStart);
 
+/** Space between a result scrolled to and the header above it. */
+const RESULT_SCROLL_GAP_PX = 12;
+
+/** How much of the top of the window the header covers: all of it when sticky (per tenant). */
+const getHeaderOverlap = () => {
+  const header = document.getElementById(HEADER_ID);
+  if (!header) return 0;
+
+  const { position } = getComputedStyle(header);
+  return position === 'sticky' || position === 'fixed'
+    ? header.getBoundingClientRect().height
+    : 0;
+};
+
 const scrollToResult = (id: string) => {
   setTimeout(() => {
-    document.getElementById(id)?.scrollIntoView();
+    const result = document.getElementById(id);
+    if (!result) return;
+
+    // Read when scrolling: the header can change height with the window.
+    result.style.scrollMarginTop = `${getHeaderOverlap() + RESULT_SCROLL_GAP_PX}px`;
+    result.scrollIntoView();
   });
 };
 
@@ -107,8 +129,9 @@ export function Map({
   const pointPopupRef = useRef<maplibregl.Popup | null>(null);
   const pointsRef = useRef(points);
   const lastFitKeyRef = useRef<string | null>(null);
-  // Points load after the page's markers; a reader who has used the map by then keeps their view.
-  const fittedMarkersOnlyRef = useRef(false);
+  // The rest of a search's points load after its page's; a reader who has used
+  // the map by then keeps their view.
+  const lastMarkersKeyRef = useRef<string | null>(null);
   const userInteractedRef = useRef(false);
 
   const [activePopup, setActivePopup] = useState<{
@@ -213,7 +236,7 @@ export function Map({
       mapLibreMap.current?.remove();
       mapLibreMap.current = null;
       lastFitKeyRef.current = null;
-      fittedMarkersOnlyRef.current = false;
+      lastMarkersKeyRef.current = null;
       userInteractedRef.current = false;
       setIsMapLoaded(false);
     };
@@ -432,11 +455,13 @@ export function Map({
       fitTarget.extend(usersLocation as LngLatLike);
     }
 
+    // The same page with more points is a search's pins arriving, not a new view.
+    const markersKey = markers.map((marker) => marker.id).join();
     const keepsUserView =
       Boolean(points) &&
-      fittedMarkersOnlyRef.current &&
+      markersKey === lastMarkersKeyRef.current &&
       userInteractedRef.current;
-    fittedMarkersOnlyRef.current = !points;
+    lastMarkersKeyRef.current = markersKey;
 
     if (!fitTarget.isEmpty() && !isSameSet && !keepsUserView) {
       userInteractedRef.current = false;

@@ -26,7 +26,7 @@ import {
   omitPagePins,
 } from '../utils/map-pins';
 import { useSearchPins } from '../hooks/useSearchPins';
-import { MapLegend, MapPinsLoading } from './map-legend';
+import { MapLegend } from './map-legend';
 import { MapPopup, MapSitePopup } from './map-popup';
 
 const NO_PINS: SearchPin[] = [];
@@ -43,6 +43,8 @@ const toMarker = (
   site: PinSite,
   userCoords: number[] | null | undefined,
   t: TFunction,
+  /** Ids of the list's current page, which a shared address's popup marks. */
+  listIds?: ReadonlySet<string>,
 ) => {
   const [first] = site;
   const { coordinates } = first;
@@ -73,7 +75,9 @@ const toMarker = (
           defaultValue: '{{count}} resources at this location',
         }),
         count: site.length,
-        popup: <MapSitePopup site={site} distance={distance} />,
+        popup: (
+          <MapSitePopup site={site} distance={distance} listIds={listIds} />
+        ),
       };
 };
 
@@ -85,10 +89,9 @@ export function MapContainer() {
   const { results, totalResults, pinsQuery } = useSearchResults();
   // When the page holds every result, the pins could add nothing to it.
   const isWholeSearchOnPage = totalResults <= results.length;
-  const { pins: fetchedPins, isLoading: isLoadingPins } = useSearchPins(
+  const { pins, isLoading: isLoadingPins } = useSearchPins(
     isWholeSearchOnPage ? null : pinsQuery,
   );
-  const pins = pinsQuery && isWholeSearchOnPage ? NO_PINS : fetchedPins;
   const coords = useAtomValue(userCoordinatesAtom);
 
   useEffect(() => {
@@ -106,19 +109,22 @@ export function MapContainer() {
     [coords, pagePins, t],
   );
 
+  // With the flag on, the page's results are circles from the first render;
+  // the rest of the search joins them once its pins arrive.
   const mapPoints = useMemo(() => {
-    if (!pins) return null;
+    if (!pinsQuery) return null;
 
     const onPage = new Set(pagePins.map((pin) => pin.id));
 
     // The page comes first, so a shared address is known by a result in the list.
-    return groupPinsBySite([...pagePins, ...omitPagePins(pins, pagePins)]).map(
-      (site) => ({
-        ...toMarker(site, coords, t),
-        inList: onPage.has(site[0].id),
-      }),
-    );
-  }, [coords, pagePins, pins, t]);
+    return groupPinsBySite([
+      ...pagePins,
+      ...omitPagePins(pins ?? NO_PINS, pagePins),
+    ]).map((site) => ({
+      ...toMarker(site, coords, t, onPage),
+      inList: onPage.has(site[0].id),
+    }));
+  }, [coords, pagePins, pins, pinsQuery, t]);
 
   // With circles, the markers are only how a keyboard reaches the list's circles.
   const mapMarkers = useMemo(
@@ -158,9 +164,11 @@ export function MapContainer() {
         >
           <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
           {mapPoints && mapPoints.length > 0 && (
-            <MapLegend showUserLocation={coords?.length === 2} />
+            <MapLegend
+              showUserLocation={coords?.length === 2}
+              isLoadingPins={isLoadingPins}
+            />
           )}
-          {isLoadingPins && <MapPinsLoading />}
         </ErrorBoundary>
       </div>
     </div>

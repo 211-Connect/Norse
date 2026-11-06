@@ -68,9 +68,12 @@ export function MapPopup({
 export function MapSitePopup({
   site,
   distance,
+  listIds,
 }: {
   site: PinSite;
   distance?: number;
+  /** Ids of the list's current page: those resources are marked, as on the map. */
+  listIds?: ReadonlySet<string>;
 }) {
   const { t } = useTranslation('page-search');
 
@@ -85,18 +88,40 @@ export function MapSitePopup({
         </p>
         <MapPopupLocation address={site[0].address} distance={distance} />
         <ul className="border-border -mx-1 flex min-h-0 flex-col divide-y overflow-y-auto border-t">
-          {site.map((pin) => (
-            <li key={pin.id}>
-              <Link
-                href={`/search/${pin.resourceId}`}
-                className="hover:bg-accent focus-visible:ring-ring flex items-start justify-between gap-2 rounded-sm px-1 py-1.5 text-sm no-underline transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                prefetch={false}
-              >
-                <span className="min-w-0 flex-1 break-words">{pin.name}</span>
-                <ChevronRight className="text-primary mt-[2px] size-4 shrink-0" />
-              </Link>
-            </li>
-          ))}
+          {site.map((pin) => {
+            const isInList = listIds?.has(pin.id) ?? false;
+
+            return (
+              <li key={pin.id}>
+                <Link
+                  href={`/search/${pin.resourceId}`}
+                  className={cn(
+                    'hover:bg-accent focus-visible:ring-ring flex items-start gap-2 rounded-sm px-1 py-1.5 text-sm no-underline transition-colors focus-visible:ring-2 focus-visible:outline-none',
+                    isInList && 'bg-primary/5',
+                  )}
+                  prefetch={false}
+                >
+                  {/* The same dot as the list's circles and the legend. */}
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'mt-[6px] size-2 shrink-0 rounded-full',
+                      isInList ? 'bg-primary' : 'bg-transparent',
+                    )}
+                  />
+                  <span className="min-w-0 flex-1 break-words">
+                    {pin.name}
+                    {isInList && (
+                      <span className="sr-only">
+                        {`, ${t('map_legend_list', { defaultValue: 'In the list' })}`}
+                      </span>
+                    )}
+                  </span>
+                  <ChevronRight className="text-primary mt-[2px] size-4 shrink-0" />
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </CardContent>
     </Card>
