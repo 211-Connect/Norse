@@ -25,8 +25,11 @@ import {
   groupPinsBySite,
   omitPagePins,
 } from '../utils/map-pins';
-import { MapLegend } from './map-legend';
+import { useSearchPins } from '../hooks/useSearchPins';
+import { MapLegend, MapPinsLoading } from './map-legend';
 import { MapPopup, MapSitePopup } from './map-popup';
+
+const NO_PINS: SearchPin[] = [];
 
 const toPin = (result: ResultType): SearchPin => ({
   id: result._id,
@@ -79,7 +82,13 @@ export function MapContainer() {
   const [headerHeight, setHeaderHeight] = useState(0);
 
   const { t } = useTranslation('page-search');
-  const { results, pins } = useSearchResults();
+  const { results, totalResults, pinsQuery } = useSearchResults();
+  // When the page holds every result, the pins could add nothing to it.
+  const isWholeSearchOnPage = totalResults <= results.length;
+  const { pins: fetchedPins, isLoading: isLoadingPins } = useSearchPins(
+    isWholeSearchOnPage ? null : pinsQuery,
+  );
+  const pins = pinsQuery && isWholeSearchOnPage ? NO_PINS : fetchedPins;
   const coords = useAtomValue(userCoordinatesAtom);
 
   useEffect(() => {
@@ -148,7 +157,10 @@ export function MapContainer() {
           }
         >
           <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
-          {mapPoints && <MapLegend showUserLocation={coords?.length === 2} />}
+          {mapPoints && mapPoints.length > 0 && (
+            <MapLegend showUserLocation={coords?.length === 2} />
+          )}
+          {isLoadingPins && <MapPinsLoading />}
         </ErrorBoundary>
       </div>
     </div>

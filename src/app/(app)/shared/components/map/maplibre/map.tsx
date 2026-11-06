@@ -36,6 +36,9 @@ const log = createLogger('maplibre');
 /** The user's pin next to result circles: smaller, so it doesn't hide them. */
 const COMPACT_MARKER_SCALE = 0.72;
 
+/** What a reader does to the map, as opposed to a fit or a popup moving it. */
+const INTERACTION_EVENTS = ['pointerdown', 'wheel', 'keydown'] as const;
+
 /**
  * Lets a keyboard reach a circle drawn on the canvas. It shows only as a focus
  * ring, and the mouse goes through it to the canvas.
@@ -104,6 +107,9 @@ export function Map({
   const pointPopupRef = useRef<maplibregl.Popup | null>(null);
   const pointsRef = useRef(points);
   const lastFitKeyRef = useRef<string | null>(null);
+  // Points load after the page's markers; a reader who has used the map by then keeps their view.
+  const fittedMarkersOnlyRef = useRef(false);
+  const userInteractedRef = useRef(false);
 
   const [activePopup, setActivePopup] = useState<{
     element: HTMLElement;
@@ -189,11 +195,26 @@ export function Map({
       );
     }
 
+    // Camera events don't say who moved the map (a wheel zoom carries no
+    // original event), so any pointer, wheel or key on the map counts.
+    const container = mapContainer.current;
+    const markInteraction = () => {
+      userInteractedRef.current = true;
+    };
+    for (const type of INTERACTION_EVENTS) {
+      container?.addEventListener(type, markInteraction, { passive: true });
+    }
+
     return () => {
+      for (const type of INTERACTION_EVENTS) {
+        container?.removeEventListener(type, markInteraction);
+      }
       // Remove and clear ref so other effects don't act on a torn-down map
       mapLibreMap.current?.remove();
       mapLibreMap.current = null;
       lastFitKeyRef.current = null;
+      fittedMarkersOnlyRef.current = false;
+      userInteractedRef.current = false;
       setIsMapLoaded(false);
     };
   }, [center, zoom]);
@@ -411,7 +432,14 @@ export function Map({
       fitTarget.extend(usersLocation as LngLatLike);
     }
 
-    if (!fitTarget.isEmpty() && !isSameSet) {
+    const keepsUserView =
+      Boolean(points) &&
+      fittedMarkersOnlyRef.current &&
+      userInteractedRef.current;
+    fittedMarkersOnlyRef.current = !points;
+
+    if (!fitTarget.isEmpty() && !isSameSet && !keepsUserView) {
+      userInteractedRef.current = false;
       if (fittedCount > 0 && fittedCount <= 2) {
         mapLibreMap.current.fitBounds(fitTarget, {
           padding: 50,

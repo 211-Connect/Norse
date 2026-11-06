@@ -22,11 +22,12 @@ does not check it.
 ```
 /search page (server)
   ├ GET /search         the list, as without the flag
-  └ GET /search/pins    in parallel; the page waits up to 5s, cached in Redis
+  └ toPinsQuery         the pins request, without page, limit or sort
         ↓
-SearchResultsProvider { results, pins, totalResults, isTotalCapped }
+SearchResultsProvider { results, pinsQuery, totalResults, isTotalCapped }
         ↓
 MapContainer
+  ├ useSearchPins → GET /api/search-pins (Norse) → GET /search/pins (Norse-API)
   ├ pins + results, grouped by address → points   canvas circles
   └ the list's points → markers   invisible DOM targets for the keyboard
 ```
@@ -37,14 +38,25 @@ MapContainer
   Hybrid search skips the embedding and taxonomy lookup unless `relevance_cutoff`
   is on: filters alone decide what matches, so ranking only matters past the
   limit, where pins are ordered lexically and can differ from the list.
-- **Cache.** Redis for an hour under `search_pins:<tenant>:<locale>:<hash>`.
-  `page`, `limit` and `sort` are not sent, so every page of a search shares an
-  entry. `coords` are rounded to two decimals (about 1 km) so neighbours share
+- **Client fetch.** The page renders the list without waiting for pins and
+  passes the map a query string (`toPinsQuery`). The map fetches it from
+  `/api/search-pins` with React Query, showing a "Loading all locations…" note
+  where the legend appears. The route takes the tenant from the host, never the
+  query, and keeps only the params a search matches on (`parsePinsQuery`).
+- **Cache.** Three levels, all keyed without `page`, `limit` and `sort`, so every
+  page of a search shares them: React Query in memory (fresh for an hour, kept
+  5 minutes after the last search that used it), the browser
+  (`Cache-Control: private, max-age=3600`) and Redis for an hour under
+  `search_pins:<tenant>:<locale>:<hash>`. Turning the list's page sends no pins
+  request at all, and neither does a search whose results all fit on its first
+  page: the map then draws its circles from the page alone. `coords` are rounded to two decimals (about 1 km) so neighbours share
   one too. They cannot be dropped: they filter by service area even at
   `distance=0`.
-- **Timeout.** If pins take longer than 5 seconds the page renders the current
-  page's pins only. The request keeps running and fills the cache for the next
-  visitor. `findResourcePins` never rejects, so pins cannot break the page.
+- **No timeout.** Pins never hold up the page, so there is no wait to cut
+  short. Until they arrive, and if they fail (after one retry), the map shows
+  the current page's results as without the flag. A new search drops the
+  previous search's pins straight away rather than colouring them for the new
+  list.
 - **AI classification.** It needs no special handling: results load through
   `GET /search`, so pins use the same request. Pins are skipped only when the
   clarify dialog opens over the page and hides the map.
@@ -71,12 +83,18 @@ MapContainer
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
 - **Turning the list's page** recolours the circles and leaves the map where it
   is.
-- **Pins that fail or time out** leave the map as it is without the flag.
+- **Every result on the list's page is on the map**, dark, even if the pins
+  leave it out: the page's results come from `GET /search` and go in first, and
+  pins with the same id are dropped. Results without coordinates have no circle.
+- **Pins that are loading or fail** leave the map as it is without the flag.
 - **A map that crashes** never replaces the page. It retries with the current
   page's pins only, then shows a message beside the list, and tries again on the
   next results. Each crash is still reported through the error webhook.
 - **No located results** leave the map on the user's location, or on the tenant's
-  default view without one.
+  default view without one, and show no legend.
+- **Pins arriving after the reader has used the map** (a drag, wheel, tap or key
+  on it) colour the circles without refitting, so the map doesn't move under
+  them. Otherwise the map fits the whole search once the pins arrive.
 
 ## List cap
 
@@ -94,9 +112,10 @@ and screen reader users reach them by turning the list's page.
 
 ## Known limits
 
-- Pins are sent with the page, so they add to every page load and list page
-  change, even on a cache hit. 965 pins are about 270 KB uncompressed, so
-  10,000 would be about 2.8 MB.
+- Pins arrive after the list, so the first view of a search shows the page's
+  circles first and the others a moment later. 965 pins are about 270 KB
+  uncompressed, so 10,000 would be about 2.8 MB, once per search.
+- `/api/search-pins` has no Arcjet bot protection yet, like `/api/resource-titles`.
 - Hybrid search without a taxonomy scope matches the tenant's whole population:
   the query only ranks. Pins then show everything the filters allow, not only
   what is relevant to the query.

@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -75,5 +76,20 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
         </li>
       )}
     </ul>
+  );
+}
+
+/** Where the legend appears, while the map is still fetching every result's pin. */
+export function MapPinsLoading() {
+  const { t } = useTranslation('page-search');
+
+  return (
+    <p
+      role="status"
+      className="bg-card/95 text-muted-foreground pointer-events-none absolute top-2 left-2 flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
+    >
+      <Loader2 aria-hidden className="size-3.5 shrink-0 animate-spin" />
+      {t('map_pins_loading', { defaultValue: 'Loading all locations…' })}
+    </p>
   );
 }

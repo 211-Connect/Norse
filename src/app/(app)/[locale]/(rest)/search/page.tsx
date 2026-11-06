@@ -13,12 +13,12 @@ import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import {
   FindResourcesQuery,
-  findResourcePins,
   findResources,
   findResourcesV2,
 } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { toPinsQuery } from '@/app/(app)/shared/lib/search-params';
 import { protectPage } from '@/lib/arcjet-page';
 import {
   MAP_PINS_LIMIT,
@@ -82,11 +82,11 @@ const getPageData = cache(async function (
     ? Math.min(requestedPage, lastPageWithinPinLimit(limit))
     : requestedPage;
 
-  // Alongside the list, which it never fails or delays past its own short wait.
+  // The map fetches its pins once the list is on screen, so they never delay it.
   // The dialog that opens over a clarify URL hides the map, so nobody would see them.
-  const pinsRequest =
+  const pinsQuery =
     showAllResultsOnMap && !clarify?.autoOpenDialog
-      ? findResourcePins(searchQuery, locale, appConfig.tenantId, searchEngine)
+      ? toPinsQuery(searchQuery, locale, searchEngine)
       : null;
 
   let useFindResourcesV2 = false;
@@ -156,8 +156,6 @@ const getPageData = cache(async function (
     }
   }
 
-  const pins = await pinsRequest;
-
   const { resources, t } = await initTranslations(
     locale,
     i18nNamespaces,
@@ -172,7 +170,7 @@ const getPageData = cache(async function (
     filters,
     results,
     totalResults,
-    pins,
+    pinsQuery,
     page,
     resources,
     t,
@@ -257,7 +255,7 @@ export default async function SearchPage({
     clarify: legacyAiClarifyState,
     intent,
     cardLayout,
-    pins,
+    pinsQuery,
     page: currentPage,
     appConfig,
   } = await getPageData(locale, searchParamsResult);
@@ -290,7 +288,7 @@ export default async function SearchPage({
           results,
           totalResults: listTotal,
           isTotalCapped: listTotal < totalResults,
-          pins,
+          pinsQuery,
           currentPage,
           filters,
           sort: searchQuery.sort ?? 'relevance',
