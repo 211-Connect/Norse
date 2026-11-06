@@ -44,7 +44,7 @@ import {
   taxonomyScorecardsUpdate,
 } from './endpoints/taxonomyScorecards';
 import { defaultLocale, locales } from './i18n/locales';
-import { runsPayload } from '@/lib/norse-role';
+import { getNorseRole, runsPayload } from '@/lib/norse-role';
 import { deliverScheduledPdfs } from './jobs/deliverScheduledPdfs';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
@@ -432,8 +432,17 @@ const config = buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI,
-      min: getNumberFromString(process.env.DATABASE_POOL_MIN, 1),
+      // min 0: idle connections close after idleTimeoutMillis instead of
+      // staying open for the life of the process (each one shows its last
+      // query, usually the jobs poll, in pg_stat_activity).
+      min: getNumberFromString(process.env.DATABASE_POOL_MIN, 0),
       max: getNumberFromString(process.env.DATABASE_POOL_MAX, 4),
+      idleTimeoutMillis: getNumberFromString(
+        process.env.DATABASE_POOL_IDLE_TIMEOUT_MS,
+        30_000,
+      ),
+      // Names the connection in pg_stat_activity, e.g. norse-cms.
+      application_name: `norse-${getNorseRole()}`,
     },
     allowIDOnCreate: true,
     beforeSchemaInit: [
