@@ -9,7 +9,7 @@ import { FavoriteListStateSync } from '@/app/(app)/features/favorites/components
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
+import { fetchFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
@@ -74,8 +74,20 @@ export default async function FavoritesDetailsPage({ params }) {
     );
   }
 
-  const favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
-  if (!favoriteList) {
+  const result = await fetchFavoriteList(id, locale, appConfig.tenantId);
+  if (!result.ok) {
+    // Anything other than "private" or "missing" is a real failure (API down,
+    // 5xx): let the error boundary show the generic "try again later" page.
+    if (
+      result.status !== 401 &&
+      result.status !== 403 &&
+      result.status !== 404
+    ) {
+      throw new Error(
+        `Failed to load favorite list ${id} (status ${result.status ?? 'unknown'})`,
+      );
+    }
+
     if (!session) {
       // A logged-out visitor may be the list's own owner, just not signed in
       // right now (this route is reachable without auth when `favorites-list`
@@ -94,9 +106,12 @@ export default async function FavoritesDetailsPage({ params }) {
       }
     }
 
+    // Private (and not ours) or deleted: the API doesn't let us tell these
+    // apart reliably, so `./not-found.tsx` explains both possibilities.
     notFound();
   }
 
+  const favoriteList = result.data;
   const viewingAsOwner = session?.user?.id === favoriteList.ownerId;
 
   const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
