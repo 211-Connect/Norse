@@ -100,11 +100,15 @@ export function SearchNeedInput({
               <button
                 type="button"
                 className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
-                onClick={(event) => {
-                  // A suggestion is a whole search, so it runs like a typed one.
-                  const form = event.currentTarget.form;
+                onClick={() => {
+                  // A suggestion only fills the box. The person can change it, then sends it.
                   onChange(value);
-                  requestAnimationFrame(() => form?.requestSubmit());
+                  requestAnimationFrame(() => {
+                    const box = document.getElementById(inputId);
+                    if (!(box instanceof HTMLTextAreaElement)) return;
+                    box.focus();
+                    box.setSelectionRange(value.length, value.length);
+                  });
                 }}
               >
                 {value}

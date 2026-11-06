@@ -75,8 +75,20 @@ const NEED_RULES = [
   [/\b(hits? me|hurting me|abus\w*|scared of (him|her|them))\b/i, { 'N-SAF-01': 0.9 }],
 ];
 
+const HIGH_DANGER = /\b(suicid\w*|kill myself|end my life|want to die|don'?t want to (live|be here)|(hurt|harm) myself|has a (knife|gun)|hurting me right now|overdos\w*)\b/i;
+const MIDDLE_DANGER = /\b(not safe|unsafe|in danger|in (a )?crisis|threaten\w*|hits? me|hurting me|abus\w*|scared of (him|her|them)|afraid of (him|her|them))\b/i;
+
+/**
+ * How much danger a search shows. It reads the words, not the URL, so a copied link
+ * or an answer can never turn the hotline off. Stand-in for the emergency check.
+ */
+export function dangerBand(query = '', codes = []) {
+  if (codes.includes('U-0') || HIGH_DANGER.test(query)) return 'high';
+  return MIDDLE_DANGER.test(query) ? 'middle' : 'none';
+}
+
 const URGENCY_RULES = [
-  [/\b(suicid\w*|kill myself|end my life|want to die|don'?t want to (live|be here)|(hurt|harm) myself|has a (knife|gun)|hurting me right now|overdos\w*)\b/i, 'U-0'],
+  [HIGH_DANGER, 'U-0'],
   [/\b(tonight|today|right now|this week|nowhere to (sleep|stay)|emergency|run(ning)? out)\b/i, 'U-1'],
   [/\b(hearing|court date|shut.?off|by (monday|tuesday|wednesday|thursday|friday)|eviction notice)\b/i, 'U-2'],
   [/\b(ongoing|every month|for months|for a year|chronic)\b/i, 'U-3'],
@@ -274,13 +286,11 @@ const leaf = (code, extra = {}) => ({ label: labelOf(code), add: [code], ...extr
 const FAMILY_QUESTION = {
   'N-FOD': {
     text: 'What kind of food help do you need?',
-    level: 'important',
     multi: true,
     leaves: ['N-FOD-01', 'N-FOD-04', 'N-FOD-02', 'N-FOD-03'],
   },
   'N-HOU': {
     text: 'What is going on with your housing?',
-    level: 'critical',
     multi: true,
     leaves: ['N-HOU-01', 'N-HOU-02', 'N-HOU-04', 'N-HOU-03', 'N-HOU-05'],
   },
@@ -293,7 +303,7 @@ const ALSO = {
 const STARTING_POINTS = ['N-FOD-01', 'N-HOU-01', 'N-MON-01', 'N-HLT-01', 'N-TRN-01'];
 const TIME_CRITICAL = ['N-HOU-01', 'N-HLT-03', 'N-SAF-01', 'N-HOU-05'];
 
-function candidates(query, codes) {
+function candidates(query, codes, answered) {
   const read = classifySune(query);
   const needs = codes.filter(isNeed);
   const out = [];
@@ -306,7 +316,7 @@ function candidates(query, codes) {
     out.push({
       id: `leaf-${family}`,
       text: question.text,
-      level: question.level,
+      type: 'find_need',
       multi: question.multi,
       why: `The classifier found ${familyDisplay(family)} but not which kind.`,
       answers: question.leaves.map((code) =>
@@ -315,12 +325,14 @@ function candidates(query, codes) {
     });
   }
 
-  const hasUrgency = codes.some(isUrgency);
+  // The emergency question already asked how soon, so it is not asked twice.
+  const hasUrgency =
+    codes.some(isUrgency) || dangerBand(query, codes) === 'high';
   if (needs.includes('N-HOU-01') && !hasUrgency) {
     out.push({
       id: 'tonight',
       text: 'Where are you staying right now?',
-      level: 'critical',
+      type: 'find_need',
       why: 'This decides between a bed tonight and help finding a home.',
       answers: [
         { label: labelOf('E-HOUS-03'), add: ['U-1', 'E-HOUS-03'] },
@@ -333,9 +345,24 @@ function candidates(query, codes) {
     out.push({
       id: 'when',
       text: 'When do you need help?',
-      level: needs.some((code) => TIME_CRITICAL.includes(code)) ? 'critical' : 'helpful',
+      type: needs.some((code) => TIME_CRITICAL.includes(code)) ? 'confirm_urgency' : 'narrow',
       why: 'SUNE asks about urgency only when the answer changes the results.',
       answers: ['U-1', 'U-2', 'U-3', 'U-4'].map((code) => leaf(code)),
+    });
+  }
+
+  // A person who said "today" confirms it, only when the answer changes the results.
+  if (needs.length > 0 && codes.includes('U-1') && !answered.includes(EMERGENCY_ID)) {
+    out.push({
+      id: 'confirm-today',
+      text: 'Do you need help today?',
+      type: 'confirm_urgency',
+      why: 'Same-day services are a different list.',
+      answers: [
+        { label: 'Yes, today', add: ['U-1'] },
+        { label: 'In the next few days', add: ['U-2'], remove: ['U-1'] },
+        { label: 'It can wait', add: ['U-3'], remove: ['U-1'] },
+      ],
     });
   }
 
@@ -343,7 +370,7 @@ function candidates(query, codes) {
     out.push({
       id: 'barrier',
       text: 'What is getting in the way?',
-      level: 'helpful',
+      type: 'narrow',
       multi: true,
       why: 'Help that comes to the person is a different set of services.',
       answers: ['E-BAR-ACCESS', 'E-BAR-COST', 'E-BAR-KNOW'].map((code) => leaf(code)),
@@ -353,7 +380,7 @@ function candidates(query, codes) {
     out.push({
       id: 'household',
       text: 'Who is this for?',
-      level: 'helpful',
+      type: 'narrow',
       multi: true,
       why: 'Some services are only for certain people.',
       answers: ['E-HH-01', 'E-AGE-06', 'E-VET-01'].map((code) => leaf(code)),
@@ -364,7 +391,7 @@ function candidates(query, codes) {
     out.push({
       id: 'also',
       text: 'Is anything else making this hard?',
-      level: 'helpful',
+      type: 'narrow',
       multi: true,
       always: true,
       why: 'People often have more than one need.',
@@ -395,30 +422,53 @@ const entropy = (counts) => {
   }, 0);
 };
 
-const LEVEL_RANK = { critical: 0, important: 1, helpful: 2 };
+const TYPE_RANK = { find_need: 0, confirm_urgency: 1, narrow: 2 };
+
+/** A neutral id: it can sit in the URL without saying what was asked. */
+export const EMERGENCY_ID = 'urgency';
+
+/** High danger offers no "not urgent": that answer reads badly after a search about self-harm. */
+const emergencyQuestion = (band) => ({
+  id: EMERGENCY_ID,
+  type: 'emergency',
+  text: 'Are you in an emergency right now?',
+  why: 'The search shows possible danger.',
+  answers: [
+    { label: "I'm in an emergency right now", add: [], emergency: true },
+    { label: 'I need help today', add: ['U-1'], remove: ['U-0'] },
+    { label: 'I need help soon', add: ['U-2'], remove: ['U-0'] },
+    ...(band === 'middle'
+      ? [{ label: "It's not urgent", add: ['U-3'], remove: ['U-0'] }]
+      : []),
+  ],
+});
 
 /**
  * The decision the page acts on. Results always show; this only picks what to ask beside them.
- * critical (red): the answer changes what kind of help is right.
- * important (orange): the search is vague, or a need has no leaf yet.
- * helpful (neutral): a question that narrows the list.
+ * emergency (red): the search shows danger. It goes first and nothing turns it off.
+ * find_need (orange): the search is vague, or a need has no leaf yet.
+ * confirm_urgency (orange): how soon changes the results.
+ * narrow (quiet): a question that narrows the list.
+ * none: nothing to ask.
  */
 export function decideRefine(query, codes, answered = []) {
-  const urgency = codes.find(isUrgency);
   const needs = codes.filter(isNeed);
   const current = matchServices(codes);
+  const band = dangerBand(query, codes);
 
-  if (urgency === 'U-0') {
-    return { kind: 'crisis', level: 'critical', total: current.length };
+  if (band !== 'none' && !answered.includes(EMERGENCY_ID)) {
+    const question = emergencyQuestion(band);
+    return { kind: 'question', type: 'emergency', band, total: current.length, question };
   }
   if (needs.length === 0 && !answered.includes('start')) {
     return {
       kind: 'question',
-      level: 'important',
+      type: 'find_need',
+      band,
       total: current.length,
       question: {
         id: 'start',
-        level: 'important',
+        type: 'find_need',
         text: 'What do you need help with most?',
         why: 'The classifier found no need in this search.',
         answers: STARTING_POINTS.map((code) => ({
@@ -429,7 +479,7 @@ export function decideRefine(query, codes, answered = []) {
     };
   }
 
-  const scored = candidates(query, codes)
+  const scored = candidates(query, codes, answered)
     .filter((question) => !answered.includes(question.id))
     .map((question) => {
       const answers = question.answers.map((answer) => ({
@@ -455,14 +505,14 @@ export function decideRefine(query, codes, answered = []) {
     .filter((question) => question.answers.length > 0)
     .sort(
       (a, b) =>
-        LEVEL_RANK[a.level] - LEVEL_RANK[b.level] ||
+        TYPE_RANK[a.type] - TYPE_RANK[b.type] ||
         Number(Boolean(a.always)) - Number(Boolean(b.always)) ||
         b.gain - a.gain,
     );
 
   const [question] = scored;
-  if (!question) return { kind: 'done', level: 'helpful', total: current.length };
-  return { kind: 'question', level: question.level, total: current.length, question };
+  if (!question) return { kind: 'done', type: 'none', band, total: current.length };
+  return { kind: 'question', type: question.type, band, total: current.length, question };
 }
 
 /** The questions for this need, fixed up front: an answer never changes how many are left. */

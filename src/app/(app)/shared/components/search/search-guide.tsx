@@ -1,18 +1,21 @@
 'use client';
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { X } from 'lucide-react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { ArrowLeft, X } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState, useTransition } from 'react';
 
 import {
+  EmergencyBox,
+  emergencySearchAtom,
   flaggedAtom,
-  LEVELS,
   OtherBox,
   PICKED,
   PickMark,
   PicksStatus,
+  QUESTION_STYLES,
   resultCount,
+  urlCodes,
   useAnswerPicks,
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
@@ -20,7 +23,7 @@ import {
   applyAnswer,
   applyAnswers,
   classifySune,
-  decideRefine,
+  dangerBand,
   lookup,
   matchServices,
   planQuestions,
@@ -47,10 +50,15 @@ import { SearchNeedInput } from './search-need-form';
 /** More steps than this tires people out; the rest wait on the results page. */
 const MAX_STEPS = 3;
 
-type Answer = { label: string; add: string[]; remove?: string[] };
+type Answer = {
+  label: string;
+  add: string[];
+  remove?: string[];
+  emergency?: boolean;
+};
 type Question = {
   id: string;
-  level: keyof typeof LEVELS;
+  type: keyof typeof QUESTION_STYLES;
   text: string;
   multi?: boolean;
   answers: Answer[];
@@ -82,6 +90,7 @@ export function SearchGuide({
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
   const setFlagged = useSetAtom(flaggedAtom);
+  const [emergencySearch, setEmergencySearch] = useAtom(emergencySearchAtom);
   const requireLocation = useFlag('requireUserLocation');
   const [isPending, startTransition] = useTransition();
   const navigate = useNavigateAiSearch({
@@ -105,8 +114,14 @@ export function SearchGuide({
   const query = searchTerm.trim();
   const step = steps?.[at];
   const question = step && step !== 'location' ? step : undefined;
-  const style = question ? LEVELS[question.level] : undefined;
-  const { picks, toggle } = useAnswerPicks(question?.id);
+  const style = question ? QUESTION_STYLES[question.type] : undefined;
+  const isEmergency = question?.type === 'emergency';
+  // Once the danger is known the numbers stay on every step, the location step too.
+  const hotline =
+    Boolean(steps) &&
+    (dangerBand(query, codes) === 'high' ||
+      (Boolean(query) && emergencySearch === query));
+  const { picks, toggle, clear } = useAnswerPicks(question?.id);
   const chosen = (question?.answers ?? []).filter((answer) =>
     picks.includes(answer.label),
   );
@@ -141,7 +156,7 @@ export function SearchGuide({
       return;
     }
     navigate({
-      taxonomies: finalCodes,
+      taxonomies: urlCodes(finalCodes),
       refined: finalAnswered,
       locationPayload: await buildSearchLocationPayload(
         searchCoordinates,
@@ -152,19 +167,17 @@ export function SearchGuide({
   };
 
   const plan = (needCodes: string[], hasLocation: boolean) => {
-    // Crisis never waits behind a question: the results page opens with the crisis card.
-    if (decideRefine(query, needCodes, []).kind === 'crisis') {
-      return void finish(needCodes, []);
-    }
     const location: Step[] = hasLocation ? [] : ['location'];
-    const list = [
-      ...location,
-      ...(planQuestions(
-        query,
-        needCodes,
-        MAX_STEPS - location.length,
-      ) as Question[]),
-    ];
+    const questions = planQuestions(
+      query,
+      needCodes,
+      MAX_STEPS - location.length,
+    ) as Question[];
+    // The emergency question always goes first, ahead of the location step.
+    const list: Step[] =
+      questions[0]?.type === 'emergency'
+        ? [questions[0], ...location, ...questions.slice(1)]
+        : [...location, ...questions];
     if (list.length === 0) return void finish(needCodes, []);
     setCodes(needCodes);
     setSteps(list);
@@ -174,8 +187,6 @@ export function SearchGuide({
   const next = (nextCodes: string[], nextAnswered: string[]) => {
     setCodes(nextCodes);
     setAnswered(nextAnswered);
-    // Crisis never waits behind a question, however it was typed.
-    if (nextCodes.includes('U-0')) return void finish(nextCodes, nextAnswered);
     if (steps && at + 1 < steps.length) return setAt(at + 1);
     void finish(nextCodes, nextAnswered);
   };
@@ -211,16 +222,35 @@ export function SearchGuide({
   const seeResults = () =>
     void finish(
       steps ? withPicks : known(query),
-      question && picks.length ? [...answered, question.id] : answered,
+      question && (picks.length || isEmergency)
+        ? [...answered, question.id]
+        : answered,
     );
+
+  // The typed text stays, so the person can fix it. The answers go with the old search.
+  const backToSearch = () => {
+    clear();
+    setSteps(null);
+    setAt(0);
+    setCodes([]);
+    setAnswered([]);
+    setLocationError(false);
+  };
 
   const pick = (nextCodes: string[]) => {
     if (question) next(nextCodes, [...answered, question.id]);
   };
 
+  // An emergency never waits behind another question.
+  const emergencyNow = () => {
+    setEmergencySearch(query);
+    void finish(codes, answered);
+  };
+
   const submitOther = (text: string) => {
     const found = known(text);
     if (found.length === 0) setFlagged((prev) => [...prev, text]);
+    if (found.includes('U-0')) return emergencyNow();
     pick([...new Set([...withPicks, ...found])]);
   };
 
@@ -286,7 +316,16 @@ export function SearchGuide({
           )}
 
           {steps && (
-            <div className="flex flex-col gap-1 pr-10">
+            <div className="flex flex-col items-start gap-1 pr-10">
+              <button
+                type="button"
+                className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
+                data-testid="guide-back-to-search"
+                onClick={backToSearch}
+              >
+                <ArrowLeft className="size-4" aria-hidden="true" />
+                Back to search
+              </button>
               {query && (
                 <p className="text-muted-foreground text-sm">
                   Your search:{' '}
@@ -309,6 +348,8 @@ export function SearchGuide({
               ) : null}
             </div>
           )}
+
+          {hotline && !isEmergency && <EmergencyBox hotline />}
 
           {step === 'location' && (
             <div className="flex flex-col gap-3">
@@ -341,7 +382,24 @@ export function SearchGuide({
             </div>
           )}
 
-          {question && style && (
+          {question && isEmergency && (
+            <>
+              <h2 ref={headingRef} tabIndex={-1} className="sr-only">
+                {question.text}
+              </h2>
+              <EmergencyBox
+                question={question}
+                hotline={hotline}
+                onAnswer={(option) =>
+                  option.emergency
+                    ? emergencyNow()
+                    : pick(applyAnswer(codes, option) as string[])
+                }
+              />
+            </>
+          )}
+
+          {question && !isEmergency && style && (
             <div className="flex flex-col gap-3">
               <div>
                 <h2

@@ -7,8 +7,8 @@ const svc = (s, i) => { const id = s.id; const lat = 48.72 + (i % 7) * 0.01, lon
   organization: { alternate_name: s.org }, attribution: 'Sample Data Collaborative',
   location: { name: s.org, point: { type: 'Point', coordinates: [lon, lat] }, physical_address: { address_1: id + '00 Main St', city: 'Sampleton', state: 'WA', postal_code: '98000' } },
   taxonomies: s.needs.map((code) => ({ code, name: labelOf(code) })), schedule: 'Mon-Fri 9:00 AM-5:00 PM' } }; };
-// Always refine: predict never stops the user. It returns SUNE codes where the real one returns HSIS codes.
-const predict = (q) => ({ scenario: 'search', hsis_taxonomies: classifySune(q).codes, options: [] });
+// Always refine: predict never stops the user. U-0 stays out: predict's codes land in the URL. It returns SUNE codes where the real one returns HSIS codes.
+const predict = (q) => ({ scenario: 'search', hsis_taxonomies: classifySune(q).codes.filter((code) => code !== 'U-0'), options: [] });
 const appConfig = {
   accessibility: { fontSize: { allowedValues: ['100%', '125%'] } },
   brand: { name: 'Sample County Resources', theme: { primaryColor: '#0D6C68', secondaryColor: '#7DBFA7', borderRadius: '16px' } },

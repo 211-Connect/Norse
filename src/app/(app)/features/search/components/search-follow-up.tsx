@@ -51,6 +51,7 @@ import {
   applyAnswers,
   classifySune,
   decideRefine,
+  EMERGENCY_ID,
   isRankToken,
   labelOf,
   lookup,
@@ -65,19 +66,22 @@ type Answer = {
   label: string;
   add: string[];
   remove?: string[];
-  keeps: number;
+  keeps?: number;
+  emergency?: boolean;
 };
 type Question = {
   id: string;
+  type?: keyof typeof QUESTION_STYLES;
   text: string;
-  why: string;
+  why?: string;
   multi?: boolean;
   answers: Answer[];
 };
 type Kind = { key: string; label: string; description: string };
 type Decision = {
-  kind: 'question' | 'crisis' | 'done';
-  level: 'critical' | 'important' | 'helpful';
+  kind: 'question' | 'done';
+  type: keyof typeof QUESTION_STYLES;
+  band: 'high' | 'middle' | 'none';
   total: number;
   question?: Question;
 };
@@ -85,6 +89,14 @@ type Decision = {
 /** True from the moment the box is emptied until the next search: tags and refine go with it. */
 export const searchClearedAtom = atom(false);
 const refineCollapsedAtom = atom(false);
+/**
+ * The search a person called an emergency. It stays in memory, never in the URL:
+ * the URL lands in browser history, and a copied link must not answer for someone else.
+ */
+export const emergencySearchAtom = atom('');
+/** U-0 stays out of the URL for the same reason. The words of the search still show the danger. */
+export const urlCodes = (codes: string[]) =>
+  codes.filter((code) => code !== 'U-0');
 
 /** The URL holds the search state, so a shared link shows the same tags and results. */
 function useSuneSearch() {
@@ -111,9 +123,14 @@ function useSuneSearch() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [stated.join(), label],
   );
+  const emergencySearch = useAtomValue(emergencySearchAtom);
+  const emergency = Boolean(label.trim()) && emergencySearch === label.trim();
   const answered = useMemo(
-    () => (params.get('refined') ?? '').split(',').filter(Boolean),
-    [params],
+    () => [
+      ...(params.get('refined') ?? '').split(',').filter(Boolean),
+      ...(emergency ? [EMERGENCY_ID] : []),
+    ],
+    [params, emergency],
   );
   const decision = useMemo(
     () => decideRefine(label, codes, answered) as Decision,
@@ -133,17 +150,35 @@ function useSuneSearch() {
     next.delete('taxonomy');
     next.delete('page');
     // U-X is SUNE's "not yet known": it keeps an emptied search from being classified again.
-    for (const code of nextCodes.length ? nextCodes : ['U-X']) {
+    const kept = urlCodes(nextCodes);
+    for (const code of kept.length ? kept : ['U-X']) {
       next.append('taxonomy', code);
     }
     for (const token of nextRanks) next.append('taxonomy', token);
-    next.set('refined', nextAnswered.join(','));
+    next.set(
+      'refined',
+      nextAnswered
+        .filter((id) => !(emergency && id === EMERGENCY_ID))
+        .join(','),
+    );
     startTransition(() => {
       router[history](`${pathname}?${next.toString()}`, { scroll: false });
     });
   };
 
-  return { label, codes, ranks, answered, decision, update, isPending };
+  const hotline = decision.band === 'high' || emergency;
+
+  return {
+    label,
+    codes,
+    ranks,
+    answered,
+    decision,
+    emergency,
+    hotline,
+    update,
+    isPending,
+  };
 }
 
 const TAG =
@@ -796,54 +831,119 @@ export function OtherBox({
   );
 }
 
-export const LEVELS = {
-  critical: {
-    card: 'border-red-700 bg-red-50',
-    label: 'text-red-700',
-    title: 'Refine: this is really important',
-    button: 'border-red-700 text-red-700 bg-white',
-  },
-  important: {
-    card: 'border-orange-400 bg-orange-50',
-    label: 'text-orange-800',
-    title: 'Refine: this will change your results',
-    button: 'border-orange-400 text-orange-900 bg-white',
-  },
-  helpful: {
-    card: 'border-primary/30 bg-primary/10',
-    label: 'text-primary',
-    title: 'Help us refine your search',
-    button: 'border-control-border bg-white',
-  },
+const ORANGE = {
+  card: 'border-orange-400 bg-orange-50',
+  label: 'text-orange-800',
+  title: 'Refine: this will change your results',
+  button: 'border-orange-400 text-orange-900 bg-white',
+};
+const QUIET = {
+  card: 'border-primary/30 bg-primary/10',
+  label: 'text-primary',
+  title: 'Help us refine your search',
+  button: 'border-control-border bg-white',
 };
 
-function CrisisCard() {
+/** Colour follows the type of question. */
+export const QUESTION_STYLES = {
+  emergency: {
+    card: 'border-red-700 bg-red-50',
+    label: 'text-red-700',
+    title: 'Are you safe?',
+    button: 'border-red-700 text-red-700 bg-white',
+  },
+  find_need: ORANGE,
+  confirm_urgency: ORANGE,
+  narrow: QUIET,
+  none: QUIET,
+};
+
+/** The numbers a person can call. 988 and 911 both show, because the danger may not be self-harm. */
+export function HotlineNumbers() {
   return (
-    <div
-      className="mt-3 flex flex-col gap-3 rounded-lg bg-red-700 p-4 text-white"
-      data-testid="search-crisis-card"
-      role="alert"
-    >
+    <div className="flex flex-col gap-3" data-testid="search-hotline">
       <p className="text-lg font-semibold">
         You can talk to someone right now.
       </p>
       <div className="flex flex-wrap gap-2">
         <a
           href="tel:988"
-          className="flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 font-semibold text-red-700 no-underline"
+          className="flex min-h-11 items-center gap-2 rounded-lg bg-red-700 px-4 font-semibold text-white no-underline"
         >
           <Phone className="size-4" aria-hidden="true" />
           Call 988
         </a>
         <a
           href="tel:911"
-          className="flex min-h-11 items-center gap-2 rounded-lg border border-white px-4 font-semibold text-white no-underline"
+          className="flex min-h-11 items-center gap-2 rounded-lg border border-red-700 bg-white px-4 font-semibold text-red-700 no-underline"
         >
           Call 911
         </a>
       </div>
-      <p className="text-sm">Your results are still below.</p>
     </div>
+  );
+}
+
+/**
+ * The red box. It holds the numbers, the emergency question, or both. With no question
+ * it stays as the numbers alone, so an answer never takes the numbers away.
+ */
+export function EmergencyBox({
+  question,
+  hotline,
+  onAnswer,
+  onSkip,
+}: {
+  question?: Question;
+  hotline: boolean;
+  onAnswer?: (answer: Answer) => void;
+  onSkip?: () => void;
+}) {
+  return (
+    <section
+      aria-label="Emergency help"
+      className="flex flex-col gap-3 rounded-lg border border-red-700 bg-red-50 p-4"
+      data-testid="search-emergency"
+      role={hotline ? 'alert' : undefined}
+    >
+      {hotline && <HotlineNumbers />}
+      {question && (
+        <>
+          <h2
+            id="emergency-question"
+            className="text-xl font-semibold text-red-700"
+          >
+            {question.text}
+          </h2>
+          <div
+            role="group"
+            aria-labelledby="emergency-question"
+            className="flex flex-col gap-2"
+          >
+            {question.answers.map((option) => (
+              <button
+                key={option.label}
+                type="button"
+                className="min-h-11 cursor-pointer rounded-lg border border-red-700 bg-white px-4 py-2 text-left font-medium text-red-700"
+                onClick={() => onAnswer?.(option)}
+              >
+                {option.label}
+              </button>
+            ))}
+            {onSkip && (
+              <button
+                type="button"
+                className="min-h-11 cursor-pointer justify-self-start px-1 text-left text-sm text-red-700 underline"
+                data-testid="emergency-skip"
+                onClick={onSkip}
+              >
+                Skip to results
+              </button>
+            )}
+          </div>
+        </>
+      )}
+    </section>
   );
 }
 
@@ -863,7 +963,8 @@ export function useAnswerPicks(questionId?: string) {
           : [...labels, label],
       };
     });
-  return { picks, toggle };
+  const clear = () => setState({ labels: [] });
+  return { picks, toggle, clear };
 }
 
 /** The tick box on a multi-select answer, so a picked answer does not rely on color alone. */
@@ -904,8 +1005,17 @@ export const resultCount = (count: number) =>
 
 /** Prototype: the refine question. It sits beside the results and never stops the person. */
 export function SearchRefineQuestion() {
-  const { label, codes, answered, decision, update, isPending } =
-    useSuneSearch();
+  const {
+    label,
+    codes,
+    answered,
+    decision,
+    emergency,
+    hotline,
+    update,
+    isPending,
+  } = useSuneSearch();
+  const setEmergencySearch = useSetAtom(emergencySearchAtom);
   const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
   const setFlagged = useSetAtom(flaggedAtom);
   // Always refine: with nothing left to ask, the card still invites more.
@@ -929,10 +1039,10 @@ export function SearchRefineQuestion() {
   }, [question.id]);
 
   if (!label.trim()) return null;
-  if (decision.kind === 'crisis') return <CrisisCard />;
-  const style = LEVELS[decision.level];
+  const style = QUESTION_STYLES[decision.type];
   const submitOther = (text: string) => {
     const found = classifySune(text).codes as string[];
+    if (found.includes('U-0')) setEmergencySearch(label.trim());
     if (found.length === 0) setFlagged((prev) => [...prev, text]);
     setNoted(
       found.length
@@ -958,139 +1068,176 @@ export function SearchRefineQuestion() {
       'push',
     );
   };
+  const answerEmergency = (option: Answer) => {
+    // In memory only, so the URL never records it.
+    if (option.emergency) {
+      moveFocus.current = true;
+      return setEmergencySearch(label.trim());
+    }
+    answer([option]);
+  };
   const cardTitle =
     question.id === 'start'
       ? 'Your search is vague. Help us help you.'
       : style.title;
 
+  // A person in an emergency gets the numbers and the results, and no more questions.
+  if (emergency) {
+    return (
+      <div className="mt-3">
+        <EmergencyBox hotline />
+      </div>
+    );
+  }
+
+  if (decision.type === 'emergency') {
+    return (
+      <div className="mt-3">
+        <EmergencyBox
+          question={question}
+          hotline={hotline}
+          onAnswer={answerEmergency}
+          onSkip={() => answer()}
+        />
+      </div>
+    );
+  }
+
   return (
-    <section
-      aria-label="Refine your search"
-      className={cn(
-        'mt-3 flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
-        collapsed && 'max-md:py-0',
-        style.card,
-        isPending && 'opacity-70',
-      )}
-      data-level={decision.level}
-      data-testid="search-refine-question"
-    >
-      <button
-        type="button"
-        aria-expanded={!collapsed}
-        className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:hidden"
-        onClick={() => setCollapsed((prev) => !prev)}
-      >
-        <span className={cn('text-sm font-semibold', style.label)}>
-          {cardTitle}
-        </span>
-        <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium">
-          {collapsed ? 'Show' : 'Hide'}
-          <ChevronDown
-            className={cn('size-4', !collapsed && 'rotate-180')}
-            aria-hidden="true"
-          />
-        </span>
-      </button>
-      <p className={cn('hidden text-sm font-semibold md:block', style.label)}>
-        {cardTitle}
-      </p>
-      <div
-        className={cn(
-          'flex flex-col gap-2 md:gap-3',
-          collapsed && 'hidden md:flex',
-        )}
-      >
-        <div>
-          <h2
-            ref={questionRef}
-            id="refine-question"
-            aria-describedby={question.multi ? 'refine-hint' : undefined}
-            tabIndex={-1}
-            className="text-base font-semibold outline-none md:text-xl"
-          >
-            {question.text}
-          </h2>
-          {question.multi && (
-            <p id="refine-hint" className="text-muted-foreground text-sm">
-              Pick all that fit.
-            </p>
-          )}
+    <>
+      {hotline && (
+        <div className="mt-3">
+          <EmergencyBox hotline />
         </div>
-        <div
-          role="group"
-          aria-labelledby="refine-question"
-          className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
+      )}
+      <section
+        aria-label="Refine your search"
+        className={cn(
+          'mt-3 flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
+          collapsed && 'max-md:py-0',
+          style.card,
+          isPending && 'opacity-70',
+        )}
+        data-type={decision.type}
+        data-testid="search-refine-question"
+      >
+        <button
+          type="button"
+          aria-expanded={!collapsed}
+          className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:hidden"
+          onClick={() => setCollapsed((prev) => !prev)}
         >
-          {question.answers.map((option) => {
-            const on = picks.includes(option.label);
-            return (
+          <span className={cn('text-sm font-semibold', style.label)}>
+            {cardTitle}
+          </span>
+          <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium">
+            {collapsed ? 'Show' : 'Hide'}
+            <ChevronDown
+              className={cn('size-4', !collapsed && 'rotate-180')}
+              aria-hidden="true"
+            />
+          </span>
+        </button>
+        <p className={cn('hidden text-sm font-semibold md:block', style.label)}>
+          {cardTitle}
+        </p>
+        <div
+          className={cn(
+            'flex flex-col gap-2 md:gap-3',
+            collapsed && 'hidden md:flex',
+          )}
+        >
+          <div>
+            <h2
+              ref={questionRef}
+              id="refine-question"
+              aria-describedby={question.multi ? 'refine-hint' : undefined}
+              tabIndex={-1}
+              className="text-base font-semibold outline-none md:text-xl"
+            >
+              {question.text}
+            </h2>
+            {question.multi && (
+              <p id="refine-hint" className="text-muted-foreground text-sm">
+                Pick all that fit.
+              </p>
+            )}
+          </div>
+          <div
+            role="group"
+            aria-labelledby="refine-question"
+            className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
+          >
+            {question.answers.map((option) => {
+              const on = picks.includes(option.label);
+              return (
+                <button
+                  key={option.label}
+                  type="button"
+                  disabled={isPending}
+                  aria-pressed={question.multi ? on : undefined}
+                  className={cn(
+                    'flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
+                    question.multi
+                      ? 'items-center gap-2'
+                      : 'flex-col items-start justify-center',
+                    style.button,
+                    on && PICKED,
+                  )}
+                  onClick={() =>
+                    question.multi ? toggle(option.label) : answer([option])
+                  }
+                >
+                  {question.multi && <PickMark on={on} />}
+                  {option.label}
+                  {!question.multi && (
+                    <span className="text-muted-foreground text-xs font-normal">
+                      {resultCount(option.keeps ?? 0)}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+            <OtherBox
+              className="col-span-2"
+              placeholder={
+                decision.question
+                  ? 'Other: type your own'
+                  : 'Tell us in your own words'
+              }
+              onSubmit={submitOther}
+            />
+            <PicksStatus
+              count={picks.length}
+              total={matchServices(withPicks).length}
+            />
+            {decision.question && picks.length === 0 && (
               <button
-                key={option.label}
+                type="button"
+                className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
+                onClick={() => answer()}
+              >
+                Skip
+              </button>
+            )}
+            {picks.length > 0 && (
+              <button
                 type="button"
                 disabled={isPending}
-                aria-pressed={question.multi ? on : undefined}
-                className={cn(
-                  'flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
-                  question.multi
-                    ? 'items-center gap-2'
-                    : 'flex-col items-start justify-center',
-                  style.button,
-                  on && PICKED,
-                )}
-                onClick={() =>
-                  question.multi ? toggle(option.label) : answer([option])
-                }
+                className="bg-primary text-primary-foreground col-span-2 min-h-11 cursor-pointer rounded-lg px-5 text-sm font-semibold disabled:opacity-60"
+                data-testid="refine-continue"
+                onClick={() => answer(chosen)}
               >
-                {question.multi && <PickMark on={on} />}
-                {option.label}
-                {!question.multi && (
-                  <span className="text-muted-foreground text-xs font-normal">
-                    {resultCount(option.keeps)}
-                  </span>
-                )}
+                Continue: {resultCount(matchServices(withPicks).length)}
               </button>
-            );
-          })}
-          <OtherBox
-            className="col-span-2"
-            placeholder={
-              decision.question
-                ? 'Other: type your own'
-                : 'Tell us in your own words'
-            }
-            onSubmit={submitOther}
-          />
-          <PicksStatus
-            count={picks.length}
-            total={matchServices(withPicks).length}
-          />
-          {decision.question && picks.length === 0 && (
-            <button
-              type="button"
-              className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
-              onClick={() => answer()}
-            >
-              Skip
-            </button>
-          )}
-          {picks.length > 0 && (
-            <button
-              type="button"
-              disabled={isPending}
-              className="bg-primary text-primary-foreground col-span-2 min-h-11 cursor-pointer rounded-lg px-5 text-sm font-semibold disabled:opacity-60"
-              data-testid="refine-continue"
-              onClick={() => answer(chosen)}
-            >
-              Continue: {resultCount(matchServices(withPicks).length)}
-            </button>
-          )}
+            )}
+          </div>
+          <p className="text-sm empty:hidden" role="status">
+            {noted}
+          </p>
         </div>
-        <p className="text-sm empty:hidden" role="status">
-          {noted}
-        </p>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
@@ -1119,7 +1266,8 @@ export function SearchClassifierPeek() {
         <p>Urgency: {labelOf(read.urgency as string)}</p>
         <p>Now: {codes.map((code) => labelOf(code)).join(', ') || 'nothing'}</p>
         <p>
-          Decision: {decision.kind}, {decision.level}. {decision.question?.why}
+          Decision: {decision.type}, danger {decision.band}.{' '}
+          {decision.question?.why}
         </p>
         {flagged.length > 0 && <p>Flagged as missing: {flagged.join(', ')}</p>}
         {suggestions.map((suggestion) => (
