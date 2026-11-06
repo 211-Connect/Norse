@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { parsePinsQuery } from '@/app/(app)/shared/lib/search-params';
 import { findResourcePins } from '@/app/(app)/shared/services/search-pins-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { isRouteDenied } from '@/lib/arcjet-page';
 import { isValidLocale } from '@/payload/i18n/locales';
 
 /** As long as the Redis entry behind it: pins only change on a reindex. */
@@ -14,6 +15,11 @@ const BROWSER_CACHE_SECONDS = 60 * 60;
  * never the query, so a request can only read the tenant it is sent to.
  */
 export async function GET(request: NextRequest) {
+  // Up to 10,000 locations a request: worth a scraper's while, so bots are stopped first.
+  if (await isRouteDenied('/api/search-pins')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   const params = parsePinsQuery(request.nextUrl.search);
   const locale = params.locale;
 

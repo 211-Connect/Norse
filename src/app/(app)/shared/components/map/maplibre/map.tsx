@@ -26,6 +26,10 @@ import {
   ServiceAreaGeoJSON,
   getBoundsFromServiceArea,
   getCoreExtent,
+  getPopupContent,
+  hasPopup,
+  toPlaceKey,
+  toPlacesSignature,
   normalizeServiceArea,
 } from '../map-shared';
 import {
@@ -86,7 +90,10 @@ const scrollToResult = (id: string) => {
     if (!result) return;
 
     // Read when scrolling: the header can change height with the window.
-    result.style.scrollMarginTop = `${getHeaderOverlap() + RESULT_SCROLL_GAP_PX}px`;
+    document.documentElement.style.setProperty(
+      '--result-scroll-margin',
+      `${getHeaderOverlap() + RESULT_SCROLL_GAP_PX}px`,
+    );
     result.scrollIntoView();
   });
 };
@@ -127,7 +134,8 @@ export function Map({
   const popupDialogRef = useRef<HTMLDivElement>(null);
   const restoreFocusOnCloseRef = useRef(true);
   const pointPopupRef = useRef<maplibregl.Popup | null>(null);
-  const pointsRef = useRef(points);
+  // A circle is known by its place: the uploaded locations outlive a page change.
+  const pointsByPlaceRef = useRef(new globalThis.Map<string, MarkerDef>());
   const lastFitKeyRef = useRef<string | null>(null);
   // The rest of a search's points load after its page's; a reader who has used
   // the map by then keeps their view.
@@ -264,7 +272,7 @@ export function Map({
     popup.on('open', () => {
       setActivePopup({
         element: popupDiv,
-        popup: m.popup,
+        popup: getPopupContent(m),
         popupId: `map-popup-${m.id}`,
         label: m.label?.trim() || 'resource',
         closePopup: () => {
@@ -336,7 +344,7 @@ export function Map({
 
       if (hasValidCoordinates) {
         marker.setLngLat(m.coordinates!);
-        if (m.popup) {
+        if (hasPopup(m)) {
           markerElement.style.cursor = 'pointer';
           markerElement.setAttribute('tabindex', '0');
           markerElement.setAttribute('role', 'button');
@@ -359,7 +367,7 @@ export function Map({
         markerElement.addEventListener('click', () => {
           // Built on first use. MapLibre's click handler on the map runs after
           // this one, as the event bubbles, and opens it.
-          if (m.popup && !marker.getPopup()) {
+          if (hasPopup(m) && !marker.getPopup()) {
             marker.setPopup(
               createResourcePopup(m, () => {
                 markerElement.focus();
@@ -381,7 +389,7 @@ export function Map({
           restoreFocusOnCloseRef.current = true;
         });
         markerElement.addEventListener('keydown', (event) => {
-          if (!m.popup) return;
+          if (!hasPopup(m)) return;
 
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
@@ -429,31 +437,15 @@ export function Map({
       }
     }
 
-    const fitCoordinates = points
-      ? [...points, ...markers].flatMap((m) =>
-          isValidCoordinate(m.coordinates) ? [m.coordinates] : [],
-        )
-      : [];
-
     // Points hold every result, so turning the list's page only swaps which of
-    // them are pins: the same places, which must not move the map under the
-    // reader. Compared by place, as a shared address's id changes with the page.
+    // them are dark: the same places, which must not move the map under the
+    // reader. Compared by place, as a shared address's id changes with the page,
+    // and by signature, as sorting 10,000 places on every change is too slow.
     const fitKey = points
-      ? [...new Set(fitCoordinates.map((coordinates) => coordinates.join()))]
-          .sort()
-          .concat(usersLocation ?? [])
-          .join(';')
+      ? `${toPlacesSignature(points)}|${usersLocation?.join() ?? ''}`
       : null;
     const isSameSet = fitKey !== null && fitKey === lastFitKeyRef.current;
     lastFitKeyRef.current = fitKey;
-    const fittedCount = _markers.current.length + (points?.length ?? 0);
-
-    // A few distant results shouldn't zoom every search out to the continent.
-    const fitTarget = points ? getCoreBounds(fitCoordinates) : bounds;
-
-    if (points && userMarker && !disableUserLocation) {
-      fitTarget.extend(usersLocation as LngLatLike);
-    }
 
     // The same page with more points is a search's pins arriving, not a new view.
     const markersKey = markers.map((marker) => marker.id).join();
@@ -463,7 +455,25 @@ export function Map({
       userInteractedRef.current;
     lastMarkersKeyRef.current = markersKey;
 
-    if (!fitTarget.isEmpty() && !isSameSet && !keepsUserView) {
+    if (isSameSet || keepsUserView) return;
+
+    const fittedCount = _markers.current.length + (points?.length ?? 0);
+
+    // A few distant results shouldn't zoom every search out to the continent.
+    // The list's markers are among the points, so the points alone frame them.
+    const fitTarget = points
+      ? getCoreBounds(
+          points.flatMap((point) =>
+            isValidCoordinate(point.coordinates) ? [point.coordinates] : [],
+          ),
+        )
+      : bounds;
+
+    if (points && userMarker && !disableUserLocation) {
+      fitTarget.extend(usersLocation as LngLatLike);
+    }
+
+    if (!fitTarget.isEmpty()) {
       userInteractedRef.current = false;
       if (fittedCount > 0 && fittedCount <= 2) {
         mapLibreMap.current.fitBounds(fitTarget, {
@@ -488,7 +498,13 @@ export function Map({
   }, [markers, points, usersLocation, disableUserLocation, zoom]);
 
   useEffect(() => {
-    pointsRef.current = points;
+    pointsByPlaceRef.current = new globalThis.Map(
+      (points ?? []).flatMap((point) =>
+        isValidCoordinate(point.coordinates)
+          ? [[toPlaceKey(point.coordinates!), point] as const]
+          : [],
+      ),
+    );
   }, [points]);
 
   useEffect(() => {
@@ -505,11 +521,11 @@ export function Map({
     const map: maplibregl.Map | null = mapLibreMap.current;
     if (!map) return;
 
-    return bindPointEvents(map, (id, coordinates) => {
-      const point = pointsRef.current?.find((candidate) => candidate.id === id);
-      if (!point?.popup) return;
+    return bindPointEvents(map, (placeKey, coordinates) => {
+      const point = pointsByPlaceRef.current.get(placeKey);
+      if (!point || !hasPopup(point)) return;
 
-      scrollToResult(id);
+      scrollToResult(point.id);
       restoreFocusOnCloseRef.current = false;
       pointPopupRef.current?.remove();
       _markers.current.forEach((marker) => marker.getPopup()?.remove());

@@ -14,15 +14,6 @@ export type SearchPin = {
 /** Where one or more resources share a building: they get one circle. */
 export type PinSite = SearchPin[];
 
-/** About a kilometre: close enough to share a cache entry, too close to change who is served. */
-const PIN_COORDINATE_PRECISION = 100;
-
-export const roundCoordinatesForPins = (coordinates?: number[]) =>
-  coordinates?.map(
-    (value) =>
-      Math.round(value * PIN_COORDINATE_PRECISION) / PIN_COORDINATE_PRECISION,
-  );
-
 export const lastPageWithinPinLimit = (limit: number) =>
   Math.max(Math.ceil(MAP_PINS_LIMIT / limit), 1);
 

@@ -2,7 +2,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { getCoreExtent } from '../src/app/(app)/shared/components/map/map-shared';
+import {
+  getCoreExtent,
+  toPlacesSignature,
+} from '../src/app/(app)/shared/components/map/map-shared';
 import {
   toFeatureCollection,
   toSubtleColor,
@@ -13,8 +16,8 @@ import {
   groupPinsBySite,
   lastPageWithinPinLimit,
   omitPagePins,
-  roundCoordinatesForPins,
 } from '../src/app/(app)/features/search/utils/map-pins';
+import { roundCoordinatesForPins } from '../src/app/(app)/shared/lib/search-params';
 
 const pin = (id: string, coordinates?: [number, number]): SearchPin => ({
   id,
@@ -93,19 +96,34 @@ test('no locations have no extent to fit', () => {
   assert.equal(getCoreExtent([]), null);
 });
 
-test('circles know their resources and whether the list shows them', () => {
+test('circles are known by place and count their resources', () => {
   const { features } = toFeatureCollection([
     { id: 'no-location', inList: true },
     { id: 'one', coordinates: [-120, 46] },
-    { id: 'site', coordinates: [-121, 47], count: 3, inList: true },
+    { id: 'site', coordinates: [-121.123456, 47], count: 3, inList: true },
   ]);
 
   assert.deepEqual(
     features.map(({ properties }) => properties),
     [
-      { id: 'one', resources: 1, inList: false, stack: 0 },
-      { id: 'site', resources: 3, inList: true, stack: 4 },
+      { key: '-120.00000,46.00000', resources: 1, stack: 0 },
+      { key: '-121.12346,47.00000', resources: 3, stack: 1 },
     ],
+  );
+});
+
+test('a page change keeps the signature of the same places', () => {
+  const a = { id: 'a', coordinates: [-120, 46] as [number, number] };
+  const b = { id: 'b', coordinates: [-121, 47] as [number, number], count: 2 };
+
+  // Another page puts other results first and marks others as in the list.
+  assert.equal(
+    toPlacesSignature([a, b]),
+    toPlacesSignature([{ ...b, id: 'b2', inList: true }, a]),
+  );
+  assert.notEqual(
+    toPlacesSignature([a, b]),
+    toPlacesSignature([a, { ...b, count: 3 }]),
   );
 });
 

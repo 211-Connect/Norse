@@ -68,7 +68,7 @@ export class Search<
       ...params,
     });
   /**
-   * @description The locations of a search independent of list pagination, up to 1000. Takes the same params as GET /search; `page` and `limit` are ignored. Matches without coordinates count towards `total` but have no pin.
+   * @description The locations of a search independent of list pagination, up to 10,000. Takes the same params as GET /search; `page` and `limit` are ignored. Matches without coordinates are left out, including from `total`.
    *
    * @tags Search
    * @name SearchControllerGetPins

@@ -3,15 +3,22 @@ import {
   type ExpressionSpecification,
   type GeoJSONSource,
   type Map as MapLibreMap,
+  type MapGeoJSONFeature,
 } from 'maplibre-gl';
 
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
-import { type MarkerDef } from '../map-shared';
+import { type MarkerDef, toPlaceKey, toPlacesSignature } from '../map-shared';
 
-const SOURCE_ID = 'result-points';
-const LAYER_ID = 'result-points-circles';
-const COUNT_LAYER_ID = 'result-points-counts';
+/** Every location of the search, light. Uploaded once per search, not per page. */
+const ALL_SOURCE_ID = 'result-points';
+/** The list's current page, dark, drawn above: about 25 locations, uploaded per page. */
+const LIST_SOURCE_ID = 'result-points-list';
+
+const ALL_LAYER_ID = 'result-points-circles';
+const LIST_LAYER_ID = 'result-points-list-circles';
+const ALL_COUNT_LAYER_ID = 'result-points-counts';
+const LIST_COUNT_LAYER_ID = 'result-points-list-counts';
 
 /** Circles grow to fit a count from here, so it's readable once it shows. */
 const COUNT_MIN_ZOOM = 9;
@@ -30,23 +37,22 @@ const IS_HOVERED: ExpressionSpecification = [
   ['feature-state', 'hover'],
   false,
 ];
-const IN_LIST: ExpressionSpecification = ['boolean', ['get', 'inList'], false];
 const STACK: ExpressionSpecification = ['get', 'stack'];
 
 export const toFeatureCollection = (
   points: MarkerDef[],
-): GeoJSON.FeatureCollection => ({
+): GeoJSON.FeatureCollection<GeoJSON.Point> => ({
   type: 'FeatureCollection',
   features: points
     .filter((point) => isValidCoordinate(point.coordinates))
-    .map((point, index) => ({
+    .map((point, stack) => ({
       type: 'Feature',
       properties: {
-        id: point.id,
+        // By place, not by result: a shared address's first result changes with
+        // the page, while the uploaded locations stay the same.
+        key: toPlaceKey(point.coordinates!),
         resources: point.count ?? 1,
-        inList: !!point.inList,
-        // The list's circles go above the rest, whatever the source order.
-        stack: index + (point.inList ? points.length : 0),
+        stack,
       },
       geometry: { type: 'Point', coordinates: point.coordinates! },
     })),
@@ -68,47 +74,51 @@ const getThemeColor = (variable: string, fallback: string) => {
   return lightness ? `hsl(${hue}, ${saturation}, ${lightness})` : fallback;
 };
 
-export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
-  const data = toFeatureCollection(points);
-  const source = map.getSource<GeoJSONSource>(SOURCE_ID);
+const CIRCLE_RADIUS: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  5,
+  ['case', IS_HOVERED, 8, 6],
+  COUNT_MIN_ZOOM,
+  ['case', IS_HOVERED, 12, 10],
+  15,
+  ['case', IS_HOVERED, 14, 12],
+];
 
-  if (source) {
-    source.setData(data);
-    return;
-  }
-
-  const color = getThemeColor('--primary', '#2563eb');
-
-  map.addSource(SOURCE_ID, { type: 'geojson', data, generateId: true });
+const addCircleLayer = (
+  map: MapLibreMap,
+  id: string,
+  source: string,
+  color: string,
+) =>
   map.addLayer({
-    id: LAYER_ID,
+    id,
     type: 'circle',
-    source: SOURCE_ID,
+    source,
     layout: { 'circle-sort-key': STACK },
     paint: {
-      'circle-color': ['case', IN_LIST, color, toSubtleColor(color)],
+      'circle-color': color,
       'circle-stroke-color': '#ffffff',
       'circle-stroke-width': 1,
-      'circle-radius': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        5,
-        ['case', IS_HOVERED, 8, 6],
-        COUNT_MIN_ZOOM,
-        ['case', IS_HOVERED, 12, 10],
-        15,
-        ['case', IS_HOVERED, 14, 12],
-      ],
+      'circle-radius': CIRCLE_RADIUS,
     },
   });
-  // A symbol layer always draws above the circles, so a count can't go behind a
-  // higher circle. Instead the counts collide, and the higher one keeps its place.
-  // Single resources take part invisibly, because their circles cover counts too.
+
+// A symbol layer always draws above the circles, so a count can't go behind a
+// higher circle. Instead the counts collide, and the higher one keeps its place:
+// the list's counts are placed first, being the upper layer. Single resources
+// take part invisibly, because their circles cover counts too.
+const addCountLayer = (
+  map: MapLibreMap,
+  id: string,
+  source: string,
+  color: string,
+) =>
   map.addLayer({
-    id: COUNT_LAYER_ID,
+    id,
     type: 'symbol',
-    source: SOURCE_ID,
+    source,
     minzoom: COUNT_MIN_ZOOM,
     layout: {
       'symbol-sort-key': ['-', STACK],
@@ -119,65 +129,134 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
     },
     paint: {
       'text-opacity': ['case', ['>', ['get', 'resources'], 1], 1, 0],
-      'text-color': [
-        'case',
-        IN_LIST,
-        getThemeColor('--primary-foreground', '#ffffff'),
-        '#ffffff',
-      ],
+      'text-color': color,
     },
   });
+
+const uploaded = new WeakMap<MapLibreMap, string>();
+
+/**
+ * Draws every location light and the list's current page dark above it. A new
+ * page re-uploads only its own locations: the rest are kept while they're the
+ * same places, which turning the page doesn't change.
+ */
+export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
+  const listData = toFeatureCollection(points.filter((point) => point.inList));
+  const allSource = map.getSource<GeoJSONSource>(ALL_SOURCE_ID);
+  const signature = toPlacesSignature(points);
+
+  if (allSource) {
+    if (uploaded.get(map) !== signature) {
+      allSource.setData(toFeatureCollection(points));
+      uploaded.set(map, signature);
+    }
+    map.getSource<GeoJSONSource>(LIST_SOURCE_ID)?.setData(listData);
+    return;
+  }
+
+  const color = getThemeColor('--primary', '#2563eb');
+
+  map.addSource(ALL_SOURCE_ID, {
+    type: 'geojson',
+    data: toFeatureCollection(points),
+    generateId: true,
+  });
+  map.addSource(LIST_SOURCE_ID, {
+    type: 'geojson',
+    data: listData,
+    generateId: true,
+  });
+  uploaded.set(map, signature);
+
+  addCircleLayer(map, ALL_LAYER_ID, ALL_SOURCE_ID, toSubtleColor(color));
+  addCircleLayer(map, LIST_LAYER_ID, LIST_SOURCE_ID, color);
+  addCountLayer(map, ALL_COUNT_LAYER_ID, ALL_SOURCE_ID, '#ffffff');
+  addCountLayer(
+    map,
+    LIST_COUNT_LAYER_ID,
+    LIST_SOURCE_ID,
+    getThemeColor('--primary-foreground', '#ffffff'),
+  );
 };
 
 export const removePointsLayer = (map: MapLibreMap) => {
-  [COUNT_LAYER_ID, LAYER_ID].forEach((layer) => {
+  [
+    LIST_COUNT_LAYER_ID,
+    ALL_COUNT_LAYER_ID,
+    LIST_LAYER_ID,
+    ALL_LAYER_ID,
+  ].forEach((layer) => {
     if (map.getLayer(layer)) map.removeLayer(layer);
   });
-  if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
+  [LIST_SOURCE_ID, ALL_SOURCE_ID].forEach((source) => {
+    if (map.getSource(source)) map.removeSource(source);
+  });
+  uploaded.delete(map);
 };
 
-const pointAt = (map: MapLibreMap, { x, y }: { x: number; y: number }) =>
-  map.getLayer(LAYER_ID)
-    ? map.queryRenderedFeatures(
-        [
-          [x - HIT_TOLERANCE_PX, y - HIT_TOLERANCE_PX],
-          [x + HIT_TOLERANCE_PX, y + HIT_TOLERANCE_PX],
-        ],
-        { layers: [LAYER_ID] },
-      )[0]
-    : undefined;
+/** The topmost circle under a point: the list's, where it covers another. */
+const pointAt = (
+  map: MapLibreMap,
+  { x, y }: { x: number; y: number },
+): MapGeoJSONFeature | undefined => {
+  if (!map.getLayer(ALL_LAYER_ID)) return undefined;
 
-/** Hover and click for the circles. Returns the function that removes them. */
+  const features = map.queryRenderedFeatures(
+    [
+      [x - HIT_TOLERANCE_PX, y - HIT_TOLERANCE_PX],
+      [x + HIT_TOLERANCE_PX, y + HIT_TOLERANCE_PX],
+    ],
+    { layers: [LIST_LAYER_ID, ALL_LAYER_ID] },
+  );
+
+  return (
+    features.find((feature) => feature.layer.id === LIST_LAYER_ID) ??
+    features[0]
+  );
+};
+
+type Hovered = { source: string; id: string | number } | undefined;
+
+/**
+ * Hover and click for the circles. `onClick` gets the place key of the circle
+ * clicked. Returns the function that removes them.
+ */
 export const bindPointEvents = (
   map: MapLibreMap,
-  onClick: (id: string, coordinates: [number, number]) => void,
+  onClick: (placeKey: string, coordinates: [number, number]) => void,
 ) => {
-  let hoveredId: string | number | undefined;
+  let hovered: Hovered;
 
-  const setHovered = (id: string | number | undefined) => {
-    if (id === hoveredId) return;
+  const setHovered = (next: Hovered) => {
+    if (next?.source === hovered?.source && next?.id === hovered?.id) return;
 
-    const update = (featureId: string | number | undefined, hover: boolean) => {
-      if (featureId !== undefined && map.getSource(SOURCE_ID)) {
-        map.setFeatureState({ source: SOURCE_ID, id: featureId }, { hover });
+    const update = (target: Hovered, hover: boolean) => {
+      if (target && map.getSource(target.source)) {
+        map.setFeatureState(target, { hover });
       }
     };
 
-    update(hoveredId, false);
-    update(id, true);
-    hoveredId = id;
-    map.getCanvas().style.cursor = id === undefined ? '' : 'pointer';
+    update(hovered, false);
+    update(next, true);
+    hovered = next;
+    map.getCanvas().style.cursor = next ? 'pointer' : '';
   };
 
-  const handleMove = (event: maplibregl.MapMouseEvent) =>
-    setHovered(pointAt(map, event.point)?.id);
+  const handleMove = (event: maplibregl.MapMouseEvent) => {
+    const feature = pointAt(map, event.point);
+    setHovered(
+      feature?.id !== undefined
+        ? { source: feature.source, id: feature.id }
+        : undefined,
+    );
+  };
 
   const handleClick = (event: maplibregl.MapMouseEvent) => {
     const feature = pointAt(map, event.point);
     if (!feature || feature.geometry.type !== 'Point') return;
 
     onClick(
-      feature.properties.id,
+      feature.properties.key,
       feature.geometry.coordinates as [number, number],
     );
   };

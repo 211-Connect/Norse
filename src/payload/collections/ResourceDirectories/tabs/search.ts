@@ -328,7 +328,7 @@ export const search: Tab = {
           defaultValue: false,
           admin: {
             description:
-              'Plots up to 1,000 results of a search on the map as small circles, with the current page in the brand colour, instead of only the current page. The results list is capped at the same 1,000.',
+              'Plots up to 10,000 results of a search on the map as small circles, with the current page in the brand colour, instead of only the current page. The results list is capped at the same 10,000.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,

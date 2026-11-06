@@ -223,7 +223,7 @@ export interface SearchPinDto {
 }
 
 export interface SearchPinsResponseDto {
-  /** Documents matching the search, located or not. Classic search counts up to 10000. */
+  /** Located documents matching the search. Classic search counts up to 10000. */
   total: number;
   /** Whether matches past the pin limit were cut. */
   truncated: boolean;

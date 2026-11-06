@@ -56,8 +56,9 @@ export async function findResourcePins(
   return withCache(
     `search_pins:${tenantId}:${locale}:${stableHash(request)}`,
     () => findResourcePinsOrigin(request, locale, tenantId),
+    // An empty list is cached too: a search with no located results stays one.
+    // A failure is null, which is never cached.
     { redis: true, memory: false, ttl: ONE_HOUR },
-    (value) => Boolean(value?.length),
   ).catch((err) => {
     log.error({ err, tenantId, locale }, 'Search pins cache error');
     return null;

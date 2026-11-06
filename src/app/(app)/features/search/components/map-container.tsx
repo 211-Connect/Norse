@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
 import { MapErrorFallback } from '@/app/(app)/shared/components/map/map-error-fallback';
+import { type MarkerDef } from '@/app/(app)/shared/components/map/map-shared';
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
@@ -39,46 +40,57 @@ const toPin = (result: ResultType): SearchPin => ({
   coordinates: result?.location?.coordinates as Coords | undefined,
 });
 
+/**
+ * A site's marker. Its popup is built when it opens (`getPopup`) for circles,
+ * which can be 10,000, and up front (`popup`) for the page's few pins.
+ */
 const toMarker = (
   site: PinSite,
   userCoords: number[] | null | undefined,
   t: TFunction,
-  /** Ids of the list's current page, which a shared address's popup marks. */
-  listIds?: ReadonlySet<string>,
-) => {
+  {
+    listIds,
+    isLazy = false,
+  }: {
+    /** Ids of the list's current page, which a shared address's popup marks. */
+    listIds?: ReadonlySet<string>;
+    isLazy?: boolean;
+  } = {},
+): MarkerDef => {
   const [first] = site;
   const { coordinates } = first;
-  const distance =
-    coordinates && userCoords?.length === 2
-      ? distanceBetweenCoordsInMiles(userCoords as Coords, coordinates)
-      : undefined;
 
-  return site.length === 1
-    ? {
-        id: first.id,
-        coordinates,
-        label: first.name ?? undefined,
-        popup: (
-          <MapPopup
-            distance={distance}
-            id={first.resourceId ?? ''}
-            name={first.name ?? ''}
-            address={first.address} // TODO: Add Waiver
-          />
-        ),
-      }
-    : {
-        id: first.id,
-        coordinates,
-        label: t('map_site_title', {
-          count: site.length,
-          defaultValue: '{{count}} resources at this location',
-        }),
-        count: site.length,
-        popup: (
-          <MapSitePopup site={site} distance={distance} listIds={listIds} />
-        ),
-      };
+  const buildPopup = () => {
+    const distance =
+      coordinates && userCoords?.length === 2
+        ? distanceBetweenCoordsInMiles(userCoords as Coords, coordinates)
+        : undefined;
+
+    return site.length === 1 ? (
+      <MapPopup
+        distance={distance}
+        id={first.resourceId ?? ''}
+        name={first.name ?? ''}
+        address={first.address} // TODO: Add Waiver
+      />
+    ) : (
+      <MapSitePopup site={site} distance={distance} listIds={listIds} />
+    );
+  };
+
+  return {
+    id: first.id,
+    coordinates,
+    label:
+      site.length === 1
+        ? (first.name ?? undefined)
+        : t('map_site_title', {
+            count: site.length,
+            defaultValue: '{{count}} resources at this location',
+          }),
+    ...(site.length > 1 && { count: site.length }),
+    ...(isLazy ? { getPopup: buildPopup } : { popup: buildPopup() }),
+  };
 };
 
 export function MapContainer() {
@@ -121,10 +133,20 @@ export function MapContainer() {
       ...pagePins,
       ...omitPagePins(pins ?? NO_PINS, pagePins),
     ]).map((site) => ({
-      ...toMarker(site, coords, t, onPage),
+      ...toMarker(site, coords, t, { listIds: onPage, isLazy: true }),
       inList: onPage.has(site[0].id),
     }));
   }, [coords, pagePins, pins, pinsQuery, t]);
+
+  // The legend explains only what the map shows.
+  const legendRows = useMemo(
+    () => ({
+      inList: mapPoints?.some((point) => point.inList) ?? false,
+      other: mapPoints?.some((point) => !point.inList) ?? false,
+      site: mapPoints?.some((point) => (point.count ?? 1) > 1) ?? false,
+    }),
+    [mapPoints],
+  );
 
   // With circles, the markers are only how a keyboard reaches the list's circles.
   const mapMarkers = useMemo(
@@ -165,6 +187,7 @@ export function MapContainer() {
           <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
           {mapPoints && mapPoints.length > 0 && (
             <MapLegend
+              rows={legendRows}
               showUserLocation={coords?.length === 2}
               isLoadingPins={isLoadingPins}
             />

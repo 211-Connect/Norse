@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Info, Loader2 } from 'lucide-react';
+import { type ReactNode, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -27,72 +27,118 @@ function LegendSymbol({ children }: { children: ReactNode }) {
   return <span className="flex w-4 shrink-0 justify-center">{children}</span>;
 }
 
+export type MapLegendRows = {
+  /** The map shows a location from the list's current page. */
+  inList: boolean;
+  /** The map shows a location outside it. */
+  other: boolean;
+  /** The map shows an address with several resources. */
+  site: boolean;
+};
+
+const ROW = 'flex items-center gap-1.5';
+
 export function MapLegend({
+  rows,
   showUserLocation,
   isLoadingPins,
 }: {
+  rows: MapLegendRows;
   showUserLocation: boolean;
   /** The rest of the search's circles are on their way: says so as the last row. */
   isLoadingPins: boolean;
 }) {
   const { t } = useTranslation('page-search');
+  const listId = useId();
+  // Below `lg` the map is 320px high, so the legend waits behind a button.
+  const [isOpen, setIsOpen] = useState(false);
+  const label = t('map_legend_label', { defaultValue: 'Map legend' });
 
   return (
-    <ul
-      aria-label={t('map_legend_label', { defaultValue: 'Map legend' })}
-      className="bg-card/95 text-card-foreground pointer-events-none absolute top-2 left-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
-    >
-      <li className="flex items-center gap-1.5">
-        <LegendSymbol>
-          <span className="bg-primary size-2.5 rounded-full ring-1 ring-white" />
-        </LegendSymbol>
-        {t('map_legend_list', { defaultValue: 'In the list' })}
-      </li>
-      <li className="flex items-center gap-1.5">
-        <LegendSymbol>
-          <span
+    <div className="pointer-events-none absolute top-2 left-2 flex flex-col items-start gap-1 print:hidden">
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        aria-controls={listId}
+        onClick={() => setIsOpen((open) => !open)}
+        className="bg-card/95 text-card-foreground hover:bg-accent focus-visible:ring-ring pointer-events-auto flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-xs shadow-sm transition-colors focus-visible:ring-2 focus-visible:outline-none lg:hidden"
+      >
+        {isLoadingPins ? (
+          <Loader2 aria-hidden className="size-3.5 animate-spin" />
+        ) : (
+          <Info aria-hidden className="size-3.5" />
+        )}
+        {label}
+      </button>
+      <ul
+        id={listId}
+        aria-label={label}
+        className={cn(
+          'bg-card/95 text-card-foreground flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm',
+          isOpen ? 'flex' : 'hidden lg:flex',
+        )}
+      >
+        {rows.inList && (
+          <li className={ROW}>
+            <LegendSymbol>
+              <span className="bg-primary size-2.5 rounded-full ring-1 ring-white" />
+            </LegendSymbol>
+            {t('map_legend_list', { defaultValue: 'In the list' })}
+          </li>
+        )}
+        {rows.other && (
+          <li className={ROW}>
+            <LegendSymbol>
+              <span
+                className={cn(
+                  'size-2.5 rounded-full ring-1 ring-white',
+                  SUBTLE_DOT,
+                )}
+              />
+            </LegendSymbol>
+            {t('map_legend_other', { defaultValue: 'Other locations' })}
+          </li>
+        )}
+        {rows.site && (
+          <li className={ROW}>
+            <LegendSymbol>
+              <span
+                className={cn(
+                  'flex size-4 items-center justify-center rounded-full text-[9px] leading-none font-medium text-white ring-1 ring-white',
+                  SUBTLE_DOT,
+                )}
+              >
+                2
+              </span>
+            </LegendSymbol>
+            {t('map_legend_site', {
+              defaultValue: 'Resources at one address (zoom in)',
+            })}
+          </li>
+        )}
+        {showUserLocation && (
+          <li className={ROW}>
+            <LegendSymbol>
+              <LegendPin className="text-yellow-500" />
+            </LegendSymbol>
+            {t('map_legend_user', { defaultValue: 'Your location' })}
+          </li>
+        )}
+        {isLoadingPins && (
+          <li
+            role="status"
             className={cn(
-              'size-2.5 rounded-full ring-1 ring-white',
-              SUBTLE_DOT,
-            )}
-          />
-        </LegendSymbol>
-        {t('map_legend_other', { defaultValue: 'Other locations' })}
-      </li>
-      <li className="flex items-center gap-1.5">
-        <LegendSymbol>
-          <span
-            className={cn(
-              'flex size-4 items-center justify-center rounded-full text-[9px] leading-none font-medium text-white ring-1 ring-white',
-              SUBTLE_DOT,
+              ROW,
+              'text-muted-foreground mt-0.5 border-t pt-1 first:mt-0 first:border-t-0 first:pt-0',
             )}
           >
-            2
-          </span>
-        </LegendSymbol>
-        {t('map_legend_site', {
-          defaultValue: 'Resources at one address (zoom in)',
-        })}
-      </li>
-      {showUserLocation && (
-        <li className="flex items-center gap-1.5">
-          <LegendSymbol>
-            <LegendPin className="text-yellow-500" />
-          </LegendSymbol>
-          {t('map_legend_user', { defaultValue: 'Your location' })}
-        </li>
-      )}
-      {isLoadingPins && (
-        <li
-          role="status"
-          className="text-muted-foreground mt-0.5 flex items-center gap-1.5 border-t pt-1"
-        >
-          <LegendSymbol>
-            <Loader2 aria-hidden className="size-3 animate-spin" />
-          </LegendSymbol>
-          {t('map_pins_loading', { defaultValue: 'Loading all locations…' })}
-        </li>
-      )}
-    </ul>
+            <LegendSymbol>
+              <Loader2 aria-hidden className="size-3 animate-spin" />
+            </LegendSymbol>
+            {t('map_pins_loading', { defaultValue: 'Loading all locations…' })}
+          </li>
+        )}
+      </ul>
+    </div>
   );
 }

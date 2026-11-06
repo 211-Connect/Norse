@@ -1,6 +1,5 @@
 import qs from 'qs';
 
-import { roundCoordinatesForPins } from '@/app/(app)/features/search/utils/map-pins';
 import { SearchEngine } from '@/types/appConfig';
 
 import { type FindResourcesQuery } from '../services/search-service';
@@ -42,6 +41,15 @@ export function toSearchParams({
     ...(query.age !== undefined && { age: query.age }),
   };
 }
+
+/** About a kilometre: close enough to share a cache entry, too close to change who is served. */
+const PIN_COORDINATE_PRECISION = 100;
+
+export const roundCoordinatesForPins = (coordinates?: number[]) =>
+  coordinates?.map(
+    (value) =>
+      Math.round(value * PIN_COORDINATE_PRECISION) / PIN_COORDINATE_PRECISION,
+  );
 
 /** The params a pins request may carry; the tenant always comes from the host. */
 const PINS_PARAMS = [

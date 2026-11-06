@@ -43,12 +43,15 @@ MapContainer
   `/api/search-pins` with React Query, showing "Loading all locations…" as the
   legend's last row. The page's own results are circles from the
   first render, so nothing changes shape when the rest arrive. The route takes the tenant from the host, never the
-  query, and keeps only the params a search matches on (`parsePinsQuery`).
+  query, keeps only the params a search matches on (`parsePinsQuery`), and has
+  Arcjet bot protection like the search page (`isRouteDenied`, see
+  [bot-protection.md](bot-protection.md)).
 - **Cache.** Three levels, all keyed without `page`, `limit` and `sort`, so every
   page of a search shares them: React Query in memory (fresh for an hour, kept
   5 minutes after the last search that used it), the browser
   (`Cache-Control: private, max-age=3600`) and Redis for an hour under
-  `search_pins:<tenant>:<locale>:<hash>`. Turning the list's page sends no pins
+  `search_pins:<tenant>:<locale>:<hash>`, an empty result included (a failure
+  is never cached). Turning the list's page sends no pins
   request at all, and neither does a search whose results all fit on its first
   page: the map then draws its circles from the page alone. `coords` are rounded to two decimals (about 1 km) so neighbours share
   one too. They cannot be dropped: they filter by service area even at
@@ -67,8 +70,16 @@ MapContainer
 
 ## Map behavior
 
-- **Circles** are a MapLibre `circle` layer (`maplibre/points-layer.ts`), drawn
-  by the GPU rather than as DOM elements, with an 8px click tolerance.
+- **Circles** are MapLibre `circle` layers (`maplibre/points-layer.ts`), drawn
+  by the GPU rather than as DOM elements, with an 8px click tolerance. Two
+  sources: every location, light, uploaded once per search, and the list's
+  current page, dark, drawn above it. Turning the page re-uploads only the page's
+  locations; the rest stay while they're the same places, checked by an
+  order-independent signature (`toPlacesSignature`) rather than by sorting.
+  A circle is known by its place (`toPlaceKey`), as a shared address's first
+  result changes with the page.
+- **Popups are built when they open** (`MarkerDef.getPopup`), not for every one
+  of 10,000 circles on each page change.
 - **Circles are the same size** whether or not they're in the list. Only the
   colour differs, and the list's are drawn on top. They grow with the zoom and on
   hover.
@@ -81,7 +92,9 @@ MapContainer
 - **Clicking a circle in the list** scrolls the list to that result, just below
   the header when the tenant's header is sticky.
 - **A legend** in the map's corner explains the two circles, the count on a shared
-  address and the user's location.
+  address and the user's location, each row only when the map shows it. Below
+  `lg`, where the map is 320px high, it stays folded behind a "Map legend"
+  button, which shows a spinner while the rest of the circles load.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
 - **Turning the list's page** recolours the circles and leaves the map where it
@@ -119,7 +132,6 @@ and screen reader users reach them by turning the list's page.
 - Pins arrive after the list, so the first view of a search shows the page's
   circles first and the others a moment later. 965 pins are about 270 KB
   uncompressed, so 10,000 would be about 2.8 MB, once per search.
-- `/api/search-pins` has no Arcjet bot protection yet, like `/api/resource-titles`.
 - Hybrid search without a taxonomy scope matches the tenant's whole population:
   the query only ranks. Pins then show everything the filters allow, not only
   what is relevant to the query.
