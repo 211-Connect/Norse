@@ -14,6 +14,7 @@
   "map_legend_list": "In the list",
   "map_legend_user": "Your location",
   "map_legend_other": "Other locations",
+  "map_legend_site": "Resources at one address (zoom in)",
   "no_results": {
     "title": "No results found matching your query",
     "subtitle": "We've provided some similar results below",

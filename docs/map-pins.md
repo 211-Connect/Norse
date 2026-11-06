@@ -65,7 +65,8 @@ MapContainer
   while a circle above covers it. An address counts as in the list if any of its
   resources is.
 - **Clicking a circle in the list** scrolls the list to that result.
-- **A legend** in the map's corner explains the two circles and the user's location.
+- **A legend** in the map's corner explains the two circles, the count on a shared
+  address and the user's location.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
 - **Turning the list's page** recolours the circles and leaves the map where it

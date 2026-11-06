@@ -1,3 +1,4 @@
+import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -18,6 +19,13 @@ function LegendPin({ className }: { className: string }) {
   );
 }
 
+const SUBTLE_DOT = 'bg-[color-mix(in_srgb,hsl(var(--primary))_50%,white)]';
+
+/** Wide enough for the numbered dot, so every label starts at the same place. */
+function LegendSymbol({ children }: { children: ReactNode }) {
+  return <span className="flex w-4 shrink-0 justify-center">{children}</span>;
+}
+
 export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
   const { t } = useTranslation('page-search');
 
@@ -27,20 +35,42 @@ export function MapLegend({ showUserLocation }: { showUserLocation: boolean }) {
       className="bg-card/95 text-card-foreground pointer-events-none absolute top-2 left-2 flex flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm print:hidden"
     >
       <li className="flex items-center gap-1.5">
-        <span className="flex w-[11px] justify-center">
+        <LegendSymbol>
           <span className="bg-primary size-2.5 rounded-full ring-1 ring-white" />
-        </span>
+        </LegendSymbol>
         {t('map_legend_list', { defaultValue: 'In the list' })}
       </li>
       <li className="flex items-center gap-1.5">
-        <span className="flex w-[11px] justify-center">
-          <span className="size-2.5 bg-[color-mix(in_srgb,hsl(var(--primary))_50%,white)] rounded-full ring-1 ring-white" />
-        </span>
+        <LegendSymbol>
+          <span
+            className={cn(
+              'size-2.5 rounded-full ring-1 ring-white',
+              SUBTLE_DOT,
+            )}
+          />
+        </LegendSymbol>
         {t('map_legend_other', { defaultValue: 'Other locations' })}
+      </li>
+      <li className="flex items-center gap-1.5">
+        <LegendSymbol>
+          <span
+            className={cn(
+              'flex size-4 items-center justify-center rounded-full text-[9px] leading-none font-medium text-white ring-1 ring-white',
+              SUBTLE_DOT,
+            )}
+          >
+            2
+          </span>
+        </LegendSymbol>
+        {t('map_legend_site', {
+          defaultValue: 'Resources at one address (zoom in)',
+        })}
       </li>
       {showUserLocation && (
         <li className="flex items-center gap-1.5">
-          <LegendPin className="text-yellow-500" />
+          <LegendSymbol>
+            <LegendPin className="text-yellow-500" />
+          </LegendSymbol>
           {t('map_legend_user', { defaultValue: 'Your location' })}
         </li>
       )}
