@@ -1,11 +1,13 @@
 'use client';
 
 import {
+  type Announcements,
   DndContext,
   type DragEndEvent,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
+  type UniqueIdentifier,
   closestCenter,
   useSensor,
   useSensors,
@@ -40,7 +42,6 @@ import {
   useState,
   useTransition,
 } from 'react';
-import { createPortal } from 'react-dom';
 
 import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
@@ -126,6 +127,7 @@ function useSuneSearch() {
     nextCodes: string[],
     nextAnswered = answered,
     nextRanks: string[] = [],
+    history: 'push' | 'replace' = 'replace',
   ) => {
     const next = new URLSearchParams(params.toString());
     next.delete('taxonomy');
@@ -137,7 +139,7 @@ function useSuneSearch() {
     for (const token of nextRanks) next.append('taxonomy', token);
     next.set('refined', nextAnswered.join(','));
     startTransition(() => {
-      router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+      router[history](`${pathname}?${next.toString()}`, { scroll: false });
     });
   };
 
@@ -164,10 +166,12 @@ function RankRow({
   item,
   at,
   onRemove,
+  ranked,
 }: {
   item: Ranked;
   at: number;
   onRemove: () => void;
+  ranked: boolean;
 }) {
   const {
     attributes,
@@ -185,29 +189,34 @@ function RankRow({
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      onMouseDown={handlers?.onMouseDown}
-      onTouchStart={handlers?.onTouchStart}
+      onMouseDown={ranked ? handlers?.onMouseDown : undefined}
+      onTouchStart={ranked ? handlers?.onTouchStart : undefined}
       className={cn(
-        'bg-card flex cursor-grab touch-manipulation items-center gap-2 rounded-lg border py-1.5 pr-1 pl-1 select-none',
+        'bg-card flex touch-manipulation items-center gap-2 rounded-lg border py-1.5 pr-1 pl-1 select-none',
+        ranked ? 'cursor-grab' : 'pl-3',
         isDragging && 'border-primary relative z-10 cursor-grabbing shadow-lg',
       )}
     >
-      <button
-        ref={setActivatorNodeRef}
-        type="button"
-        {...attributes}
-        onKeyDown={handlers?.onKeyDown}
-        aria-label={`Rank ${item.label}, now number ${at + 1}. Press space, then the arrow keys.`}
-        className="text-muted-foreground flex h-9 w-6 shrink-0 cursor-grab items-center justify-center rounded-lg"
-      >
-        <GripVertical className="size-4" aria-hidden="true" />
-      </button>
-      <span
-        aria-hidden="true"
-        className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
-      >
-        {at + 1}
-      </span>
+      {ranked && (
+        <>
+          <button
+            ref={setActivatorNodeRef}
+            type="button"
+            {...attributes}
+            onKeyDown={handlers?.onKeyDown}
+            aria-label={`Rank ${item.label}, now number ${at + 1}`}
+            className="text-muted-foreground flex h-9 w-6 shrink-0 cursor-grab items-center justify-center rounded-lg"
+          >
+            <GripVertical className="size-4" aria-hidden="true" />
+          </button>
+          <span
+            aria-hidden="true"
+            className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
+          >
+            {at + 1}
+          </span>
+        </>
+      )}
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-medium">{item.label}</span>
         {item.description && (
@@ -233,6 +242,7 @@ function RankList({
   items,
   label,
   listRef,
+  onDragging,
   onRemove,
   onReorder,
   testId,
@@ -240,11 +250,11 @@ function RankList({
   items: Ranked[];
   label: string;
   listRef?: RefObject<HTMLOListElement | null>;
+  onDragging: (dragging: boolean) => void;
   onRemove: (item: Ranked) => void;
   onReorder: (items: Ranked[]) => void;
   testId: string;
 }) {
-  const [said, setSaid] = useState('');
   // A drop shows at once; the URL and the rerun catch up behind it.
   const [list, setList] = useState(items);
   const order = items.map((item) => item.key).join();
@@ -260,21 +270,53 @@ function RankList({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+  const moved = useRef(false);
+  const labelOfRow = (id: UniqueIdentifier) =>
+    list.find((item) => item.key === String(id))?.label ?? '';
+  const numberOfRow = (id: UniqueIdentifier) =>
+    list.findIndex((item) => item.key === String(id)) + 1;
+  // Screen readers hear the labels. The library's default reads out the internal ids.
+  const announcements: Announcements = {
+    onDragStart: ({ active }) =>
+      `Picked up ${labelOfRow(active.id)}. Use the arrow keys to move it. Press space to drop it, or Escape to cancel.`,
+    // The first event is the row over itself; saying so would cut off the instructions above.
+    onDragOver: ({ active, over }) => {
+      if (over?.id !== active.id) moved.current = true;
+      if (!over || !moved.current) return undefined;
+      return `${labelOfRow(active.id)} is over number ${numberOfRow(over.id)}.`;
+    },
+    onDragEnd: ({ active, over }) =>
+      `${labelOfRow(active.id)} is now number ${numberOfRow(over?.id ?? active.id)}.`,
+    onDragCancel: ({ active }) =>
+      `Cancelled. ${labelOfRow(active.id)} stays at number ${numberOfRow(active.id)}.`,
+  };
   const drop = ({ active, over }: DragEndEvent) => {
+    onDragging(false);
     if (!over || active.id === over.id) return;
     const keys = list.map((item) => item.key);
     const to = keys.indexOf(String(over.id));
     const next = arrayMove(list, keys.indexOf(String(active.id)), to);
     setList(next);
     onReorder(next);
-    setSaid(`${next[to].label} is now number ${to + 1}.`);
   };
 
   return (
     <DndContext
+      accessibility={{
+        announcements,
+        screenReaderInstructions: {
+          draggable:
+            'Press space to pick up this item. Use the arrow keys to move it. Press space to drop it, or Escape to cancel.',
+        },
+      }}
       collisionDetection={closestCenter}
       modifiers={[restrictToVerticalAxis]}
+      onDragCancel={() => onDragging(false)}
       onDragEnd={drop}
+      onDragStart={() => {
+        moved.current = false;
+        onDragging(true);
+      }}
       sensors={sensors}
     >
       <SortableContext
@@ -294,13 +336,11 @@ function RankList({
               item={item}
               at={at}
               onRemove={() => onRemove(item)}
+              ranked={list.length > 1}
             />
           ))}
         </ol>
       </SortableContext>
-      <p className="sr-only" aria-live="polite">
-        {said}
-      </p>
     </DndContext>
   );
 }
@@ -310,10 +350,12 @@ function RankStep({
   kinds,
   removed,
   onChange,
+  onDragging,
   onMissing,
 }: {
   kinds: Kind[];
   removed: Kind[];
+  onDragging: (dragging: boolean) => void;
   onChange: (kinds: Kind[], removed: Kind[]) => void;
   onMissing: (text: string) => void;
 }) {
@@ -340,6 +382,7 @@ function RankStep({
         items={kinds}
         label="Kinds of help, ranked"
         listRef={listRef}
+        onDragging={onDragging}
         onRemove={remove}
         onReorder={(next) => onChange(next as Kind[], removed)}
         testId="search-rank-list"
@@ -381,6 +424,12 @@ export function SearchResultsHelp() {
   const setSuggestions = useSetAtom(suggestionsAtom);
   const [shown, setShown] = useState(false);
   const [open, setOpen] = useState(false);
+  const dragging = useRef(false);
+  const onDragging = (value: boolean) => {
+    dragging.current = value;
+  };
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const needListRef = useRef<HTMLOListElement>(null);
   const [phase, setPhase] = useState<'tags' | 'rank' | 'done'>('tags');
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState('');
@@ -407,7 +456,17 @@ export function SearchResultsHelp() {
     };
   }, [label]);
 
-  if (!label.trim() || !shown) return null;
+  // A new step replaces the panel's content, so focus moves to its title.
+  const firstPhase = useRef(true);
+  useEffect(() => {
+    if (firstPhase.current) {
+      firstPhase.current = false;
+      return;
+    }
+    titleRef.current?.focus();
+  }, [phase]);
+
+  if (!label.trim()) return null;
 
   const { kinds, removed } = rankKinds([...codes, ...ranks]) as {
     kinds: Kind[];
@@ -442,7 +501,10 @@ export function SearchResultsHelp() {
       needs.length > 1
         ? 'Drag to rank. 1 matters most.'
         : 'Remove or add what you need.',
-    rank: 'Drag to rank. 1 is the best fit.',
+    rank:
+      kinds.length > 1
+        ? 'Drag to rank. 1 is the best fit.'
+        : 'Remove this or add what is missing.',
     done: 'Your results are updated.',
   };
 
@@ -470,7 +532,16 @@ export function SearchResultsHelp() {
     closeAdd();
   };
 
-  return createPortal(
+  const removeNeed = (item: Ranked) => {
+    update(codes.filter((code) => code !== item.key));
+    (needs.length > 1 ? needListRef : addButtonRef).current?.focus();
+  };
+  const removeTrait = (code: string) => {
+    update(codes.filter((item) => item !== code));
+    addButtonRef.current?.focus();
+  };
+
+  return (
     <DialogPrimitive.Root
       modal={false}
       open={open}
@@ -481,7 +552,12 @@ export function SearchResultsHelp() {
       }}
     >
       <DialogPrimitive.Trigger
-        className="fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg print:hidden"
+        className={cn(
+          'fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg print:hidden',
+          // Before it appears it stays in the tab order, so a keyboard user can still reach it.
+          !shown &&
+            'pointer-events-none opacity-0 focus:pointer-events-auto focus:opacity-100',
+        )}
         data-testid="search-results-help"
       >
         Not getting the results you expected?
@@ -491,7 +567,8 @@ export function SearchResultsHelp() {
           className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl md:left-auto md:w-96"
           data-testid="search-results-help-panel"
           onEscapeKeyDown={(event) => {
-            if (adding) event.preventDefault();
+            // Escape cancels a keyboard drag or the Add box, not the whole panel.
+            if (adding || dragging.current) event.preventDefault();
           }}
         >
           <div className="flex items-start justify-between gap-3">
@@ -501,7 +578,11 @@ export function SearchResultsHelp() {
                   Step {phase === 'tags' ? 1 : 2} of 2
                 </p>
               )}
-              <DialogPrimitive.Title className="text-lg font-semibold">
+              <DialogPrimitive.Title
+                ref={titleRef}
+                tabIndex={-1}
+                className="text-lg font-semibold outline-none"
+              >
                 {TITLES[phase]}
               </DialogPrimitive.Title>
             </div>
@@ -520,6 +601,7 @@ export function SearchResultsHelp() {
               kinds={kinds}
               removed={removed}
               onChange={reorder}
+              onDragging={onDragging}
               onMissing={reportMissing}
             />
           )}
@@ -531,9 +613,9 @@ export function SearchResultsHelp() {
                   label: labelOf(code),
                 }))}
                 label="Your needs, ranked"
-                onRemove={(item) =>
-                  update(codes.filter((code) => code !== item.key))
-                }
+                listRef={needListRef}
+                onDragging={onDragging}
+                onRemove={removeNeed}
                 onReorder={(next) =>
                   update([...next.map((item) => item.key), ...others])
                 }
@@ -549,10 +631,8 @@ export function SearchResultsHelp() {
                     <button
                       type="button"
                       aria-label={`Remove ${labelOf(code)}`}
-                      className="cursor-pointer"
-                      onClick={() =>
-                        update(codes.filter((item) => item !== code))
-                      }
+                      className="-my-1 -mr-1.5 flex size-6 cursor-pointer items-center justify-center"
+                      onClick={() => removeTrait(code)}
                     >
                       <X className="size-3.5" aria-hidden="true" />
                     </button>
@@ -562,6 +642,8 @@ export function SearchResultsHelp() {
                   ref={addButtonRef}
                   type="button"
                   data-dismiss-keep
+                  aria-expanded={adding}
+                  aria-label="Add a need"
                   className={ADD_PILL}
                   onClick={() => setAdding((prev) => !prev)}
                 >
@@ -581,11 +663,15 @@ export function SearchResultsHelp() {
                       if (event.key === 'Enter') {
                         event.preventDefault();
                         if (matches[0]) addTerm(matches[0].code);
+                        else if (typed) flagMissing();
                       }
                       if (event.key === 'Escape') closeAdd();
                     }}
                     className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
                   />
+                  <p className="sr-only" role="status">
+                    {typed ? `${matches.length} matches` : ''}
+                  </p>
                   {typed && (
                     <ul className="bg-card rounded-lg border">
                       {matches.map((term) => (
@@ -614,7 +700,17 @@ export function SearchResultsHelp() {
               )}
             </>
           )}
-          {thanks && <p className="text-muted-foreground text-sm">{thanks}</p>}
+          <p
+            className="text-muted-foreground text-sm empty:hidden"
+            role="status"
+          >
+            {thanks}
+          </p>
+          {phase === 'done' && (
+            <DialogPrimitive.Close className="bg-primary text-primary-foreground cursor-pointer self-end rounded-lg px-4 py-2 text-sm font-semibold">
+              Close
+            </DialogPrimitive.Close>
+          )}
           {phase !== 'done' && (
             <div className="flex items-center justify-between gap-2">
               {phase === 'rank' ? (
@@ -650,8 +746,7 @@ export function SearchResultsHelp() {
           )}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>,
-    document.body,
+    </DialogPrimitive.Root>
   );
 }
 
@@ -685,12 +780,12 @@ export function OtherBox({
             send();
           }
         }}
-        className="border-control-border focus:border-primary min-h-12 w-full rounded-lg border bg-white py-2 pr-12 pl-4 text-base outline-none focus:outline-none"
+        className="border-control-border focus-visible:ring-primary focus:border-primary min-h-12 w-full rounded-lg border bg-white py-2 pr-12 pl-4 text-base outline-none focus:outline-none focus-visible:ring-2"
         data-testid="other-box"
       />
       <button
         type="button"
-        aria-label="Send"
+        aria-label="Send your answer"
         className="bg-primary text-primary-foreground absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-lg"
         onClick={send}
       >
@@ -702,10 +797,10 @@ export function OtherBox({
 
 export const LEVELS = {
   critical: {
-    card: 'border-destructive bg-red-50',
-    label: 'text-destructive',
+    card: 'border-red-700 bg-red-50',
+    label: 'text-red-700',
     title: 'Refine: this is really important',
-    button: 'border-destructive text-destructive bg-white',
+    button: 'border-red-700 text-red-700 bg-white',
   },
   important: {
     card: 'border-orange-400 bg-orange-50',
@@ -724,7 +819,7 @@ export const LEVELS = {
 function CrisisCard() {
   return (
     <div
-      className="bg-destructive text-destructive-foreground mt-3 flex flex-col gap-3 rounded-lg p-4"
+      className="mt-3 flex flex-col gap-3 rounded-lg bg-red-700 p-4 text-white"
       data-testid="search-crisis-card"
       role="alert"
     >
@@ -734,7 +829,7 @@ function CrisisCard() {
       <div className="flex flex-wrap gap-2">
         <a
           href="tel:988"
-          className="text-destructive flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 font-semibold no-underline"
+          className="flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 font-semibold text-red-700 no-underline"
         >
           <Phone className="size-4" aria-hidden="true" />
           Call 988
@@ -787,6 +882,21 @@ export function PickMark({ on }: { on: boolean }) {
   );
 }
 
+/** Says what a tick changed, because the count and Continue are out of a screen reader's view. */
+export function PicksStatus({
+  count,
+  total,
+}: {
+  count: number;
+  total: number;
+}) {
+  return (
+    <p className="sr-only" role="status">
+      {count > 0 ? `${count} picked, ${resultCount(total)}.` : ''}
+    </p>
+  );
+}
+
 export const PICKED = 'border-primary bg-primary/10 text-foreground';
 export const resultCount = (count: number) =>
   `${count} ${count === 1 ? 'result' : 'results'}`;
@@ -807,6 +917,15 @@ export function SearchRefineQuestion() {
   const { picks, toggle } = useAnswerPicks(question.id);
   const chosen = question.answers.filter((a) => picks.includes(a.label));
   const withPicks = applyAnswers(codes, chosen) as string[];
+  const [noted, setNoted] = useState('');
+  // An answer removes the control in focus, so focus goes to the next question.
+  const questionRef = useRef<HTMLHeadingElement>(null);
+  const moveFocus = useRef(false);
+  useEffect(() => {
+    if (!moveFocus.current) return;
+    moveFocus.current = false;
+    questionRef.current?.focus({ preventScroll: true });
+  }, [question.id]);
 
   if (!label.trim()) return null;
   if (decision.kind === 'crisis') return <CrisisCard />;
@@ -814,17 +933,38 @@ export function SearchRefineQuestion() {
   const submitOther = (text: string) => {
     const found = classifySune(text).codes as string[];
     if (found.length === 0) setFlagged((prev) => [...prev, text]);
-    update([...new Set([...withPicks, ...found])], [...answered, question.id]);
+    setNoted(
+      found.length
+        ? 'Thank you. We added that to your search.'
+        : `Thank you. We will look at adding “${text}”.`,
+    );
+    moveFocus.current = true;
+    update(
+      [...new Set([...withPicks, ...found])],
+      [...answered, question.id],
+      [],
+      'push',
+    );
   };
+  // Each answer is a history entry, so the browser's Back button undoes it.
   const answer = (options: Answer[] = []) => {
-    update(applyAnswers(codes, options) as string[], [
-      ...answered,
-      question.id,
-    ]);
+    setNoted('');
+    moveFocus.current = true;
+    update(
+      applyAnswers(codes, options) as string[],
+      [...answered, question.id],
+      [],
+      'push',
+    );
   };
+  const cardTitle =
+    question.id === 'start'
+      ? 'Your search is vague. Help us help you.'
+      : style.title;
 
   return (
-    <div
+    <section
+      aria-label="Refine your search"
       className={cn(
         'mt-3 flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
         collapsed && 'max-md:py-0',
@@ -837,15 +977,13 @@ export function SearchRefineQuestion() {
       <button
         type="button"
         aria-expanded={!collapsed}
-        className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:min-h-0 md:cursor-default"
+        className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:hidden"
         onClick={() => setCollapsed((prev) => !prev)}
       >
         <span className={cn('text-sm font-semibold', style.label)}>
-          {question.id === 'start'
-            ? 'Your search is vague. Help us help you.'
-            : style.title}
+          {cardTitle}
         </span>
-        <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium md:hidden">
+        <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium">
           {collapsed ? 'Show' : 'Hide'}
           <ChevronDown
             className={cn('size-4', !collapsed && 'rotate-180')}
@@ -853,6 +991,9 @@ export function SearchRefineQuestion() {
           />
         </span>
       </button>
+      <p className={cn('hidden text-sm font-semibold md:block', style.label)}>
+        {cardTitle}
+      </p>
       <div
         className={cn(
           'flex flex-col gap-2 md:gap-3',
@@ -860,14 +1001,19 @@ export function SearchRefineQuestion() {
         )}
       >
         <div>
-          <p
+          <h2
+            ref={questionRef}
             id="refine-question"
-            className="text-base font-semibold md:text-xl"
+            aria-describedby={question.multi ? 'refine-hint' : undefined}
+            tabIndex={-1}
+            className="text-base font-semibold outline-none md:text-xl"
           >
             {question.text}
-          </p>
+          </h2>
           {question.multi && (
-            <p className="text-muted-foreground text-sm">Pick all that fit.</p>
+            <p id="refine-hint" className="text-muted-foreground text-sm">
+              Pick all that fit.
+            </p>
           )}
         </div>
         <div
@@ -914,6 +1060,10 @@ export function SearchRefineQuestion() {
             }
             onSubmit={submitOther}
           />
+          <PicksStatus
+            count={picks.length}
+            total={matchServices(withPicks).length}
+          />
           {decision.question && picks.length === 0 && (
             <button
               type="button"
@@ -935,8 +1085,11 @@ export function SearchRefineQuestion() {
             </button>
           )}
         </div>
+        <p className="text-sm empty:hidden" role="status">
+          {noted}
+        </p>
       </div>
-    </div>
+    </section>
   );
 }
 

@@ -70,13 +70,13 @@ const NEED_RULES = [
   [/\b(job|work|resume)\b/i, { 'N-WRK-01': 0.7 }],
   [/\b(doctor|clinic|nurse)\b/i, { 'N-HLT-01': 0.8 }],
   [/\b(medicine|insulin|prescription|medication)\b/i, { 'N-HLT-03': 0.9 }],
-  [/\b(counsel\w*|therap\w*|depress\w*|anxiety|suicid\w*|kill myself|end my life)\b/i, { 'N-MHS-01': 0.9 }],
+  [/\b(counsel\w*|therap\w*|depress\w*|anxiety|suicid\w*|kill myself|end my life|want to die|don'?t want to (live|be here)|(hurt|harm) myself)\b/i, { 'N-MHS-01': 0.9 }],
   [/\b(child ?care|daycare|babysit\w*)\b/i, { 'N-DLC-02': 0.9 }],
   [/\b(hits? me|hurting me|abus\w*|scared of (him|her|them))\b/i, { 'N-SAF-01': 0.9 }],
 ];
 
 const URGENCY_RULES = [
-  [/\b(suicid\w*|kill myself|end my life|has a (knife|gun)|hurting me right now|overdos\w*)\b/i, 'U-0'],
+  [/\b(suicid\w*|kill myself|end my life|want to die|don'?t want to (live|be here)|(hurt|harm) myself|has a (knife|gun)|hurting me right now|overdos\w*)\b/i, 'U-0'],
   [/\b(tonight|today|right now|this week|nowhere to (sleep|stay)|emergency|run(ning)? out)\b/i, 'U-1'],
   [/\b(hearing|court date|shut.?off|by (monday|tuesday|wednesday|thursday|friday)|eviction notice)\b/i, 'U-2'],
   [/\b(ongoing|every month|for months|for a year|chronic)\b/i, 'U-3'],
@@ -418,6 +418,7 @@ export function decideRefine(query, codes, answered = []) {
       total: current.length,
       question: {
         id: 'start',
+        level: 'important',
         text: 'What do you need help with most?',
         why: 'The classifier found no need in this search.',
         answers: STARTING_POINTS.map((code) => ({

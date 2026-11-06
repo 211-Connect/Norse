@@ -11,6 +11,7 @@ import {
   OtherBox,
   PICKED,
   PickMark,
+  PicksStatus,
   resultCount,
   useAnswerPicks,
 } from '@/app/(app)/features/search/components/search-follow-up';
@@ -170,6 +171,8 @@ export function SearchGuide({
   const next = (nextCodes: string[], nextAnswered: string[]) => {
     setCodes(nextCodes);
     setAnswered(nextAnswered);
+    // Crisis never waits behind a question, however it was typed.
+    if (nextCodes.includes('U-0')) return void finish(nextCodes, nextAnswered);
     if (steps && at + 1 < steps.length) return setAt(at + 1);
     void finish(nextCodes, nextAnswered);
   };
@@ -268,7 +271,7 @@ export function SearchGuide({
                 onChange={() => setNeedError(false)}
               />
               {needError && (
-                <p role="alert" className="text-destructive font-semibold">
+                <p role="alert" className="text-red-700 font-semibold">
                   Tell us what you need help with first.
                 </p>
               )}
@@ -292,6 +295,7 @@ export function SearchGuide({
                     style?.label ?? 'text-primary',
                   )}
                   data-testid="guide-progress"
+                  id="guide-progress"
                 >
                   Question {at + 1} of {steps.length}
                 </p>
@@ -303,6 +307,7 @@ export function SearchGuide({
             <div className="flex flex-col gap-3">
               <h2
                 ref={headingRef}
+                aria-describedby="guide-progress"
                 tabIndex={-1}
                 className="text-2xl font-semibold outline-none"
               >
@@ -320,7 +325,7 @@ export function SearchGuide({
               {locationError && (
                 <p
                   role="alert"
-                  className="border-destructive text-destructive rounded-lg border bg-red-50 p-3 font-semibold"
+                  className="border-red-700 text-red-700 rounded-lg border bg-red-50 p-3 font-semibold"
                 >
                   Add your location to continue. We can only show services where
                   you are.
@@ -335,13 +340,19 @@ export function SearchGuide({
                 <h2
                   ref={headingRef}
                   id="guide-question"
+                  aria-describedby={cn(
+                    'guide-progress',
+                    question.multi && 'guide-hint',
+                  )}
                   tabIndex={-1}
                   className="text-2xl font-semibold outline-none"
                 >
                   {question.text}
                 </h2>
                 {question.multi && (
-                  <p className="text-muted-foreground">Pick all that fit.</p>
+                  <p id="guide-hint" className="text-muted-foreground">
+                    Pick all that fit.
+                  </p>
                 )}
               </div>
               <div
@@ -381,6 +392,10 @@ export function SearchGuide({
                   key={question.id}
                   placeholder="Other: type your own"
                   onSubmit={submitOther}
+                />
+                <PicksStatus
+                  count={picks.length}
+                  total={matchServices(withPicks).length}
                 />
                 {picks.length > 0 && (
                   <button

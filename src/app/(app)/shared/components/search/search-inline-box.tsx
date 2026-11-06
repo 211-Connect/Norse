@@ -41,6 +41,8 @@ export function SearchInlineBox({
   const [isPending, startTransition] = useTransition();
   const [isBusy, setIsBusy] = useState(false);
   const [editingLocation, setEditingLocation] = useState(false);
+  const [emptyError, setEmptyError] = useState(false);
+  const locationButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigateAiSearch({ startTransition });
   const locationRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -53,6 +55,26 @@ export function SearchInlineBox({
     observer.observe(formRef.current);
     return () => observer.disconnect();
   }, []);
+  // Tabbing must not land a focused control under the sticky bar or the floating button.
+  useEffect(() => {
+    const { style } = document.documentElement;
+    style.scrollPaddingTop = scrolledPast ? '4rem' : '';
+    style.scrollPaddingBottom = '5rem';
+    return () => {
+      style.scrollPaddingTop = '';
+      style.scrollPaddingBottom = '';
+    };
+  }, [scrolledPast]);
+  const closeLocation = () => {
+    setEditingLocation(false);
+    requestAnimationFrame(() => locationButtonRef.current?.focus());
+  };
+  const openLocation = () => {
+    setEditingLocation(true);
+    requestAnimationFrame(() =>
+      document.getElementById(LOCATION_INPUT_ID)?.focus(),
+    );
+  };
   useDismissOutside(locationRef, editingLocation, () =>
     setEditingLocation(false),
   );
@@ -61,6 +83,7 @@ export function SearchInlineBox({
 
   const onChange = (value: string) => {
     if (!value.trim()) setCleared(true);
+    setEmptyError(false);
     setSearch((prev) => ({
       ...prev,
       query: value,
@@ -75,7 +98,8 @@ export function SearchInlineBox({
 
   const submit = async () => {
     const query = searchTerm.trim();
-    if (!query || isBusy) return;
+    if (!query) return setEmptyError(true);
+    if (isBusy) return;
     setIsBusy(true);
     setCleared(false);
     const prediction = await predictSearchNeeds(
@@ -100,7 +124,7 @@ export function SearchInlineBox({
     if (lastLocation.current === searchLocation) return;
     lastLocation.current = searchLocation;
     if (editingLocation) {
-      setEditingLocation(false);
+      closeLocation();
       void submit();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,6 +135,9 @@ export function SearchInlineBox({
       {scrolledPast && (
         <button
           type="button"
+          aria-label={
+            searchTerm ? `Edit your search: ${searchTerm}` : 'Search again'
+          }
           className="border-control-border fixed inset-x-0 top-0 z-30 flex cursor-pointer items-center gap-2 border-b bg-white px-4 py-3 text-left text-sm shadow-sm print:hidden"
           data-testid="search-sticky-bar"
           onClick={() => {
@@ -147,7 +174,7 @@ export function SearchInlineBox({
             }
           }}
           style={{ fieldSizing: 'content' } as React.CSSProperties}
-          className="border-control-border focus:border-primary block max-h-40 min-h-14 w-full resize-none rounded-lg border bg-white py-3 pr-14 pl-4 text-base shadow-sm outline-none focus:outline-none focus-visible:outline-none md:min-h-16"
+          className="border-control-border focus-visible:ring-primary focus:border-primary block max-h-40 min-h-14 w-full resize-none rounded-lg border bg-white py-3 pr-14 pl-4 text-base shadow-sm outline-none focus:outline-none focus-visible:ring-2 focus-visible:outline-none md:min-h-16"
           data-testid="search-inline-input"
         />
         <button
@@ -159,16 +186,36 @@ export function SearchInlineBox({
           <ArrowUp className="size-5" aria-hidden="true" />
         </button>
       </form>
+      {emptyError && (
+        <p role="alert" className="text-red-700 text-sm font-semibold">
+          Tell us what you need help with first.
+        </p>
+      )}
       {belowSearch}
       {editingLocation ? (
-        <div className="w-full" ref={locationRef}>
+        <div
+          className="w-full"
+          ref={locationRef}
+          // Capture runs first: the box's own Escape would commit its highlighted row, "Everywhere".
+          onKeyDownCapture={(event) => {
+            if (event.key !== 'Escape') return;
+            event.stopPropagation();
+            closeLocation();
+          }}
+        >
           <LocationSearchBar inputId={LOCATION_INPUT_ID} className="w-full" />
         </div>
       ) : (
         <button
+          ref={locationButtonRef}
           type="button"
+          aria-label={
+            searchLocation
+              ? `Change location, now ${searchLocation}`
+              : 'Add your location'
+          }
           className="text-primary flex cursor-pointer items-center gap-1.5 text-sm font-medium"
-          onClick={() => setEditingLocation(true)}
+          onClick={openLocation}
         >
           <MapPin className="size-4" aria-hidden="true" />
           {searchLocation || 'Add your location'}

@@ -73,7 +73,7 @@ export function SearchNeedInput({
             }
           }}
           placeholder="For example: I think I will run out of food this week."
-          className="border-control-border focus:border-primary block w-full resize-none rounded-lg border bg-white p-3 pr-14 text-base shadow-sm outline-none focus:outline-none focus-visible:outline-none"
+          className="border-control-border focus-visible:ring-primary focus:border-primary block w-full resize-none rounded-lg border bg-white p-3 pr-14 text-base shadow-sm outline-none focus:outline-none focus-visible:ring-2 focus-visible:outline-none"
           data-testid="search-need-input"
         />
         <button
@@ -84,14 +84,28 @@ export function SearchNeedInput({
           <ArrowUp className="size-5" aria-hidden="true" />
         </button>
       </div>
+      <p className="sr-only" role="status">
+        {matches.length > 0
+          ? `${matches.length} suggestions below the search box.`
+          : ''}
+      </p>
       {matches.length > 0 && (
-        <ul className="flex flex-col" data-testid="search-need-suggestions">
+        <ul
+          aria-label="Suggestions"
+          className="flex flex-col"
+          data-testid="search-need-suggestions"
+        >
           {matches.map((value) => (
             <li key={value}>
               <button
                 type="button"
                 className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
-                onClick={() => onChange(value)}
+                onClick={(event) => {
+                  // A suggestion is a whole search, so it runs like a typed one.
+                  const form = event.currentTarget.form;
+                  onChange(value);
+                  requestAnimationFrame(() => form?.requestSubmit());
+                }}
               >
                 {value}
               </button>
@@ -108,10 +122,10 @@ export function SearchCrisisButton() {
   return (
     <a
       href="tel:988"
-      className="bg-destructive text-destructive-foreground flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold no-underline"
+      className="flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg bg-red-700 px-3 text-sm font-semibold text-white no-underline"
     >
       <Phone className="size-4" aria-hidden="true" />
-      I&apos;m in a crisis right now
+      I&apos;m in a crisis: call 988
     </a>
   );
 }
