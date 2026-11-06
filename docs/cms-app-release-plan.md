@@ -110,7 +110,7 @@ work on App Platform, and scheduled PDF delivery needs it.
 | `ARCJET_*`                                                               | ✓      |     |
 | `EMS_SERVICE_URL`, `WEBHOOK_ALERT_URL`, `GOOGLE_SITE_VERIFICATION`       | ✓      |     |
 | `CUSTOM_AUTH_HOST`, `CUSTOM_AUTH_PROTOCOL` (MBOA)                        | ✓      |     |
-| `DATABASE_URI`, `DATABASE_POOL_MIN`, `DATABASE_POOL_MAX`, `PAYLOAD_SECRET` |        | ✓   |
+| `DATABASE_URI`, `DATABASE_POOL_MIN`, `DATABASE_POOL_MAX`, `DATABASE_POOL_IDLE_TIMEOUT_MS`, `PAYLOAD_SECRET` |        | ✓   |
 | `MEDIA_S3_*`, `MEDIA_DO_CDN_ENDPOINT`                                    |        | ✓   |
 | `SENDGRID_API_KEY`                                                       |        | ✓   |
 | `KEYCLOAK_ADMIN_CLIENT_ID`, `KEYCLOAK_ADMIN_SECRET`                     |        | ✓   |
