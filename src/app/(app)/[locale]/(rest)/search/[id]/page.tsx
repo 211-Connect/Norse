@@ -8,7 +8,13 @@ import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
+import {
+  jsonLdScript,
+  resourceCanonicalUrl,
+  resourceJsonLd,
+} from '@/app/(app)/features/resource/seo/resourceSeo';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getHost } from '@/app/(app)/shared/utils/getHost';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
 import { protectPage } from '@/lib/arcjet-page';
 import { createLogger } from '@/lib/logger';
@@ -38,7 +44,15 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
     return {};
   }
 
+  const canonical = resourceCanonicalUrl({
+    ...(await getHost()),
+    locale,
+    defaultLocale: appConfig.i18n.defaultLocale,
+    id,
+  });
+
   return {
+    alternates: { canonical },
     openGraph: {
       description: resource.description ?? undefined,
       images: appConfig.brand.openGraphUrl
@@ -111,6 +125,15 @@ export default async function ResourcePage({ params }) {
   }
 
   const layout = appConfig.resource.layout ?? DEFAULT_RESOURCE_LAYOUT;
+  const jsonLd = resourceJsonLd(
+    resource,
+    resourceCanonicalUrl({
+      ...(await getHost()),
+      locale,
+      defaultLocale: appConfig.i18n.defaultLocale,
+      id,
+    }),
+  );
 
   return (
     <PageWrapper
@@ -118,6 +141,14 @@ export default async function ResourcePage({ params }) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          nonce={nonce || undefined}
+          // Escaped by jsonLdScript: record text cannot close the script.
+          dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
+        />
+      )}
       <ResourcePageContent
         resource={resource}
         layout={layout}
