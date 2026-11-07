@@ -192,6 +192,68 @@ test('hours: only text that fully parses becomes opening hours; anything else is
   assert.equal(ld.hoursAvailable, undefined);
 });
 
+// The forms WA211's hours actually take (NORSE_STAGING.WA211_V2.APP_DISPLAY_TRANSLATIONS.DISPLAY_SCHEDULE,
+// 2026-11-06: 14,259 values, none in the "Monday 11:00am - 4:30pm" form). Counts are rows with that exact value.
+const spec = (day: string, opens: string, closes: string) => ({
+  '@type': 'OpeningHoursSpecification',
+  dayOfWeek: `https://schema.org/${day}`,
+  opens,
+  closes,
+});
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const ALL_DAYS = [...WEEKDAYS, 'Saturday', 'Sunday'];
+
+test("hours: WA211's compact form parses (day ranges, lists, end-only am/pm, ';' groups, final period)", () => {
+  // [1,784 rows]
+  assert.deepEqual(
+    parseOpeningHours('M-F, 8am-5pm.'),
+    WEEKDAYS.map((d) => spec(d, '08:00', '17:00')),
+  );
+  // [448 rows]
+  assert.deepEqual(
+    parseOpeningHours('M-F, 8am-4:30pm.'),
+    WEEKDAYS.map((d) => spec(d, '08:00', '16:30')),
+  );
+  // [721 rows]
+  assert.deepEqual(
+    parseOpeningHours('24 hours daily.'),
+    ALL_DAYS.map((d) => spec(d, '00:00', '23:59')),
+  );
+  // Start time takes the end's am/pm unless that would start after it ends: 1-6pm is 1pm, 10-2pm is 10am.
+  assert.deepEqual(
+    parseOpeningHours('M, Tu, Th, F, 9am-6pm; W, 1-6pm; Sa, 10-2pm.'),
+    [
+      spec('Monday', '09:00', '18:00'),
+      spec('Tuesday', '09:00', '18:00'),
+      spec('Thursday', '09:00', '18:00'),
+      spec('Friday', '09:00', '18:00'),
+      spec('Wednesday', '13:00', '18:00'),
+      spec('Saturday', '10:00', '14:00'),
+    ],
+  );
+  assert.deepEqual(
+    parseOpeningHours('M-Th, 10am-3pm.'),
+    ['Monday', 'Tuesday', 'Wednesday', 'Thursday'].map((d) =>
+      spec(d, '10:00', '15:00'),
+    ),
+  );
+});
+
+test('hours: WA211 values with labels, notes, prose or several lines are left out', () => {
+  for (const text of [
+    'M-F, 8am-5pm. Hours for application eligibility interviews are 8am-2pm.',
+    'Office: M-F, 9am-4pm. Toll Free Number: 8am-7pm.',
+    'Phone: M-F, 8am-4pm.',
+    'M-F, 8am-4:30pm; W - by appointment only.',
+    'M-F, 8:30am-4:30pm. \n Closed Noon-1pm.',
+    'Our front desk hours are Monday through Thursdays from 10am-3pm',
+    'M, W, F, 9-11:45am; 3rd Tu, each month, 6-8pm. \nBread and Produce room: daily, 9am-2:30pm.',
+    'M-F, 5pm-8am.',
+  ]) {
+    assert.equal(parseOpeningHours(text), undefined, text);
+  }
+});
+
 test('the script cannot be closed by record text, and reads back to the same data', () => {
   const hostile = {
     ...FULL,
