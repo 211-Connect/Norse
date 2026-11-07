@@ -702,12 +702,27 @@ export const WRITER_FIXTURES: WriterFixture[] = [
     written: '/search?query=syntheticquery&query_type=hybrid',
   },
   {
-    name: 'query, label and organization are trimmed',
-    query:
-      'query=%20syntheticquery%20&query_label=%20syntheticlabel%20&organization_id=%20synthetic-org%20',
+    name: 'query and label are trimmed',
+    query: 'query=%20syntheticquery%20&query_label=%20syntheticlabel%20',
     searchEngine: 'classic',
     written:
-      '/search?query=syntheticquery&query_label=syntheticlabel&query_type=text&organization_id=synthetic-org',
+      '/search?query=syntheticquery&query_label=syntheticlabel&query_type=text',
+  },
+  {
+    name: 'label and organization are trimmed',
+    query:
+      'query_label=%20syntheticlabel%20&organization_id=%20synthetic-org%20',
+    searchEngine: 'classic',
+    written:
+      '/search?query_label=syntheticlabel&query_type=text&organization_id=synthetic-org',
+  },
+  {
+    name: 'a query drops the organization: a new search is never within one organization (ISS-2474)',
+    query:
+      'query=syntheticquery&query_label=syntheticlabel&organization_id=synthetic-org',
+    searchEngine: 'classic',
+    written:
+      '/search?query=syntheticquery&query_label=syntheticlabel&query_type=text',
   },
   {
     name: 'empty values are dropped',

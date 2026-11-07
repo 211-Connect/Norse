@@ -174,9 +174,16 @@ test('gate case D: text, or no query type, is classified like B', () => {
   assert.equal(resolve('query=food', AI).value, 'needs_prediction');
 });
 
-test('an organization-scoped search is never classified', () => {
+test('a query beside an organization is a new search, classified like any query (ISS-2474)', () => {
+  assert.equal(
+    resolve('query=food&query_type=text&organization_id=org-1', AI).value,
+    'needs_prediction',
+  );
+});
+
+test('an organization link with no query is never classified', () => {
   const snapshot = resolve(
-    'query=food&query_type=text&organization_id=org-1',
+    'query_label=OlyCAP&query_type=text&organization_id=org-1',
     AI,
   );
   assert.equal(snapshot.value, 'ready');
@@ -362,9 +369,15 @@ test('the dialog submit searches as typed unless needs is a gate and there is a 
     submit(AI, { queryType: 'taxonomy' }).value,
     'navigating_classic',
   );
+  // An organization pick has no query: it shows that organization's services, as typed.
+  assert.equal(
+    submit(AI, { organizationId: 'org-1', query: '' }).value,
+    'navigating_classic',
+  );
+  // A typed query beside a stale organization is a new search (ISS-2474).
   assert.equal(
     submit(AI, { organizationId: 'org-1' }).value,
-    'navigating_classic',
+    'needs_prediction',
   );
   assert.equal(submit(AI, { query: '' }).value, 'navigating_classic');
   assert.equal(submit(AI).value, 'needs_prediction');

@@ -160,9 +160,7 @@ export const searchResolverMachine = setup({
     /** Gate case C: a taxonomy search needs no classifying. */
     taxonomySearch: ({ context }) =>
       context.searchQuery.queryType === 'taxonomy',
-    /** A search scoped to one organization is never classified (#1138). */
-    organizationScoped: ({ context }) =>
-      Boolean(context.searchQuery.organizationId),
+    // An organization link carries no query (ISS-2474), so `noQuery` already keeps it unclassified.
     noQuery: ({ context }) => !context.searchQuery.query,
     clarifyStated: ({ context }) => context.clarify !== null,
     predictionMissing: ({ event }) =>
@@ -183,14 +181,14 @@ export const searchResolverMachine = setup({
       context.policy.location === 'gate' &&
       event.submission.location.trim().length === 0,
     /**
-     * Searched as typed, not classified: needs is refine, a taxonomy pick, an organization scope (a filter,
-     * not a classifiable text query), or no query.
+     * Searched as typed, not classified: needs is refine, a taxonomy pick, or no query. An organization pick
+     * has no query; a typed query beside a stale organization is a new search, classified like any other
+     * (ISS-2474).
      */
     classicSubmit: ({ context, event }) =>
       event.type === 'SUBMIT' &&
       (context.policy.needs !== 'gate' ||
         event.submission.queryType === 'taxonomy' ||
-        Boolean(event.submission.organizationId) ||
         !event.submission.query),
     pending: ({ event }) =>
       (event.type === 'SKIPPED' || event.type === 'CONFIRMED') && event.pending,
@@ -248,7 +246,6 @@ export const searchResolverMachine = setup({
         { guard: 'loopGuarded', target: 'settled' },
         { guard: 'canonicalAi', target: 'settled' },
         { guard: 'taxonomySearch', target: 'settled' },
-        { guard: 'organizationScoped', target: 'settled' },
         { guard: 'noQuery', target: 'settled' },
         // Gate cases B (hybrid without taxonomy) and D (text, or no query type).
         { target: 'needs_prediction' },

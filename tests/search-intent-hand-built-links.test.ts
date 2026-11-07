@@ -113,3 +113,33 @@ test('printable-directory source replays its stored search inside the directory'
     },
   });
 });
+
+test('printable-directory source with a query replays no organization (ISS-2474)', () => {
+  const href = directorySourceSearchHref(
+    {
+      query: 'syntheticquery',
+      query_type: 'text',
+      organization_id: 'synthetic-org',
+    },
+    'synthetic-directory',
+    'synthetic-section',
+    'synthetic-source',
+  );
+  assert.equal(
+    href,
+    '/search?query=syntheticquery&query_type=text&pdid=synthetic-directory&pdsid=synthetic-section&pdsrcid=synthetic-source',
+  );
+});
+
+test('printable-directory source of an organization keeps it', () => {
+  const href = directorySourceSearchHref(
+    { query_type: 'text', organization_id: 'synthetic-org' },
+    'synthetic-directory',
+    'synthetic-section',
+    'synthetic-source',
+  );
+  assert.equal(
+    href,
+    '/search?query_type=text&organization_id=synthetic-org&pdid=synthetic-directory&pdsid=synthetic-section&pdsrcid=synthetic-source',
+  );
+});

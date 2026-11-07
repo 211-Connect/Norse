@@ -24,11 +24,14 @@ export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
   const coordinates = valueOf(intent.coords);
   const location = nonEmpty(intent.location);
   const taxonomy = valueOf(intent.taxonomy);
+  const query = nonEmpty(intent.query);
   return {
-    query: nonEmpty(intent.query),
+    query,
     queryLabel: nonEmpty(intent.queryLabel),
     queryType: nonEmpty(intent.queryType),
-    organizationId: nonEmpty(intent.organizationId),
+    // An organization scope only means "show this organization's services": a typed query is a new
+    // search of the whole directory, never a search within one organization (ISS-2474).
+    organizationId: query ? undefined : nonEmpty(intent.organizationId),
     location: isEverywhereLocation(location) ? undefined : location,
     coordinates,
     distance: nonEmpty(intent.distance),

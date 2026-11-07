@@ -38,9 +38,14 @@ export function directorySourceSearchHref(
   sectionId: string,
   sourceId: string,
 ): string {
+  // A source saved with a query is a search of the whole directory, never within one organization
+  // (ISS-2474): only an organization source with no query keeps `organization_id`.
+  const { organization_id, ...rest } = params;
+  const hasQuery =
+    typeof params.query === 'string' && params.query.trim() !== '';
   return `/search?${qs.stringify(
     {
-      ...params,
+      ...(hasQuery ? rest : params),
       [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.directoryId]: directoryId,
       [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sectionId]: sectionId,
       [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sourceId]: sourceId,

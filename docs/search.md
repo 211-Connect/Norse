@@ -131,6 +131,21 @@ uses the id to scope results to that organization. This replaced the earlier
 name-based organization filter (`query_type=organization&query=<name>`) once the
 backend gained support for filtering by stable organization id.
 
+### A new search is never within one organization
+
+`organization_id` only ever means "show this organization's services", with no
+query. A search with a typed query is a new search of the whole directory, not a
+search within the organization the visitor was looking at (ISS-2474):
+
+- Typing in the search bar clears the organization (`handleInputChange` in
+  `search-bar.tsx`).
+- A URL that carries both a query and an `organization_id` (for example a
+  printable-directory source saved from an organization search) is searched
+  without the organization: `toFindResourcesQuery` drops it.
+- No URL writer writes the two together (`applyWriterRules`).
+
+See [docs/search-intent.md](/docs/search-intent.md) for the resolver side.
+
 ### Feature flags
 
 - `enableOrganizationSearch` (default off, per tenant) — gates whether the

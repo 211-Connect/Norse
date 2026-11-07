@@ -39,6 +39,7 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
   - `query_type` is always written: `taxonomy` when stated or when the query looks like codes,
     otherwise the tenant's engine type;
   - query, label, organization, location and distance are trimmed, and empty values are dropped;
+  - an organization is written only without a query (ISS-2474);
   - taxonomy codes are split, trimmed and de-duplicated;
   - "Everywhere" means no location; coords are written only as a pair; distance only with a location
     or coords;
@@ -89,9 +90,13 @@ gate onto it unchanged.
 | `skipping`, `confirmed` | `page:redirect`    | the clarify step's Skip, or Confirm after the re-rank                                    |
 | `confirming`         | `page:render-gate`    | Confirm is waiting for the re-rank                                                       |
 
-**Organization scope is never classified.** An organization-scoped deep link on an AI tenant
-(`?query=food&organization_id=…`) searches as is on the server (`organizationScoped`), as the dialog's submit
-does (`classicSubmit`); #1138 made the old gate skip it, which supersedes the asymmetry ISS-2474 recorded.
+**An organization scope never carries a query (ISS-2474).** `organization_id` only means "show this
+organization's services": an organization link has no query, so `noQuery` keeps it unclassified. A typed
+query is a new search of the whole directory, never a search within one organization. A URL that holds both
+(`?query=food&organization_id=…`, for example from a printable-directory source) is searched without the
+organization (`toFindResourcesQuery` drops it), and on an AI tenant is classified like any other query;
+writers never write the two together (`applyWriterRules`). This replaces the `organizationScoped` guard that
+#1138 added.
 
 **A decided asymmetry (2026-10-22).** An incoming clarify URL opens the clarify step on any tenant,
 classic ones included; whether classic tenants should ignore it is revisited with ISS-2297, which changes
@@ -122,7 +127,6 @@ stateDiagram-v2
   resolving --> settled: always [loopGuarded]
   resolving --> settled: always [canonicalAi]
   resolving --> settled: always [taxonomySearch]
-  resolving --> settled: always [organizationScoped]
   resolving --> settled: always [noQuery]
   resolving --> needs_prediction: always
   needs_prediction --> navigating_classic: PREDICTION_RESOLVED [fromDialog && predictionMissing]

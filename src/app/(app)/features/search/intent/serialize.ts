@@ -108,6 +108,8 @@ function writerFilters(
  * - `query_type` is always written: `taxonomy` when stated or when the query looks like codes, otherwise
  *   what the tenant's search engine searches with.
  * - The query, its label, the organization, the location and the distance are trimmed; empty is dropped.
+ * - An organization is written only without a query: a typed query is a new search, never a search within
+ *   one organization (ISS-2474).
  * - Taxonomy codes are split on commas, trimmed and de-duplicated.
  * - "Everywhere" is no location; coords are written only as a pair; distance only with a location or
  *   coords.
@@ -132,10 +134,11 @@ export function applyWriterRules(
   const aiOptions = valueOf(intent.aiOptions);
   const filters = writerFilters(valueOf(intent.filters));
   const { page, ...unpaged } = envelope;
+  const query = trimmed(intent.query);
   return {
     intent: {
       ...intent,
-      query: trimmed(intent.query),
+      query,
       queryLabel: trimmed(intent.queryLabel),
       queryType: stated(
         deriveQueryType({
@@ -144,7 +147,9 @@ export function applyWriterRules(
           query: valueOf(intent.query),
         }),
       ),
-      organizationId: trimmed(intent.organizationId),
+      organizationId: valueOf(query)
+        ? UNSTATED
+        : trimmed(intent.organizationId),
       taxonomy: taxonomy ? stated(taxonomy) : UNSTATED,
       aiScenario: valueOf(intent.aiScenario) ? intent.aiScenario : UNSTATED,
       aiOptions:
