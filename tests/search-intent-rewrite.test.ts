@@ -14,6 +14,7 @@ import {
 } from '../src/app/(app)/features/search/intent';
 
 import { ALL_FIXTURES } from './search-intent-fixtures';
+import { isCrawlTrapKey } from '../src/lib/crawl-trap';
 
 /** What the filter navigation writes for a change, from a query string. */
 const filterClick = (
@@ -144,9 +145,15 @@ test('a rewrite changes bytes, not meaning: the URL it writes lifts to the inten
       const url = rewriteSearchUrl(raw, (i) => i, { newSearch: false });
       const written = liftQueryString(url.split('?')[1] ?? '');
       assert.deepStrictEqual(written.intent, read.intent, `${query} -> ${url}`);
+      // The one thing a rewrite drops: crawl-trap keys (`amp;…`), never re-emitted (ISS-2307).
       assert.deepStrictEqual(
         written.envelope,
-        read.envelope,
+        {
+          ...read.envelope,
+          passThrough: read.envelope.passThrough.filter(
+            ([key]) => !isCrawlTrapKey(key),
+          ),
+        },
         `${query} -> ${url}`,
       );
     }

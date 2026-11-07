@@ -16,6 +16,7 @@ import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { SortOption } from '@/app/(app)/shared/utils/getSortOption';
 
 import { useSearchResults } from '../context/search-results-context';
+import { sortHref } from '../utils/sortHref';
 
 const SORT_LABEL: Record<SortOption, string> = {
   relevance: 'Most Relevant',
@@ -39,15 +40,8 @@ export function SortSelect() {
   const { start } = useTopLoader();
 
   const handleSortChange = (value: string) => {
-    const params = new URLSearchParams(searchParams?.toString());
-
-    params.set('sort', value);
-
-    // Reset to page 1 when sorting changes
-    params.delete('page');
-
     start();
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(sortHref(pathname, searchParams, value));
   };
 
   const sortOptions = [
