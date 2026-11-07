@@ -47,6 +47,10 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
   the intent and serialize it, through `rewriteSearchUrl` (`rewrite.ts`). They read the URL as the page
   does, so a repeated or bracketed plain key is written back once, as its first value; `taxonomy` repeats
   and repeated pass-through keys are kept. No writer emits `key[n]` for a plain key (ISS-2409).
+- **No writer re-emits a crawl-trap key** (`amp;…`, ISS-2307): `rewriteSearchUrl` drops them from the
+  pass-through, and pagination, sort and the language switch drop them when they copy the current URL. The
+  lift still reads them as unrecognised pass-through, but the edge answers such a request with 410 before
+  the page runs (see [bot-protection.md](/docs/bot-protection.md#crawl-trap-amp-keys-iss-2307)).
 - **Hand-built `/search` URLs** live only in `features/search/utils/handBuiltSearchLinks.ts`, each
   pinned by a fixture. `tests/search-url-writers.test.ts` fails on any other one.
 

@@ -27,7 +27,7 @@ export const ARCJET_ALLOWED_BOTS = [
   // food bank near me"), not crawling for training: ChatGPT-User,
   // OAI-SearchBot, Perplexity-User, Claude-User. All are CATEGORY:AI, which
   // is otherwise denied. Training crawlers stay denied and are disallowed in
-  // robots.txt (src/app/robots.ts).
+  // robots.txt (`DISALLOWED_CRAWLERS` in src/app/robotsRules.ts).
   'OPENAI_CRAWLER_USER',
   'OPENAI_CRAWLER_SEARCH',
   'PERPLEXITY_USER',

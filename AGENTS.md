@@ -25,7 +25,7 @@ Other docs, load only when the task touches that area:
 - [docs/scheduled-pdf-delivery.md](/docs/scheduled-pdf-delivery.md) — emailing printable directory PDFs on a weekly/monthly schedule: daily Payload job, server-side rendering via an internal Pages API route.
 - [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
 - [docs/tenant-api-key.md](/docs/tenant-api-key.md) — per-tenant Norse API authentication key (`x-api-key`), caching, and bulk backfill endpoint.
-- [docs/bot-protection.md](/docs/bot-protection.md) — Arcjet bot protection on directory pages: covered routes, env-only enforcement (no Payload setting), rollout and recovery runbook.
+- [docs/bot-protection.md](/docs/bot-protection.md) — Arcjet bot protection on directory pages: covered routes, env-only enforcement (no Payload setting), rollout and recovery runbook; robots.txt rules and the `amp;` crawl-trap 410.
 - [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md) — counting Arcjet denials per tenant (in-memory, pushed to Norse-API each minute, stored hourly) for the Blocked Bots analytics widget; classification rules.
 - [docs/cms-app-separation-plan.md](/docs/cms-app-separation-plan.md) — `NORSE_ROLE` (`app`/`cms`/`all`): running the public app without a database and the Payload CMS as a separate app; the `@/lib/cms` bridge, the CMS internal API, the lint rule, env per app and rollout.
 - [docs/cms-app-release-plan.md](/docs/cms-app-release-plan.md) — rollout of the CMS/app split for multi-tenant and MBOA: images, hostnames, environment per app, dashboard settings, step-by-step release with checks and rollback.
