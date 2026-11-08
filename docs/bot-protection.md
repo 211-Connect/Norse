@@ -116,9 +116,9 @@ reader recognises one.
 
 | Layer | Where | What |
 | --- | --- | --- |
-| Edge | `src/middlewares/crawlTrapMiddleware.ts`, first in `src/proxy.ts` after the role gate | `410 Gone` (`X-Robots-Tag: noindex`) for any route whose query has a key starting with `amp;` (any case, also percent-encoded), on every tenant, before the tenant lookup: no CMS call, no search, no Arcjet decision. |
-| Writers | `currentSearchString` (pagination, language switch), `sortHref` (sort), `rewriteSearchUrl` (filter navigation, coords redirect) | Drop `amp;` keys when copying the current URL, so a copied URL is never deeper than its source. |
-| robots.txt | `src/app/robotsRules.ts`, `User-agent: *` | `Disallow: /*?amp;`, `/*&amp;` (and upper case). Matches a key only: a real `&` or `;` inside a value is percent-encoded. |
+| Edge | `src/middlewares/crawlTrapMiddleware.ts`, first in `src/proxy.ts` after the role gate | `410 Gone` (`X-Robots-Tag: noindex`) for any page route the proxy matches (not `/api`, `/admin`, static files, `robots.txt` or `sitemap.xml`) whose query has a key starting with `amp;` (any case, also percent-encoded), on every tenant, before the tenant lookup: no CMS call, no search, no Arcjet decision. The body is a tiny HTML page with a `nofollow` link to the same URL without the broken keys, so a person who followed a mangled link can continue. |
+| Writers | `currentSearchString` (pagination, language switch, and `stringifySearchParams` from `useClientSearchParams`), `sortHref` (sort), `rewriteSearchUrl` (filter navigation, coords redirect) | Drop `amp;` keys when copying the current URL, so a copied URL is never deeper than its source. |
+| robots.txt | `src/app/robotsRules.ts`, `User-agent: *` | `Disallow: /*?amp;`, `/*&amp;` (and upper case). Matches a key only: a real `&` or `;` inside a value is percent-encoded. Mixed-case or percent-encoded keys are not covered here; the edge 410 catches them. |
 
 The key test is `isCrawlTrapKey` in `src/lib/crawl-trap.ts`; all three layers
 use it. Values are never inspected.

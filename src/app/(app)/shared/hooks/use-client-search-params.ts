@@ -9,11 +9,10 @@ import { currentSearchString } from '../utils/currentSearchString';
 export const useClientSearchParams = () => {
   const searchParams = useSearchParams();
 
+  // Drops crawl-trap keys too (ISS-2307), so no writer using it can re-emit them.
   const stringifySearchParams = useCallback(
-    (searchParamsAttr: URLSearchParams) => {
-      const params = searchParamsAttr.toString().replace(/\+/g, '%20');
-      return params ? `?${params}` : '';
-    },
+    (searchParamsAttr: URLSearchParams) =>
+      currentSearchString(searchParamsAttr),
     [],
   );
 

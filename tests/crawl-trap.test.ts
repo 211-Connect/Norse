@@ -75,6 +75,41 @@ test('the edge answers 410 to any route whose query has a crawl-trap key, on any
   }
 });
 
+test('the 410 is a small page that links a person on to the same URL without the broken keys', async () => {
+  const response = crawlTrapMiddleware(
+    request(
+      'https://search.wa211.org/en/search?query=food&amp;page=2&location=Lewis+County',
+    ),
+  )!;
+  assert.equal(response.status, 410);
+  assert.match(response.headers.get('content-type') ?? '', /^text\/html/);
+  assert.match(response.headers.get('x-robots-tag') ?? '', /noindex/);
+  const html = await response.text();
+  assert.ok(
+    html.includes(
+      'href="/en/search?query=food&amp;location=Lewis+County" rel="nofollow"',
+    ),
+    html,
+  );
+  assert.ok(!/amp%3B|amp;page/i.test(html), html);
+});
+
+test('the 410 page links to the bare path when only broken keys remain, and reflects nothing raw', async () => {
+  const bare = await crawlTrapMiddleware(
+    request('https://search.wa211.org/search?amp;page=2'),
+  )!.text();
+  assert.ok(bare.includes('href="/search" rel="nofollow"'), bare);
+
+  const hostile = await crawlTrapMiddleware(
+    request(
+      'https://search.wa211.org/search?q="><script>alert(1)</script>&amp;x=1',
+    ),
+  )!.text();
+  assert.ok(!/<script/i.test(hostile), hostile);
+  assert.ok(!hostile.includes('"><script'), hostile);
+  assert.ok(!hostile.includes('alert(1)'), hostile);
+});
+
 test('the edge lets every other URL through: Watt ads, values that contain "amp;", ordinary search URLs', () => {
   for (const url of [
     `https://search.wa211.org/search?${WATT_QUERY}`,
