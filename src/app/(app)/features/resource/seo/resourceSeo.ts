@@ -3,8 +3,9 @@ import type { Resource } from '@/types/resource';
 
 /**
  * The resource page's own URL, for `<link rel="canonical">` (ISS-2678). In v1 every page's canonical points to
- * itself (decided 2026-11-06; cross-site canonical is ISS-2676). The tenant's default locale is served without a
- * prefix, and the id is lower-cased so one resource has one URL.
+ * itself (decided 2026-11-06; cross-site canonical is ISS-2676). Pass the record's id (`resource.id`), not the
+ * URL's, and the origin from `canonicalOrigin`. The tenant's default locale is served without a prefix, and the
+ * id is lower-cased so one resource has one URL.
  */
 export function resourceCanonicalUrl({
   protocol,
@@ -26,6 +27,37 @@ export function resourceCanonicalUrl({
   return `${protocol}://${host}${path}`;
 }
 
+/** A trusted-domain entry as an admin may type it (`https://Search.WA211.org/`), as a bare lower-case host. */
+function bareHost(domain: string): string {
+  return domain
+    .trim()
+    .toLowerCase()
+    .replace(/^[a-z]+:\/\//, '')
+    .replace(/[/?#].*$/, '')
+    .replace(/:\d+$/, '');
+}
+
+/**
+ * The origin a canonical URL names: the tenant's first trusted domain (Norse's primary domain elsewhere too),
+ * not whichever host the request came in on, so a tenant with several domains has one canonical. Only the first
+ * `x-forwarded-proto` value counts, since a chain of proxies can append more.
+ */
+export function canonicalOrigin({
+  trustedDomains,
+  host,
+  protocol,
+}: {
+  trustedDomains: string[];
+  host: string;
+  protocol: string;
+}): { host: string; protocol: string } {
+  const primary = trustedDomains.map(bareHost).find(Boolean);
+  return {
+    host: primary ?? host,
+    protocol: protocol.split(',')[0]?.trim() || 'https',
+  };
+}
+
 type JsonLd = Record<string, unknown>;
 
 const text = (value: string | null | undefined) => value?.trim() || undefined;
@@ -39,17 +71,14 @@ function compact(value: JsonLd): JsonLd | undefined {
   return hasContent ? Object.fromEntries(entries) : undefined;
 }
 
+/**
+ * The address the page shows, and only that: the first physical one, as `address.tsx` picks it. A confidential
+ * site arrives as `type: 'virtual'` (dagster's resource writer) and the page hides it behind a notice, so the
+ * markup must never fall back to it, to another rank, or to the bare address string.
+ */
 function postalAddress(resource: Resource): JsonLd | undefined {
-  const address =
-    resource.addresses?.find((a) => a.type === 'physical' && a.rank === 1) ??
-    resource.addresses?.find((a) => a.rank === 1) ??
-    resource.addresses?.[0];
-  if (!address) {
-    return compact({
-      '@type': 'PostalAddress',
-      streetAddress: text(resource.address),
-    });
-  }
+  const address = resource.addresses?.find(({ type }) => type === 'physical');
+  if (!address) return undefined;
   return compact({
     '@type': 'PostalAddress',
     streetAddress:
@@ -65,8 +94,9 @@ function postalAddress(resource: Resource): JsonLd | undefined {
 
 /**
  * schema.org JSON-LD for a resource page (ISS-2678): a `Service` provided by an `Organization`, with its phone and
- * address where the record has them. Built from the record only; nothing comes from the URL. No hours: the record
- * carries them only as display text, and the markup parses no text (decided 2026-11-07).
+ * the address the page shows, where the record has them. Every value is the record's own field; `url` is the
+ * canonical. No hours: the record carries them only as display text, and the markup parses no text (decided
+ * 2026-11-07).
  */
 export function resourceJsonLd(
   resource: Resource,

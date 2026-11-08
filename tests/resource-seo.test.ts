@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
+  canonicalOrigin,
   jsonLdScript,
   resourceCanonicalUrl,
   resourceJsonLd,
@@ -166,6 +167,103 @@ test('JSON-LD: hours text never becomes opening hours, whatever its format', () 
     >;
     assert.equal(ld.hoursAvailable, undefined, hours);
   }
+});
+
+// The page shows only a physical address (address.tsx); anything else gets the "may be confidential" notice.
+// dagster writes a confidential site as `type: 'virtual'`, `rank: 1`, street nulled (resource_records.py).
+// On 2026-11-07, 6,227 live resources had only non-physical addresses, 178 of them with a street.
+const virtualAddress = (address_1: string | null) => ({
+  address_1: address_1 as string,
+  city: 'Tacoma',
+  stateProvince: 'WA',
+  postalCode: '98402',
+  country: 'US',
+  type: 'virtual',
+  rank: 1,
+});
+
+test('JSON-LD: a confidential (virtual) address is never published, with or without a street', () => {
+  for (const street of [null, '1 Hidden Way']) {
+    const ld = resourceJsonLd(
+      { ...FULL, addresses: [virtualAddress(street)] } as Resource,
+      URL_,
+    ) as Record<string, any>;
+    assert.equal(
+      ld.availableChannel?.serviceLocation,
+      undefined,
+      String(street),
+    );
+    const json = JSON.stringify(ld);
+    for (const leaked of ['Tacoma', '98402', 'PostalAddress', 'Hidden Way']) {
+      assert.ok(!json.includes(leaked), `${leaked} leaked (street: ${street})`);
+    }
+  }
+});
+
+test('JSON-LD: the address is the one the page shows, the first physical one, whatever its rank', () => {
+  const ld = resourceJsonLd(
+    {
+      ...FULL,
+      addresses: [
+        virtualAddress('1 Hidden Way'),
+        { ...FULL.addresses![0], rank: 2 },
+      ],
+    } as Resource,
+    URL_,
+  ) as Record<string, any>;
+  assert.equal(
+    ld.availableChannel.serviceLocation.address.streetAddress,
+    '543 East Connect Street, Suite 2',
+  );
+  assert.ok(!JSON.stringify(ld).includes('Hidden Way'));
+});
+
+test('JSON-LD: the bare address string never stands in for a structured physical address', () => {
+  const ld = resourceJsonLd(
+    { ...FULL, addresses: [], address: '1 Hidden Way' } as Resource,
+    URL_,
+  ) as Record<string, any>;
+  assert.equal(ld.availableChannel?.serviceLocation, undefined);
+  assert.ok(!JSON.stringify(ld).includes('Hidden Way'));
+});
+
+test("canonical origin: the tenant's first trusted domain, not whichever host the request came in on", () => {
+  assert.deepEqual(
+    canonicalOrigin({
+      trustedDomains: ['search.wa211.org', 'wa211.norse.app'],
+      host: 'wa211.norse.app',
+      protocol: 'https',
+    }),
+    { host: 'search.wa211.org', protocol: 'https' },
+  );
+  assert.deepEqual(
+    canonicalOrigin({
+      trustedDomains: ['https://Search.WA211.org:443/'],
+      host: 'x',
+      protocol: 'https',
+    }),
+    { host: 'search.wa211.org', protocol: 'https' },
+  );
+  assert.deepEqual(
+    canonicalOrigin({
+      trustedDomains: [],
+      host: 'localhost',
+      protocol: 'http',
+    }),
+    { host: 'localhost', protocol: 'http' },
+  );
+});
+
+test('canonical origin: only the first x-forwarded-proto value counts', () => {
+  assert.equal(
+    canonicalOrigin({ trustedDomains: [], host: 'h', protocol: 'https, http' })
+      .protocol,
+    'https',
+  );
+  assert.equal(
+    canonicalOrigin({ trustedDomains: [], host: 'h', protocol: '' }).protocol,
+    'https',
+  );
 });
 
 test('the script cannot be closed by record text, and reads back to the same data', () => {

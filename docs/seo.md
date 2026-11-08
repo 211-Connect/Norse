@@ -10,10 +10,21 @@ Code: `src/app/(app)/features/resource/seo/resourceSeo.ts`, used by
 `src/app/(app)/[locale]/(rest)/search/[id]/page.tsx`. No configuration: every tenant gets both.
 
 **Canonical.** `<link rel="canonical">` points to the page itself (decided 2026-11-06 for WA RHTP; a partner
-directory pointing to the record steward's own site is deferred to ISS-2676). The URL is absolute: the request's
-`host` and `x-forwarded-proto` (`getHost`), the custom base path if set, no locale prefix for the tenant's default
-locale (as `next-i18n-router` serves it), and the id lower-cased so one resource has one URL. A 404 or a redirect has
-no canonical, because `generateMetadata` returns nothing without a resource.
+directory pointing to the record steward's own site is deferred to ISS-2676). It is built once per request
+(`canonicalFor` in the page) from:
+
+- **the record's id** (`resource.id`, its service-at-location id), not the URL's. Norse-API's lookup falls back
+  to the Mongo `_id` and then across tenants, so a page reached through a fallback still names the record's
+  real URL;
+- **the tenant's first trusted domain** (`trustedDomains[0]`, read through `@/lib/cms`), the primary domain
+  Norse already uses elsewhere, so a tenant with several domains has one canonical. When the tenant cannot be
+  read, it falls back to the request's host;
+- the first value of `x-forwarded-proto` (a proxy chain can append more), the custom base path if set, and no
+  locale prefix for the tenant's default locale (as `next-i18n-router` serves it). The id is lower-cased.
+
+A 404 or a redirect has no canonical, because `generateMetadata` returns nothing without a resource. Locally and
+on staging the canonical names the tenant's first trusted domain, which may be the production one; those hosts
+are not indexed.
 
 **Structured data.** One `<script type="application/ld+json">`:
 
@@ -21,11 +32,16 @@ no canonical, because `generateMetadata` returns nothing without a resource.
 | --- | --- |
 | `Service` `name`, `description`, `url` | `serviceName` (else `name`), `description`, the canonical URL |
 | `provider` `Organization` | `organizationName`, `organizationUrl` |
-| `availableChannel` `ServiceChannel` | `website`; `servicePhone` `ContactPoint` (`phone`, `email`); `serviceLocation` `Place` (`locationName`, the rank-1 physical address as `PostalAddress`) |
+| `availableChannel` `ServiceChannel` | `website`; `servicePhone` `ContactPoint` (`phone`, `email`); `serviceLocation` `Place` (`locationName`, and the address the page shows as `PostalAddress`) |
 
 Rules:
 
-- **Nothing comes from the URL.** Every value is the record's own field.
+- **Only the record's own fields**, plus the canonical as `url`. Nothing is read from the URL's query or path.
+- **Only the address the page shows: the first `physical` one** (`address.tsx`), whatever its rank, with no
+  fallback. A confidential site arrives as `type: 'virtual'` (dagster's resource writer nulls its street but
+  keeps city, state and ZIP), and the page hides it behind a "may be confidential" notice, so the markup must
+  never publish it. On 2026-11-07, 6,227 live resources across tenants had only non-physical addresses, 178 of
+  them with a street still present. The bare `address` string is never used either.
 - **Absent is left out.** No key is written as `null` or empty; a `Place` needs an address.
 - **No coordinates.** Some records carry coordinates that contradict their address (one WA211 record has
   central-Seattle coordinates for a Des Moines address), so the markup gives the address only.
