@@ -2,7 +2,6 @@ import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
 import { Metadata } from 'next/types';
-import { cache } from 'react';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -11,9 +10,7 @@ import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import {
   canonicalOrigin,
-  jsonLdScript,
   resourceCanonicalUrl,
-  resourceJsonLd,
 } from '@/app/(app)/features/resource/seo/resourceSeo';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getHost } from '@/app/(app)/shared/utils/getHost';
@@ -29,11 +26,11 @@ const log = createLogger('resource-page');
 const i18nNamespaces = ['page-resource', 'page-list', 'common'];
 
 /**
- * The page's canonical URL, once per request (ISS-2678): the record's own id on the tenant's primary (first
- * trusted) domain, so an `_id` or cross-tenant fallback lookup, or a second domain, never declares itself the
- * canonical page. Falls back to the request's host when the tenant cannot be read.
+ * The page's canonical URL (ISS-2678): the record's own id on the tenant's primary (first trusted) domain, so an
+ * `_id` or cross-tenant fallback lookup, or a second domain, never declares itself the canonical page. Falls back
+ * to the request's host when the tenant cannot be read.
  */
-const canonicalFor = cache(async function (
+async function canonicalFor(
   locale: string,
   defaultLocale: string,
   resourceId: string,
@@ -55,7 +52,7 @@ const canonicalFor = cache(async function (
     defaultLocale,
     id: resourceId,
   });
-});
+}
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { id, locale } = await params;
@@ -157,10 +154,6 @@ export default async function ResourcePage({ params }) {
   }
 
   const layout = appConfig.resource.layout ?? DEFAULT_RESOURCE_LAYOUT;
-  const jsonLd = resourceJsonLd(
-    resource,
-    await canonicalFor(locale, appConfig.i18n.defaultLocale, resource.id),
-  );
 
   return (
     <PageWrapper
@@ -168,14 +161,6 @@ export default async function ResourcePage({ params }) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          nonce={nonce || undefined}
-          // Escaped by jsonLdScript: record text cannot close the script.
-          dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
-        />
-      )}
       <ResourcePageContent
         resource={resource}
         layout={layout}

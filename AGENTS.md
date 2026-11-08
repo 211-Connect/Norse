@@ -29,7 +29,7 @@ Other docs, load only when the task touches that area:
 - [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md) — counting Arcjet denials per tenant (in-memory, pushed to Norse-API each minute, stored hourly) for the Blocked Bots analytics widget; classification rules.
 - [docs/cms-app-separation-plan.md](/docs/cms-app-separation-plan.md) — `NORSE_ROLE` (`app`/`cms`/`all`): running the public app without a database and the Payload CMS as a separate app; the `@/lib/cms` bridge, the CMS internal API, the lint rule, env per app and rollout.
 - [docs/cms-app-release-plan.md](/docs/cms-app-release-plan.md) — rollout of the CMS/app split for multi-tenant and MBOA: images, hostnames, environment per app, dashboard settings, step-by-step release with checks and rollback.
-- [docs/seo.md](/docs/seo.md) — technical SEO on existing pages: self-referencing canonical and schema.org JSON-LD on resource detail pages; status of the sitemap, `/search` canonical and HTML caching.
+- [docs/seo.md](/docs/seo.md) — technical SEO on existing pages: self-referencing canonical on resource detail pages; status of the sitemap, `/search` canonical and HTML caching.
 - [docs/tracing.md](/docs/tracing.md) — OpenTelemetry tracing setup, propagated to the Norse API via `traceparent`, and how to view traces locally.
 
 ## Feature documentation
