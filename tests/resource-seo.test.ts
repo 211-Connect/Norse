@@ -6,7 +6,6 @@ import { test } from 'node:test';
 
 import {
   jsonLdScript,
-  parseOpeningHours,
   resourceCanonicalUrl,
   resourceJsonLd,
 } from '../src/app/(app)/features/resource/seo/resourceSeo';
@@ -90,7 +89,7 @@ const FULL: Partial<Resource> = {
 
 const URL_ = `https://search.wa211.org/search/${ID}`;
 
-test('JSON-LD: a Service provided by an Organization, with phone, address and hours', () => {
+test('JSON-LD: a Service provided by an Organization, with phone and address', () => {
   const ld = resourceJsonLd(FULL as Resource, URL_) as Record<string, any>;
   assert.equal(ld['@context'], 'https://schema.org');
   assert.equal(ld['@type'], 'Service');
@@ -125,13 +124,10 @@ test('JSON-LD: a Service provided by an Organization, with phone, address and ho
   // No coordinates: a real WA211 record (005f16ab…) carries central-Seattle coordinates for a Des Moines
   // address, and the address alone identifies the place.
   assert.equal(JSON.stringify(ld).includes('GeoCoordinates'), false);
-  assert.deepEqual(ld.hoursAvailable[0], {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: 'https://schema.org/Monday',
-    opens: '11:00',
-    closes: '16:30',
-  });
-  assert.equal(ld.hoursAvailable.length, 4);
+  // No hours: the resource record carries hours only as display text, and the markup takes no parsed text
+  // (decided 2026-11-07). Hours return once structured schedules reach the resource record.
+  assert.equal(ld.hoursAvailable, undefined);
+  assert.ok(!JSON.stringify(ld).includes('OpeningHours'));
 });
 
 test('JSON-LD: absent fields are left out, never written as null or empty', () => {
@@ -157,100 +153,18 @@ test('JSON-LD: a record with nothing to name it has no JSON-LD', () => {
   assert.equal(resourceJsonLd({ id: ID } as Resource, URL_), undefined);
 });
 
-test('hours: only text that fully parses becomes opening hours; anything else is left out, not guessed', () => {
-  assert.deepEqual(parseOpeningHours('Saturday 12:00am - 12:00pm'), [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: 'https://schema.org/Saturday',
-      opens: '00:00',
-      closes: '12:00',
-    },
-  ]);
-  assert.deepEqual(parseOpeningHours(' friday 9:00 AM-5:15 PM ; '), [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: 'https://schema.org/Friday',
-      opens: '09:00',
-      closes: '17:15',
-    },
-  ]);
-  for (const text of [
-    null,
-    '',
-    'Call for hours',
-    '24 hours',
-    'Monday 9:00am - 5:00pm;By appointment',
-    'Mon-Fri 9-5',
-    'Monday 13:00pm - 5:00pm',
-  ]) {
-    assert.equal(parseOpeningHours(text), undefined, String(text));
-  }
-  const ld = resourceJsonLd(
-    { ...FULL, hours: 'Monday 9:00am - 5:00pm;Call ahead' } as Resource,
-    URL_,
-  ) as Record<string, any>;
-  assert.equal(ld.hoursAvailable, undefined);
-});
-
-// The forms WA211's hours actually take (NORSE_STAGING.WA211_V2.APP_DISPLAY_TRANSLATIONS.DISPLAY_SCHEDULE,
-// 2026-11-06: 14,259 values, none in the "Monday 11:00am - 4:30pm" form). Counts are rows with that exact value.
-const spec = (day: string, opens: string, closes: string) => ({
-  '@type': 'OpeningHoursSpecification',
-  dayOfWeek: `https://schema.org/${day}`,
-  opens,
-  closes,
-});
-const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-const ALL_DAYS = [...WEEKDAYS, 'Saturday', 'Sunday'];
-
-test("hours: WA211's compact form parses (day ranges, lists, end-only am/pm, ';' groups, final period)", () => {
-  // [1,784 rows]
-  assert.deepEqual(
-    parseOpeningHours('M-F, 8am-5pm.'),
-    WEEKDAYS.map((d) => spec(d, '08:00', '17:00')),
-  );
-  // [448 rows]
-  assert.deepEqual(
-    parseOpeningHours('M-F, 8am-4:30pm.'),
-    WEEKDAYS.map((d) => spec(d, '08:00', '16:30')),
-  );
-  // [721 rows]
-  assert.deepEqual(
-    parseOpeningHours('24 hours daily.'),
-    ALL_DAYS.map((d) => spec(d, '00:00', '23:59')),
-  );
-  // Start time takes the end's am/pm unless that would start after it ends: 1-6pm is 1pm, 10-2pm is 10am.
-  assert.deepEqual(
-    parseOpeningHours('M, Tu, Th, F, 9am-6pm; W, 1-6pm; Sa, 10-2pm.'),
-    [
-      spec('Monday', '09:00', '18:00'),
-      spec('Tuesday', '09:00', '18:00'),
-      spec('Thursday', '09:00', '18:00'),
-      spec('Friday', '09:00', '18:00'),
-      spec('Wednesday', '13:00', '18:00'),
-      spec('Saturday', '10:00', '14:00'),
-    ],
-  );
-  assert.deepEqual(
-    parseOpeningHours('M-Th, 10am-3pm.'),
-    ['Monday', 'Tuesday', 'Wednesday', 'Thursday'].map((d) =>
-      spec(d, '10:00', '15:00'),
-    ),
-  );
-});
-
-test('hours: WA211 values with labels, notes, prose or several lines are left out', () => {
-  for (const text of [
-    'M-F, 8am-5pm. Hours for application eligibility interviews are 8am-2pm.',
+test('JSON-LD: hours text never becomes opening hours, whatever its format', () => {
+  for (const hours of [
+    'M-F, 8am-5pm.',
+    '24 hours daily.',
+    'Monday 11:00am - 4:30pm;Tuesday 11:00am - 6:00pm',
     'Office: M-F, 9am-4pm. Toll Free Number: 8am-7pm.',
-    'Phone: M-F, 8am-4pm.',
-    'M-F, 8am-4:30pm; W - by appointment only.',
-    'M-F, 8:30am-4:30pm. \n Closed Noon-1pm.',
-    'Our front desk hours are Monday through Thursdays from 10am-3pm',
-    'M, W, F, 9-11:45am; 3rd Tu, each month, 6-8pm. \nBread and Produce room: daily, 9am-2:30pm.',
-    'M-F, 5pm-8am.',
   ]) {
-    assert.equal(parseOpeningHours(text), undefined, text);
+    const ld = resourceJsonLd({ ...FULL, hours } as Resource, URL_) as Record<
+      string,
+      any
+    >;
+    assert.equal(ld.hoursAvailable, undefined, hours);
   }
 });
 

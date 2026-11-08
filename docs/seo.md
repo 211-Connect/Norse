@@ -22,7 +22,6 @@ no canonical, because `generateMetadata` returns nothing without a resource.
 | `Service` `name`, `description`, `url` | `serviceName` (else `name`), `description`, the canonical URL |
 | `provider` `Organization` | `organizationName`, `organizationUrl` |
 | `availableChannel` `ServiceChannel` | `website`; `servicePhone` `ContactPoint` (`phone`, `email`); `serviceLocation` `Place` (`locationName`, the rank-1 physical address as `PostalAddress`) |
-| `hoursAvailable` `OpeningHoursSpecification` | `hours`, only when the whole text parses (below) |
 
 Rules:
 
@@ -30,12 +29,10 @@ Rules:
 - **Absent is left out.** No key is written as `null` or empty; a `Place` needs an address.
 - **No coordinates.** Some records carry coordinates that contradict their address (one WA211 record has
   central-Seattle coordinates for a Des Moines address), so the markup gives the address only.
-- **Hours are never guessed.** `hours` is free text (WA211's comes from its source `SCHEDULE.description`).
-  It becomes opening hours only when the whole value is `;`-separated day groups with one time range each, in
-  WA211's compact form (`M-F, 8am-5pm.`, `M, Tu, Th, F, 9am-6pm; W, 1-6pm; Sa, 10-2pm.`: a start without am/pm
-  takes the end's unless it would then start after it) or spelled out (`Monday 11:00am - 4:30pm`), or is exactly
-  `24 hours daily.` (00:00–23:59 every day). A label (`Office:`), a note, several lines, "by appointment" or an
-  overnight range leaves `hoursAvailable` out; the page still shows the text.
+- **No hours yet.** The resource record carries hours only as display text (`translations[].hours`, from
+  `DISPLAY_SCHEDULE`), and the markup parses no text (decided 2026-11-07). The structured weekly schedules
+  (`FREQ`, `BYDAY`, `OPENS_AT`, `CLOSES_AT`) exist in `APP_SERVICE_AT_LOCATION_FULL.SERVICE.SCHEDULES` but are
+  not written to the resource record; hours return to the markup once they are (SEO improvements, post-RHTP).
 - **Escaped for HTML.** `jsonLdScript` writes `<`, `>`, `&`, U+2028 and U+2029 as JSON unicode escapes, so
   record text cannot close the script, and the JSON reads back unchanged.
 
