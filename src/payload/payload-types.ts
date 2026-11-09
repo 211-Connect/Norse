@@ -903,6 +903,10 @@ export interface ResourceDirectory {
        */
       pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
       resultsLimit: number;
+      /**
+       * Plots up to 10,000 results of a search on the map as small circles, with the current page in the brand colour, instead of only the current page. The results list is capped at the same 10,000.
+       */
+      showAllResultsOnMap?: boolean | null;
       radiusSelectValues?:
         | {
             value: number;
@@ -1860,6 +1864,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               searchEngine?: T;
               pinnedResourcesMode?: T;
               resultsLimit?: T;
+              showAllResultsOnMap?: T;
               radiusSelectValues?:
                 | T
                 | {

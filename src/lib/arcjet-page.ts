@@ -123,11 +123,25 @@ const observe = cache(async (pathName: string) => {
  * @param pathName  Path only, e.g. `/en/search`. Never the query string.
  */
 export async function protectPage(pathName: string): Promise<void> {
+  if (await isDenied(pathName)) forbidden();
+}
+
+/**
+ * Bot protection for a route handler that serves directory data: whether to
+ * answer 403. Same decision and enforcement as `protectPage`, which a route
+ * handler can't use, as `forbidden()` only works while rendering a page.
+ *
+ * @param pathName  Path only, e.g. `/api/search-pins`. Never the query string.
+ */
+export async function isRouteDenied(pathName: string): Promise<boolean> {
+  return isDenied(pathName);
+}
+
+async function isDenied(pathName: string): Promise<boolean> {
   const req = await arcjetRequest();
   if (!isEnforcedHost(req)) {
     await observe(pathName);
-    return;
+    return false;
   }
-  const result = await decide(pathName);
-  if (result.denied) forbidden();
+  return (await decide(pathName)).denied;
 }

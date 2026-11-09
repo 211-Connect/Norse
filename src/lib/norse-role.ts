@@ -60,6 +60,7 @@ const APP_API_PREFIXES = [
   '/api/share',
   '/api/resource-titles',
   '/api/search-config',
+  '/api/search-pins',
   '/api/webhook',
 ];
 

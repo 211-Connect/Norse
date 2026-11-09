@@ -65,8 +65,10 @@ arcjetProtect                    src/lib/arcjet/index.ts
   latency. Awaiting it everywhere, as v2.30.0 did, put up to 500 ms on every
   observe-only page view and held renders open under load.
 - **Covered routes:** `/[locale]/search`, `/[locale]/search/[id]`,
-  `/[locale]/details/original/[original_id]`. Server Actions and
-  `/api/resource-titles` are not covered yet (follow-up ticket).
+  `/[locale]/details/original/[original_id]`, and the route handler
+  `/api/search-pins` (through `isRouteDenied`, which answers a JSON `403`).
+  Server Actions and `/api/resource-titles` are not covered yet (follow-up
+  ticket).
 - **The 403 is real only before streaming.** Do not move the call below a
   `<Suspense>` boundary or into a segment with `loading.tsx`: the status
   becomes `200`. `forbidden()` needs `experimental.authInterrupts` in

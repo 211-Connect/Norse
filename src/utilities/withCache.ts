@@ -28,6 +28,7 @@ export type CacheKey =
   | `resource_directory:${Domain}:${Locale}`
   | `app_config:${Domain}:${Locale}`
   | `search_results:${TenantId}:${Locale}:${Hash}`
+  | `search_pins:${TenantId}:${Locale}:${Hash}`
   | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
   | `resource:${TenantId}:${ResourceId}:${Locale}`

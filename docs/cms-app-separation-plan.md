@@ -196,6 +196,7 @@ hostname.
 | `/api/share/[tenantId]`                  | send a resource by SMS                                 | `getTenantById`               |
 | `/api/share/[tenantId]/[id]`             | deprecated short-URL redirect                          | Norse API                     |
 | `/api/resource-titles`                   | resource titles for ids                                | Norse API                     |
+| `/api/search-pins`                       | every result's map pin (`showAllResultsOnMap`)         | Norse API                     |
 | `/api/search-config/[tenantId]/[locale]` | widget search settings (CORS `*`)                      | `getSearchConfig`             |
 | `/api/keycloak/domain-check`             | Keycloak domain allow-list check (also on the CMS)     | `getTenantByRealmId`          |
 | `/api/webhook`                           | client error alerts                                    | —                             |

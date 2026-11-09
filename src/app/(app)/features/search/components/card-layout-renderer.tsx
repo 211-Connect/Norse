@@ -73,7 +73,8 @@ export function CardLayoutRenderer({
     <>
       <Card
         id={result._id}
-        className="flex flex-col overflow-hidden print:border-none"
+        // The map scrolls a result here below a sticky header (see scrollToResult).
+        className="flex scroll-mt-[var(--result-scroll-margin,0px)] flex-col overflow-hidden print:border-none"
       >
         <CardContent className="flex min-w-0 flex-col gap-2">
           {renderedComponents}

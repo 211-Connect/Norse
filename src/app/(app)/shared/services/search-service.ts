@@ -17,7 +17,8 @@ import { ensureUrlProtocol } from '@/utils';
 import { API_URL } from '../lib/constants';
 import { FetchError } from '../lib/fetchError';
 import { fetchWrapper } from '../lib/fetchWrapper';
-import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
+import { toSearchParams } from '../lib/search-params';
+import { buildSearchRequest } from '../lib/search-utils';
 import { formatAddressForDisplay } from '../lib/utils';
 import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
@@ -162,34 +163,15 @@ async function findResourcesOrigin({
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  const resolvedQueryType = deriveQueryType({
-    searchEngine,
-    originQueryType: query.queryType,
-    query: query.query,
-  });
-
-  const hasCoords = query.coordinates?.length === 2;
-
   let data: SearchApiResponse | null | undefined;
   try {
     const searchString = qs.stringify({
-      ...(query.query?.trim() && { query: query.query.trim() }),
+      ...toSearchParams({ query, locale, tenantId, searchEngine }),
       ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
-      query_type: resolvedQueryType,
-      ...(query.organizationId && { organization_id: query.organizationId }),
-      ...(Array.isArray(query.taxonomy) &&
-        query.taxonomy.length > 0 && { taxonomy: query.taxonomy.join(',') }),
       ...(query.location?.trim() && { location: query.location.trim() }),
-      ...(hasCoords && { coords: query.coordinates!.join(',') }),
-      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
       ...(query.sort && { sort: query.sort }),
       page,
-      locale,
       limit,
-      ...(tenantId && { tenant_id: tenantId }),
-      ...(query.filters &&
-        Object.keys(query.filters).length > 0 && { filters: query.filters }),
-      ...(query.age !== undefined && { age: query.age }),
     });
 
     data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
