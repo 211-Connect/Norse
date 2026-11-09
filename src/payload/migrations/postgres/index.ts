@@ -89,6 +89,7 @@ import * as migration_20261020_115758_translation_usage from './20261020_115758_
 import * as migration_20261020_122644 from './20261020_122644';
 import * as migration_20261102_124412 from './20261102_124412';
 import * as migration_20261103_205043_show_all_results_on_map from './20261103_205043_show_all_results_on_map';
+import * as migration_20261109_103137 from './20261109_103137';
 
 export const migrations = [
   {
@@ -545,5 +546,10 @@ export const migrations = [
     up: migration_20261103_205043_show_all_results_on_map.up,
     down: migration_20261103_205043_show_all_results_on_map.down,
     name: '20261103_205043_show_all_results_on_map',
+  },
+  {
+    up: migration_20261109_103137.up,
+    down: migration_20261109_103137.down,
+    name: '20261109_103137'
   },
 ];
