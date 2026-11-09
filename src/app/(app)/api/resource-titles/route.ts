@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { API_URL } from '@/app/(app)/shared/lib/constants';
 import { getApiHeaders } from '@/lib/api';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
@@ -36,14 +37,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const upstream = await fetch(`${API_URL}/resource/titles`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(await getApiHeaders(tenantId)),
-    },
-    body: JSON.stringify({ ids }),
-  });
+  const upstream = await trackDependency(
+    'norse_api',
+    'resource_titles',
+    async () =>
+      fetch(`${API_URL}/resource/titles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(await getApiHeaders(tenantId)),
+        },
+        body: JSON.stringify({ ids }),
+      }),
+  );
 
   if (!upstream.ok) {
     const text = await upstream.text().catch(() => '');

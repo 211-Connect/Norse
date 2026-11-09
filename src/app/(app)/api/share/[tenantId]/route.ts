@@ -3,6 +3,7 @@ import { Twilio } from 'twilio';
 
 import { createLogger } from '@/lib/logger';
 import { getTenantById } from '@/lib/cms/tenants';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 const log = createLogger('share');
 
@@ -64,13 +65,15 @@ async function sendViaEMS(
   formData.append('keyword', config.keyword);
   formData.append('message', data.message);
 
-  const response = await fetch(emsUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: formData.toString(),
-  });
+  const response = await trackDependency('ems', 'share', () =>
+    fetch(emsUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    }),
+  );
 
   if (!response.ok) {
     const errorText = await response.text();

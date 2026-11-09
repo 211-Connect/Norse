@@ -8,6 +8,12 @@ import { hostname } from 'node:os';
 import { performance } from 'node:perf_hooks';
 
 import {
+  type Outcome,
+  recordDependency,
+  toOperation,
+} from '@/lib/telemetry/dependency';
+
+import {
   ARCJET_PROXIES,
   internalIpSrc,
   isMboaWithoutClientIp,
@@ -95,6 +101,8 @@ export type ArcjetProtectResult =
        */
       conclusion:
         'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
+      /** `decision.id`; absent when no decision came back (SKIPPED/THREW). */
+      decisionId?: string;
       timing?: ArcjetTiming;
     }
   | {
@@ -104,6 +112,7 @@ export type ArcjetProtectResult =
       deniedBots: string[];
       /** `decision.reason.type`: 'BOT' | 'FILTER' | ... (ISS-2366). */
       reasonType: string;
+      decisionId?: string;
       timing?: ArcjetTiming;
     }
   | {
@@ -111,6 +120,7 @@ export type ArcjetProtectResult =
       conclusion: 'DENY';
       deniedBots: string[];
       reasonType: string;
+      decisionId?: string;
       timing?: ArcjetTiming;
     };
 
@@ -235,6 +245,25 @@ export function createArcjetProtect(
   const traceContext = options.traceContext ?? defaultTraceContext;
   let deniedSampledOut = 0;
 
+  /**
+   * One downstream sample per Arcjet decision. `SKIPPED`/`NO_CLIENT_IP`
+   * return before this is called: no call happened. A failed decision that
+   * reached the Decide API timeout is a timeout; any other failure is an
+   * error.
+   */
+  function recordDecision(timing: ArcjetTiming, failed: boolean): void {
+    let outcome: Outcome = 'ok';
+    if (failed) {
+      outcome = timing.durationMs >= ARCJET_TIMEOUT_MS ? 'timeout' : 'error';
+    }
+    recordDependency(
+      'arcjet',
+      toOperation('arcjet', 'decide'),
+      outcome,
+      timing.durationMs / 1000,
+    );
+  }
+
   function logFingerprintFailed(
     request: ArcjetRequestLike,
     pathName: string,
@@ -352,6 +381,7 @@ export function createArcjetProtect(
         },
         timing,
       );
+      recordDecision(timing, true);
       return { denied: false, conclusion: 'THREW', timing };
     }
     const timing = stopTimer();
@@ -369,19 +399,23 @@ export function createArcjetProtect(
         enforced,
       });
       if (!enforced) {
+        recordDecision(timing, false);
         return {
           denied: false,
           conclusion: 'DENIED_NOT_ENFORCED',
           deniedBots,
           reasonType,
+          decisionId: decision.id,
           timing,
         };
       }
+      recordDecision(timing, false);
       return {
         denied: true,
         conclusion: 'DENY',
         deniedBots,
         reasonType,
+        decisionId: decision.id,
         timing,
       };
     }
@@ -400,7 +434,13 @@ export function createArcjetProtect(
         },
         timing,
       );
-      return { denied: false, conclusion: 'ERROR', timing };
+      recordDecision(timing, true);
+      return {
+        denied: false,
+        conclusion: 'ERROR',
+        decisionId: decision.id,
+        timing,
+      };
     }
 
     for (const match of dryRunMatchesOf(decision)) {
@@ -411,9 +451,11 @@ export function createArcjetProtect(
       });
     }
 
+    recordDecision(timing, false);
     return {
       denied: false,
       conclusion: decision.conclusion === 'CHALLENGE' ? 'CHALLENGE' : 'ALLOW',
+      decisionId: decision.id,
       timing,
     };
   }
