@@ -52,6 +52,7 @@ declare global {
       // Database pool
       DATABASE_POOL_MIN?: string;
       DATABASE_POOL_MAX?: string;
+      DATABASE_POOL_IDLE_TIMEOUT_MS?: string;
 
       // Cache service
       CACHE_REDIS_URI?: string;
