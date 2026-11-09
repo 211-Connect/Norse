@@ -22,6 +22,7 @@ import {
   NO_USER_AGENT_FILTER,
   buildArcjetRules,
   type ArcjetLog,
+  type ArcjetTiming,
   FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE,
   MBOA_PROXY_IP,
   createArcjetProtect,
@@ -111,6 +112,19 @@ const errored = () =>
 const clientReturning = (decision: ArcjetDecision) => ({
   protect: async () => decision,
 });
+
+/**
+ * Results now carry a `timing` field (N1: Arcjet failure log fields). Strip
+ * it and assert its shape separately, so the rest can be compared exactly.
+ */
+function stripTiming(result: Record<string, unknown>) {
+  const timing = result.timing as ArcjetTiming;
+  const { timing: _ignored, ...rest } = result;
+  assert.ok(timing);
+  assert.equal(typeof timing.durationMs, 'number');
+  assert.equal(typeof timing.eventLoopUtilization, 'number');
+  return rest;
+}
 
 const SENSITIVE_HEADERS = {
   cookie: 'session=secret',
@@ -281,7 +295,10 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
 
     const result = await protect(makeRequest(), PATH, log);
 
-    assert.deepEqual(result, { denied: false, conclusion: 'ALLOW' });
+    assert.deepEqual(stripTiming(result), {
+      denied: false,
+      conclusion: 'ALLOW',
+    });
     assert.equal(entries.length, 1);
     assert.equal(entries[0].event, 'arcjet_dry_run_match');
     assert.equal(entries[0].data.ruleType, 'filter');
@@ -303,7 +320,7 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
 
     const result = await protect(makeRequest(), PATH, log);
 
-    assert.deepEqual(result, {
+    assert.deepEqual(stripTiming(result), {
       denied: true,
       conclusion: 'DENY',
       deniedBots: [],
@@ -379,7 +396,7 @@ describe('enforced hosts (ISS-1728, ISS-1737)', () => {
       log,
     );
 
-    assert.deepEqual(result, {
+    assert.deepEqual(stripTiming(result), {
       denied: false,
       conclusion: 'DENIED_NOT_ENFORCED',
       deniedBots: ['CURL'],
@@ -530,7 +547,10 @@ describe('MBOA internal traffic (ISS-1734, ISS-1728)', () => {
 
     const result = await protect(req, PATH, log);
 
-    assert.deepEqual(result, { denied: false, conclusion: 'ALLOW' });
+    assert.deepEqual(stripTiming(result), {
+      denied: false,
+      conclusion: 'ALLOW',
+    });
     assert.equal(calls(), 1, 'Arcjet protect must be called');
     assert.deepEqual(lastOptions(), { ipSrc: '10.215.199.3' });
     assert.equal(entries.length, 1);
@@ -660,7 +680,10 @@ describe('fingerprint failure logging (ISS-1734)', () => {
 
     const result = await protect(makeRequest(SENSITIVE_HEADERS), PATH, log);
 
-    assert.deepEqual(result, { denied: false, conclusion: 'THREW' });
+    assert.deepEqual(stripTiming(result), {
+      denied: false,
+      conclusion: 'THREW',
+    });
     assert.equal(entries.length, 1);
     const entry = entries[0];
     assert.equal(entry.level, 'warn');
@@ -693,7 +716,10 @@ describe('fingerprint failure logging (ISS-1734)', () => {
 
     const result = await protect(makeRequest(SENSITIVE_HEADERS), PATH, log);
 
-    assert.deepEqual(result, { denied: false, conclusion: 'ERROR' });
+    assert.deepEqual(stripTiming(result), {
+      denied: false,
+      conclusion: 'ERROR',
+    });
     assert.equal(entries[0].event, 'arcjet_fingerprint_failed');
     assert.equal(entries[0].data.conclusion, 'ERROR');
     assert.equal(entries[0].data.errorType, 'ERROR');

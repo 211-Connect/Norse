@@ -130,12 +130,16 @@ differently-behaved spans.
 - `OTEL_TRACES_SAMPLER_ARG` — ratio (0.0–1.0) passed to
   `TraceIdRatioBasedSampler`, same env var name the API's `tracing.ts` uses.
   Defaults to `1.0` (sample everything) if unset.
-- `OTEL_EXPORTER_OTLP_ENDPOINT` — where spans are exported. `compose.yaml`
-  points this at the local `tempo` service (`http://tempo:4318`) for
+- `OTEL_EXPORTER_OTLP_ENDPOINT` — where telemetry is exported. `compose.yaml`
+  points this at the local `alloy` OTLP gateway (`http://alloy:4318`) for
   `norse-app`. For a non-dockerized `npm run dev`, set it in `.env` to
-  `http://localhost:4318` (Tempo's OTLP HTTP port is published to the host).
-  In any other environment (staging/prod), point it at whatever OTLP
-  collector Ops has configured — same as the API.
+  `http://localhost:4318` (Alloy's OTLP HTTP port is published to the host)
+  and set `DEPLOYMENT_ENVIRONMENT=local`. In any other environment
+  (staging/prod), point it at the collector Ops runs
+  (`https://otlp.c211.io`) — same as the API.
+- `DEPLOYMENT_ENVIRONMENT` — becomes the `deployment.environment.name`
+  resource attribute (`production` | `dev` | `local`); the local stack's
+  Alloy copies it to the `env` label, exactly like production.
 
 No `next.config.js` or `Dockerfile` changes were needed: `instrumentation.ts`
 is a stable Next.js convention (no experimental flag), and Next's
@@ -208,25 +212,51 @@ what the OTLP backend costs to store — but as a starting point:
 Keeping the two ratios equal remains the simplest default unless there's a
 specific reason to give direct-hit traffic different visibility.
 
-## Viewing traces locally
+## Local stack (`compose.yaml`)
 
-`compose.yaml` runs a local Grafana Tempo (`tempo`, config in
-[`tempo.yaml`](/tempo.yaml)) and provisions it as a Grafana datasource
-(`grafana/provisioning/datasources/tempo.yml`) — no manual Grafana setup
-needed.
+The local stack mirrors the production signal path — same OTLP entry point,
+same `env` convention, same Grafana datasource UIDs:
+
+```
+norse-app --OTLP--> alloy :4317/:4318 --+--> tempo   (traces, metrics_generator -> prometheus)
+                                        +--> prometheus (remote write, exemplars)
+                                        +--> loki    (logs, OTLP)
+grafana :3001  (datasources: prometheus, loki, tempo)
+```
+
+- `alloy` — [`observability/alloy/config.alloy`](/observability/alloy/config.alloy),
+  the local equivalent of production's `alloy-otlp`: `otelcol.receiver.otlp`
+  (gRPC 4317, HTTP 4318) → `otelcol.processor.transform` (`privacy`, the same
+  query-string/label redaction as production) → `otelcol.processor.transform`
+  (`env` from `deployment.environment.name`) → `otelcol.processor.batch` →
+  Tempo (traces), Prometheus remote write with exemplars (metrics), Loki OTLP
+  (logs).
+- `tempo` — [`tempo.yaml`](/tempo.yaml), monolithic Tempo 3 with the
+  `service-graphs` and `span-metrics` processors remote-writing to Prometheus.
+  Only its query API (3200) is published; OTLP goes through Alloy.
+- `prometheus` — remote-write receiver and exemplar storage enabled, 2 d retention.
+- `loki` — [`observability/loki/config.yaml`](/observability/loki/config.yaml),
+  single binary, filesystem storage, schema v13, structured metadata allowed.
+- `grafana` — datasources `prometheus`, `loki`, `tempo` (the UIDs the
+  production dashboards use), with exemplar/`trace_id` → Tempo and
+  Tempo → Loki/metrics links.
 
 1. `docker compose up` (or your usual local stack).
 2. Exercise a code path that calls the Norse API (e.g. load the search page).
-3. Open Grafana (`http://localhost:3001`, `admin`/`admin`) → **Explore** →
-   select the **Tempo** datasource → search `{ resource.service.name = "norse-app" }`.
-4. You should see a trace with a root span for the request and a child
-   "fetch" span for the Norse API call, carrying the propagated `traceparent`.
+3. Open Grafana (`http://localhost:3001`, `admin`/`admin`) → **Explore**:
+   - **Tempo**: `{ resource.service.name = "norse-app" }` — a request root
+     span plus a child "fetch" span carrying the propagated `traceparent`.
+   - **Prometheus**: `norse_downstream_requests_total{env="local"}` once the
+     metrics pipeline (N3) is in.
+   - **Loki**: `{service_name="norse-app"} | trace_id=~".+"`.
+   Click the trace ID on a Prometheus/Mimir exemplar or a Loki log line to
+   jump into Tempo, and the Tempo log link to jump back into Loki.
 
 Seeing the **full** cross-service trace (norse-app → norse-api) locally
-requires the API's own local `tracing.ts` to export to this same Tempo
-instance — point its OTLP gRPC exporter at the published `4317` port
-(e.g. `http://localhost:4317` from the API's host, or the docker network
-hostname if both repos share a compose network). That's a `norse-api`-repo
+requires the API's own local `tracing.ts` to export to this same collection
+pipeline — point its OTLP gRPC exporter at the published `4317` port
+(e.g. `http://localhost:4317` from the API's host, or `http://alloy:4317`
+if both repos share a compose network). That's a `norse-api`-repo
 configuration change, out of scope here.
 
 ## Out of scope / possible future work
@@ -235,6 +265,3 @@ configuration change, out of scope here.
   can be added alongside `register()` in the same `instrumentation.ts`.
 - Postgres spans (e.g. `@opentelemetry/instrumentation-pg`). Redis is
   traced (see above); Postgres queries are not.
-- Tempo `metrics_generator` / service-graph wiring into the existing local
-  Prometheus — would need `--web.enable-remote-write-receiver` on the
-  `prometheus` service; not required to see propagated traces.

@@ -24,7 +24,8 @@ services:
       DATABASE_URI: postgresql://norse-ng:norse-ng@norse-db:5432/norse-ng
       CACHE_REDIS_URI: redis://:norse-ng@valkey:6379
       UMAMI_API_URL: http://umami:4444
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
+      DEPLOYMENT_ENVIRONMENT: local
 
   norse-db:
     image: postgres:18
@@ -57,6 +58,26 @@ services:
       retries: 5
     command: valkey-server --appendonly yes --requirepass norse-ng
 
+  # OTLP gateway: the only OTLP entry point, mirrors production `alloy-otlp`.
+  alloy:
+    image: grafana/alloy:v1.21.1
+    restart: always
+    ports:
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP HTTP receiver
+    volumes:
+      - ./observability/alloy/config.alloy:/etc/alloy/config.alloy
+      - alloy_data:/var/lib/alloy/data
+    command:
+      - 'run'
+      - '/etc/alloy/config.alloy'
+      - '--server.http.listen-addr=0.0.0.0:12345'
+      - '--storage.path=/var/lib/alloy/data'
+    depends_on:
+      - prometheus
+      - tempo
+      - loki
+
   prometheus:
     image: prom/prometheus:v3.9.1
     restart: always
@@ -68,30 +89,29 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=2d'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
-    depends_on:
-      - norse-app
-      - pushgateway
+      - '--web.enable-remote-write-receiver'
+      - '--enable-feature=exemplar-storage'
 
-  pushgateway:
-    image: prom/pushgateway:v1.10.0
+  loki:
+    image: grafana/loki:3.7.9
     restart: always
     ports:
-      - 9091:9091
+      - 3100:3100
     volumes:
-      - pushgateway_data:/data
+      - ./observability/loki/config.yaml:/etc/loki/config.yaml
+      - loki_data:/loki
     command:
-      - '--persistence.file=/data/pushgateway.data'
+      - '-config.file=/etc/loki/config.yaml'
 
   tempo:
-    image: grafana/tempo:3.0.3
+    image: grafana/tempo:3.1.1
     restart: always
     ports:
       - 3200:3200 # Tempo query API (used by the Grafana datasource)
-      - 4317:4317 # OTLP gRPC receiver
-      - 4318:4318 # OTLP HTTP receiver
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
       - tempo_data:/var/tempo
@@ -113,6 +133,7 @@ services:
     depends_on:
       - prometheus
       - tempo
+      - loki
 
   umami:
     image: ghcr.io/umami-software/umami:latest
@@ -152,8 +173,9 @@ services:
 volumes:
   postgres_data:
   valkey_data:
+  alloy_data:
   prometheus_data:
-  pushgateway_data:
+  loki_data:
   grafana_data:
   umami-db-data:
   tempo_data:
