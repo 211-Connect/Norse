@@ -119,7 +119,7 @@
     "i18next-resources-to-backend": "^1.2.1",
     "ioredis": "^5.8.2",
     "ipaddr.js": "2.2.0",
-    "jotai": "^2.12.5",
+    "jotai": "^3.0.1",
     "libphonenumber-js": "^1.13.15",
     "lru-cache": "^11.3.5",
     "lucide-react": "^1.22.0",
