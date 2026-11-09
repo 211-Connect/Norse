@@ -320,6 +320,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -511,6 +512,7 @@ export interface TenantMedia {
   id: number;
   tenant?: (string | null) | Tenant;
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1471,6 +1473,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -1574,6 +1577,7 @@ export interface TenantsSelect<T extends boolean = true> {
 export interface TenantMediaSelect<T extends boolean = true> {
   tenant?: T;
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
