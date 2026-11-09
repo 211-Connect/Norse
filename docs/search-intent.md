@@ -40,7 +40,7 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
     otherwise the tenant's engine type;
   - query, label, organization, location and distance are trimmed, and empty values are dropped;
   - taxonomy codes are split, trimmed and de-duplicated;
-  - "Everywhere" means no location; coords are written only as a pair; distance only with a location
+  - "Everywhere" (the literal `EVERYWHERE_LOCATION`, never its translated label) means no location; coords are written only as a pair; distance only with a location
     or coords;
   - a new search starts on page 1.
 - **Writers that edit the URL the visitor is on** (filter navigation, the coords redirect) lift it, change
