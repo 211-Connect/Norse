@@ -14,6 +14,8 @@ import {
   PrivacySpanExporter,
   createOtlpTraceExporter,
 } from '@/lib/privacy-span-exporter';
+import { CMS_SECRET_HEADER } from '@/lib/cms/config';
+import { getNorseRole, runsPayload } from '@/lib/norse-role';
 import { markTelemetryReady } from '@/lib/telemetry/meter';
 
 import type {
@@ -57,6 +59,132 @@ export class InjectOnlyTraceContextPropagator extends W3CTraceContextPropagator 
     _getter: TextMapGetter,
   ): Context {
     return context;
+  }
+}
+
+/**
+ * Constant-time string comparison that also runs on the Edge runtime. Not
+ * `src/lib/secrets.ts`: that helper uses `node:crypto`, and this module is
+ * loaded by both the Node and the Edge runtime. Only the length can leak.
+ */
+function secretsMatch(received: string, expected: string): boolean {
+  if (received.length !== expected.length) return false;
+  let diff = 0;
+  for (let index = 0; index < expected.length; index += 1) {
+    diff |= received.charCodeAt(index) ^ expected.charCodeAt(index);
+  }
+  return diff === 0;
+}
+
+/**
+ * The CMS (`norse-cms`) continues a trace only for calls from our own app.
+ *
+ * Since the app/CMS split the app calls the CMS internal API over HTTP
+ * (`PAYLOAD_CMS_URL`, e.g. `http://norse-cms:8080`), always with the
+ * `x-internal-api-key` header. Those calls carry the app's `traceparent`, and
+ * continuing it puts the CMS spans (Postgres included) under the app trace.
+ *
+ * Every other request (`/admin`, Payload REST from the browser, anything that
+ * passed DO App Platform / Cloudflare) may carry an upstream `traceparent`
+ * whose parent never reaches Tempo, so it is still ignored exactly like
+ * `InjectOnlyTraceContextPropagator` does: no rootless traces.
+ */
+export class InternalCallerTraceContextPropagator extends InjectOnlyTraceContextPropagator {
+  constructor(private readonly internalSecret: string) {
+    super();
+  }
+
+  extract(context: Context, carrier: unknown, getter: TextMapGetter): Context {
+    try {
+      const raw = getter.get(carrier, CMS_SECRET_HEADER);
+      const received = Array.isArray(raw) ? raw[0] : raw;
+      if (
+        this.internalSecret &&
+        typeof received === 'string' &&
+        secretsMatch(received, this.internalSecret)
+      ) {
+        return W3CTraceContextPropagator.prototype.extract.call(
+          this,
+          context,
+          carrier,
+          getter,
+        );
+      }
+    } catch {
+      // Telemetry must never break a request: fall back to a new root.
+    }
+    return context;
+  }
+}
+
+/**
+ * Propagator for this process. Only a process that serves the CMS internal
+ * API (`cms`, or the single-process `all`) and knows the shared secret trusts
+ * incoming context from authenticated internal calls; the public app never
+ * does.
+ */
+export function createPropagator(
+  env: Record<string, string | undefined> = process.env,
+): InjectOnlyTraceContextPropagator {
+  const secret = env.PAYLOAD_API_ROUTE_SECRET;
+  if (!secret) return new InjectOnlyTraceContextPropagator();
+  try {
+    if (!runsPayload(getNorseRole(env.NORSE_ROLE, env.NORSE_BUILD))) {
+      return new InjectOnlyTraceContextPropagator();
+    }
+  } catch {
+    // An invalid role is reported elsewhere; never trust context then.
+    return new InjectOnlyTraceContextPropagator();
+  }
+  return new InternalCallerTraceContextPropagator(secret);
+}
+
+/**
+ * Outgoing calls that get a `traceparent`: the Norse API and, since the
+ * app/CMS split, the CMS internal API. Nothing else (Keycloak, S3, Umami,
+ * Mapbox, translation, ...). Matched by URL prefix; the trailing `/` keeps
+ * `http://norse-cms:8080` from matching `http://norse-cms:80801`.
+ */
+export function propagateContextUrls(
+  env: Record<string, string | undefined> = process.env,
+): string[] {
+  const urls: string[] = [];
+  if (env.API_URL) urls.push(env.API_URL);
+  const cmsUrl = env.PAYLOAD_CMS_URL?.trim();
+  if (cmsUrl) urls.push(normalizedPrefix(cmsUrl));
+  return urls;
+}
+
+/**
+ * `@vercel/otel` compares the prefix with `url.toString()` of the outgoing
+ * request, which is normalised (lowercase host, default port dropped:
+ * `http://norse-cms:80/x` becomes `http://norse-cms/x`). Normalise the prefix
+ * the same way, ending in exactly one `/`, or propagation silently stops.
+ */
+function normalizedPrefix(raw: string): string {
+  try {
+    return new URL(raw).href.replace(/\/*$/, '/');
+  } catch {
+    return `${raw.replace(/\/+$/, '')}/`;
+  }
+}
+
+/**
+ * `service.name` by role, so prod and dev share one name per service and the
+ * environment comes from `DEPLOYMENT_ENVIRONMENT` (OTel convention). The CMS
+ * reports as `norse-cms`; the public app and the single-process `all` as
+ * `norse-app`. An explicit `OTEL_SERVICE_NAME` still wins (`@vercel/otel`
+ * reads it first).
+ */
+export function serviceNameForRole(
+  env: Record<string, string | undefined> = process.env,
+): 'norse-app' | 'norse-cms' {
+  try {
+    return getNorseRole(env.NORSE_ROLE, env.NORSE_BUILD) === 'cms'
+      ? 'norse-cms'
+      : 'norse-app';
+  } catch {
+    return 'norse-app';
   }
 }
 
@@ -131,10 +259,10 @@ export async function register(
       nodeConfiguration;
 
     registerOtel({
-      serviceName: 'norse-app',
+      serviceName: serviceNameForRole(),
       // Baggage is dropped on purpose; it is not used. Code-level
       // `propagators` overrides OTEL_PROPAGATORS.
-      propagators: [new InjectOnlyTraceContextPropagator()],
+      propagators: [createPropagator()],
       // Every exported span passes through `PrivacySpanExporter`: query strings
       // and fragments never leave the process (privacy rule 8). A sole
       // `spanProcessors` entry, because `traceExporter` would leave
@@ -156,15 +284,15 @@ export async function register(
         // orphan root spans from commands outside a request, such as the
         // connect-time ready check.
         new IORedisInstrumentation({ requireParentSpan: true }),
-        // Runtime-node (event loop, GC, heap) and pino (log correlation +
-        // OTLP log records), when those signals are enabled.
+        // Node runtime only: Postgres query spans (always), runtime-node
+        // (event loop, GC, heap) and pino (log correlation + OTLP log
+        // records) when those signals are enabled.
         ...nodeInstrumentations,
       ],
       instrumentationConfig: {
         fetch: {
-          // Only inject `traceparent` for calls to the Norse API — not
-          // Keycloak, S3, Umami, Mapbox, Azure/Google Translate, etc.
-          propagateContextUrls: apiUrl ? [apiUrl] : [],
+          // Norse API + CMS internal API only (see propagateContextUrls).
+          propagateContextUrls: propagateContextUrls(),
         },
       },
     });
