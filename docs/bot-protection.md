@@ -74,7 +74,7 @@ arcjetProtect                    src/lib/arcjet/index.ts
 - **Rules** (`src/lib/arcjet/rules.ts`): `detectBot` in `LIVE` with the allow
   list `ARCJET_ALLOWED_BOTS`, and a `filter` in `DRY_RUN` that denies
   requests with no `User-Agent` (ISS-1744). AI training crawlers are denied
-  and also disallowed in `src/app/robots.ts`; keep the two lists in agreement.
+  and also disallowed in `src/app/robotsRules.ts`; keep the two lists in agreement.
 - **Client IP** (`src/lib/arcjet/client-ip.ts`): the SDK resolves it through
   `cloudflare()` and `MBOA_PROXY_IP`. MBOA internal traffic (only private hops
   behind the mn.gov proxy) gets `ipSrc` set to the hop that proxy appended;
@@ -103,6 +103,39 @@ Bots widget after the response; see
 Decision logs contain no IP address: find the request in the Arcjet console
 by `decisionId`. Events with no decision log headers from an allow list only,
 with every IP masked (`maskIp`). Paths never include the query string.
+
+## Crawl trap: `amp;` keys (ISS-2307)
+
+An outside crawler reads React's correctly escaped `href="…&amp;page=2"`
+without decoding the entity and requests `?…&amp;page=2`, so the key arrives
+as `amp;page`. Pagination used to copy every key and replace only `page`, so
+each hop added a level (`amp;amp;page`, …): 944 URLs up to 35 levels deep in
+the 2026-07 to 2026-10 harvest, 87% of them on Maryland (ISS-2379). Every hit
+ran a full search against Norse-API. No Norse writer emits such a key and no
+reader recognises one.
+
+| Layer | Where | What |
+| --- | --- | --- |
+| Edge | `src/middlewares/crawlTrapMiddleware.ts`, first in `src/proxy.ts` after the role gate | `410 Gone` (`X-Robots-Tag: noindex`) for any page route the proxy matches (not `/api`, `/admin`, static files, `robots.txt` or `sitemap.xml`) whose query has a key starting with `amp;` (any case, also percent-encoded), on every tenant, before the tenant lookup: no CMS call, no search, no Arcjet decision. The body is a tiny HTML page with a `nofollow` link to the same URL without the broken keys, so a person who followed a mangled link can continue. |
+| Writers | `currentSearchString` (pagination, language switch, and `stringifySearchParams` from `useClientSearchParams`), `sortHref` (sort), `rewriteSearchUrl` (filter navigation, coords redirect) | Drop `amp;` keys when copying the current URL, so a copied URL is never deeper than its source. |
+| robots.txt | `src/app/robotsRules.ts`, `User-agent: *` | `Disallow: /*?amp;`, `/*&amp;` (and upper case). Matches a key only: a real `&` or `;` inside a value is percent-encoded. Mixed-case or percent-encoded keys are not covered here; the edge 410 catches them. |
+
+The key test is `isCrawlTrapKey` in `src/lib/crawl-trap.ts`; all three layers
+use it. Values are never inspected.
+
+**Paid ads are unaffected.** Watt Advertising's landing URLs
+(`/search?query=…&query_label=…&query_type=taxonomy&entry=topic_card&location=…&coords=…`,
+plus `gclid`/`gad_*`) carry no `amp;` key, and AdsBot ignores `User-agent: *`
+rules anyway. A test pins that shape as allowed at every layer.
+
+**Only this shape is refused.** Every other odd URL shape in ISS-2379 was
+decided "preserve" (2026-10-18) and is read by the search-intent lift. Removed
+resources keep their 404; the id re-key redirects are ISS-2514 and ISS-2517.
+
+The robots disallow list and Arcjet's bot rules are separate concerns: the
+crawler list in `robotsRules.ts` (`DISALLOWED_CRAWLERS`) must still agree with
+`ARCJET_ALLOWED_BOTS`; the trap patterns apply to every crawler and need no
+Arcjet counterpart, since the edge 410 comes first.
 
 ## Rollout procedure
 
@@ -135,7 +168,8 @@ label caused it.
 
 ## Tests
 
-- Unit: `tests/arcjet.test.ts` (rules, enforcement, client IP, logging).
+- Unit: `tests/arcjet.test.ts` (rules, enforcement, client IP, logging);
+  `tests/crawl-trap.test.ts` (edge 410, writers, robots patterns).
 - E2E runs in CI against the dev hosts only, which stay unenforced. It does
   not run against production, where headless Chromium is expected to be
   denied.

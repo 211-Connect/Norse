@@ -17,6 +17,7 @@ import { describeError, truncateBody } from './lib/describe-error';
 import { getNorseRole, servesPath } from './lib/norse-role';
 import { maskSecret, redactUrl } from './lib/redact';
 import type { TenantBasicConfigResponse } from './types/tenantBasicConfig';
+import { crawlTrapMiddleware } from './middlewares/crawlTrapMiddleware';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
 
@@ -333,6 +334,9 @@ function roleGate(request: NextRequest): NextResponse | undefined {
 export async function proxy(request: NextRequest) {
   const gated = roleGate(request);
   if (gated) return gated;
+
+  const trapped = crawlTrapMiddleware(request);
+  if (trapped) return trapped;
 
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {
