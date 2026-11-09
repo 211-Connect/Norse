@@ -1,14 +1,20 @@
 import type { Page } from '@playwright/test';
 
 import { baseURL } from '../playwright.config';
+import esCommon from '../public/locales/es/common.json' with { type: 'json' };
 import { getCurrentTenant } from './fixtures/tenants';
 import {
+  applyTestLocationOnSearchPage,
   expect,
   expectSearchDialogDismissed,
+  getResultTotalNumber,
   goHome,
   LOCALE,
+  openTopicSearch,
+  switchLanguage,
   test,
   waitForPageStabilized,
+  waitForSearchResultsSettled,
 } from './helpers';
 import {
   AUTOCOMPLETE_TIMEOUT_MS,
@@ -361,5 +367,57 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });
+  });
+
+  test('clearing the location in a non-English locale restores the unfiltered results', async ({
+    context,
+    page,
+  }) => {
+    // The clear button commits the translated "Everywhere" label. Only the
+    // English word used to be recognised as "no location", so a translated
+    // label reached the URL, was geocoded as a real place, and left the search
+    // filtered around wherever that phrase resolved to.
+    await goHome(page);
+    await switchLanguage(page, 'es');
+    await openTopicSearch(page);
+    await waitForSearchResultsSettled(page);
+    const totalWithoutLocation = await getResultTotalNumber(page);
+    expect(totalWithoutLocation).toBeGreaterThan(0);
+
+    await applyTestLocationOnSearchPage(page, testLocation);
+
+    await page
+      .getByRole('button', { name: /cambiar ubicación/i })
+      .first()
+      .click();
+    const locationInput = page.locator('#location-input');
+    const clearButton = page
+      .getByTestId('location-field')
+      .getByTestId('search-clear-btn');
+    await expect(clearButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await clearButton.click();
+    await expect(locationInput).toHaveValue(esCommon.search.everywhere, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+
+    await page.getByTestId('search-submit-btn').click();
+    await expectSearchDialogDismissed(page);
+
+    await expect
+      .poll(() => new URL(page.url()).searchParams.has('location'), {
+        timeout: SEARCH_NAV_TIMEOUT_MS,
+      })
+      .toBe(false);
+    await waitForSearchResultsSettled(page);
+    expect(new URL(page.url()).searchParams.has('coords')).toBe(false);
+    await expect
+      .poll(() => getResultTotalNumber(page), {
+        timeout: SEARCH_NAV_TIMEOUT_MS,
+      })
+      .toBe(totalWithoutLocation);
+
+    const cookieNames = (await context.cookies()).map(({ name }) => name);
+    expect(cookieNames).not.toContain('user-pref-location');
+    expect(cookieNames).not.toContain('user-pref-coords');
   });
 });
