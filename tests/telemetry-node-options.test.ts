@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, describe, it } from 'node:test';
 
+import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { PinoInstrumentation } from '@opentelemetry/instrumentation-pino';
 import { RuntimeNodeInstrumentation } from '@opentelemetry/instrumentation-runtime-node';
 import { AggregationType } from '@opentelemetry/sdk-metrics';
@@ -34,7 +35,7 @@ describe('createNodeTelemetryOptions', () => {
     }
   };
 
-  it('configures nothing when both exporters are none', () => {
+  it('configures only Postgres tracing when both exporters are none', () => {
     setExporters('none', 'none');
 
     const { configuration, errors } = createNodeTelemetryOptions();
@@ -43,7 +44,9 @@ describe('createNodeTelemetryOptions', () => {
     assert.equal(configuration.metricReaders, undefined);
     assert.equal(configuration.views, undefined);
     assert.equal(configuration.logRecordProcessors, undefined);
-    assert.equal(configuration.instrumentations, undefined);
+    // Query spans are a trace signal: the metrics/logs gates do not apply.
+    assert.equal(configuration.instrumentations?.length, 1);
+    assert.ok(configuration.instrumentations?.[0] instanceof PgInstrumentation);
     // Resource attributes are cheap and always built.
     assert.ok(configuration.attributes?.['service.instance.id']);
   });
@@ -109,5 +112,20 @@ describe('createNodeTelemetryOptions', () => {
 
     // No interval may outlive the test process.
     await configuration.logRecordProcessors?.[0]?.shutdown();
+  });
+
+  it('traces Postgres queries without bind values, orphans or pool spans', () => {
+    setExporters('none', 'none');
+
+    const { configuration } = createNodeTelemetryOptions();
+    const pg = configuration.instrumentations?.find(
+      (instrumentation) => instrumentation instanceof PgInstrumentation,
+    ) as PgInstrumentation | undefined;
+
+    assert.ok(pg, 'PgInstrumentation must be registered');
+    const config = pg.getConfig();
+    assert.equal(config.requireParentSpan, true);
+    assert.equal(config.enhancedDatabaseReporting, false);
+    assert.equal(config.ignoreConnectSpans, true);
   });
 });

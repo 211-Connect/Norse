@@ -51,11 +51,61 @@ function scrubUrlText(value: string): string {
   );
 }
 
+/**
+ * The content of every `IN (...)` / `NOT IN (...)` list, masked whole: for
+ * JSON fields Payload writes the values unquoted (`in (bob@example.com)`), so
+ * the literal patterns below cannot see them. A subquery without nested
+ * parentheses (`in (select ...)`) is masked too; that is the price of safety.
+ */
+const SQL_IN_LIST = /\b(in\s*\()[^()]*(\))/gi;
+
+/** Attributes that carry SQL text (stable and legacy semconv names). */
+const SQL_TEXT_ATTRIBUTES = new Set(['db.query.text', 'db.statement']);
+
+/** `'…'` string literals, including `''` escapes and `E'…'` strings. */
+const SQL_STRING_LITERAL = /(?:\b[eE])?'(?:[^']|'')*'/g;
+
+/**
+ * Numeric literals that stand alone. `$1` placeholders, identifiers such as
+ * `t1` and qualified names such as `s.1x` are left alone.
+ */
+const SQL_NUMBER_LITERAL = /(?<![\w$.])-?\d+(?:\.\d+)?(?![\w.])/g;
+
+/**
+ * Replaces literal values in SQL with `?`, keeping the statement shape.
+ *
+ * drizzle sends bind parameters (`$1`), but Payload writes some values into
+ * the SQL text itself: JSON/richText field queries (`… LIKE '%value%'`) and
+ * `IN (…)` lists of relation ids. Those values can be user input (emails,
+ * hosts), so they never leave the process (privacy rule 8).
+ */
+export function maskSqlLiterals(sql: string): string {
+  return sql
+    .replace(SQL_IN_LIST, '$1?$2')
+    .replace(SQL_STRING_LITERAL, "'?'")
+    .replace(SQL_NUMBER_LITERAL, '?');
+}
+
+/** Fixed status text for a failed Postgres query; see sanitizeStatus. */
+export const POSTGRES_ERROR_STATUS = 'postgres error';
+
+function isPostgresSpan(attributes: Attributes): boolean {
+  return (
+    attributes['db.system.name'] === 'postgresql' ||
+    attributes['db.system'] === 'postgresql'
+  );
+}
+
 function sanitizeAttributes(attributes: Attributes): Attributes {
   const sanitized: Attributes = {};
+  const postgres = isPostgresSpan(attributes);
   for (const [key, value] of Object.entries(attributes)) {
     // The query on its own is never needed: drop the key outright.
     if (key === 'url.query') continue;
+    if (postgres && SQL_TEXT_ATTRIBUTES.has(key) && typeof value === 'string') {
+      sanitized[key] = maskSqlLiterals(value);
+      continue;
+    }
     sanitized[key] =
       typeof value === 'string' &&
       (URL_ATTRIBUTES.has(key) || NEXT_URL_ATTRIBUTE.test(key))
@@ -82,10 +132,24 @@ function sanitizeEvent(event: TimedEvent): TimedEvent {
   };
 }
 
+/**
+ * `@opentelemetry/instrumentation-pg` sets `status.message = err.message`, and
+ * Postgres errors echo input (`invalid input syntax for type uuid: "…"`,
+ * `invalid input value for enum …: "…"`). The status keeps its code; the
+ * message becomes a fixed text. The exception event already carries a
+ * sanitised message from the instrumentation.
+ */
+function sanitizeStatus(span: ReadableSpan): ReadableSpan['status'] {
+  const { status } = span;
+  if (!status?.message || !isPostgresSpan(span.attributes)) return status;
+  return { ...status, message: POSTGRES_ERROR_STATUS };
+}
+
 function sanitizeSpan(span: ReadableSpan): ReadableSpan {
   return {
     ...span,
     name: scrubUrlText(span.name),
+    status: sanitizeStatus(span),
     attributes: sanitizeAttributes(span.attributes),
     events: span.events.map(sanitizeEvent),
     // Dropped counts are not getters today, but they describe the payload and

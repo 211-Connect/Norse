@@ -18,6 +18,20 @@ a separate NestJS repo).
   `serverExternalPackages` (`next.config.js`): a copy bundled into
   `.next/server/chunks` is never patched and traces nothing.
   `requireParentSpan` drops commands that run outside a request.
+- **Postgres queries** (`norse-cms`, Payload's `pg` pool):
+  `@opentelemetry/instrumentation-pg`, registered for the Node runtime in
+  `src/instrumentation.node.ts`. One client span per query under the request
+  that ran it (`requireParentSpan`), no `pg.connect`/pool spans
+  (`ignoreConnectSpans`), and never bind values
+  (`enhancedDatabaseReporting: false`). `pg` is in Next.js's built-in server
+  external packages, so the require hook patches it without a
+  `serverExternalPackages` entry. drizzle sends `$1` parameters, but Payload
+  writes some values into the SQL text (JSON/richText field queries, `IN`
+  lists of ids, unquoted for JSON fields), so `PrivacySpanExporter` masks every
+  `IN (...)` list whole and every string and number literal in
+  `db.query.text`/`db.statement` as `?` before export. A failed query's status
+  message echoes input (`invalid input syntax for type uuid: "…"`), so it is
+  replaced by `postgres error`; the status code stays.
 - **Outgoing calls to the Norse API**: every call made through the generated
   SDK (`src/lib/api/clients.ts`) goes through the global `fetch`. `@vercel/otel`'s
   fetch instrumentation patches that global `fetch`, creates a client span for
@@ -60,9 +74,21 @@ or as a trace lasting hours.
 request, so without this a header from a gateway, CDN or bot makes our root
 span the child of a span that never reaches Tempo. It would also let any
 caller decide whether a request is sampled. `src/instrumentation.ts` registers
-`InboundIgnoringTraceContextPropagator` (`src/lib/tracing.ts`), which still
-injects `traceparent` on calls to the Norse API. If something upstream ever
-exports to the same Tempo, this is what to change to join its traces.
+`InjectOnlyTraceContextPropagator`, which still injects `traceparent` on calls
+to the Norse API and the CMS internal API. If something upstream ever exports
+to the same Tempo, this is what to change to join its traces.
+
+**One exception: app → CMS calls.** Since the app/CMS split, `norse-app` calls
+`norse-cms` over the internal network (`PAYLOAD_CMS_URL`, e.g.
+`http://norse-cms:8080`), always with `x-internal-api-key`
+(`PAYLOAD_API_ROUTE_SECRET`). The app injects `traceparent` on those calls
+(`PAYLOAD_CMS_URL` is in `propagateContextUrls`), and the CMS registers
+`InternalCallerTraceContextPropagator`, which continues the incoming trace
+**only** when that key matches (constant-time compare). The CMS spans, and
+their Postgres spans, then sit under the app request. Public CMS traffic
+(`/admin`, Payload REST, anything through DO App Platform / Cloudflare) has no
+key, so its `traceparent` is ignored as before. The public app never trusts
+incoming context.
 
 **Timers must not keep a request's context.** A timer inherits the async
 context it was created in, so one armed during a request runs inside that
@@ -124,9 +150,14 @@ differently-behaved spans.
 
 ## Configuration
 
-- `src/instrumentation.ts` — the single entry point. Sets the service name
-  (`norse-app`, paired with the API's `norse-api`), the trace sampler, and
-  the fetch propagation scope.
+- `src/instrumentation.ts` — the single entry point. Sets the service name,
+  the propagator, the trace sampler, and the fetch propagation scope.
+- Service name — by role: `norse-cms` for `NORSE_ROLE=cms` (or a
+  `NORSE_BUILD=cms` image), `norse-app` otherwise (paired with the API's
+  `norse-api`). Production and dev share the name; `DEPLOYMENT_ENVIRONMENT`
+  tells them apart (OTel convention, and what the dashboards/alerts filter
+  on). Do not set `OTEL_SERVICE_NAME` per environment: if set, it overrides
+  the role-based name.
 - `OTEL_TRACES_SAMPLER_ARG` — ratio (0.0–1.0) passed to
   `TraceIdRatioBasedSampler`, same env var name the API's `tracing.ts` uses.
   Defaults to `1.0` (sample everything) if unset.
@@ -246,6 +277,10 @@ grafana :3001  (datasources: prometheus, loki, tempo)
 3. Open Grafana (`http://localhost:3001`, `admin`/`admin`) → **Explore**:
    - **Tempo**: `{ resource.service.name = "norse-app" }` — a request root
      span plus a child "fetch" span carrying the propagated `traceparent`.
+     Locally (`NORSE_ROLE=all`) the CMS runs in the same process, so its spans
+     are `norse-app` too. In the split deployment, query
+     `{ resource.service.name =~ "norse-(app|cms)" }` (plus
+     `resource.deployment.environment.name`) to include the CMS.
    - **Prometheus**: `norse_downstream_requests_total{env="local"}` once the
      metrics pipeline (N3) is in.
    - **Loki**: `{service_name="norse-app"} | trace_id=~".+"`.

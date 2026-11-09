@@ -4,6 +4,7 @@ import os from 'node:os';
 import type { Attributes } from '@opentelemetry/api';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-proto';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
+import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { PinoInstrumentation } from '@opentelemetry/instrumentation-pino';
 import { RuntimeNodeInstrumentation } from '@opentelemetry/instrumentation-runtime-node';
 import {
@@ -143,6 +144,28 @@ export function createNodeTelemetryOptions(): NodeTelemetryOptions {
     configuration.attributes = currentResourceAttributes();
   } catch (error) {
     errors.push({ signal: 'resource', error });
+  }
+
+  // Postgres (Payload's `pg` pool, norse-cms): one span per query, under the
+  // request span. Traces only, so it does not depend on the metrics/logs
+  // gates. `pg` is in Next.js's built-in server external packages, so the
+  // require hook can patch it.
+  //   - requireParentSpan: no orphan root spans from pool maintenance or jobs
+  //     outside a traced operation.
+  //   - enhancedDatabaseReporting off: bind values are never recorded.
+  //   - ignoreConnectSpans: no `pg.connect` / pool spans, one span per query.
+  // The SQL text (`db.query.text`) is still exported; PrivacySpanExporter masks
+  // literal values in it, and the collector applies its own rule.
+  try {
+    instrumentations.push(
+      new PgInstrumentation({
+        requireParentSpan: true,
+        enhancedDatabaseReporting: false,
+        ignoreConnectSpans: true,
+      }),
+    );
+  } catch (error) {
+    errors.push({ signal: 'node', error });
   }
 
   if (process.env.OTEL_METRICS_EXPORTER !== 'none') {
