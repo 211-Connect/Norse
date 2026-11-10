@@ -57,6 +57,7 @@ const SHARED_API_PREFIXES = [
 const APP_API_PREFIXES = [
   '/api/auth',
   '/api/cms-admin-redirect',
+  '/api/locale',
   '/api/share',
   '/api/resource-titles',
   '/api/search-config',
