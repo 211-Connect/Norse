@@ -289,12 +289,12 @@ export function createArcjetProtect(
       }),
     };
     if (sampleHeaderLog()) {
-      log('warn', 'arcjet_fingerprint_failed', {
+      log('debug', 'arcjet_fingerprint_failed', {
         ...base,
         headers: redactHeaders(request.headers),
       });
     } else {
-      log('warn', 'arcjet_fingerprint_failed_sampled_out', base);
+      log('debug', 'arcjet_fingerprint_failed_sampled_out', base);
     }
   }
 
@@ -311,12 +311,12 @@ export function createArcjetProtect(
       forwardedFor: maskIpList(request.headers.get('x-forwarded-for') ?? ''),
     };
     if (sampleHeaderLog()) {
-      log('warn', 'arcjet_no_client_ip', {
+      log('debug', 'arcjet_no_client_ip', {
         ...base,
         headers: redactHeaders(request.headers),
       });
     } else {
-      log('warn', 'arcjet_no_client_ip_sampled_out', base);
+      log('debug', 'arcjet_no_client_ip_sampled_out', base);
     }
   }
 
@@ -325,7 +325,7 @@ export function createArcjetProtect(
       deniedSampledOut += 1;
       return;
     }
-    log('warn', 'arcjet_denied', {
+    log('debug', 'arcjet_denied', {
       ...data,
       sampledOutSinceLast: deniedSampledOut,
     });
@@ -444,7 +444,7 @@ export function createArcjetProtect(
     }
 
     for (const match of dryRunMatchesOf(decision)) {
-      log('warn', 'arcjet_dry_run_match', {
+      log('debug', 'arcjet_dry_run_match', {
         ...requestContext(request, pathName),
         ...match,
         decisionId: decision.id,
