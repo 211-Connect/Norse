@@ -41,6 +41,12 @@ async function findResourcePinsOrigin(
 }
 
 /**
+ * Longer than the 1 h of search results: pins are large (up to 10,000 per
+ * search), so after an import the map can lag the list by up to 5 h.
+ */
+const SEARCH_PINS_CACHE_TTL = 6 * ONE_HOUR;
+
+/**
  * Pins for every result of a search, or null when the Norse API fails. Not a
  * Server Action: only `/api/search-pins` calls it, with the tenant of the host.
  *
@@ -58,7 +64,7 @@ export async function findResourcePins(
     () => findResourcePinsOrigin(request, locale, tenantId),
     // An empty list is cached too: a search with no located results stays one.
     // A failure is null, which is never cached.
-    { redis: true, memory: false, ttl: ONE_HOUR },
+    { redis: true, memory: false, ttl: SEARCH_PINS_CACHE_TTL },
   ).catch((err) => {
     log.error({ err, tenantId, locale }, 'Search pins cache error');
     return null;

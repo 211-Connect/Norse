@@ -29,10 +29,12 @@ setLogDestination(capture);
 const TENANT_V1 = 'tenant-1';
 const TENANT_V2 = 'tenant-2';
 
-// A cached tenant API key keeps getApiHeaders() from initialising Payload, so
-// the request reaches fetch() and throws a real FetchError.
-memoryCache.set(`tenant_api_key:${TENANT_V1}`, JSON.stringify('test-key'));
-memoryCache.set(`tenant_api_key:${TENANT_V2}`, JSON.stringify('test-key'));
+// A cached tenant (which carries the API key) keeps getApiHeaders() from
+// initialising Payload, so the request reaches fetch() and throws a real
+// FetchError.
+const cachedTenant = JSON.stringify({ api: { apiKey: 'test-key' } });
+memoryCache.set(`tenant:${TENANT_V1}`, cachedTenant);
+memoryCache.set(`tenant:${TENANT_V2}`, cachedTenant);
 
 const requestedUrls: string[] = [];
 const originalFetch = globalThis.fetch;

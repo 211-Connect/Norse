@@ -13,12 +13,13 @@ The API key is not localized; it is a single credential per tenant.
 ## How it is stored and cached
 
 - Stored on the `Tenant` document in the `api.apiKey` field.
-- Cached under the Redis/memory key `tenant_api_key:${tenantId}` via
-  `src/utilities/withCache.ts` (both Redis and in-process memory enabled).
+- `getTenantApiKey` reads it from the tenant document returned by
+  `getTenantById`, which is cached under `tenant:${tenantId}` (in-process
+  memory 1 min, Redis 1 h); the key has no cache entry of its own.
 - The cache is invalidated automatically when a tenant is updated because
   `src/payload/collections/Tenants/hooks/revalidateCache.ts` deletes
-  `tenant_api_key:${doc.id}` and `clearMemoryCache()` flushes the in-process
-  LRU cache.
+  `tenant:${doc.id}` and `clearMemoryCache()` flushes the in-process
+  LRU cache. Other instances' memory copies expire within a minute.
 
 ## Where it is used
 
@@ -44,8 +45,8 @@ x-api-key: ${tenantApiKey}
 
 The helper lives in `src/lib/api/getTenantApiKey.ts`:
 
-- `getTenantApiKey(tenantId)` — returns the cached key or throws if none is
-  configured.
+- `getTenantApiKey(tenantId)` — returns the key from the cached tenant, or
+  `null` (with a warning) if none is configured.
 
 For request building, prefer the combined helper in `src/lib/api/getApiHeaders.ts`:
 

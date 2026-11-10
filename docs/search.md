@@ -117,7 +117,8 @@ other:
 (`src/app/(app)/shared/services/search-suggestions-service.ts`) wraps this
 call with the standard per-request `x-tenant-id`/`accept-language`/
 `x-api-key` headers (see the "Norse API tenant requirement" in
-[AGENTS.md](/AGENTS.md)). `useSearchSuggestions()` exposes it as a
+[AGENTS.md](/AGENTS.md)) and caches each response for a minute in memory and
+an hour in Redis. `useSearchSuggestions()` exposes it as a
 react-query hook. The `enableOrganizationSearch` flag does **not** change
 what's requested — the API always returns both — it only controls whether
 `search-bar.tsx` turns the `organizations` array into visible dropdown

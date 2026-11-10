@@ -146,7 +146,7 @@ The proxy's tenant config lookup (`/api/getTenantBasicConfig`) does its own
 fetch to `PAYLOAD_CMS_URL` (see [architecture.md](/docs/architecture.md)).
 
 **Caching** is unchanged: the bridge caches under the same keys as the
-Payload lookups (`tenant:<host|id>`, `tenant_api_key:<id>`,
+Payload lookups (`tenant:<host|id>`, which also carries the Norse API key,
 `app_config:<host>:<locale>`, `search_config:<id>:<locale>`), memory then
 Redis then the CMS. The CMS's `revalidateCache` hooks delete the Redis keys
 on save; memory entries expire within a minute, as they already did across

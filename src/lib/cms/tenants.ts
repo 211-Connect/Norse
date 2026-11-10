@@ -1,5 +1,5 @@
 import type { Tenant } from '@/payload/payload-types';
-import { withCache } from '@/utilities/withCache';
+import { ONE_HOUR, withCache } from '@/utilities/withCache';
 
 import { cmsRequest } from './client';
 import { isCmsRemote } from './config';
@@ -27,7 +27,7 @@ export async function getTenantByHost(host: string): Promise<Tenant | null> {
   return withCache(
     `tenant:${host}`,
     () => cmsRequest<Tenant | null>('tenants/by-host', { query: { host } }),
-    { redis: true, memory: true },
+    { redis: true, memory: true, ttl: ONE_HOUR },
   );
 }
 
@@ -44,7 +44,7 @@ export async function getTenantById(tenantId: string): Promise<Tenant | null> {
     `tenant:${tenantId}`,
     () =>
       cmsRequest<Tenant | null>('tenants/by-id', { query: { id: tenantId } }),
-    { redis: true, memory: true },
+    { redis: true, memory: true, ttl: ONE_HOUR },
   );
 }
 
