@@ -163,14 +163,19 @@ traceSampler: new HealthCheckDroppingSampler(
   empty or invalid falls back to **`0.1`** (never `1`) and `register()` logs
   `OTEL_TRACES_SAMPLER_ARG is unset or invalid: sampling at the default ratio`.
   The `Initialized telemetry` log line reports the ratio in effect as
-  `traceSamplerArg`.
+  `traceSamplerArg`, a number (`0.1`), not the raw variable.
 - **Health checks are never traced.** A server root span whose `http.target`
-  path ends in `/api/health` or `/api/healthz` (optionally with a trailing `/`
-  or behind a base path, e.g. MBOA's `/adresources/api/health/`) gets
+  path is `<base path>/api/health` or `<base path>/api/healthz` (optional
+  trailing `/`, query, fragment or origin; the base path is
+  `NEXT_PUBLIC_CUSTOM_BASE_PATH`, e.g. MBOA's `/adresources`) gets
   `NOT_RECORD`, so the whole trace, Redis and Postgres children included, is
-  dropped. DO App Platform probes every instance every 10 s; at `1` on the CMS
-  that was a trace per instance every 10 s. Norse API excludes its `/health`
-  the same way (`ignoreIncomingRequestHook`).
+  dropped. The match is anchored: `/en/api/health` or `/admin/api/health`
+  (catch-all routes) are traced as usual. DO App Platform probes every
+  instance on its health check period (10 s for Norse); at `1` that was a
+  trace per instance every 10 s. Norse API excludes its `/health` the same
+  way (`ignoreIncomingRequestHook`). Side effect: work a health request
+  starts for the process (for example Payload's lazy init when `/api/healthz`
+  is the first request on a CMS instance) is not traced either.
 
 - **Norse is the trace root.** Incoming `traceparent` is deliberately ignored:
   `InjectOnlyTraceContextPropagator` (`src/instrumentation.ts`) overrides
@@ -190,9 +195,10 @@ traceSampler: new HealthCheckDroppingSampler(
   App Platform / Cloudflare) has no key and still starts a new root. The
   public app never trusts incoming context.
 - **Production:** `norse-app` samples 10% (`OTEL_TRACES_SAMPLER_ARG=0.1`).
-  `norse-cms` may run `1`: calls from the app follow the app's decision
-  (parent-based), so the CMS ratio only applies to CMS-rooted traffic
-  (admin, jobs, public Payload REST). Dev may run `1` on both.
+  `norse-cms` may run `1`: every app → CMS call carries the app's decision
+  (`-01`, or `-00` for an unsampled request, see below), so the CMS ratio
+  only applies to CMS-rooted traffic (admin, jobs, public Payload REST).
+  Dev may run `1` on both.
 - `TraceIdRatioBasedSampler` is a pure function of `(traceId, ratio)`, and
   `ParentBasedSampler` honours a parent's decision instead of re-deciding. So
   the ratio is **not** something the two services must keep in sync.
@@ -202,7 +208,9 @@ traceSampler: new HealthCheckDroppingSampler(
   (`src/lib/telemetry/fetch.ts`) injects the active (unsampled) context itself,
   producing `…-00`, and never overwrites a header that is already present.
   Either way norse-api receives a parent decision and never re-roots a Norse
-  request. Norse-api's own `ParentBasedSampler` follows it.
+  request. Calls to the CMS internal API do the same: `cmsRequest()`
+  (`src/lib/cms/client.ts`) injects the active context, so an unsampled app
+  request reaches the CMS as `-00` instead of starting a CMS root. Norse-api's own `ParentBasedSampler` follows it.
 - A non-Norse caller that hits `norse-api` directly still gets sampled by the
   API's own root ratio; that is out of scope here.
 
@@ -428,7 +436,8 @@ Events worth knowing:
 | `arcjet_no_client_ip` / `arcjet_no_client_ip_sampled_out` | warn | `host`, `pathName`, `ipSrc`, `doConnectingIp`, `forwardedFor` (masked), `headers?` (redacted) |
 | `arcjet_denied` | warn | `host`, `pathName`, `reason`, `reasonType`, `deniedBots`, `decisionId`, `enforced`, `sampledOutSinceLast` (≤30/min) |
 | `request_error` | error | `routePath`, `routeType`, `method`, `digest`, `errName`, `errMessage` — never `request.path`, which can contain a query string |
-| — | info/error | `Initialized telemetry` (`endpoint`, `traceSamplerArg`, `basicAuth`, `metrics`, `logs`) and `telemetry setup failed; continuing without that signal` (`signal`, `err`) |
+| — | info/error | `Initialized telemetry` (`endpoint`, `traceSamplerArg` = the ratio in effect, `basicAuth`, `metrics`, `logs`) and `telemetry setup failed; continuing without that signal` (`signal`, `err`) |
+| — | warn | `OTEL_TRACES_SAMPLER_ARG is unset or invalid: sampling at the default ratio` (`reason`: `unset` \| `invalid`, `ratio`) |
 
 The fields above live in the JSON line body (query them with `| json`). Loki
 labels the stream `service_name="norse-app"` (`"norse-cms"` for the CMS; the
