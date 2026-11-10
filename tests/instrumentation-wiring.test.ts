@@ -7,6 +7,7 @@ import type { Configuration } from '@vercel/otel';
 
 import { register } from '../src/instrumentation';
 import { PrivacySpanExporter } from '../src/lib/privacy-span-exporter';
+import { HealthCheckDroppingSampler } from '../src/lib/telemetry/sampler';
 
 /**
  * `registerOTel` is the only place that decides which exporter the app's spans
@@ -48,5 +49,20 @@ test('register wires a single span processor wrapped in PrivacySpanExporter', ()
   assert.ok(
     exporter instanceof PrivacySpanExporter,
     'the delegate exporter must sanitise spans',
+  );
+});
+
+test('register samples with the health-check-dropping sampler', () => {
+  process.env.OTEL_EXPORTER_OTLP_ENDPOINT = 'http://collector.invalid:4318';
+
+  let received: Configuration | string | undefined;
+  register((options) => {
+    received = options;
+  });
+
+  const { traceSampler } = received as Configuration;
+  assert.ok(
+    traceSampler instanceof HealthCheckDroppingSampler,
+    'DO App Platform health probes must not be traced',
   );
 });
