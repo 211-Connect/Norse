@@ -40,8 +40,11 @@ export async function getTenantById(tenantId: string): Promise<Tenant | null> {
     }
   }
 
-  return withCache(`tenant:${tenantId}`, () =>
-    cmsRequest<Tenant | null>('tenants/by-id', { query: { id: tenantId } }),
+  return withCache(
+    `tenant:${tenantId}`,
+    () =>
+      cmsRequest<Tenant | null>('tenants/by-id', { query: { id: tenantId } }),
+    { redis: true, memory: true },
   );
 }
 
