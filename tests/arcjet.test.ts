@@ -177,7 +177,7 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
       'PYTHON_REQUESTS',
     ]);
     assert.equal(entries.length, 1);
-    assert.equal(entries[0].level, 'warn');
+    assert.equal(entries[0].level, 'debug');
     assert.equal(entries[0].event, 'arcjet_denied');
     assert.deepEqual(entries[0].data.deniedBots, ['CURL', 'PYTHON_REQUESTS']);
     assert.equal(entries[0].data.host, 'example.org');
@@ -556,7 +556,7 @@ describe('MBOA internal traffic (ISS-1734, ISS-1728)', () => {
     assert.deepEqual(lastOptions(), { ipSrc: '10.215.199.3' });
     assert.equal(entries.length, 1);
     assert.equal(entries[0].data.ipSrc, '10.215.x.x');
-    assert.equal(entries[0].level, 'warn');
+    assert.equal(entries[0].level, 'debug');
     assert.equal(entries[0].event, 'arcjet_no_client_ip');
     assert.equal(entries[0].data.host, NO_CLIENT_IP_BYPASS_HOST);
     assert.equal(entries[0].data.pathName, PATH);
@@ -687,7 +687,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     });
     assert.equal(entries.length, 1);
     const entry = entries[0];
-    assert.equal(entry.level, 'warn');
+    assert.equal(entry.level, 'debug');
     assert.equal(entry.event, 'arcjet_fingerprint_failed');
     assert.equal(entry.data.conclusion, 'THREW');
     assert.equal(entry.data.errorType, 'TypeError');
