@@ -20,11 +20,11 @@ const LIST_LAYER_ID = 'result-points-list-circles';
 const ALL_COUNT_LAYER_ID = 'result-points-counts';
 const LIST_COUNT_LAYER_ID = 'result-points-list-counts';
 
-/** Circles grow to fit a count from here, so it's readable once it shows. */
-const COUNT_MIN_ZOOM = 9;
+/** Counts show from here, where a circle (16px across) still holds two digits. */
+const COUNT_MIN_ZOOM = 7;
 
-/** A count hides once a higher circle is this close to covering it. */
-const COUNT_COLLISION_PADDING_PX = 4;
+/** A count hides only once a higher circle actually reaches its digits. */
+const COUNT_COLLISION_PADDING_PX = 1;
 
 /** Must exist on the style's glyph server, or the counts don't draw. */
 const COUNT_FONT = 'DIN Pro Medium';
@@ -45,6 +45,10 @@ export const toFeatureCollection = (
   type: 'FeatureCollection',
   features: points
     .filter((point) => isValidCoordinate(point.coordinates))
+    // Larger counts stack higher, so a shared address isn't buried under single
+    // resources and its count wins the collision. The sort is stable, so equal
+    // counts keep their order.
+    .sort((a, b) => (a.count ?? 1) - (b.count ?? 1))
     .map((point, stack) => ({
       type: 'Feature',
       properties: {
@@ -80,7 +84,7 @@ const CIRCLE_RADIUS: ExpressionSpecification = [
   ['zoom'],
   5,
   ['case', IS_HOVERED, 8, 6],
-  COUNT_MIN_ZOOM,
+  9,
   ['case', IS_HOVERED, 12, 10],
   15,
   ['case', IS_HOVERED, 14, 12],
