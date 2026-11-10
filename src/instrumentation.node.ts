@@ -96,6 +96,14 @@ export function resourceAttributes({
     // value is reported as `unknown` rather than guessed as production.
     'deployment.environment.name': env.DEPLOYMENT_ENVIRONMENT || 'unknown',
     'service.version': env.APP_VERSION || packageVersion,
+    // `@vercel/otel` labels every process `cloud.provider=vercel` and adds
+    // `vercel.runtime`; these attributes are merged over its defaults. Norse
+    // runs on DO App Platform in SFO3. `undefined` removes the attribute
+    // (`process.runtime.name` already carries the runtime).
+    'cloud.provider': 'digitalocean',
+    'cloud.platform': 'digitalocean_app_platform',
+    'cloud.region': env.CLOUD_REGION || 'sfo3',
+    'vercel.runtime': undefined,
   };
 }
 

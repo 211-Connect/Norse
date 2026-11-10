@@ -53,6 +53,35 @@ describe('resourceAttributes', () => {
     assert.equal(attributes['service.version'], '0.1.1');
   });
 
+  it('labels the process as DO App Platform in SFO3, not Vercel', () => {
+    const attributes = resourceAttributes({
+      env: {},
+      hostname: 'norse-app-1',
+      now: 1_700_000_000_000,
+      uptimeSeconds: 0,
+      packageVersion: '0.1.1',
+    });
+
+    assert.equal(attributes['cloud.provider'], 'digitalocean');
+    assert.equal(attributes['cloud.platform'], 'digitalocean_app_platform');
+    assert.equal(attributes['cloud.region'], 'sfo3');
+    // Present as undefined so it overrides (removes) @vercel/otel's default.
+    assert.ok('vercel.runtime' in attributes);
+    assert.equal(attributes['vercel.runtime'], undefined);
+  });
+
+  it('takes the region from CLOUD_REGION when set', () => {
+    const attributes = resourceAttributes({
+      env: { CLOUD_REGION: 'nyc3' },
+      hostname: 'norse-app-1',
+      now: 1_700_000_000_000,
+      uptimeSeconds: 0,
+      packageVersion: '0.1.1',
+    });
+
+    assert.equal(attributes['cloud.region'], 'nyc3');
+  });
+
   it('treats an empty environment as unknown', () => {
     const attributes = resourceAttributes({
       env: { DEPLOYMENT_ENVIRONMENT: '' },
