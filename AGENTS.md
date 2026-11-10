@@ -23,6 +23,7 @@ Other docs, load only when the task touches that area:
 - [docs/map-pins.md](/docs/map-pins.md) — every search result on the map: per-tenant flag, `GET /search/pins`, canvas circles plus list pins, the 10,000 cap and its caching.
 - [docs/search-intent.md](/docs/search-intent.md) — how a `/search` URL is read into a typed search intent and envelope (slots, lift, generations, serializer), how the resolver machine decides what the page and dialog do (including the AI-classification deep-link gate), and how to add a slot.
 - [docs/scorecards.md](/docs/scorecards.md) — managing per-tenant AI-classification taxonomy-to-need weights.
+- [docs/payload-jobs.md](/docs/payload-jobs.md) — Payload background jobs: queues and crons, and the Postgres advisory lock that lets only one CMS instance schedule and run them.
 - [docs/scheduled-pdf-delivery.md](/docs/scheduled-pdf-delivery.md) — emailing printable directory PDFs on a weekly/monthly schedule: daily Payload job, server-side rendering via an internal Pages API route.
 - [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
 - [docs/tenant-api-key.md](/docs/tenant-api-key.md) — per-tenant Norse API authentication key (`x-api-key`), caching, and bulk backfill endpoint.
