@@ -81,6 +81,8 @@ otelcol.processor.transform "env" {
 		context    = "datapoint"
 		statements = [
 			`set(attributes["env"], resource.attributes["deployment.environment.name"]) where resource.attributes["deployment.environment.name"] != nil`,
+			// Multi-tenant vs MBOA app (same as production): `deployment` label.
+			`set(attributes["deployment"], resource.attributes["norse.deployment"]) where resource.attributes["norse.deployment"] != nil`,
 		]
 	}
 

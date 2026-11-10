@@ -135,6 +135,7 @@ Derived once per process in `resourceAttributes()` (`src/instrumentation.node.ts
 | `service.instance.id` = `os.hostname()` (random UUID if empty) | `instance` |
 | `deployment.environment.name` (`production` \| `dev` \| `local`, `unknown` when unset) | `env` (datapoint attribute, set by the collector's `transform`) |
 | `host.name`, `process.creation.time`, `service.version` | labels on `target_info` |
+| `norse.deployment` = `multi-tenant` (default) \| `mboa`, from `NORSE_DEPLOYMENT`: which App Platform app the process belongs to (both run `norse-app` and `norse-cms` under the same names); `unknown` for a value that is not a short slug | `deployment` (datapoint attribute, set by the collector's `transform`); `deployment` in Tempo span metrics; Loki index label `norse_deployment` |
 | `cloud.provider=digitalocean`, `cloud.platform=digitalocean_app_platform`, `cloud.region` (`CLOUD_REGION`, default `sfo3`) | labels on `target_info` |
 
 These are merged over `@vercel/otel`'s defaults, which would otherwise label
@@ -260,6 +261,7 @@ OTEL_EXPORTER_OTLP_USERNAME=<secret>
 OTEL_EXPORTER_OTLP_PASSWORD=<secret>
 OTEL_TRACES_SAMPLER_ARG=0.1        # unset = 0.1; dev and prod norse-cms may use 1
 DEPLOYMENT_ENVIRONMENT=production   # or dev
+NORSE_DEPLOYMENT=mboa               # MBOA apps only; unset = multi-tenant
 APP_VERSION=${_self.COMMIT_HASH}    # App Platform bindable variable; verify the name
 OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT=512
 # remove: OTEL_SERVICE_NAME, OTEL_PROPAGATORS, PROMETHEUS_TOKEN
@@ -282,6 +284,7 @@ Also honoured by the code, when set:
 | `API_URL` | Scope for `traceparent` injection. Without it a warning is logged and no header reaches norse-api. |
 | `PAYLOAD_CMS_URL` | On `norse-app`: the CMS internal API, also in the `traceparent` injection scope. |
 | `PAYLOAD_API_ROUTE_SECRET` | On the CMS: the `x-internal-api-key` value. Only when it is set does the CMS continue an incoming trace (from a caller that sends the key). |
+| `NORSE_DEPLOYMENT` | `norse.deployment` resource attribute. Set `mboa` on both MBOA components (dev and prod); leave unset on the multi-tenant apps (`multi-tenant`). |
 | `CLOUD_REGION` | `cloud.region` resource attribute; defaults to `sfo3`. |
 | `NORSE_ROLE` / `NORSE_BUILD` | Choose the role, and with it `service.name` (`norse-cms` for `cms`, `norse-app` otherwise). |
 
