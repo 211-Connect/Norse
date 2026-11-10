@@ -20,7 +20,7 @@ import { maskSecret, redactUrl } from './lib/redact';
 import type { TenantBasicConfigResponse } from './types/tenantBasicConfig';
 import { crawlTrapMiddleware } from './middlewares/crawlTrapMiddleware';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
-import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
+import { ONE_MINUTE } from './utilities/withCache';
 import { trackDependency } from './lib/telemetry/dependency';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
@@ -107,14 +107,19 @@ function addRootSpanExtras(request: NextRequest) {
   }
 }
 
-const TENANT_DATA_CACHE_TTL_MS = 10 * 60 * 1000;
 /**
- * A failed lookup (timeout, network error, non-2xx) is cached only briefly:
- * long enough that an outage doesn't make every request wait out the fetch
- * timeout, short enough that a blip doesn't serve a tenant without its
- * config (default locales, no login wall) for the full TTL above.
+ * Not invalidated on save: a change to the login wall, `noindex` or locales
+ * reaches each app instance within this TTL.
  */
-const TENANT_DATA_FAILURE_CACHE_TTL_MS = 10 * 1000;
+const TENANT_DATA_CACHE_TTL_MS = 15 * 60 * 1000;
+/**
+ * After a failed lookup (timeout, network error, non-2xx) the next retry
+ * waits this long, so an outage doesn't make every request wait out the
+ * fetch timeout. Meanwhile the last good config is served when there is
+ * one (stale-on-error), keeping the tenant's login wall and locales; only a
+ * host never fetched successfully falls back to the defaults.
+ */
+const TENANT_DATA_FAILURE_RETRY_MS = 10 * 1000;
 const TENANT_DATA_CACHE_MAX_ENTRIES = 1_000;
 
 type TenantDataCacheEntry = {
@@ -134,22 +139,22 @@ function getOriginFromUrl(url?: string): string | undefined {
   }
 }
 
+/** The cached config while fresh; `undefined` when missing or expired. */
 function getCachedTenantData(
   host: string,
 ): TenantBasicConfigResponse | null | undefined {
   const entry = tenantDataCache.get(host);
 
-  if (!entry) {
-    return undefined;
-  }
-
-  const expired = Date.now() > entry.expiresAt;
-  if (expired) {
-    tenantDataCache.delete(host);
+  if (!entry || Date.now() > entry.expiresAt) {
     return undefined;
   }
 
   return entry.data;
+}
+
+/** The last cached config for `host`, expired or not. */
+function getStaleTenantData(host: string): TenantBasicConfigResponse | null {
+  return tenantDataCache.get(host)?.data ?? null;
 }
 
 function setCachedTenantData(
@@ -157,7 +162,10 @@ function setCachedTenantData(
   data: TenantBasicConfigResponse | null,
   ttlMs: number = TENANT_DATA_CACHE_TTL_MS,
 ): void {
-  if (tenantDataCache.size >= TENANT_DATA_CACHE_MAX_ENTRIES) {
+  if (
+    !tenantDataCache.has(host) &&
+    tenantDataCache.size >= TENANT_DATA_CACHE_MAX_ENTRIES
+  ) {
     const firstKey = tenantDataCache.keys().next().value;
     if (firstKey) {
       tenantDataCache.delete(firstKey);
@@ -184,33 +192,24 @@ export const config = {
   ],
 };
 
-const CDN_CACHE_POLICIES = {
-  legal: {
-    pattern: /\/legal\//,
-    cacheControl: `public, max-age=${ONE_HOUR}, s-maxage=${ONE_DAY}, stale-while-revalidate=${12 * ONE_HOUR}`,
-    shared: true,
-  },
-  home: {
-    pattern: /^\/[a-z]{2}(\/)?$/,
-    cacheControl: `public, max-age=${10 * ONE_MINUTE}, s-maxage=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
-    shared: true,
-  },
-  topics: {
-    pattern: /\/topics(\/)?$/,
-    cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${30 * ONE_MINUTE}`,
-    shared: true,
-  },
+/**
+ * Every page renders per request (CSP nonce, cookies, session id), so none
+ * may sit in a shared cache: home, topics and legal fall through to the
+ * `private, no-cache` default. Only resource detail pages let the browser
+ * keep its own copy.
+ */
+const CACHE_POLICIES = {
   resourceDetail: {
     pattern: /\/search\/[^/?]+$/,
     cacheControl: `private, max-age=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
-    shared: false,
   },
   detailsOriginal: {
     pattern: /\/details\/original/,
     cacheControl: `private, max-age=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
-    shared: false,
   },
 } as const;
+
+const DEFAULT_CACHE_CONTROL = 'private, no-cache';
 
 function cacheControlMiddleware(response: NextResponse, pathname: string) {
   const isProduction = process.env.NODE_ENV === 'production';
@@ -220,17 +219,14 @@ function cacheControlMiddleware(response: NextResponse, pathname: string) {
     return;
   }
 
-  for (const [_name, policy] of Object.entries(CDN_CACHE_POLICIES)) {
+  for (const policy of Object.values(CACHE_POLICIES)) {
     if (policy.pattern.test(pathname)) {
       response.headers.set('Cache-Control', policy.cacheControl);
-      if (policy.shared) {
-        response.headers.set('Vary', 'Cookie');
-      }
       return;
     }
   }
 
-  response.headers.set('Cache-Control', 'no-cache');
+  response.headers.set('Cache-Control', DEFAULT_CACHE_CONTROL);
 }
 
 function robotsMiddleware(
@@ -426,7 +422,7 @@ export async function proxy(request: NextRequest) {
   let tenantConfig: TenantBasicConfigResponse | null | undefined;
 
   if (cached !== undefined) {
-    // Cache hit (null after a recent failed lookup)
+    // Cache hit (null after a recent failed lookup with nothing stale)
     if (cached && cached.enabledLocales.length && cached.defaultLocale) {
       locales = cached.enabledLocales;
       defaultLocale = cached.defaultLocale;
@@ -493,13 +489,20 @@ export async function proxy(request: NextRequest) {
         });
       }
     } catch (error) {
-      // Cache the failure briefly so we don't retry on every request
-      setCachedTenantData(host, null, TENANT_DATA_FAILURE_CACHE_TTL_MS);
+      // Serve the last good config (if any) and retry after a short pause
+      const stale = getStaleTenantData(host);
+      setCachedTenantData(host, stale, TENANT_DATA_FAILURE_RETRY_MS);
+      if (stale && stale.enabledLocales.length && stale.defaultLocale) {
+        locales = stale.enabledLocales;
+        defaultLocale = stale.defaultLocale;
+        tenantConfig = stale;
+      }
       edgeLog('error', 'tenant_basic_config_fetch_failed', {
         ...(error instanceof TenantConfigFetchError
           ? { error: error.message, ...error.details }
           : describeError(error)),
         timedOut: error instanceof Error && error.name === 'AbortError',
+        servedStale: stale !== null,
         secret: maskSecret(process.env.PAYLOAD_API_ROUTE_SECRET),
         url: request.url,
         method: request.method,

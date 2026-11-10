@@ -379,7 +379,7 @@ export async function findResourcesV2(
         tenantId,
         searchEngine,
       ),
-    { redis: true, memory: true, ttl: ONE_HOUR },
+    { redis: true, memory: false, ttl: ONE_HOUR },
     (value) => value.results.length > 0,
     (hit) => {
       cacheHit = hit;

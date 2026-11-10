@@ -4,7 +4,7 @@ import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { locales } from '@/payload/i18n/locales';
 import { ResourceDirectory } from '@/payload/payload-types';
-import { withCache } from '@/utilities/withCache';
+import { ONE_HOUR, withCache } from '@/utilities/withCache';
 
 async function findResourceDirectoryByHostOrig(
   host: string,
@@ -55,6 +55,6 @@ export async function findResourceDirectoryByHost(
   return await withCache(
     `resource_directory:${domain}:${locale}`,
     () => findResourceDirectoryByHostOrig(host, locale),
-    { redis: true, memory: true },
+    { redis: true, memory: true, ttl: ONE_HOUR },
   );
 }

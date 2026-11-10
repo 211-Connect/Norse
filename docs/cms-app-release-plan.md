@@ -215,7 +215,7 @@ schema, and `norse-cms` doesn't undo migrations on the way back.
 | Event                              | App    | Meaning                                                                                      |
 | ---------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
 | `cms_request_failed`               | public | A call to the CMS failed. See `status`, `body`, and `cfRay` (set means it went through Cloudflare). |
-| `tenant_basic_config_fetch_failed` | public | The proxy could not read a tenant's locales and login wall, so the page got defaults, **without its login wall**. |
+| `tenant_basic_config_fetch_failed` | public | The proxy could not read a tenant's locales and login wall. With `servedStale: true` the page got the last good config; otherwise it got defaults, **without its login wall**. |
 | `CMS internal API route failed`    | CMS    | An `/api/internal/*` handler threw and answered 500.                                         |
 
 The secret is never logged in full: `tenant_basic_config_fetch_failed` shows its

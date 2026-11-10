@@ -6,7 +6,7 @@
  */
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { Tenant } from '@/payload/payload-types';
-import { withCache } from '@/utilities/withCache';
+import { ONE_HOUR, withCache } from '@/utilities/withCache';
 
 async function findTenantByIdOrig(tenantId: string): Promise<Tenant | null> {
   const payload = await getPayloadSingleton();
@@ -27,7 +27,11 @@ export async function findTenantById(
   useCache = true,
 ): Promise<Tenant | null> {
   if (useCache) {
-    return withCache(`tenant:${tenantId}`, () => findTenantByIdOrig(tenantId));
+    return withCache(`tenant:${tenantId}`, () => findTenantByIdOrig(tenantId), {
+      redis: true,
+      memory: true,
+      ttl: ONE_HOUR,
+    });
   }
 
   return findTenantByIdOrig(tenantId);

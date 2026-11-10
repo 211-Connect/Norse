@@ -2,7 +2,7 @@
 
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { Tenant } from '@/payload/payload-types';
-import { withCache } from '@/utilities/withCache';
+import { ONE_HOUR, withCache } from '@/utilities/withCache';
 
 export async function findTenantByHost(host: string): Promise<Tenant | null> {
   return await withCache(
@@ -25,6 +25,6 @@ export async function findTenantByHost(host: string): Promise<Tenant | null> {
 
       return tenant || null;
     },
-    { redis: true, memory: true },
+    { redis: true, memory: true, ttl: ONE_HOUR },
   );
 }
