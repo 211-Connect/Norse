@@ -56,14 +56,25 @@ export async function expectPageUrl(
   });
 }
 
+/**
+ * The number at the end of `text`, e.g. `1-25 of 10,000+` → 10000.
+ *
+ * - A trailing `+` is allowed: tenants with "Show all results on the map"
+ *   cap the list total at `MAP_PINS_LIMIT` and render `10,000+`
+ *   (`ResultTotal`).
+ * - Thousands separators may be `,` (en), `.` (es) or a (narrow) no-break
+ *   space, depending on the locale `toLocaleString()` formats with.
+ *
+ * Returns 0 when there is no trailing number.
+ */
 export function parseTrailingInteger(text: string): number {
-  const match = text.replace(/,/g, '').match(/(\d+)\s*$/);
-  return match ? Number(match[1]) : 0;
+  const match = text.match(/(\d[\d.,\s\u00a0\u202f]*)\+?\s*$/);
+  return match ? Number(match[1].replace(/\D/g, '')) : 0;
 }
 
+/** The total in a `#result-total` text (`1-25 of 10,000+`, `0-0 de 0`). */
 export function parseTotalFromResultText(text: string): number {
-  const match = text.match(/of\s+(\d+)/);
-  return match ? parseInt(match[1], 10) : 0;
+  return parseTrailingInteger(text);
 }
 
 /** Escapes a string for safe interpolation into a single `RegExp` literal. */
