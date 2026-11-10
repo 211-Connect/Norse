@@ -93,3 +93,20 @@ export function getPrintableDirectoryViewerAccess(
     ],
   };
 }
+
+/**
+ * Whether to show the Printable Directories link in the header. Users with
+ * basic access always see it. In the tenant's `everyone` access mode it is
+ * shown to signed-out users too: any signed-in user would have access, and
+ * the `/directories` page sends them to sign in first.
+ */
+export function shouldShowPrintableDirectoriesLink(
+  hasAccess: boolean,
+  appConfig: AccessConfig,
+): boolean {
+  if (!appConfig.featureFlags.enablePrintableDirectories) {
+    return false;
+  }
+
+  return hasAccess || appConfig.printableDirectories.accessMode === 'everyone';
+}
