@@ -111,6 +111,69 @@ test.describe('Language Persistence And Results Button', () => {
     expect(r2TitlesEnglishAgain.length).toBeGreaterThan(0);
   });
 
+  // Regression: switching ES -> EN on a search page, then clicking a filter,
+  // landed back on `/es/search`. An unprefixed path takes its language from the
+  // NEXT_LOCALE cookie, and the proxy let background requests write it: while
+  // the switch was in flight the still-mounted Spanish page prefetched its
+  // `/es…` links, which reset the cookie to `es`, so the filter's `/search?…`
+  // push was redirected to Spanish.
+  test('clicking a filter after switching EN -> ES -> EN stays in English', async ({
+    page,
+    context,
+  }) => {
+    test.skip(
+      !hasFacetsForCurrentTenant(),
+      'This tenant/environment has no search facets/filters (see e2e/fixtures/tenants.ts)',
+    );
+
+    // Search on the host under test. (Home-page topic links can be absolute
+    // CMS hrefs to another host, e.g. production, so they are not followed.)
+    const origin = new URL(page.url()).origin;
+    const { taxonomy } = getCurrentTenant();
+    await performSearch(page, {
+      query: taxonomy.code,
+      query_label: taxonomy.label,
+      query_type: 'taxonomy',
+    });
+    await waitForSearchResultsSettled(page);
+    expect(new URL(page.url()).origin).toBe(origin);
+
+    await switchLanguage(page, 'es');
+    await waitForSearchResultsSettled(page);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+
+    await switchLanguage(page, 'en');
+    await waitForSearchResultsSettled(page);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+
+    const availableFilters = await page
+      .locator('#filter-panel [role="checkbox"]')
+      .count();
+    test.skip(
+      availableFilters === 0,
+      'No facet checkboxes on this topic search in this environment.',
+    );
+
+    const searchBeforeFilter = new URL(page.url()).search;
+    await markFirstNEnabledFilters(page, 1);
+    // The filter is applied once the URL's query changes; the path it lands on
+    // (with or without `/es`) is final at that point.
+    await expectPageUrl(
+      page,
+      (url) => isSearchResultsListUrl(url) && url.search !== searchBeforeFilter,
+    );
+    await waitForSearchResultsSettled(page);
+
+    expect(countLocaleSegments(new URL(page.url()), 'es')).toBe(0);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    expect((await getResultTotalText(page)).toLowerCase()).toContain('of');
+
+    const localeCookie = (await context.cookies()).find(
+      (cookie) => cookie.name === 'NEXT_LOCALE',
+    );
+    expect(localeCookie?.value).toBe('en');
+  });
+
   test('resource page back button is Results and returns to list EN', async ({
     page,
   }) => {

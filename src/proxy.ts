@@ -19,6 +19,8 @@ import { getNorseRole, servesPath } from './lib/norse-role';
 import { maskSecret, redactUrl } from './lib/redact';
 import type { TenantBasicConfigResponse } from './types/tenantBasicConfig';
 import { crawlTrapMiddleware } from './middlewares/crawlTrapMiddleware';
+import { LOCALE_COOKIE, localeCookieOptions } from './lib/locale-cookie';
+import { keepLocaleCookieForDocumentNavigations } from './middlewares/localeCookieMiddleware';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_MINUTE } from './utilities/withCache';
 import { trackDependency } from './lib/telemetry/dependency';
@@ -594,11 +596,8 @@ export async function proxy(request: NextRequest) {
   let response = i18nRouter(request, {
     ...i18nConfig,
     basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
-    cookieOptions: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    },
+    localeCookie: LOCALE_COOKIE,
+    cookieOptions: localeCookieOptions(),
   });
   if (!request.cookies.has(SESSION_ID)) {
     response.cookies.set({
@@ -646,6 +645,7 @@ export async function proxy(request: NextRequest) {
 
   cacheControlMiddleware(response, pathname);
   robotsMiddleware(response, pathname, tenantConfig);
+  keepLocaleCookieForDocumentNavigations(request, response);
 
   return response;
 }

@@ -77,8 +77,8 @@ const ALLOWED_EDITS: Record<string, { count: number; why: string }> = {
     why: 'a typeahead topic of type link opens its CMS href verbatim (BUILDERS 3)',
   },
   'app/(app)/shared/components/language-switcher.tsx': {
-    count: 1,
-    why: 'swaps the locale prefix on the current URL (BUILDERS 10)',
+    count: 2,
+    why: 'swaps the locale prefix on the current URL (BUILDERS 10): a client push, or a page load of the prefixed URL when the locale cookie could not be saved (docs/locale-routing.md)',
   },
   'app/(app)/shared/components/printable-directories/save-source-to-directory-button.tsx':
     {
