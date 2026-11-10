@@ -90,7 +90,9 @@ function startFakeRedis(): Promise<{
     });
   });
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    // EPERM in a sandbox, EADDRINUSE: fail the hook instead of hanging.
+    server.once('error', reject);
     server.listen(0, '127.0.0.1', () => {
       const { port } = server.address() as net.AddressInfo;
       resolve({
@@ -115,6 +117,9 @@ function contextOfNextReconnect(client: Redis): Promise<Context> {
   });
 }
 
+// A failed listen or a missing `reconnecting` event must fail, not hang.
+const TIMEOUT = { timeout: 10_000 };
+
 let fakeRedis: Awaited<ReturnType<typeof startFakeRedis>>;
 
 before(async () => {
@@ -132,61 +137,65 @@ before(async () => {
     },
   });
   fakeRedis = await startFakeRedis();
-});
+}, TIMEOUT);
 
 after(async () => {
   await fakeRedis.close();
   context.disable();
 });
 
-describe('Redis reconnects do not join the request that created the client', () => {
-  test('control: a client connected inside a request reconnects in that request', async () => {
-    // Pins the mechanism the fix relies on: without ROOT_CONTEXT the socket
-    // keeps the creating request's context, so this would be the bug.
-    const client = new Redis(fakeRedis.url, {
-      lazyConnect: true,
-      retryStrategy: () => 50,
+describe(
+  'Redis reconnects do not join the request that created the client',
+  TIMEOUT,
+  () => {
+    test('control: a client connected inside a request reconnects in that request', async () => {
+      // Pins the mechanism the fix relies on: without ROOT_CONTEXT the socket
+      // keeps the creating request's context, so this would be the bug.
+      const client = new Redis(fakeRedis.url, {
+        lazyConnect: true,
+        retryStrategy: () => 50,
+      });
+      try {
+        await context.with(ROOT_CONTEXT.setValue(REQUEST, 'first'), () =>
+          client.connect(),
+        );
+        const reconnect = contextOfNextReconnect(client);
+        fakeRedis.dropAll();
+        assert.equal((await reconnect).getValue(REQUEST), 'first');
+      } finally {
+        client.disconnect();
+      }
     });
-    try {
-      await context.with(ROOT_CONTEXT.setValue(REQUEST, 'first'), () =>
-        client.connect(),
-      );
-      const reconnect = contextOfNextReconnect(client);
-      fakeRedis.dropAll();
-      assert.equal((await reconnect).getValue(REQUEST), 'first');
-    } finally {
-      client.disconnect();
-    }
-  });
 
-  test('CacheService reconnects outside any request context', async () => {
-    process.env.CACHE_REDIS_URI = fakeRedis.url;
-    const { CacheService } = await import('../src/cacheService');
-    const service = new CacheService(0);
-    try {
-      const healthy = await context.with(
-        ROOT_CONTEXT.setValue(REQUEST, 'first'),
-        async () => {
-          const ok = await service.isHealthy();
-          // The caller keeps its own context after awaiting the connect.
-          assert.equal(context.active().getValue(REQUEST), 'first');
-          return ok;
-        },
-      );
-      assert.equal(healthy, true);
+    test('CacheService reconnects outside any request context', async () => {
+      process.env.CACHE_REDIS_URI = fakeRedis.url;
+      const { CacheService } = await import('../src/cacheService');
+      const service = new CacheService(0);
+      try {
+        const healthy = await context.with(
+          ROOT_CONTEXT.setValue(REQUEST, 'first'),
+          async () => {
+            const ok = await service.isHealthy();
+            // The caller keeps its own context after awaiting the connect.
+            assert.equal(context.active().getValue(REQUEST), 'first');
+            return ok;
+          },
+        );
+        assert.equal(healthy, true);
 
-      const client = service.getClient();
-      assert.ok(client, 'isHealthy() must have created the client');
-      const reconnect = contextOfNextReconnect(client);
-      fakeRedis.dropAll();
-      assert.equal(
-        (await reconnect).getValue(REQUEST),
-        undefined,
-        'the reconnect must not run in the context of the first request',
-      );
-    } finally {
-      service.getClient()?.disconnect();
-      delete process.env.CACHE_REDIS_URI;
-    }
-  });
-});
+        const client = service.getClient();
+        assert.ok(client, 'isHealthy() must have created the client');
+        const reconnect = contextOfNextReconnect(client);
+        fakeRedis.dropAll();
+        assert.equal(
+          (await reconnect).getValue(REQUEST),
+          undefined,
+          'the reconnect must not run in the context of the first request',
+        );
+      } finally {
+        service.getClient()?.disconnect();
+        delete process.env.CACHE_REDIS_URI;
+      }
+    });
+  },
+);

@@ -67,7 +67,10 @@ export class CacheService {
     // their spans would join its trace for the life of the process and their
     // logs would carry its trace_id. With `requireParentSpan: true` the
     // handshake now records no span at all. Commands still trace normally:
-    // each one is a child of whoever awaits it.
+    // each one is a child of whoever awaits it. This resets the OTel context
+    // only: Next.js's own request stores (separate AsyncLocalStorage) stay
+    // attached to the socket, so nothing in these callbacks may read
+    // headers(), cookies() or other request-scoped state.
     await context.with(ROOT_CONTEXT, () => this.createAndConnect());
   }
 
