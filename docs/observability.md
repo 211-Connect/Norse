@@ -94,7 +94,7 @@ On exported spans the query string and fragment are removed in three layers
 | Traces | Next.js request/render/route spans (root span per request, RSC render spans, route-handler spans) | free once an OTel SDK is registered |
 | Traces | `fetch <METHOD> <host><path-template>` for wrapped outgoing calls (`fetch <METHOD> <url>` for raw `fetch` calls); the query string is removed at export | `@vercel/otel` fetch instrumentation + `spanOptionsFor()` in `src/lib/telemetry/fetch.ts`; `propagateContextUrls` scoped to `API_URL` and `PAYLOAD_CMS_URL`; `PrivacySpanExporter` |
 | Traces | `response.parse` (JSON parse, `response.body.size`, `server.address`, `url.path`) | `src/app/(app)/shared/lib/fetchWrapper.ts` |
-| Traces | Redis client span per command (`db.system = redis`); `db.statement` keeps the command and key only | `@opentelemetry/instrumentation-ioredis`, `requireParentSpan: true`; `ioredis` is in `serverExternalPackages` (a bundled copy is never patched) |
+| Traces | Redis client span per command (`db.system = redis`); `db.statement` keeps the command and key only | `@opentelemetry/instrumentation-ioredis`, `requireParentSpan: true`; clients connect under `ROOT_CONTEXT`, so the connect/reconnect handshake records no span; `ioredis` is in `serverExternalPackages` (a bundled copy is never patched) |
 | Traces | Postgres client span per query (`norse-cms`, Payload's `pg` pool): no connect/pool spans, never bind values, SQL literals masked at export (see [Postgres query text](#postgres-query-text)) | `@opentelemetry/instrumentation-pg` in `src/instrumentation.node.ts` (`requireParentSpan`, `ignoreConnectSpans`, `enhancedDatabaseReporting: false`); `PrivacySpanExporter` |
 | Traces | `arcjet.protect` (`url.path`, `arcjet.enforced`, `arcjet.conclusion`, `arcjet.decision_id`, `event_loop.utilization`, `arcjet.duration_ms`, `arcjet.reason_type` on a denial) | `src/lib/arcjet-page.ts` |
 | Traces | `job <slug>` root span per Payload task run | `src/payload/jobs/tracedTask.ts` → `src/lib/telemetry/jobs.ts` |
@@ -135,6 +135,13 @@ Derived once per process in `resourceAttributes()` (`src/instrumentation.node.ts
 | `service.instance.id` = `os.hostname()` (random UUID if empty) | `instance` |
 | `deployment.environment.name` (`production` \| `dev` \| `local`, `unknown` when unset) | `env` (datapoint attribute, set by the collector's `transform`) |
 | `host.name`, `process.creation.time`, `service.version` | labels on `target_info` |
+| `norse.deployment` = `multi-tenant` (default) \| `mboa`, from `NORSE_DEPLOYMENT`: which App Platform app the process belongs to (both run `norse-app` and `norse-cms` under the same names); `unknown` for a value that is not a short slug | `deployment` (datapoint attribute, set by the collector's `transform`); `deployment` in Tempo span metrics; Loki index label `norse_deployment` |
+| `cloud.provider=digitalocean`, `cloud.platform=digitalocean_app_platform`, `cloud.region` (`CLOUD_REGION`, default `sfo3`) | labels on `target_info` |
+
+These are merged over `@vercel/otel`'s defaults, which would otherwise label
+every process `cloud.provider=vercel`; `vercel.runtime` is removed
+(`process.runtime.name` carries the runtime). Edge-runtime spans do not run
+`instrumentation.node.ts` and keep the `@vercel/otel` defaults.
 
 `job`, `env` and `instance` are what every query below filters on. The name
 covers traces, metrics and logs alike, and prod and dev share it. `norse-api`
@@ -147,10 +154,29 @@ query can cover all services. The queries below use `job="norse-app"`; use
 Sampling is decided **once per request, in this process**:
 
 ```ts
-traceSampler: new ParentBasedSampler({
-  root: new TraceIdRatioBasedSampler(parseFloat(process.env.OTEL_TRACES_SAMPLER_ARG || '1.0')),
-})
+// src/lib/telemetry/sampler.ts
+traceSampler: new HealthCheckDroppingSampler(
+  new ParentBasedSampler({ root: new TraceIdRatioBasedSampler(ratio) }),
+)
 ```
+
+- **The ratio** is `OTEL_TRACES_SAMPLER_ARG`, a number in `[0, 1]`. Unset,
+  empty or invalid falls back to **`0.1`** (never `1`) and `register()` logs
+  `OTEL_TRACES_SAMPLER_ARG is unset or invalid: sampling at the default ratio`.
+  The `Initialized telemetry` log line reports the ratio in effect as
+  `traceSamplerArg`, a number (`0.1`), not the raw variable.
+- **Health checks are never traced.** A server root span whose `http.target`
+  path is `<base path>/api/health` or `<base path>/api/healthz` (optional
+  trailing `/`, query, fragment or origin; the base path is
+  `NEXT_PUBLIC_CUSTOM_BASE_PATH`, e.g. MBOA's `/adresources`) gets
+  `NOT_RECORD`, so the whole trace, Redis and Postgres children included, is
+  dropped. The match is anchored: `/en/api/health` or `/admin/api/health`
+  (catch-all routes) are traced as usual. DO App Platform probes every
+  instance on its health check period (10 s for Norse); at `1` that was a
+  trace per instance every 10 s. Norse API excludes its `/health` the same
+  way (`ignoreIncomingRequestHook`). Side effect: work a health request
+  starts for the process (for example Payload's lazy init when `/api/healthz`
+  is the first request on a CMS instance) is not traced either.
 
 - **Norse is the trace root.** Incoming `traceparent` is deliberately ignored:
   `InjectOnlyTraceContextPropagator` (`src/instrumentation.ts`) overrides
@@ -169,8 +195,11 @@ traceSampler: new ParentBasedSampler({
   app request. Public CMS traffic (`/admin`, Payload REST, anything through DO
   App Platform / Cloudflare) has no key and still starts a new root. The
   public app never trusts incoming context.
-- **Production samples 10%** (`OTEL_TRACES_SAMPLER_ARG=0.1`). Dev may run
-  `1`. Do not go above `0.1` in production.
+- **Production:** `norse-app` samples 10% (`OTEL_TRACES_SAMPLER_ARG=0.1`).
+  `norse-cms` may run `1`: every app → CMS call carries the app's decision
+  (`-01`, or `-00` for an unsampled request, see below), so the CMS ratio
+  only applies to CMS-rooted traffic (admin, jobs, public Payload REST).
+  Dev may run `1` on both.
 - `TraceIdRatioBasedSampler` is a pure function of `(traceId, ratio)`, and
   `ParentBasedSampler` honours a parent's decision instead of re-deciding. So
   the ratio is **not** something the two services must keep in sync.
@@ -180,13 +209,19 @@ traceSampler: new ParentBasedSampler({
   (`src/lib/telemetry/fetch.ts`) injects the active (unsampled) context itself,
   producing `…-00`, and never overwrites a header that is already present.
   Either way norse-api receives a parent decision and never re-roots a Norse
-  request. Norse-api's own `ParentBasedSampler` follows it.
+  request. Calls to the CMS internal API do the same: `cmsRequest()`
+  (`src/lib/cms/client.ts`) injects the active context, so an unsampled app
+  request reaches the CMS as `-00` instead of starting a CMS root. Norse-api's own `ParentBasedSampler` follows it.
 - A non-Norse caller that hits `norse-api` directly still gets sampled by the
   API's own root ratio; that is out of scope here.
 
 Timers do not keep a request's context. Anything long-lived leaves it when it
 starts: the blocked-traffic flush timer runs under `ROOT_CONTEXT`
-(`src/lib/blocked-traffic-counter.ts`), and Payload job handlers run inside
+(`src/lib/blocked-traffic-counter.ts`), the Redis clients connect under
+`ROOT_CONTEXT` (`src/cacheService.ts`: ioredis keeps the context its socket
+was created in, so every reconnect handshake and its logs would otherwise
+join the first request that touched the cache, for the life of the process),
+and Payload job handlers run inside
 `inNewTrace()` (`src/payload/jobs/tracedTask.ts`). Use `inNewTrace` from
 `src/lib/tracing.ts` for new background work.
 
@@ -202,6 +237,9 @@ Open the trace and look at its topmost span:
 - **`norse-cms` spans whose parent never arrived** — the app's span was lost
   on export. A CMS request without the internal key starts its own root and is
   never rootless.
+- **`connect`, `client`, `auth`, `info` Redis spans minutes after the request
+  ended** — a Redis client created inside a request (see above); they are
+  ioredis reconnects. Create clients under `ROOT_CONTEXT`.
 - **A `fetch …` or `job …` span in a trace older than the search window** — a
   timer that kept a request's context. The root exists but falls outside the
   range Grafana searched; widen the range.
@@ -214,15 +252,16 @@ Open the trace and look at its topmost span:
 Final set for **both** App Platform apps, on **both** components
 (`norse-app` and `norse-cms`). The dev app uses
 `DEPLOYMENT_ENVIRONMENT=dev` (and may keep `OTEL_TRACES_SAMPLER_ARG=1`); prod
-uses `production` and `0.1`. Secrets are provisioned in App Platform, never in
+uses `production`, `0.1` on `norse-app` and may use `1` on `norse-cms`. Secrets are provisioned in App Platform, never in
 the repo:
 
 ```
 OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.c211.io
 OTEL_EXPORTER_OTLP_USERNAME=<secret>
 OTEL_EXPORTER_OTLP_PASSWORD=<secret>
-OTEL_TRACES_SAMPLER_ARG=0.1        # dev may use 1
+OTEL_TRACES_SAMPLER_ARG=0.1        # unset = 0.1; dev and prod norse-cms may use 1
 DEPLOYMENT_ENVIRONMENT=production   # or dev
+NORSE_DEPLOYMENT=mboa               # MBOA apps only; unset = multi-tenant
 APP_VERSION=${_self.COMMIT_HASH}    # App Platform bindable variable; verify the name
 OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT=512
 # remove: OTEL_SERVICE_NAME, OTEL_PROPAGATORS, PROMETHEUS_TOKEN
@@ -245,6 +284,8 @@ Also honoured by the code, when set:
 | `API_URL` | Scope for `traceparent` injection. Without it a warning is logged and no header reaches norse-api. |
 | `PAYLOAD_CMS_URL` | On `norse-app`: the CMS internal API, also in the `traceparent` injection scope. |
 | `PAYLOAD_API_ROUTE_SECRET` | On the CMS: the `x-internal-api-key` value. Only when it is set does the CMS continue an incoming trace (from a caller that sends the key). |
+| `NORSE_DEPLOYMENT` | `norse.deployment` resource attribute. Set `mboa` on both MBOA components (dev and prod); leave unset on the multi-tenant apps (`multi-tenant`). |
+| `CLOUD_REGION` | `cloud.region` resource attribute; defaults to `sfo3`. |
 | `NORSE_ROLE` / `NORSE_BUILD` | Choose the role, and with it `service.name` (`norse-cms` for `cms`, `norse-app` otherwise). |
 
 Removed / do not set: `OTEL_SERVICE_NAME` (the service name follows the
@@ -398,7 +439,8 @@ Events worth knowing:
 | `arcjet_no_client_ip` / `arcjet_no_client_ip_sampled_out` | warn | `host`, `pathName`, `ipSrc`, `doConnectingIp`, `forwardedFor` (masked), `headers?` (redacted) |
 | `arcjet_denied` | warn | `host`, `pathName`, `reason`, `reasonType`, `deniedBots`, `decisionId`, `enforced`, `sampledOutSinceLast` (≤30/min) |
 | `request_error` | error | `routePath`, `routeType`, `method`, `digest`, `errName`, `errMessage` — never `request.path`, which can contain a query string |
-| — | info/error | `Initialized telemetry` (`endpoint`, `traceSamplerArg`, `basicAuth`, `metrics`, `logs`) and `telemetry setup failed; continuing without that signal` (`signal`, `err`) |
+| — | info/error | `Initialized telemetry` (`endpoint`, `traceSamplerArg` = the ratio in effect, `basicAuth`, `metrics`, `logs`) and `telemetry setup failed; continuing without that signal` (`signal`, `err`) |
+| — | warn | `OTEL_TRACES_SAMPLER_ARG is unset or invalid: sampling at the default ratio` (`reason`: `unset` \| `invalid`, `ratio`) |
 
 The fields above live in the JSON line body (query them with `| json`). Loki
 labels the stream `service_name="norse-app"` (`"norse-cms"` for the CMS; the

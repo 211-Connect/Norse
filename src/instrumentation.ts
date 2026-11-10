@@ -2,11 +2,7 @@ import type { Context, Exception, TextMapGetter } from '@opentelemetry/api';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
-import {
-  BatchSpanProcessor,
-  ParentBasedSampler,
-  TraceIdRatioBasedSampler,
-} from '@opentelemetry/sdk-trace-base';
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { registerOTel } from '@vercel/otel';
 
 import type { Logger } from '@/lib/logger';
@@ -17,6 +13,11 @@ import {
 import { CMS_SECRET_HEADER } from '@/lib/cms/config';
 import { getNorseRole, runsPayload } from '@/lib/norse-role';
 import { markTelemetryReady } from '@/lib/telemetry/meter';
+import {
+  DEFAULT_TRACE_SAMPLE_RATIO,
+  createTraceSampler,
+  traceSampleRatio,
+} from '@/lib/telemetry/sampler';
 
 import type {
   NodeTelemetryConfiguration,
@@ -234,7 +235,9 @@ export async function register(
     }
 
     const basicAuthConfigured = configureOtlpBasicAuth();
-    const traceSamplerArg = process.env.OTEL_TRACES_SAMPLER_ARG || '1.0';
+    // Unset or invalid falls back to the production ratio (0.1), never to 1:
+    // a component that forgot the variable must not trace every request.
+    const sampleRatio = traceSampleRatio(process.env.OTEL_TRACES_SAMPLER_ARG);
     const apiUrl = process.env.API_URL;
 
     // Metrics and logs are Node-only: the exporters, the runtime
@@ -273,9 +276,12 @@ export async function register(
           new PrivacySpanExporter(createOtlpTraceExporter()),
         ),
       ],
-      traceSampler: new ParentBasedSampler({
-        root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
-      }),
+      // Health checks (`/api/health`, `/api/healthz`) are never traced; every
+      // other root is sampled at the ratio, children follow their parent.
+      traceSampler: createTraceSampler(
+        sampleRatio.ratio,
+        process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH ?? '',
+      ),
       ...nodeOptions,
       instrumentations: [
         'auto',
@@ -322,7 +328,8 @@ export async function register(
     log.info(
       {
         endpoint,
-        traceSamplerArg,
+        // The ratio in effect (after the fallback), not the raw variable.
+        traceSamplerArg: sampleRatio.ratio,
         basicAuth: basicAuthConfigured,
         metrics:
           process.env.NEXT_RUNTIME === 'nodejs' &&
@@ -333,6 +340,15 @@ export async function register(
       },
       'Initialized telemetry',
     );
+    if (sampleRatio.fallbackReason) {
+      log.warn(
+        {
+          reason: sampleRatio.fallbackReason,
+          ratio: DEFAULT_TRACE_SAMPLE_RATIO,
+        },
+        'OTEL_TRACES_SAMPLER_ARG is unset or invalid: sampling at the default ratio',
+      );
+    }
     if (!apiUrl) {
       log.warn(
         'API_URL not set: traceparent will not be sent to the Norse API',

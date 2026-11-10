@@ -72,6 +72,19 @@ export type ResourceAttributeInput = {
 };
 
 /**
+ * Which App Platform app this process belongs to: the multi-tenant apps or
+ * MBOA's. Both run the same services (`norse-app`, `norse-cms`) under the
+ * same names, so this is what tells them apart. Unset means `multi-tenant`;
+ * an unusable value is reported as `unknown` (it becomes a Prometheus and
+ * Loki label, so it must stay a short slug).
+ */
+export function norseDeployment(raw: string | undefined): string {
+  const value = raw?.trim().toLowerCase();
+  if (!value) return 'multi-tenant';
+  return /^[a-z0-9][a-z0-9-]{0,31}$/.test(value) ? value : 'unknown';
+}
+
+/**
  * Resource attributes shared by traces, metrics and logs. Derived once per
  * process: every instance reports its own `service.instance.id` (the container
  * hostname), which the collector maps to the Prometheus `instance` label.
@@ -96,6 +109,15 @@ export function resourceAttributes({
     // value is reported as `unknown` rather than guessed as production.
     'deployment.environment.name': env.DEPLOYMENT_ENVIRONMENT || 'unknown',
     'service.version': env.APP_VERSION || packageVersion,
+    'norse.deployment': norseDeployment(env.NORSE_DEPLOYMENT),
+    // `@vercel/otel` labels every process `cloud.provider=vercel` and adds
+    // `vercel.runtime`; these attributes are merged over its defaults. Norse
+    // runs on DO App Platform in SFO3. `undefined` removes the attribute
+    // (`process.runtime.name` already carries the runtime).
+    'cloud.provider': 'digitalocean',
+    'cloud.platform': 'digitalocean_app_platform',
+    'cloud.region': env.CLOUD_REGION || 'sfo3',
+    'vercel.runtime': undefined,
   };
 }
 

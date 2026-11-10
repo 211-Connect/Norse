@@ -3,7 +3,10 @@ import { describe, it } from 'node:test';
 
 // `.js` lets the Node ESM loader (tsx) resolve the `.node.ts` module; the
 // bare specifier is read as the `.node` native-addon extension.
-import { resourceAttributes } from '../src/instrumentation.node.js';
+import {
+  norseDeployment,
+  resourceAttributes,
+} from '../src/instrumentation.node.js';
 
 /**
  * Resource attributes are shared by traces, metrics and logs. They are what
@@ -53,6 +56,35 @@ describe('resourceAttributes', () => {
     assert.equal(attributes['service.version'], '0.1.1');
   });
 
+  it('labels the process as DO App Platform in SFO3, not Vercel', () => {
+    const attributes = resourceAttributes({
+      env: {},
+      hostname: 'norse-app-1',
+      now: 1_700_000_000_000,
+      uptimeSeconds: 0,
+      packageVersion: '0.1.1',
+    });
+
+    assert.equal(attributes['cloud.provider'], 'digitalocean');
+    assert.equal(attributes['cloud.platform'], 'digitalocean_app_platform');
+    assert.equal(attributes['cloud.region'], 'sfo3');
+    // Present as undefined so it overrides (removes) @vercel/otel's default.
+    assert.ok('vercel.runtime' in attributes);
+    assert.equal(attributes['vercel.runtime'], undefined);
+  });
+
+  it('takes the region from CLOUD_REGION when set', () => {
+    const attributes = resourceAttributes({
+      env: { CLOUD_REGION: 'nyc3' },
+      hostname: 'norse-app-1',
+      now: 1_700_000_000_000,
+      uptimeSeconds: 0,
+      packageVersion: '0.1.1',
+    });
+
+    assert.equal(attributes['cloud.region'], 'nyc3');
+  });
+
   it('treats an empty environment as unknown', () => {
     const attributes = resourceAttributes({
       env: { DEPLOYMENT_ENVIRONMENT: '' },
@@ -81,5 +113,34 @@ describe('resourceAttributes', () => {
     );
     // Both attributes describe the same process; they must not disagree.
     assert.equal(attributes['host.name'], instanceId);
+  });
+});
+
+describe('norse.deployment', () => {
+  it('defaults to multi-tenant', () => {
+    assert.equal(norseDeployment(undefined), 'multi-tenant');
+    assert.equal(norseDeployment('  '), 'multi-tenant');
+  });
+
+  it('takes NORSE_DEPLOYMENT, normalised', () => {
+    assert.equal(norseDeployment('mboa'), 'mboa');
+    assert.equal(norseDeployment(' MBOA '), 'mboa');
+  });
+
+  it('labels an unusable value unknown (it becomes a metrics label)', () => {
+    assert.equal(norseDeployment('mboa prod'), 'unknown');
+    assert.equal(norseDeployment('x'.repeat(40)), 'unknown');
+    assert.equal(norseDeployment('-mboa'), 'unknown');
+  });
+
+  it('is a resource attribute on every signal', () => {
+    const attributes = resourceAttributes({
+      env: { NORSE_DEPLOYMENT: 'mboa' },
+      hostname: 'norse-app-1',
+      now: 1_700_000_000_000,
+      uptimeSeconds: 0,
+      packageVersion: '0.1.1',
+    });
+    assert.equal(attributes['norse.deployment'], 'mboa');
   });
 });
