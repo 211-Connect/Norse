@@ -3,6 +3,7 @@ import {
   type Context,
   type Link,
   SpanKind,
+  isSpanContextValid,
   trace,
 } from '@opentelemetry/api';
 import {
@@ -40,27 +41,45 @@ export function traceSampleRatio(raw: string | undefined): TraceSampleRatio {
 }
 
 /**
- * Health endpoints, also behind a base path (MBOA serves
- * `/adresources/api/health/`). Next.js starts the request span with
- * `http.target` = the raw request URL, query string included.
+ * Matches the health endpoints at the root of the app, behind its base path
+ * (`NEXT_PUBLIC_CUSTOM_BASE_PATH`; MBOA serves `/adresources/api/health/`),
+ * with or without an origin. Anchored, so `/en/api/health` or
+ * `/admin/api/health` (real catch-all routes) are still traced.
  */
-const HEALTH_CHECK_PATH = /(?:^|\/)api\/healthz?\/?$/;
+function healthCheckPattern(basePath: string): RegExp {
+  const base = basePath
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`^(?:https?://[^/]+)?${base}/api/healthz?/?$`);
+}
 
-export function isHealthCheckTarget(target: unknown): boolean {
+/**
+ * Next.js starts the request span with `http.target` = the raw request URL:
+ * base path and query string included.
+ */
+export function isHealthCheckTarget(target: unknown, basePath = ''): boolean {
   if (typeof target !== 'string') return false;
   const path = target.split(/[?#]/, 1)[0];
-  return HEALTH_CHECK_PATH.test(path);
+  return healthCheckPattern(basePath).test(path);
 }
 
 /**
  * Never records a request to `/api/health` or `/api/healthz`. DO App Platform
- * probes every instance every few seconds; at any ratio those traces only
+ * probes every instance on its health check period (10 s for Norse); at any ratio those traces only
  * add noise and storage, and the probes are already measured by the platform.
  * Dropping the root span drops the whole trace: its children (Redis, Postgres)
  * follow the parent's decision. Everything else goes to `delegate`.
  */
 export class HealthCheckDroppingSampler implements Sampler {
-  constructor(private readonly delegate: Sampler) {}
+  private readonly healthCheck: RegExp;
+
+  constructor(
+    private readonly delegate: Sampler,
+    basePath = '',
+  ) {
+    this.healthCheck = healthCheckPattern(basePath);
+  }
 
   shouldSample(
     context: Context,
@@ -70,12 +89,14 @@ export class HealthCheckDroppingSampler implements Sampler {
     attributes: Attributes,
     links: Link[],
   ): SamplingResult {
-    if (
-      spanKind === SpanKind.SERVER &&
-      !trace.getSpanContext(context) &&
-      isHealthCheckTarget(attributes['http.target'] ?? attributes['url.path'])
-    ) {
-      return { decision: SamplingDecision.NOT_RECORD };
+    if (spanKind === SpanKind.SERVER && isRoot(context)) {
+      const target = attributes['http.target'] ?? attributes['url.path'];
+      if (
+        typeof target === 'string' &&
+        this.healthCheck.test(target.split(/[?#]/, 1)[0])
+      ) {
+        return { decision: SamplingDecision.NOT_RECORD };
+      }
     }
     return this.delegate.shouldSample(
       context,
@@ -92,9 +113,16 @@ export class HealthCheckDroppingSampler implements Sampler {
   }
 }
 
+/** "Root" exactly as `ParentBasedSampler` decides it: no valid parent. */
+function isRoot(context: Context): boolean {
+  const parent = trace.getSpanContext(context);
+  return !parent || !isSpanContextValid(parent);
+}
+
 /** The process sampler: health checks dropped, then parent-based ratio. */
-export function createTraceSampler(ratio: number): Sampler {
+export function createTraceSampler(ratio: number, basePath = ''): Sampler {
   return new HealthCheckDroppingSampler(
     new ParentBasedSampler({ root: new TraceIdRatioBasedSampler(ratio) }),
+    basePath,
   );
 }

@@ -13,8 +13,11 @@ import {
 const TRACE_ID = 'f19b75958f6c9ac03bba908a167bd745';
 
 /** What Next.js passes when it starts the request span (base-server.js). */
-function sampleRequest(target: string, ratio = 1) {
-  return createTraceSampler(ratio).shouldSample(
+function sampleRequest(
+  target: string,
+  { ratio = 1, basePath = '' }: { ratio?: number; basePath?: string } = {},
+) {
+  return createTraceSampler(ratio, basePath).shouldSample(
     ROOT_CONTEXT,
     TRACE_ID,
     'GET',
@@ -24,15 +27,22 @@ function sampleRequest(target: string, ratio = 1) {
   ).decision;
 }
 
+const parentContext = (traceFlags: TraceFlags) =>
+  trace.setSpanContext(ROOT_CONTEXT, {
+    traceId: TRACE_ID,
+    spanId: '2583a0531ea386f4',
+    traceFlags,
+  });
+
 describe('health checks are never traced', () => {
   for (const target of [
     '/api/health',
     '/api/healthz',
     '/api/health/',
     '/api/health?probe=1',
-    // MBOA serves the app under a base path.
-    '/adresources/api/health/',
-    '/adresources/api/healthz',
+    '/api/health#x',
+    // Absolute-form request target.
+    'http://norse-app:8080/api/health',
   ]) {
     it(`drops ${target}`, () => {
       assert.equal(sampleRequest(target), SamplingDecision.NOT_RECORD);
@@ -44,7 +54,10 @@ describe('health checks are never traced', () => {
     '/en/search/a04ff9ea',
     '/api/healthcheck',
     '/api/health/details',
-    '/en/api/health-tips',
+    // Real catch-all routes: only the root health endpoints are dropped.
+    '/en/api/health',
+    '/admin/api/health',
+    '/api/auth/api/health',
     '/robots.txt',
   ]) {
     it(`keeps ${target}`, () => {
@@ -52,14 +65,50 @@ describe('health checks are never traced', () => {
     });
   }
 
-  it('only filters server roots: a child follows its sampled parent', () => {
-    const parent = trace.setSpanContext(ROOT_CONTEXT, {
-      traceId: TRACE_ID,
-      spanId: '2583a0531ea386f4',
-      traceFlags: TraceFlags.SAMPLED,
+  describe('behind a base path (MBOA)', () => {
+    const basePath = '/adresources';
+    for (const target of [
+      '/adresources/api/health/',
+      '/adresources/api/healthz',
+    ]) {
+      it(`drops ${target}`, () => {
+        assert.equal(
+          sampleRequest(target, { basePath }),
+          SamplingDecision.NOT_RECORD,
+        );
+      });
+    }
+
+    it('keeps the health path without the base path', () => {
+      assert.equal(
+        sampleRequest('/api/health', { basePath }),
+        SamplingDecision.RECORD_AND_SAMPLED,
+      );
     });
+
+    it('accepts a base path with a trailing slash', () => {
+      assert.equal(
+        sampleRequest('/adresources/api/health', { basePath: '/adresources/' }),
+        SamplingDecision.NOT_RECORD,
+      );
+    });
+  });
+
+  it('falls back to url.path when http.target is missing', () => {
+    const decision = createTraceSampler(1).shouldSample(
+      ROOT_CONTEXT,
+      TRACE_ID,
+      'GET',
+      SpanKind.SERVER,
+      { 'url.path': '/api/healthz' },
+      [],
+    ).decision;
+    assert.equal(decision, SamplingDecision.NOT_RECORD);
+  });
+
+  it('a client child follows its sampled parent', () => {
     const decision = createTraceSampler(0).shouldSample(
-      parent,
+      parentContext(TraceFlags.SAMPLED),
       TRACE_ID,
       'fetch GET',
       SpanKind.CLIENT,
@@ -69,13 +118,46 @@ describe('health checks are never traced', () => {
     assert.equal(decision, SamplingDecision.RECORD_AND_SAMPLED);
   });
 
+  it('a server span with a parent (a continued CMS trace) follows it', () => {
+    const decision = createTraceSampler(0).shouldSample(
+      parentContext(TraceFlags.SAMPLED),
+      TRACE_ID,
+      'GET',
+      SpanKind.SERVER,
+      { 'http.target': '/api/healthz' },
+      [],
+    ).decision;
+    assert.equal(decision, SamplingDecision.RECORD_AND_SAMPLED);
+  });
+
+  it('treats an invalid parent as a root, like ParentBasedSampler', () => {
+    const invalid = trace.setSpanContext(ROOT_CONTEXT, {
+      traceId: '00000000000000000000000000000000',
+      spanId: '0000000000000000',
+      traceFlags: TraceFlags.SAMPLED,
+    });
+    const decision = createTraceSampler(1).shouldSample(
+      invalid,
+      TRACE_ID,
+      'GET',
+      SpanKind.SERVER,
+      { 'http.target': '/api/health' },
+      [],
+    ).decision;
+    assert.equal(decision, SamplingDecision.NOT_RECORD);
+  });
+
   it('still applies the ratio to other roots', () => {
-    assert.equal(sampleRequest('/en', 0), SamplingDecision.NOT_RECORD);
+    assert.equal(
+      sampleRequest('/en', { ratio: 0 }),
+      SamplingDecision.NOT_RECORD,
+    );
   });
 
   it('matches only strings', () => {
     assert.equal(isHealthCheckTarget(undefined), false);
     assert.equal(isHealthCheckTarget(42), false);
+    assert.equal(isHealthCheckTarget('/api/health'), true);
   });
 });
 

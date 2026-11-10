@@ -278,7 +278,10 @@ export async function register(
       ],
       // Health checks (`/api/health`, `/api/healthz`) are never traced; every
       // other root is sampled at the ratio, children follow their parent.
-      traceSampler: createTraceSampler(sampleRatio.ratio),
+      traceSampler: createTraceSampler(
+        sampleRatio.ratio,
+        process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH ?? '',
+      ),
       ...nodeOptions,
       instrumentations: [
         'auto',

@@ -52,17 +52,26 @@ test('register wires a single span processor wrapped in PrivacySpanExporter', ()
   );
 });
 
-test('register samples with the health-check-dropping sampler', () => {
+test('register drops health checks and defaults the ratio to 0.1', async () => {
   process.env.OTEL_EXPORTER_OTLP_ENDPOINT = 'http://collector.invalid:4318';
+  const saved = process.env.OTEL_TRACES_SAMPLER_ARG;
+  delete process.env.OTEL_TRACES_SAMPLER_ARG;
 
-  let received: Configuration | string | undefined;
-  register((options) => {
-    received = options;
-  });
+  try {
+    let received: Configuration | string | undefined;
+    await register((options) => {
+      received = options;
+    });
 
-  const { traceSampler } = received as Configuration;
-  assert.ok(
-    traceSampler instanceof HealthCheckDroppingSampler,
-    'DO App Platform health probes must not be traced',
-  );
+    const { traceSampler } = received as Configuration;
+    assert.ok(
+      traceSampler instanceof HealthCheckDroppingSampler,
+      'DO App Platform health probes must not be traced',
+    );
+    // An unset ratio must never mean "trace everything".
+    assert.match(String(traceSampler), /TraceIdRatioBased\{0\.1\}/);
+  } finally {
+    if (saved === undefined) delete process.env.OTEL_TRACES_SAMPLER_ARG;
+    else process.env.OTEL_TRACES_SAMPLER_ARG = saved;
+  }
 });
