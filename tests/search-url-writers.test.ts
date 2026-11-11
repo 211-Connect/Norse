@@ -51,6 +51,15 @@ const URL_EDIT =
 
 /** Where the current URL may be edited or navigated to, how many times, and why. */
 const ALLOWED_EDITS: Record<string, { count: number; why: string }> = {
+  // Prototype only (branch prototype/search-ux-redesign, never merged).
+  'app/(app)/features/search/components/search-follow-up.tsx': {
+    count: 1,
+    why: 'prototype: the results help popup writes its taxonomy rank tokens',
+  },
+  'app/(app)/features/search/v2/use-v2-search.ts': {
+    count: 1,
+    why: 'prototype round 17: an answer writes needs, passed_needs, urgency, other, asked and refine',
+  },
   'app/(app)/features/search/components/sort-select.tsx': {
     count: 1,
     why: 'sort edits the current URL (BUILDERS 8, parity harness "sort")',

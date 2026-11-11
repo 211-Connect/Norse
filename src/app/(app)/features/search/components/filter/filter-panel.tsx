@@ -1,5 +1,6 @@
 'use client';
 
+import { SearchGuideWhenRefining } from '@/app/(app)/shared/components/search/search-guide';
 import { useAtom, useAtomValue } from 'jotai';
 import { Filter } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
@@ -116,6 +117,7 @@ export function FilterPanel({
           {t('search.filter', 'Filter')}
         </Button>
       </div>
+      <SearchGuideWhenRefining />
       <SearchRefineQuestion />
       <SearchClassifierPeek />
       <SearchResultsHelp />

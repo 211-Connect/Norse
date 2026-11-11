@@ -61,6 +61,13 @@ import {
   rankKinds,
   removedToken,
 } from '../sune-demo/sune.mjs';
+import {
+  styleOf,
+  useV2Navigate,
+  useV2Search,
+  useV2Url,
+  type V2Question,
+} from '../v2/use-v2-search';
 
 type Answer = {
   label: string;
@@ -1093,31 +1100,51 @@ export const PICKED = 'border-primary bg-primary/10 text-foreground';
 export const resultCount = (count: number) =>
   `${count} ${count === 1 ? 'result' : 'results'}`;
 
-/** Prototype: the refine question. It sits beside the results and never stops the person. */
+/** A v2 question in the shape the cards draw. Option values ride along, so an answer can write them. */
+export function toCardQuestion(q: V2Question): Question & { values: string[] } {
+  return {
+    id: q.id,
+    type: styleOf(q),
+    text: q.stem,
+    multi: q.multiSelect,
+    values: q.options.map((o) => o.value),
+    answers: q.options.map((o) => ({
+      label: o.label,
+      add: [o.value],
+      keeps: o.resultsCount,
+      emergency: o.value === 'U-0',
+    })),
+  };
+}
+
+/** The value an answer label stands for, on the v2 question it came from. */
+export const valueOfLabel = (q: V2Question, label: string) =>
+  q.options.find((o) => o.label === label)?.value ?? label;
+
+/**
+ * Prototype: the refine question beside the results. Round 17: it comes from `GET /v2/search`
+ * (real ml-broker classifier, real rules engine). It hides while the guided flow (`refine=1`) is open.
+ */
 export function SearchRefineQuestion() {
-  const {
-    label,
-    codes,
-    answered,
-    decision,
-    emergency,
-    hotline,
-    update,
-    isPending,
-  } = useSuneSearch();
-  const setEmergencySearch = useSetAtom(emergencySearchAtom);
+  const { data, isFetching, query: label } = useV2Search();
+  const { refine, params } = useV2Url();
+  const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
+  const [emergencySearch, setEmergencySearch] = useAtom(emergencySearchAtom);
   const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
   const setFlagged = useSetAtom(flaggedAtom);
+  const emergency = Boolean(label) && emergencySearch === label;
+  const v2 = data?.clarification.questions[0];
+  const isPending = isFetching || isWriting;
   // Always refine: with nothing left to ask, the card still invites more.
-  const question: Question = decision.question ?? {
-    id: 'done',
-    text: 'Is there anything else we should know?',
-    why: 'Every question that changes the results is answered.',
-    answers: [],
-  };
+  const question: Question = v2
+    ? toCardQuestion(v2)
+    : {
+        id: 'done',
+        text: 'Is there anything else we should know?',
+        why: 'Every question that changes the results is answered.',
+        answers: [],
+      };
   const { picks, toggle } = useAnswerPicks(question.id);
-  const chosen = question.answers.filter((a) => picks.includes(a.label));
-  const withPicks = applyAnswers(codes, chosen) as string[];
   const [noted, setNoted] = useState('');
   const pin = usePhonePin(collapsed, setCollapsed);
   // A new question must not arrive hidden at the top of the page.
@@ -1134,48 +1161,39 @@ export function SearchRefineQuestion() {
     questionRef.current?.focus({ preventScroll: true });
   }, [question.id]);
 
-  if (!label.trim()) return null;
-  const style = QUESTION_STYLES[decision.type];
+  if (!label || refine || !data) return null;
+  const hotline = data.emergency.show_hotline || emergency;
+  const type: keyof typeof QUESTION_STYLES = v2 ? styleOf(v2) : 'none';
+  const style = QUESTION_STYLES[type];
+
   const submitOther = (text: string) => {
-    const found = classifySune(text).codes as string[];
-    if (found.includes('U-0')) setEmergencySearch(label.trim());
-    if (found.length === 0) setFlagged((prev) => [...prev, text]);
-    setNoted(
-      found.length
-        ? 'Thank you. We added that to your search.'
-        : `Thank you. We will look at adding “${text}”.`,
-    );
+    const other = [params.get('other'), text].filter(Boolean).join('. ');
+    setNoted('Thank you. We added that to your search.');
+    setFlagged((prev) => [...prev, text]);
     moveFocus.current = true;
-    update(
-      [...new Set([...withPicks, ...found])],
-      [...answered, question.id],
-      [],
-      'push',
-    );
+    if (v2) writeAnswer(v2, [], { other });
+    else write({ other });
   };
   // Each answer is a history entry, so the browser's Back button undoes it.
-  const answer = (options: Answer[] = []) => {
+  const answer = (labels: string[] = []) => {
+    if (!v2) return;
     setNoted('');
     moveFocus.current = true;
-    update(
-      applyAnswers(codes, options) as string[],
-      [...answered, question.id],
-      [],
-      'push',
+    writeAnswer(
+      v2,
+      labels.map((l) => valueOfLabel(v2, l)),
     );
   };
   const answerEmergency = (option: Answer) => {
     // In memory only, so the URL never records it.
     if (option.emergency) {
       moveFocus.current = true;
-      return setEmergencySearch(label.trim());
+      return setEmergencySearch(label);
     }
-    answer([option]);
+    answer([option.label]);
   };
   const cardTitle =
-    question.id === 'start'
-      ? 'Your search is vague. Help us help you.'
-      : style.title;
+    v2?.id === 'start' ? 'Your search is vague. Help us help you.' : style.title;
 
   // A person in an emergency gets the numbers and the results, and no more questions.
   if (emergency) {
@@ -1192,7 +1210,7 @@ export function SearchRefineQuestion() {
   }
 
   // The emergency question never compacts. Scrolled away, a row leads back to it.
-  if (decision.type === 'emergency') {
+  if (type === 'emergency') {
     return (
       <div ref={pin.holderRef} className="mt-3">
         <EmergencyBox
@@ -1229,13 +1247,15 @@ export function SearchRefineQuestion() {
         {pin.pinned && hotline && <PinnedNumbers />}
         <section
           aria-label="Refine your search"
+          aria-busy={isPending}
           className={cn(
             'flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
             collapsed && 'max-md:py-0',
             style.card,
             isPending && 'opacity-70',
           )}
-          data-type={decision.type}
+          data-type={type}
+          data-question={question.id}
           data-testid="search-refine-question"
         >
           <button
@@ -1304,39 +1324,40 @@ export function SearchRefineQuestion() {
                       on && PICKED,
                     )}
                     onClick={() =>
-                      question.multi ? toggle(option.label) : answer([option])
+                      question.multi
+                        ? toggle(option.label)
+                        : answer([option.label])
                     }
                   >
                     {question.multi && <PickMark on={on} />}
                     {option.label}
-                    {!question.multi && (
+                    {typeof option.keeps === 'number' && (
                       <span className="text-muted-foreground text-xs font-normal">
-                        {resultCount(option.keeps ?? 0)}
+                        {resultCount(option.keeps)}
                       </span>
                     )}
                   </button>
                 );
               })}
-              <OtherBox
-                className="col-span-2"
-                placeholder={
-                  decision.question
-                    ? 'Other: type your own'
-                    : 'Tell us in your own words'
-                }
-                onSubmit={submitOther}
-              />
-              <PicksStatus
-                count={picks.length}
-                total={matchServices(withPicks).length}
-              />
-              {decision.question && picks.length === 0 && (
+              {(!v2 || v2.allowOther) && (
+                <OtherBox
+                  className="col-span-2"
+                  placeholder={
+                    v2 ? 'Other: type your own' : 'Tell us in your own words'
+                  }
+                  onSubmit={submitOther}
+                />
+              )}
+              <p className="sr-only" role="status">
+                {picks.length > 0 ? `${picks.length} picked.` : ''}
+              </p>
+              {v2 && picks.length === 0 && (
                 <button
                   type="button"
                   className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
                   onClick={() => answer()}
                 >
-                  Skip
+                  {v2.noneOfThese ? 'None of these' : 'Skip'}
                 </button>
               )}
               {picks.length > 0 && (
@@ -1345,9 +1366,9 @@ export function SearchRefineQuestion() {
                   disabled={isPending}
                   className="bg-primary text-primary-foreground col-span-2 min-h-11 cursor-pointer rounded-lg px-5 text-sm font-semibold disabled:opacity-60"
                   data-testid="refine-continue"
-                  onClick={() => answer(chosen)}
+                  onClick={() => answer(picks)}
                 >
-                  Continue: {resultCount(matchServices(withPicks).length)}
+                  Continue
                 </button>
               )}
             </div>
@@ -1363,36 +1384,48 @@ export function SearchRefineQuestion() {
 
 /** Demo only: shows Skyler what drove the screen. Not part of the proposed design. */
 export function SearchClassifierPeek() {
-  const { label, codes, decision } = useSuneSearch();
-  const flagged = useAtomValue(flaggedAtom);
-  const suggestions = useAtomValue(suggestionsAtom);
-  if (!label.trim()) return null;
-  const read = classifySune(label);
+  const { data, error, query } = useV2Search();
+  if (!query) return null;
 
   return (
     <details className="text-muted-foreground mt-3 hidden text-xs md:block print:hidden">
       <summary className="cursor-pointer">
-        Demo only: what the classifier saw
+        Demo only: what the v2 call returned
       </summary>
-      <div className="mt-2 flex flex-col gap-1">
-        {read.ranked.length === 0 && <p>No need found.</p>}
-        {read.ranked.map(
-          (need: { code: string; label: string; score: number }) => (
-            <p key={need.code}>
-              {need.label}: {Math.round(need.score * 100)}%
+      <div className="mt-2 flex flex-col gap-1" data-testid="v2-peek">
+        {error && <p>The v2 call failed: {String(error.message)}</p>}
+        {data && (
+          <>
+            <p>
+              Classifier: {data.prototype?.classifier ?? 'unknown'}; services:{' '}
+              {data.prototype?.services ?? 'unknown'}.
             </p>
-          ),
+            <p>
+              Needs:{' '}
+              {data.intent.needs
+                .map(
+                  (n) =>
+                    `${labelOf(n.value)} (${n.state}, ${n.source}${n.confidence !== undefined ? ` ${Math.round(n.confidence * 100)}%` : ''})`,
+                )
+                .join(', ') || 'none'}
+            </p>
+            <p>
+              Urgency: {data.intent.urgency.value} ({data.intent.urgency.source},{' '}
+              {data.intent.urgency.state}). Emergency band: {data.emergency.band}.
+            </p>
+            <p>
+              Questions:{' '}
+              {data.clarification.questions
+                .map((q) => `${q.id} (${q.importance})`)
+                .join(', ') || 'none'}
+            </p>
+            <p>
+              Versions: model {data.versions.model ?? 'none'}, rules{' '}
+              {data.versions.rules}. Time: classify {data.timing_ms.classify} ms,
+              total {data.timing_ms.total} ms.
+            </p>
+          </>
         )}
-        <p>Urgency: {labelOf(read.urgency as string)}</p>
-        <p>Now: {codes.map((code) => labelOf(code)).join(', ') || 'nothing'}</p>
-        <p>
-          Decision: {decision.type}, danger {decision.band}.{' '}
-          {decision.question?.why}
-        </p>
-        {flagged.length > 0 && <p>Flagged as missing: {flagged.join(', ')}</p>}
-        {suggestions.map((suggestion) => (
-          <p key={suggestion}>Kept for review: {suggestion}</p>
-        ))}
       </div>
     </details>
   );

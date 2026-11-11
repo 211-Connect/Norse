@@ -36,6 +36,13 @@ export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
     filters: valueOf(intent.filters) as FindResourcesQuery['filters'],
     sort: getSortOption(valueOf(intent.sort) ?? null, coordinates),
     age: valueOf(intent.age) || undefined,
+    // v2 prototype (round 17): these change the results, so they reach the search call.
+    needs: valueOf(intent.needs)?.length ? valueOf(intent.needs) : undefined,
+    passedNeeds: valueOf(intent.passedNeeds)?.length
+      ? valueOf(intent.passedNeeds)
+      : undefined,
+    urgency: valueOf(intent.urgency),
+    other: nonEmpty(intent.other),
   };
 }
 

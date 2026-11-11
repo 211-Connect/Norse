@@ -37,13 +37,13 @@ export const useNavigateAiSearch = ({
     ({
       scenario,
       taxonomies,
-      refined,
+      extraParams,
       locationPayload,
     }: {
       scenario?: AiClassificationScenario;
       taxonomies?: string[];
-      /** Prototype: questions the guide already asked, so the results page does not repeat them. */
-      refined?: string[];
+      /** Prototype (round 17): v2 slots to add, such as `refine=1` for the guided questions. */
+      extraParams?: Record<string, string>;
       locationPayload: SearchLocationPayload;
     }) => {
       const query = (search.query || search.searchTerm || '').trim();
@@ -65,8 +65,9 @@ export const useNavigateAiSearch = ({
         }),
         searchParams,
       );
-      const url = refined?.length
-        ? `${built}${built.includes('?') ? '&' : '?'}refined=${refined.join(',')}`
+      const extra = new URLSearchParams(extraParams ?? {}).toString();
+      const url = extra
+        ? `${built}${built.includes('?') ? '&' : '?'}${extra}`
         : built;
 
       persistSearchDistancePreference(distance);

@@ -176,6 +176,55 @@ const geoMode: SlotDeclaration<GeoMode> = {
  * them in. Add a slot here, with its URL keys, decoder and encoder, and it exists everywhere; old URLs
  * lift with it unstated.
  */
+/**
+ * A comma list of codes or ids, in URL order, without repeats. `key=` and a list with no valid entry
+ * read as stated and empty, as `coords=abc` does; only an absent key is unstated.
+ */
+const codeList = (
+  key: string,
+  valid: RegExp,
+): SlotDeclaration<string[]> => ({
+  keys: [key],
+  decode: ({ raw }) => {
+    const value = raw[key];
+    if (value === undefined) return undefined;
+    const parts = (Array.isArray(value) ? value : [value])
+      .flatMap((v) => v.split(','))
+      .map((v) => v.trim())
+      .filter((v) => valid.test(v));
+    return [...new Set(parts)];
+  },
+  encode: (value) => [[key, value.join(',')]],
+});
+
+/** v2 needs: Tier 1 (`N-HOU`), Tier 2 (`N-HOU-02`) and `N-X`. Confirmed needs boost; they never filter. */
+const needs = codeList('needs', /^N-(X|[A-Z]{3}(-\d{2})?)$/);
+/** Needs a person saw as options and did not pick, so they are not offered again. */
+const passedNeeds = codeList('passed_needs', /^N-(X|[A-Z]{3}(-\d{2})?)$/);
+/** Question ids already answered on the guided flow. Changes only what is asked, never the results. */
+const asked = codeList('asked', /^[a-z_]+(:[A-Z0-9-]+)?$/);
+
+/** v2 urgency. U-0 never reads from a URL: an emergency answer must not live in a shared link. */
+const URGENCY_CODES = new Set(['U-1', 'U-2', 'U-3', 'U-4', 'U-X']);
+const urgency: SlotDeclaration<string> = {
+  keys: ['urgency'],
+  decode: ({ parsed }) => {
+    const value = firstValue(parsed.urgency)?.trim();
+    return value && URGENCY_CODES.has(value) ? value : undefined;
+  },
+  encode: (value) => [['urgency', value]],
+};
+
+/** Q4 = A (Lucas, 2026-11-11): a plain URL shows results; `refine=1` turns the guided questions on. */
+const refine: SlotDeclaration<boolean> = {
+  keys: ['refine'],
+  decode: ({ parsed }) => {
+    const value = firstValue(parsed.refine);
+    return value === undefined ? undefined : value === '1';
+  },
+  encode: (value) => [['refine', value ? '1' : '0']],
+};
+
 export const SEARCH_SLOTS = defineSlots({
   query: stringParam('query'),
   queryLabel: stringParam('query_label'),
@@ -190,6 +239,12 @@ export const SEARCH_SLOTS = defineSlots({
   filters,
   sort,
   age,
+  needs,
+  passedNeeds,
+  urgency,
+  other: stringParam('other'),
+  refine,
+  asked,
   place,
   geoMode,
 });

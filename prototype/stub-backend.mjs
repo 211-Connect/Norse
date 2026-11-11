@@ -1,6 +1,8 @@
 // Prototype only. Fake CMS + fake Norse-API on :4100, so the public app runs with no database and no real data.
 import http from 'node:http';
-import { classifySune, labelOf, matchServices } from '../src/app/(app)/features/search/sune-demo/sune.mjs';
+import { classifySune, labelOf } from '../src/app/(app)/features/search/sune-demo/sune.mjs';
+// Round 17: run with `npx tsx prototype/stub-backend.mjs`. `/v2/search` and `/search` share one real classify + rules pass.
+import { readParams, v2Search } from './v2-search.ts';
 const svc = (s, i) => { const id = s.id; const lat = 48.72 + (i % 7) * 0.01, lon = -122.52 + (i % 5) * 0.02; return { _id: id, _source: {
   service_at_location_id: 'sal-' + id, name: s.org, priority: 0, phone: '(555) 010-' + id.padStart(4, '0'), url: 'https://example.org/' + id,
   service: { name: s.name, summary: s.summary, description: s.summary + ' This is synthetic sample data for a design prototype.', eligibility: s.who, application_process: 'Call to apply.' },
@@ -37,7 +39,8 @@ http.createServer((req, res) => {
     if (p === '/search/predict') return send(predict(q));
     if (p === '/search/re-rank') return send({ hsis_taxonomies: ['BD-5000'] });
     if (p === '/suggestion') return send({ taxonomies: [], organizations: [] });
-    if (p === '/search') { const stated = (u.searchParams.get('taxonomy') || '').split(',').filter(Boolean); const hits = matchServices(stated.length ? stated : classifySune(q).codes).map(svc); return send({ search: { hits: { total: { value: hits.length }, hits } }, facets: [] }); }
+    if (p === '/v2/search') return void v2Search(readParams(u.searchParams)).then(({ services, body }) => send({ results: services.slice(0, 25).map(svc), ...body }), (err) => { console.error(err); res.writeHead(500); res.end(); });
+    if (p === '/search') return void v2Search(readParams(u.searchParams)).then(({ services }) => { const hits = services.map(svc); send({ search: { hits: { total: { value: hits.length }, hits } }, facets: [] }); }, (err) => { console.error(err); res.writeHead(500); res.end(); });
     send(null);
   });
 }).listen(4100, () => console.log('stub on 4100'));
