@@ -13,7 +13,6 @@ import {
   openTopicSearch,
   switchLanguage,
   test,
-  waitForPageStabilized,
   waitForSearchResultsSettled,
 } from './helpers';
 import {
@@ -257,8 +256,10 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
       timeout: UI_SHELL_TIMEOUT_MS,
     });
     // The Next.js route-change toploader can still be animating over the
-    // header at this point and intercept the click below.
-    await waitForPageStabilized(page);
+    // header at this point and intercept the click below. Settle on the
+    // page's own signals, not `networkidle`: WA's injected trackers keep
+    // requests open long enough that networkidle is reached only by chance.
+    await waitForSearchResultsSettled(page);
 
     // The trigger reflects the seeded stale location before we touch anything.
     const changeLocation = page
@@ -314,10 +315,7 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
       }),
       { waitUntil: 'domcontentloaded' },
     );
-    await expect(page.locator('#search-container')).toBeVisible({
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await waitForPageStabilized(page);
+    await waitForSearchResultsSettled(page);
 
     const changeLocation = page
       .getByRole('button', { name: /change location/i })
