@@ -203,6 +203,41 @@ via `deleteFavoriteList(page, listName)` (`helpers/favorites.ts`), called
 directly in the test that owns the list, not from a broad `beforeAll`/
 `afterAll` sweep.
 
+## MBOA QA checklist (`mboa-qa-checklist*.spec.ts`)
+
+Project `mboa-qa-checklist` automates the MBOA team's weekly manual QA
+checklist (`Connect211-QA Checklist.xlsx`, one sheet per run; automated from
+the `11102026` sheet). One `test()` per checklist "Test Name" and one
+`test.step()` per checklist step, labelled with the sheet's step number, so a
+failure names the same step a manual tester would report.
+
+- MBOA-only: both files `test.skip` unless `E2E_TENANT_KEY` is `MBOA` (the
+  default). All data is in `fixtures/mboa-qa-checklist.ts` — guided-topic
+  names, St. Paul / Duluth addresses, MN filter labels, named resources.
+- `mboa-qa-checklist.spec.ts` needs no account. Its "Anonymous User Lists"
+  test only touches browser-local favorites.
+- `mboa-qa-checklist-favorites.spec.ts` needs `TEST_USER_PASSWORD` and creates,
+  renames and deletes lists on the test account. It follows the log-in-once
+  pattern above, except "Anonymous User Lists — sign in keeps local
+  favorites", which tests the anonymous → signed-in sync and so signs in from
+  its own fresh context. `beforeAll` deletes leftover `My new list` lists
+  (the sync only reports "List created" when none exists). The last test
+  logs the shared session out, so `afterAll` sweeps leftovers with a fresh
+  login.
+- Sort after adding a location: located **taxonomy** searches (guided topics,
+  "Topics"/"Taxonomies"/"Suggestions" picks) expect "Nearest First"; a
+  located **text** search expects "Most Relevant" (PR #1185).
+- Where the sheet's wording no longer matches the app, the test asserts the
+  current behaviour and says why in a comment (e.g. "Login" after logging out
+  goes straight to Keycloak instead of a "Sign in required" dialog; "Site Area
+  Served" is free text such as "Southern St. Louis counties", so it is matched
+  on "St. Louis").
+- New-tab links (websites, the UDALSA PDF, print) are checked on the network
+  (the new tab's navigation request), not `popup.url()`. Headless Chromium has
+  no PDF viewer, so a tab opened onto a PDF keeps an empty URL.
+- Run: `npm run test:e2e:mboa-qa-checklist` (against stg-mboa by default via
+  `E2E_TENANT_KEY=MBOA`).
+
 ## Known risks (documented, not fixed here)
 
 - **Data-dependent tests silently skip**: several tests call
@@ -232,7 +267,7 @@ directly in the test that owns the list, not from a broad `beforeAll`/
 - `npm run test:e2e` — full suite (all projects, Desktop Chrome only).
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
   `translations`, `search-geocode`, `search-taxonomy`, `share-link`,
-  `resource-direct-link`, `organization`).
+  `resource-direct-link`, `organization`, `mboa-qa-checklist`).
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`
   when no tenant/env is selected, otherwise it is derived from
   `e2e/fixtures/tenants.ts`. Override with `E2E_BASE_URL` at any time.

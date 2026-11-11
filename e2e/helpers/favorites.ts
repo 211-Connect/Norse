@@ -465,3 +465,41 @@ export async function removeFirstResourceFromListPage(page: Page) {
     timeout: ASYNC_UI_TIMEOUT_MS,
   });
 }
+
+/**
+ * Anonymous (local) favoriting: hearts the top `count` search results, waits
+ * for each heart to fill, and returns their names in result order.
+ */
+export async function favoriteTopResultsLocally(page: Page, count: number) {
+  const names: string[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const button = page.getByTestId('favorite-btn').nth(i);
+    await expect(button).toHaveAttribute(
+      'data-session-status',
+      'unauthenticated',
+      { timeout: UI_SHELL_TIMEOUT_MS },
+    );
+    names.push(
+      (
+        (await page.getByTestId('resource-link').nth(i).textContent()) ?? ''
+      ).trim(),
+    );
+    await button.click();
+    await expect(button.locator('svg')).toHaveClass(/fill-current/, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+  }
+  return names;
+}
+
+/** Asserts the local favorites page lists exactly `names`. */
+export async function expectLocalFavorites(page: Page, names: string[]) {
+  await expect(page.getByTestId('resource-link')).toHaveCount(names.length, {
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+  for (const name of names) {
+    await expect(
+      page.getByTestId('resource-link').filter({ hasText: name }).first(),
+    ).toBeVisible();
+  }
+}
