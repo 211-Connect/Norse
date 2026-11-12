@@ -8,7 +8,7 @@
  * "Authenticated favorites: log in once"): `beforeAll` logs in once and saves
  * the session; tests reuse it via `test.use({ storageState })`. The one
  * exception is "Anonymous User Lists", which *is* the anonymous → signed-in
- * transition (local favorites are synced into "My new list" on sign-in), so it
+ * transition (local favorites are synced into "My New List" on sign-in), so it
  * runs in its own fresh context and signs in itself.
  *
  * Every list this file creates is tagged with a per-run id and deleted by the
@@ -57,8 +57,20 @@ import {
   UI_SHELL_TIMEOUT_MS,
 } from './timeouts';
 
-/** Name the API gives the list it creates from synced local favorites. */
-const SYNCED_LIST_NAME = 'My new list';
+/**
+ * Name the API gives the list it creates from synced local favorites
+ * (Norse-API `FavoriteListService`, hard-coded `'My New List'`). The QA sheet
+ * spells it "My new list", but list cards are matched by exact,
+ * case-sensitive link name, so this must match the API.
+ */
+const SYNCED_LIST_NAME = 'My New List';
+
+/**
+ * Budget for sweeping every leftover list with one name. Each deletion costs
+ * a confirm dialog plus a reload, and sync leftovers pile up (one per signed-in
+ * run whose cleanup failed), so one persistence window is not enough.
+ */
+const LEFTOVER_SWEEP_TIMEOUT_MS = FAVORITES_PERSISTENCE_TIMEOUT_MS * 3;
 
 const hasAuth = hasTestCredentials;
 
@@ -92,9 +104,10 @@ test.describe('MBOA QA checklist (authenticated favorites)', () => {
       await expectAuthenticatedShell(page);
       await context.storageState({ path: AUTH_STORAGE_STATE_PATH });
 
-      // The local→account sync only reports "created" (and shows its toast)
-      // when the account has no "My new list" yet, so drop leftovers from
-      // earlier runs before the scenario that checks for it.
+      // Step 13 expects exactly one "My New List" card, so drop leftovers
+      // from earlier runs (or manual QA on this account) first. Note the
+      // sync's "created" result (and toast) depends on whether a list with
+      // the same set of favorites already exists, not on the name.
       await goToFavorites(page);
       await deleteAllListsNamed(page, SYNCED_LIST_NAME);
     } finally {
@@ -145,7 +158,7 @@ test.describe('MBOA QA checklist (authenticated favorites)', () => {
         await expectKeycloakSignInForm(page);
       });
 
-      await test.step('13. Sign in → "List created" toast, "My new list" on Favorites', async () => {
+      await test.step('13. Sign in → "List created" toast, "My New List" on Favorites', async () => {
         await submitKeycloakCredentials(page);
         await expect(page.getByText('List created')).toBeVisible({
           timeout: FAVORITES_PERSISTENCE_TIMEOUT_MS,
@@ -157,7 +170,7 @@ test.describe('MBOA QA checklist (authenticated favorites)', () => {
         ).toHaveCount(1);
       });
 
-      await test.step('14. Open "My new list" → the 3 favorites from step 11', async () => {
+      await test.step('14. Open "My New List" → the 3 favorites from step 11', async () => {
         await openFavoriteListByName(page, SYNCED_LIST_NAME);
         await waitForFavoriteListPage(page);
         for (const name of savedNames) {
@@ -478,11 +491,12 @@ async function deleteAllListsNamed(page: Page, listName: string) {
             timeout: ASYNC_UI_TIMEOUT_MS,
           });
           await page.reload({ waitUntil: 'domcontentloaded' });
+          await expect(search).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
         }
         return count;
       },
       {
-        timeout: FAVORITES_PERSISTENCE_TIMEOUT_MS,
+        timeout: LEFTOVER_SWEEP_TIMEOUT_MS,
         intervals: [500, 1_000, 2_000],
       },
     )

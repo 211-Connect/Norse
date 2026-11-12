@@ -220,8 +220,10 @@ failure names the same step a manual tester would report.
   renames and deletes lists on the test account. It follows the log-in-once
   pattern above, except "Anonymous User Lists — sign in keeps local
   favorites", which tests the anonymous → signed-in sync and so signs in from
-  its own fresh context. `beforeAll` deletes leftover `My new list` lists
-  (the sync only reports "List created" when none exists). The last test
+  its own fresh context. `beforeAll` deletes leftover `My New List` lists
+  (step 13 expects exactly one). The API names the synced list
+  `My New List`; the QA sheet's "My new list" is stale, and list cards are
+  matched case-sensitively. The last test
   logs the shared session out, so `afterAll` sweeps leftovers with a fresh
   login.
 - Sort after adding a location: located **taxonomy** searches (guided topics,
