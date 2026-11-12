@@ -560,7 +560,7 @@ test.describe('MBOA QA checklist', () => {
         page,
         'Taxonomies',
         new RegExp(
-          `^\\s*${MBOA_SEARCHES.homeRepair.label}\\s*${MBOA_SEARCHES.homeRepair.code.replace(/\./g, '\\.')}\\s*$`,
+          `^\\s*${MBOA_SEARCHES.homeRepair.label}\\s*${MBOA_SEARCHES.homeRepair.code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`,
         ),
       );
 
