@@ -117,7 +117,8 @@ jobs:
             --project=accessibility \
             --project=resource-direct-link \
             --project=organization \
-            --project=ai-classification
+            --project=ai-classification \
+            --project=mboa-qa-checklist
 
       - name: Upload Playwright report
         if: always()

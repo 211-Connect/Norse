@@ -44,7 +44,7 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 
 The full suite (`search-taxonomy`, `translations`, `search-geocode`,
 `favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
-`organization`) runs against the 7 tenants' dev hosts in CI — see
+`organization`, `mboa-qa-checklist`) runs against the 7 tenants' dev hosts in CI — see
 `.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only).
 CI does not run against production: production hosts are enforced by Arcjet
 bot protection, which is expected to deny headless Chromium, while the dev hosts stay
@@ -237,6 +237,8 @@ failure names the same step a manual tester would report.
   no PDF viewer, so a tab opened onto a PDF keeps an empty URL.
 - Run: `npm run test:e2e:mboa-qa-checklist` (against stg-mboa by default via
   `E2E_TENANT_KEY=MBOA`).
+  CI runs it in every tenant cell of the e2e workflow; it skips everywhere
+  but MBOA.
 
 ## Known risks (documented, not fixed here)
 
