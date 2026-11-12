@@ -201,16 +201,23 @@ type DeriveQueryTypeArgs = {
   query: string | undefined;
 };
 
+/**
+ * Whether Norse-API runs this as a taxonomy search. Independent of the tenant's search engine: a
+ * taxonomy search stays taxonomy on hybrid and AI tenants too.
+ */
+export function isTaxonomySearch(
+  originQueryType: string | undefined,
+  query: string | undefined,
+): boolean {
+  return originQueryType === 'taxonomy' || isTaxonomyQuery(query);
+}
+
 export function deriveQueryType({
   searchEngine,
   originQueryType,
   query,
 }: DeriveQueryTypeArgs): QueryType {
-  if (originQueryType === 'taxonomy') {
-    return QueryType.Taxonomy;
-  }
-
-  if (isTaxonomyQuery(query)) {
+  if (isTaxonomySearch(originQueryType, query)) {
     return QueryType.Taxonomy;
   }
 
