@@ -158,6 +158,7 @@ export type AppConfig = {
     defaultRadius?: number;
     searchEngine: SearchEngine;
     resultsLimit: number;
+    showAllResultsOnMap: boolean;
     pinnedResourcesMode: 'ignore' | 'boost' | 'top';
     texts?: {
       title?: string;

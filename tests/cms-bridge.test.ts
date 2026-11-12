@@ -1,8 +1,18 @@
+import {
+  type Context,
+  ROOT_CONTEXT,
+  TraceFlags,
+  context,
+  propagation,
+  trace,
+} from '@opentelemetry/api';
 import assert from 'node:assert/strict';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { type Server, createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { afterEach, beforeEach, describe, test } from 'node:test';
+import { afterEach, before, beforeEach, describe, test } from 'node:test';
 
+import { InjectOnlyTraceContextPropagator } from '../src/instrumentation';
 import { CmsRequestError, cmsRequest } from '../src/lib/cms/client';
 import { isCmsRemote } from '../src/lib/cms/config';
 import { internalRoute } from '../src/lib/cms/internal-route';
@@ -10,6 +20,27 @@ import { internalRoute } from '../src/lib/cms/internal-route';
 const KEY = 'test-internal-key-not-a-real-secret';
 const ENV_NAMES = ['NORSE_ROLE', 'PAYLOAD_CMS_URL', 'PAYLOAD_API_ROUTE_SECRET'];
 let savedEnv: Record<string, string | undefined>;
+
+const TRACE_ID = 'd5d66db15abc6640c0148371e2ce7d18';
+const SPAN_ID = '9092161788c27f33';
+
+before(() => {
+  // The app's propagator and a real async context, as registerOTel sets up.
+  const storage = new AsyncLocalStorage<Context>();
+  context.setGlobalContextManager({
+    active: () => storage.getStore() ?? ROOT_CONTEXT,
+    with: (ctx, fn, thisArg, ...args) =>
+      storage.run(ctx, () => fn.apply(thisArg, args)),
+    bind: (_ctx, target) => target,
+    enable() {
+      return this;
+    },
+    disable() {
+      return this;
+    },
+  });
+  propagation.setGlobalPropagator(new InjectOnlyTraceContextPropagator());
+});
 
 beforeEach(() => {
   savedEnv = Object.fromEntries(ENV_NAMES.map((n) => [n, process.env[n]]));
@@ -88,7 +119,13 @@ describe('internalRoute', () => {
 
 describe('cmsRequest', () => {
   let server: Server;
-  let seen: { url?: string; key?: string; method?: string; body?: string };
+  let seen: {
+    url?: string;
+    key?: string;
+    method?: string;
+    body?: string;
+    traceparent?: string;
+  };
 
   beforeEach(async () => {
     seen = {};
@@ -101,6 +138,7 @@ describe('cmsRequest', () => {
           key: req.headers['x-internal-api-key'] as string,
           method: req.method,
           body,
+          traceparent: req.headers.traceparent as string | undefined,
         };
         if (req.url?.startsWith('/api/internal/forbidden')) {
           res.writeHead(403, { 'content-type': 'text/html' });
@@ -132,6 +170,25 @@ describe('cmsRequest', () => {
 
   test('null is a valid answer', async () => {
     assert.equal(await cmsRequest('tenants/missing'), null);
+  });
+
+  test('an unsampled request sends a -00 traceparent', async () => {
+    // @vercel/otel injects only for sampled spans; without this the CMS
+    // would start its own root and sample it at its own ratio.
+    const unsampled = trace.wrapSpanContext({
+      traceId: TRACE_ID,
+      spanId: SPAN_ID,
+      traceFlags: TraceFlags.NONE,
+    });
+    await context.with(trace.setSpan(ROOT_CONTEXT, unsampled), () =>
+      cmsRequest('tenants/by-host', { query: { host: 'a.test' } }),
+    );
+    assert.equal(seen.traceparent, `00-${TRACE_ID}-${SPAN_ID}-00`);
+  });
+
+  test('no traceparent outside any trace', async () => {
+    await cmsRequest('tenants/by-host', { query: { host: 'a.test' } });
+    assert.equal(seen.traceparent, undefined);
   });
 
   test('POSTs JSON bodies', async () => {

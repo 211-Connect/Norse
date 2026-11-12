@@ -62,16 +62,24 @@ enforcement is set by env vars, not in Payload. See
 config, the rollout and the recovery runbook.
 
 `src/proxy.ts` resolves each host's locales, login wall and `noindex` from
-`/api/getTenantBasicConfig`, cached in memory for 10 minutes (10 seconds after
-a failure). It calls the route on `PAYLOAD_CMS_URL` when set, otherwise on the
+`/api/getTenantBasicConfig`, cached in memory per instance for 15 minutes and
+not invalidated on save, so a change to these settings takes up to 15 minutes
+to reach every app instance. It calls the route on `PAYLOAD_CMS_URL` when set, otherwise on the
 tenant's own public host, which goes out through Cloudflare, whose WAF can
 answer `403`. The tenant is passed as `?host=`, and `PAYLOAD_API_ROUTE_SECRET`
 travels in the `x-internal-api-key` header, never in the URL. A failed
 lookup logs `tenant_basic_config_fetch_failed` with the status, `fetchUrl`,
 `server`, `cf-ray`, `cf-mitigated` and the start of the body: a Cloudflare
 block shows a `cf-ray` and an HTML body.
-While a lookup is failing that host gets default locales and **no login
-wall**.
+While a lookup is failing the proxy keeps serving the host's last good
+config and retries every 10 seconds. Only a host it never fetched
+successfully (since that instance started) gets default locales and **no
+login wall**.
+
+Every page is served with `Cache-Control: private, no-cache`, except resource
+detail pages (`private, max-age=1800`): all pages render per request (CSP
+nonce, cookies), so none may sit in a shared cache. Cacheable HTML is
+ISS-2681 ([seo.md](/docs/seo.md)).
 
 `shared/` holds code used by more than one feature:
 

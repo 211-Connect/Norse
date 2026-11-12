@@ -121,6 +121,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
+      // MBOA weekly manual QA checklist, automated. Skips for other tenants.
+      name: 'mboa-qa-checklist',
+      testMatch: [
+        '**/mboa-qa-checklist.spec.ts',
+        '**/mboa-qa-checklist-favorites.spec.ts',
+      ],
+      use: { ...devices['Desktop Chrome'], baseURL },
+    },
+    {
       name: 'organization',
       testMatch: [
         '**/search-organization.spec.ts',

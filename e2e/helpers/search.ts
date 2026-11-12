@@ -11,6 +11,7 @@ import {
   expectPageUrl,
   isSearchResultsListUrl,
   parseTrailingInteger,
+  toSingleRegexLiteral,
 } from './url';
 
 /**
@@ -286,4 +287,186 @@ export async function applyTestLocationOnSearchPage(
   await expectSearchDialogDismissed(page);
   await expectPageUrl(page, (u) => u.searchParams.has('location'));
   await waitForSearchResultsSettled(page);
+}
+
+/** The results page's search-bar trigger (shows the active query label). */
+export function getSearchBarTrigger(page: Page) {
+  return page.getByTestId('search-trigger').first();
+}
+
+/** Asserts the search-bar trigger shows `text` (the active query label). */
+export async function expectSearchBarText(page: Page, text: string | RegExp) {
+  await expect(getSearchBarTrigger(page)).toHaveText(text, {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}
+
+/**
+ * The "Add my location" / current-location button directly below the search
+ * bar on the results page. Its visible text is the active location, or
+ * "Add my location" when none is set (`AddMyLocationButton`).
+ */
+export function getLocationBelowSearch(page: Page) {
+  return page
+    .locator('#filter-panel')
+    .getByRole('button', { name: /^(add my location|change location:)/i })
+    .first();
+}
+
+/** Asserts no location is applied: the button below the search bar offers "Add my location". */
+export async function expectNoLocationBelowSearch(page: Page) {
+  const button = getLocationBelowSearch(page);
+  await expect(button).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await expect(button).toHaveText(/^\s*add my location\s*$/i);
+  expect(new URL(page.url()).searchParams.get('location')).toBeNull();
+}
+
+/** Asserts `location` is shown directly below the search bar. */
+export async function expectLocationBelowSearch(page: Page, location: string) {
+  const button = getLocationBelowSearch(page);
+  await expect(button).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await expect(button).toHaveText(location, { timeout: UI_SHELL_TIMEOUT_MS });
+}
+
+/** The "Sort by" select trigger on the results page (`SortSelect`). */
+export function getSortSelect(page: Page) {
+  return page.locator('#sort-select');
+}
+
+/** Asserts the "Sort by" select shows `label` (e.g. "Most Relevant"). */
+export async function expectSortLabel(page: Page, label: string) {
+  await expect(getSortSelect(page)).toHaveText(label, {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}
+
+/** Picks a "Sort by" option and waits for the re-sorted results to settle. */
+export async function selectSortOption(page: Page, label: string) {
+  await getSortSelect(page).click();
+  const option = page.getByRole('option', { name: label, exact: true });
+  await expect(option).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await option.click();
+  await expectPageUrl(page, (u) => u.searchParams.has('sort'));
+  await waitForSearchResultsSettled(page);
+  await expectSortLabel(page, label);
+}
+
+/**
+ * Waits for the search dialog's autocomplete to show resolved options and
+ * returns the listbox. Groups ("Suggestions", "Topics", "Taxonomies") are
+ * `role="group"` elements labelled by their heading.
+ */
+export async function waitForAutocompleteOptions(page: Page) {
+  const listbox = page.getByTestId('autocomplete-listbox');
+  await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
+  await expect(listbox.getByTestId('autocomplete-option').first()).toBeVisible({
+    timeout: AUTOCOMPLETE_TIMEOUT_MS,
+  });
+  return listbox;
+}
+
+/** An autocomplete option within a named group (e.g. "Topics"), matched on its full text. */
+export function getAutocompleteOptionInGroup(
+  page: Page,
+  group: string,
+  text: string | RegExp,
+) {
+  return page
+    .getByTestId('autocomplete-listbox')
+    .getByRole('group', { name: group, exact: true })
+    .getByTestId('autocomplete-option')
+    .filter({ hasText: text });
+}
+
+/**
+ * Submits the open search dialog via its "Search" button and waits for the
+ * results page to render.
+ */
+export async function submitSearchDialog(page: Page) {
+  const submitButton = page.getByTestId('search-submit-btn');
+  await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
+  await submitButton.click();
+  await expectPageUrl(page, isSearchResultsListUrl);
+  await expectSearchDialogDismissed(page);
+  await waitForSearchResultsSettled(page);
+}
+
+/**
+ * From the results page: clicks "Add my location", types `typed` into the
+ * location box, picks the exact `suggestion` from the dropdown and asserts it
+ * populated the box. Leaves the dialog open so callers submit explicitly.
+ */
+export async function chooseLocationFromSearchPage(
+  page: Page,
+  { typed, suggestion }: { typed: string; suggestion: string },
+) {
+  await getLocationBelowSearch(page).click();
+  await expect(page.getByTestId('search-dialog')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
+  const locationInput = page.locator('#location-input');
+  await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await locationInput.fill(typed);
+
+  const option = page
+    .getByTestId('autocomplete-listbox')
+    .getByTestId('autocomplete-option')
+    .filter({
+      hasText: new RegExp(`^\\s*${toSingleRegexLiteral(suggestion)}\\s*$`),
+    });
+  await expect(option.first()).toBeVisible({
+    timeout: AUTOCOMPLETE_TIMEOUT_MS,
+  });
+  await option.first().click();
+
+  await expect(locationInput).toHaveValue(suggestion, {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}
+
+/**
+ * A result card on the results/favorites page by its exact resource name.
+ * Cards are the `div[id]` wrapping the `resourceName` layout component.
+ */
+export function getResultCardByName(page: Page, name: string) {
+  return page
+    .locator('div[id]:has(> div > [data-component-id="resourceName"])')
+    .filter({
+      has: page.getByTestId('resource-link').filter({
+        hasText: new RegExp(`^\\s*${toSingleRegexLiteral(name)}\\s*$`),
+      }),
+    });
+}
+
+/** All result cards currently rendered on the page. */
+export function getResultCards(page: Page) {
+  return page.locator(
+    'div[id]:has(> div > [data-component-id="resourceName"])',
+  );
+}
+
+/**
+ * Clicks a home-page guided search topic link (`CategoriesSection`): `section`
+ * is the topic heading (its `ul` is labelled by it), `name` the link text.
+ * Waits for the results page to settle.
+ */
+export async function openGuidedSearchTopic(
+  page: Page,
+  { section, name }: { section: string; name: string },
+) {
+  const link = page
+    .getByRole('list', { name: section, exact: true })
+    .getByRole('link', { name, exact: true });
+  await expect(link).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await link.click();
+  await expectPageUrl(page, isSearchResultsListUrl);
+  await waitForSearchResultsSettled(page);
+}
+
+/** Asserts at least one result card is rendered. */
+export async function expectResultsDisplayed(page: Page) {
+  await expect(page.getByTestId('resource-link').first()).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
 }

@@ -13,6 +13,11 @@ import {
 } from '@/lib/arcjet';
 import { recordBlockedTraffic } from '@/lib/blocked-traffic';
 import { createLogger } from '@/lib/logger';
+import {
+  arcjetSpanAttributes,
+  isArcjetErrorConclusion,
+  recordArcjetDecision,
+} from '@/lib/telemetry/arcjet';
 
 const logger = createLogger('arcjet');
 
@@ -36,7 +41,7 @@ const tracer = trace.getTracer('norse-app');
 /**
  * The Arcjet SDK calls its API over a `node:http2` Connect RPC session, not
  * the global `fetch` that @vercel/otel instruments, so the call needs a
- * manual span to show up in traces (see docs/tracing.md).
+ * manual span to show up in traces (see docs/observability.md).
  */
 function tracedProtect(
   req: ArcjetRequestLike,
@@ -51,9 +56,23 @@ function tracedProtect(
     try {
       const result = await arcjetProtect(req, pathName, log);
       span.setAttribute('arcjet.conclusion', result.conclusion);
+      span.setAttributes(
+        arcjetSpanAttributes({
+          conclusion: result.conclusion,
+          decisionId: result.decisionId,
+          timing: result.timing,
+        }),
+      );
       if (isArcjetDeniedResult(result)) {
         span.setAttribute('arcjet.reason_type', result.reasonType);
       }
+      // A decision the API never answered (timeout/transport error) is a
+      // failed span even though the page fails open.
+      if (isArcjetErrorConclusion(result.conclusion)) {
+        span.setStatus({ code: SpanStatusCode.ERROR });
+      }
+      // One sample per decision, enforced or observe-only.
+      recordArcjetDecision(result.conclusion, !afterResponse);
       return result;
     } catch (error) {
       span.recordException(error as Error);
@@ -123,11 +142,25 @@ const observe = cache(async (pathName: string) => {
  * @param pathName  Path only, e.g. `/en/search`. Never the query string.
  */
 export async function protectPage(pathName: string): Promise<void> {
+  if (await isDenied(pathName)) forbidden();
+}
+
+/**
+ * Bot protection for a route handler that serves directory data: whether to
+ * answer 403. Same decision and enforcement as `protectPage`, which a route
+ * handler can't use, as `forbidden()` only works while rendering a page.
+ *
+ * @param pathName  Path only, e.g. `/api/search-pins`. Never the query string.
+ */
+export async function isRouteDenied(pathName: string): Promise<boolean> {
+  return isDenied(pathName);
+}
+
+async function isDenied(pathName: string): Promise<boolean> {
   const req = await arcjetRequest();
   if (!isEnforcedHost(req)) {
     await observe(pathName);
-    return;
+    return false;
   }
-  const result = await decide(pathName);
-  if (result.denied) forbidden();
+  return (await decide(pathName)).denied;
 }

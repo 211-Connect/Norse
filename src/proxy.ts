@@ -1,3 +1,4 @@
+import { trace } from '@opentelemetry/api';
 import { i18nRouter } from 'next-i18n-router';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -17,8 +18,12 @@ import { describeError, truncateBody } from './lib/describe-error';
 import { getNorseRole, servesPath } from './lib/norse-role';
 import { maskSecret, redactUrl } from './lib/redact';
 import type { TenantBasicConfigResponse } from './types/tenantBasicConfig';
+import { crawlTrapMiddleware } from './middlewares/crawlTrapMiddleware';
+import { LOCALE_COOKIE, localeCookieOptions } from './lib/locale-cookie';
+import { keepLocaleCookieForDocumentNavigations } from './middlewares/localeCookieMiddleware';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
-import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
+import { ONE_MINUTE } from './utilities/withCache';
+import { trackDependency } from './lib/telemetry/dependency';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
@@ -62,14 +67,61 @@ function edgeLog(
   else console.log(entry);
 }
 
-const TENANT_DATA_CACHE_TTL_MS = 10 * 60 * 1000;
+const ROOT_SPAN_EXTRAS_ENABLED = process.env.OTEL_ROOT_SPAN_EXTRAS === '1';
+
+/** `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` as a positive integer, else undefined. */
+function attributeValueLengthLimit(): number | undefined {
+  const raw = process.env.OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT;
+  if (!raw) return undefined;
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
 /**
- * A failed lookup (timeout, network error, non-2xx) is cached only briefly:
- * long enough that an outage doesn't make every request wait out the fetch
- * timeout, short enough that a blip doesn't serve a tenant without its
- * config (default locales, no login wall) for the full TTL above.
+ * Optional request-root enrichment (plan N5): `OTEL_ROOT_SPAN_EXTRAS=1` puts
+ * `server.address` and a length-limited `user_agent.original` on the root span.
+ * Only the root span is touched — a span that already has a parent is left
+ * alone, so a child span never gets request-level identity. Never throws.
  */
-const TENANT_DATA_FAILURE_CACHE_TTL_MS = 10 * 1000;
+function addRootSpanExtras(request: NextRequest) {
+  if (!ROOT_SPAN_EXTRAS_ENABLED) return;
+
+  try {
+    const span = trace.getActiveSpan();
+    // `parentSpanContext` is only on real SDK spans; without it we cannot
+    // prove this is the root, so skip.
+    if (!span || !('parentSpanContext' in span)) return;
+    if (span.parentSpanContext !== undefined) return;
+
+    const host = request.headers.get('host');
+    if (host) {
+      span.setAttribute('server.address', host);
+    }
+
+    // The user agent is optional and only ever stored length-limited.
+    const limit = attributeValueLengthLimit();
+    const userAgent = request.headers.get('user-agent');
+    if (limit !== undefined && userAgent) {
+      span.setAttribute('user_agent.original', userAgent.slice(0, limit));
+    }
+  } catch {
+    // Telemetry must never break a request (plan rule 7).
+  }
+}
+
+/**
+ * Not invalidated on save: a change to the login wall, `noindex` or locales
+ * reaches each app instance within this TTL.
+ */
+const TENANT_DATA_CACHE_TTL_MS = 15 * 60 * 1000;
+/**
+ * After a failed lookup (timeout, network error, non-2xx) the next retry
+ * waits this long, so an outage doesn't make every request wait out the
+ * fetch timeout. Meanwhile the last good config is served when there is
+ * one (stale-on-error), keeping the tenant's login wall and locales; only a
+ * host never fetched successfully falls back to the defaults.
+ */
+const TENANT_DATA_FAILURE_RETRY_MS = 10 * 1000;
 const TENANT_DATA_CACHE_MAX_ENTRIES = 1_000;
 
 type TenantDataCacheEntry = {
@@ -89,22 +141,22 @@ function getOriginFromUrl(url?: string): string | undefined {
   }
 }
 
+/** The cached config while fresh; `undefined` when missing or expired. */
 function getCachedTenantData(
   host: string,
 ): TenantBasicConfigResponse | null | undefined {
   const entry = tenantDataCache.get(host);
 
-  if (!entry) {
-    return undefined;
-  }
-
-  const expired = Date.now() > entry.expiresAt;
-  if (expired) {
-    tenantDataCache.delete(host);
+  if (!entry || Date.now() > entry.expiresAt) {
     return undefined;
   }
 
   return entry.data;
+}
+
+/** The last cached config for `host`, expired or not. */
+function getStaleTenantData(host: string): TenantBasicConfigResponse | null {
+  return tenantDataCache.get(host)?.data ?? null;
 }
 
 function setCachedTenantData(
@@ -112,7 +164,10 @@ function setCachedTenantData(
   data: TenantBasicConfigResponse | null,
   ttlMs: number = TENANT_DATA_CACHE_TTL_MS,
 ): void {
-  if (tenantDataCache.size >= TENANT_DATA_CACHE_MAX_ENTRIES) {
+  if (
+    !tenantDataCache.has(host) &&
+    tenantDataCache.size >= TENANT_DATA_CACHE_MAX_ENTRIES
+  ) {
     const firstKey = tenantDataCache.keys().next().value;
     if (firstKey) {
       tenantDataCache.delete(firstKey);
@@ -139,33 +194,24 @@ export const config = {
   ],
 };
 
-const CDN_CACHE_POLICIES = {
-  legal: {
-    pattern: /\/legal\//,
-    cacheControl: `public, max-age=${ONE_HOUR}, s-maxage=${ONE_DAY}, stale-while-revalidate=${12 * ONE_HOUR}`,
-    shared: true,
-  },
-  home: {
-    pattern: /^\/[a-z]{2}(\/)?$/,
-    cacheControl: `public, max-age=${10 * ONE_MINUTE}, s-maxage=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
-    shared: true,
-  },
-  topics: {
-    pattern: /\/topics(\/)?$/,
-    cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${30 * ONE_MINUTE}`,
-    shared: true,
-  },
+/**
+ * Every page renders per request (CSP nonce, cookies, session id), so none
+ * may sit in a shared cache: home, topics and legal fall through to the
+ * `private, no-cache` default. Only resource detail pages let the browser
+ * keep its own copy.
+ */
+const CACHE_POLICIES = {
   resourceDetail: {
     pattern: /\/search\/[^/?]+$/,
     cacheControl: `private, max-age=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
-    shared: false,
   },
   detailsOriginal: {
     pattern: /\/details\/original/,
     cacheControl: `private, max-age=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
-    shared: false,
   },
 } as const;
+
+const DEFAULT_CACHE_CONTROL = 'private, no-cache';
 
 function cacheControlMiddleware(response: NextResponse, pathname: string) {
   const isProduction = process.env.NODE_ENV === 'production';
@@ -175,17 +221,14 @@ function cacheControlMiddleware(response: NextResponse, pathname: string) {
     return;
   }
 
-  for (const [_name, policy] of Object.entries(CDN_CACHE_POLICIES)) {
+  for (const policy of Object.values(CACHE_POLICIES)) {
     if (policy.pattern.test(pathname)) {
       response.headers.set('Cache-Control', policy.cacheControl);
-      if (policy.shared) {
-        response.headers.set('Vary', 'Cookie');
-      }
       return;
     }
   }
 
-  response.headers.set('Cache-Control', 'no-cache');
+  response.headers.set('Cache-Control', DEFAULT_CACHE_CONTROL);
 }
 
 function robotsMiddleware(
@@ -288,13 +331,15 @@ async function hasActiveSession(request: NextRequest): Promise<boolean> {
   const sessionRoute = getApiRoute(request, 'auth/session');
 
   try {
-    const response = await fetch(sessionRoute, {
-      headers: {
-        cookie: request.headers.get('cookie') || '',
-        host: request.headers.get('host') || '',
-      },
-      cache: 'no-store',
-    });
+    const response = await trackDependency('payload_api', 'auth_session', () =>
+      fetch(sessionRoute, {
+        headers: {
+          cookie: request.headers.get('cookie') || '',
+          host: request.headers.get('host') || '',
+        },
+        cache: 'no-store',
+      }),
+    );
 
     if (!response.ok) {
       return false;
@@ -333,6 +378,11 @@ function roleGate(request: NextRequest): NextResponse | undefined {
 export async function proxy(request: NextRequest) {
   const gated = roleGate(request);
   if (gated) return gated;
+
+  addRootSpanExtras(request);
+
+  const trapped = crawlTrapMiddleware(request);
+  if (trapped) return trapped;
 
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {
@@ -374,7 +424,7 @@ export async function proxy(request: NextRequest) {
   let tenantConfig: TenantBasicConfigResponse | null | undefined;
 
   if (cached !== undefined) {
-    // Cache hit (null after a recent failed lookup)
+    // Cache hit (null after a recent failed lookup with nothing stale)
     if (cached && cached.enabledLocales.length && cached.defaultLocale) {
       locales = cached.enabledLocales;
       defaultLocale = cached.defaultLocale;
@@ -387,19 +437,25 @@ export async function proxy(request: NextRequest) {
       const controller = new AbortController();
       timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch(
-        withOptionalTrailingSlash(
-          `${getCmsApiRoute(request, 'getTenantBasicConfig')}?host=${encodeURIComponent(host)}`,
-        ),
-        {
-          // No `host` override: the tenant goes in `?host=`, and the URL's
-          // own host must route the request to the CMS.
-          headers: {
-            'x-internal-api-key': process.env.PAYLOAD_API_ROUTE_SECRET ?? '',
-          },
-          signal: controller.signal,
-          cache: 'no-store',
-        },
+      const response = await trackDependency(
+        'payload_api',
+        'tenant_basic_config',
+        () =>
+          fetch(
+            withOptionalTrailingSlash(
+              `${getCmsApiRoute(request, 'getTenantBasicConfig')}?host=${encodeURIComponent(host)}`,
+            ),
+            {
+              // No `host` override: the tenant goes in `?host=`, and the URL's
+              // own host must route the request to the CMS.
+              headers: {
+                'x-internal-api-key':
+                  process.env.PAYLOAD_API_ROUTE_SECRET ?? '',
+              },
+              signal: controller.signal,
+              cache: 'no-store',
+            },
+          ),
       );
 
       if (!response.ok) {
@@ -435,13 +491,20 @@ export async function proxy(request: NextRequest) {
         });
       }
     } catch (error) {
-      // Cache the failure briefly so we don't retry on every request
-      setCachedTenantData(host, null, TENANT_DATA_FAILURE_CACHE_TTL_MS);
+      // Serve the last good config (if any) and retry after a short pause
+      const stale = getStaleTenantData(host);
+      setCachedTenantData(host, stale, TENANT_DATA_FAILURE_RETRY_MS);
+      if (stale && stale.enabledLocales.length && stale.defaultLocale) {
+        locales = stale.enabledLocales;
+        defaultLocale = stale.defaultLocale;
+        tenantConfig = stale;
+      }
       edgeLog('error', 'tenant_basic_config_fetch_failed', {
         ...(error instanceof TenantConfigFetchError
           ? { error: error.message, ...error.details }
           : describeError(error)),
         timedOut: error instanceof Error && error.name === 'AbortError',
+        servedStale: stale !== null,
         secret: maskSecret(process.env.PAYLOAD_API_ROUTE_SECRET),
         url: request.url,
         method: request.method,
@@ -533,11 +596,8 @@ export async function proxy(request: NextRequest) {
   let response = i18nRouter(request, {
     ...i18nConfig,
     basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
-    cookieOptions: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    },
+    localeCookie: LOCALE_COOKIE,
+    cookieOptions: localeCookieOptions(),
   });
   if (!request.cookies.has(SESSION_ID)) {
     response.cookies.set({
@@ -585,6 +645,7 @@ export async function proxy(request: NextRequest) {
 
   cacheControlMiddleware(response, pathname);
   robotsMiddleware(response, pathname, tenantConfig);
+  keepLocaleCookieForDocumentNavigations(request, response);
 
   return response;
 }

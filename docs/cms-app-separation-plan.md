@@ -146,7 +146,7 @@ The proxy's tenant config lookup (`/api/getTenantBasicConfig`) does its own
 fetch to `PAYLOAD_CMS_URL` (see [architecture.md](/docs/architecture.md)).
 
 **Caching** is unchanged: the bridge caches under the same keys as the
-Payload lookups (`tenant:<host|id>`, `tenant_api_key:<id>`,
+Payload lookups (`tenant:<host|id>`, which also carries the Norse API key,
 `app_config:<host>:<locale>`, `search_config:<id>:<locale>`), memory then
 Redis then the CMS. The CMS's `revalidateCache` hooks delete the Redis keys
 on save; memory entries expire within a minute, as they already did across
@@ -196,6 +196,8 @@ hostname.
 | `/api/share/[tenantId]`                  | send a resource by SMS                                 | `getTenantById`               |
 | `/api/share/[tenantId]/[id]`             | deprecated short-URL redirect                          | Norse API                     |
 | `/api/resource-titles`                   | resource titles for ids                                | Norse API                     |
+| `/api/locale`                            | language switcher saves the chosen locale (cookie)     | —                             |
+| `/api/search-pins`                       | every result's map pin (`showAllResultsOnMap`)         | Norse API                     |
 | `/api/search-config/[tenantId]/[locale]` | widget search settings (CORS `*`)                      | `getSearchConfig`             |
 | `/api/keycloak/domain-check`             | Keycloak domain allow-list check (also on the CMS)     | `getTenantByRealmId`          |
 | `/api/webhook`                           | client error alerts                                    | —                             |
@@ -221,9 +223,9 @@ under `/_next` differ.
 
 ## Environment and rollout
 
-See [cms-app-release-plan.md](/docs/cms-app-release-plan.md): which variables
-each app needs, DNS, the CI change, and the rollout steps with checks and
-rollback.
+Rolled out to all four apps; production finished on 2026-11-05. See
+[cms-app-release-plan.md](/docs/cms-app-release-plan.md): which variables each
+app needs, hostnames, how CI deploys, checks and rollback.
 
 ## Decisions
 
@@ -246,10 +248,9 @@ Agreed 2026-10-30:
    and trailing slashes are baked into its builds, so it cannot share images
    or a CMS with the multi-tenant deployment.
 8. **CI builds only the four split images.** The Dockerfile's default combined
-   target remains for local use; old `norse:<sha>` images remain for rollback.
+   target remains for local use.
 9. **The existing apps stay; the split is at component level.** That gives private
-   networking, one app id per deployment in CI, and rollback by flipping a routing
-   rule back to `norse-search`.
+   networking and one app id per deployment in CI.
 
 ## Known gaps
 

@@ -40,7 +40,7 @@ function getPathSegments(pathname: string): string[] {
  * categories, or `null` if it doesn't match any of them (i.e. it must stay
  * behind the login wall).
  *
- * This is intentionally standalone rather than reusing the `CDN_CACHE_POLICIES`
+ * This is intentionally standalone rather than reusing the `CACHE_POLICIES`
  * regexes in `src/proxy.ts`: cache-control mismatches are low-risk, but a
  * shared matcher drifting would risk silently loosening the login wall.
  */

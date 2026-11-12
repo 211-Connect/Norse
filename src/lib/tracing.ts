@@ -20,7 +20,7 @@ export class InboundIgnoringTraceContextPropagator extends W3CTraceContextPropag
  * Runs background work in a new trace of its own, under a root span called
  * `name`, whatever context the caller happens to be in. For work a timer
  * fires: timers inherit the async context they were created in, so without
- * this it joins the request that armed the timer (see docs/tracing.md).
+ * this it joins the request that armed the timer (see docs/observability.md).
  */
 export function inNewTrace<T>(name: string, fn: () => Promise<T>): Promise<T> {
   return tracer.startActiveSpan(name, { root: true }, async (span) => {

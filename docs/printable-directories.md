@@ -84,8 +84,14 @@ choices (ADR 0002).
 
 ### Directory List
 
-- Route: localized page under app shell.
+- Route: localized page under app shell (`/directories`).
 - Visible only to users with basic access (see "Access control").
+- Header link (`shouldShowPrintableDirectoriesLink()`): shown to users with
+  basic access, and, in the `everyone` access mode, to everyone, signed in
+  or not, so the feature is easy to find. A signed-out user who clicks it is
+  sent to sign in (the page redirects with `redirect=/directories`) and
+  lands on the list afterwards. In `allowlist` mode the link stays hidden
+  until a user on the allow-list signs in.
 - Supports search by directory name and the creation wizard.
 
 ### Creation wizard

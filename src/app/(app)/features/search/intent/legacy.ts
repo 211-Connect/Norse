@@ -3,7 +3,10 @@ import type {
   AiPredictOption,
 } from '@/app/(app)/shared/services/ai-classification-search-service';
 import type { FindResourcesQuery } from '@/app/(app)/shared/services/search-service';
-import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
+import {
+  isEverywhereLocation,
+  isTaxonomySearch,
+} from '@/app/(app)/shared/lib/search-utils';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 
 import type { Slot } from './slot';
@@ -18,23 +21,30 @@ const nonEmpty = (slot: Slot<string>) => valueOf(slot) || undefined;
 /**
  * The intent in the shape the search service and the deep-link gate take. This is where the readings that the intent
  * deliberately does not make live: empty is absent, "Everywhere" is no location, age 0 is no age, and
- * sort falls back to relevance (and to relevance from distance without valid coords).
+ * sort falls back to relevance, or to distance for a located taxonomy search (and to relevance from distance without
+ * valid coords).
  */
 export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
   const coordinates = valueOf(intent.coords);
   const location = nonEmpty(intent.location);
   const taxonomy = valueOf(intent.taxonomy);
+  const query = nonEmpty(intent.query);
+  const queryType = nonEmpty(intent.queryType);
   return {
-    query: nonEmpty(intent.query),
+    query,
     queryLabel: nonEmpty(intent.queryLabel),
-    queryType: nonEmpty(intent.queryType),
+    queryType,
     organizationId: nonEmpty(intent.organizationId),
     location: isEverywhereLocation(location) ? undefined : location,
     coordinates,
     distance: nonEmpty(intent.distance),
     taxonomy: taxonomy?.length ? taxonomy : undefined,
     filters: valueOf(intent.filters) as FindResourcesQuery['filters'],
-    sort: getSortOption(valueOf(intent.sort) ?? null, coordinates),
+    sort: getSortOption(
+      valueOf(intent.sort) ?? null,
+      coordinates,
+      isTaxonomySearch(queryType, query),
+    ),
     age: valueOf(intent.age) || undefined,
   };
 }

@@ -82,12 +82,14 @@ import * as migration_20260910_074021_drop_legacy_analytics_relation from './202
 import * as migration_20260910_095121_search_pinned_resources_mode from './20260910_095121_search_pinned_resources_mode';
 import * as migration_20260911_114053_add_tenant_api_key from './20260911_114053_add_tenant_api_key';
 import * as migration_20260928_131716 from './20260928_131716';
-import * as migration_20261014_094136 from './20261014_094136';
 import * as migration_20261009_064658 from './20261009_064658';
 import * as migration_20261014_080226_scheduled_pdf_delivery from './20261014_080226_scheduled_pdf_delivery';
+import * as migration_20261014_094136 from './20261014_094136';
 import * as migration_20261020_115758_translation_usage from './20261020_115758_translation_usage';
 import * as migration_20261020_122644 from './20261020_122644';
 import * as migration_20261102_124412 from './20261102_124412';
+import * as migration_20261103_205043_show_all_results_on_map from './20261103_205043_show_all_results_on_map';
+import * as migration_20261109_103137 from './20261109_103137';
 
 export const migrations = [
   {
@@ -511,11 +513,6 @@ export const migrations = [
     name: '20260928_131716',
   },
   {
-    up: migration_20261014_094136.up,
-    down: migration_20261014_094136.down,
-    name: '20261014_094136',
-  },
-  {
     up: migration_20261009_064658.up,
     down: migration_20261009_064658.down,
     name: '20261009_064658',
@@ -524,6 +521,11 @@ export const migrations = [
     up: migration_20261014_080226_scheduled_pdf_delivery.up,
     down: migration_20261014_080226_scheduled_pdf_delivery.down,
     name: '20261014_080226_scheduled_pdf_delivery',
+  },
+  {
+    up: migration_20261014_094136.up,
+    down: migration_20261014_094136.down,
+    name: '20261014_094136',
   },
   {
     up: migration_20261020_115758_translation_usage.up,
@@ -539,5 +541,15 @@ export const migrations = [
     up: migration_20261102_124412.up,
     down: migration_20261102_124412.down,
     name: '20261102_124412',
+  },
+  {
+    up: migration_20261103_205043_show_all_results_on_map.up,
+    down: migration_20261103_205043_show_all_results_on_map.down,
+    name: '20261103_205043_show_all_results_on_map',
+  },
+  {
+    up: migration_20261109_103137.up,
+    down: migration_20261109_103137.down,
+    name: '20261109_103137',
   },
 ];

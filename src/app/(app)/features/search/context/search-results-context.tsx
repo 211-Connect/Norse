@@ -19,6 +19,13 @@ import { isValidCoordinate } from '@/utils/isValidCoordinate';
 export type SearchResultsData = {
   results: ResultType[];
   totalResults: number;
+  /** `totalResults` was cut to the map's limit: more resources match than it says. */
+  isTotalCapped: boolean;
+  /**
+   * Query of `/api/search-pins`, which the map fetches for every result's pin,
+   * or null to map only the current page's `results`.
+   */
+  pinsQuery: string | null;
   /** 1-based page of `results`. */
   currentPage: number;
   filters: FiltersMap;

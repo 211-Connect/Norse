@@ -7,14 +7,17 @@ import { BBox } from '@/types/resource';
 import { FindResourcesQuery } from '../services/search-service';
 
 /**
- * "Everywhere" is the wire-format sentinel for "no location filter" (the
- * literal string, independent of locale — see `search.everywhere` in
- * common.json). A `location` matching it (case-insensitively) must never be
- * treated as a real place: not forward-geocoded, not sent as a `location`
- * query param.
+ * The wire-format sentinel for "no location filter": this literal string,
+ * independent of locale. `search.everywhere` in common.json is only its display
+ * label, so the search state must hold this value and never the translation
+ * (see LocationSearchBar). A `location` matching it (case-insensitively) must
+ * never be treated as a real place: not forward-geocoded, not sent as a
+ * `location` query param.
  */
+export const EVERYWHERE_LOCATION = 'Everywhere';
+
 export function isEverywhereLocation(location: string | undefined | null) {
-  return location?.trim().toLowerCase() === 'everywhere';
+  return location?.trim().toLowerCase() === EVERYWHERE_LOCATION.toLowerCase();
 }
 
 /**
@@ -198,16 +201,23 @@ type DeriveQueryTypeArgs = {
   query: string | undefined;
 };
 
+/**
+ * Whether Norse-API runs this as a taxonomy search. Independent of the tenant's search engine: a
+ * taxonomy search stays taxonomy on hybrid and AI tenants too.
+ */
+export function isTaxonomySearch(
+  originQueryType: string | undefined,
+  query: string | undefined,
+): boolean {
+  return originQueryType === 'taxonomy' || isTaxonomyQuery(query);
+}
+
 export function deriveQueryType({
   searchEngine,
   originQueryType,
   query,
 }: DeriveQueryTypeArgs): QueryType {
-  if (originQueryType === 'taxonomy') {
-    return QueryType.Taxonomy;
-  }
-
-  if (isTaxonomyQuery(query)) {
+  if (isTaxonomySearch(originQueryType, query)) {
     return QueryType.Taxonomy;
   }
 

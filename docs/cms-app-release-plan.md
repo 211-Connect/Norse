@@ -1,19 +1,15 @@
 # Release plan: CMS / public app split
 
-How to roll out the split of Norse into a public component (no database) and a
-Payload CMS component, for the multi-tenant deployment and MBOA at the same time.
-All DigitalOcean changes are made by hand in the dashboard. What the split is and
-how the code works: [cms-app-separation-plan.md](/docs/cms-app-separation-plan.md).
+How the split of Norse into a public component (no database) and a Payload CMS
+component is deployed, for the multi-tenant deployment and MBOA. The rollout finished
+on all four apps on 2026-11-05; its step-by-step plan is in this file's git history.
+All DigitalOcean changes are made by hand in the dashboard. What the split is and how
+the code works: [cms-app-separation-plan.md](/docs/cms-app-separation-plan.md).
 
-Development goes first and is the rehearsal for production. The order is always:
-add the new components next to the existing one, verify them on a test domain, flip
-the routing rule, and only then remove the old component. Until it is removed,
-rollback is flipping the rule back.
+## What is deployed
 
-## What you end up with
-
-The four apps stay. Each gets two new components, and `norse-search` goes away at
-the end. `umami` isn't touched.
+Each app has a `norse-cms` and a `norse-app` component. `umami` is separate and isn't
+part of the split.
 
 | App                       | Secret with its id           | `norse-cms` image            | `norse-app` image            |
 | ------------------------- | ---------------------------- | ---------------------------- | ---------------------------- |
@@ -22,9 +18,11 @@ the end. `umami` isn't touched.
 | `norse2-prod-search`      | `DO_MULTITENANT_PROD_APP_ID` | `norse-cms:production`       | `norse-app:production`       |
 | `norse2-prod-search-mboa` | `DO_MBOA_PROD_APP_ID`        | `norse-cms-mboa:production`  | `norse-app-mboa:production`  |
 
-Name the components exactly `norse-cms` and `norse-app`: the variables below refer
-to them by name. Each `norse-cms` keeps its app's existing database, Redis and
-media bucket.
+The components must be named exactly `norse-cms` and `norse-app`: the variables below
+refer to them by name. Each `norse-cms` has its app's database, Redis and media bucket.
+
+MBOA's images have the base path, trailing slashes and the geospatial filtering flag
+baked in by `deploy-images.yaml`, and Umami in production only.
 
 ### How CI deploys
 
@@ -34,40 +32,41 @@ media bucket.
 2. Only then builds and pushes both public images, and waits again.
 3. Development only: runs e2e against the dev hosts, MBOA included.
 
-So each release is two deployments per app. A failed CMS deploy leaves
-the public components on the previous release and alerts Slack. The `images_only`
-option of "Run workflow" pushes the images without waiting, for use before the
-components exist.
+So each release is two deployments per app. A failed CMS deploy leaves the public
+components on the previous release and alerts Slack.
 
-**CI no longer builds `norse`**, so `norse-search` stays on its last image. On
-development it stops receiving changes until you flip to `norse-app`. Until the new
-components exist with autodeploy on, a push to `development` that changes the app
-builds the CMS images and then times out waiting for a deployment (30 minutes,
-then a Slack alert).
+- **Development** deploys on a push to `development` that changes the app, or with
+  Run workflow.
+- **Production** deploys only on a `v*` tag, multi-tenant and MBOA together, with no
+  separate approval and no manual trigger. To retry a failed release, use **Re-run
+  jobs** on the tag's run, or create a new tag if the fix needs new code.
 
 ## Networking
 
 `norse-app` calls `norse-cms` over the app's private network, using
 `${norse-cms.PRIVATE_URL}`. That traffic never leaves the app, so it can't hit the
-Cloudflare WAF, the cause of the original `403`s.
+Cloudflare WAF.
 
 Admins need a public hostname, because the admin's static files differ from the
-public app's, so it can't share a hostname with it by path. Add one custom domain
-per app and a routing rule for it (Networking → Component routing rules → Add
-routing rule):
+public app's, so it can't share a hostname with it by path. Each CMS domain has a
+routing rule **above** the rule matching all domains, with the prefix `/`, so paths
+arrive unchanged:
 
-| App                       | Domain (suggestion)    | Rule                                                |
-| ------------------------- | ---------------------- | --------------------------------------------------- |
-| `norse-dev-search`        | `dev-cms.c211.io`      | that domain → `norse-cms`, preserve full path       |
-| `norse-dev-search-mboa`   | `stg-mboa-cms.c211.io` | that domain → `norse-cms`, preserve full path       |
-| `norse2-prod-search`      | `cms.c211.io`          | that domain → `norse-cms`, preserve full path       |
-| `norse2-prod-search-mboa` | `mboa-cms.c211.io`     | that domain → `norse-cms`, preserve full path       |
+| App                       | CMS domain                                       |
+| ------------------------- | ------------------------------------------------ |
+| `norse-dev-search`        | `dev-cms.c211.io`                                |
+| `norse-dev-search-mboa`   | `stg-mboa-cms.c211.io`                           |
+| `norse2-prod-search`      | `cms.c211.io`, `payload-administration.c211.io`  |
+| `norse2-prod-search-mboa` | `mboa-cms.c211.io`                               |
 
-Keep this rule **above** the rule matching all domains.
+`CMS_ADMIN_URL` on `norse2-prod-search` is `https://cms.c211.io`, and
+`payload-administration.c211.io` is an extra way in. It is also that app's `PRIMARY`
+domain, so keep it there or choose another primary before removing its rule.
 
 **MBOA URLs include the base path.** The MBOA images serve everything under
 `/adresources`, with trailing slashes, so its admin is at
-`https://mboa-cms.c211.io/adresources/admin/`.
+`https://mboa-cms.c211.io/adresources/admin/`. `https://mn.gov/adresources/` reaches
+`norse-app` through mn.gov's proxy.
 
 ## Environment variables
 
@@ -75,17 +74,14 @@ Set these at **component level**. Check where `DATABASE_URI` and the other CMS-o
 variables are set today: if they are at app level, every component inherits them,
 including `norse-app`. Move them to the components that need them.
 
-Generate one new secret per app (the old value appeared in production logs):
-
-```bash
-openssl rand -base64 32
-```
+Each app has its own `PAYLOAD_API_ROUTE_SECRET`. To replace it, generate a value with
+`openssl rand -base64 32` and set it on both components in the same change.
 
 **App-specific values**
 
 | Variable                   | Component   | Multi-tenant                 | MBOA                                       |
 | -------------------------- | ----------- | ---------------------------- | ------------------------------------------ |
-| `PAYLOAD_API_ROUTE_SECRET` | both        | new secret, same on both     | new secret, same on both                   |
+| `PAYLOAD_API_ROUTE_SECRET` | both        | same on both                 | same on both                               |
 | `PAYLOAD_CMS_URL`          | `norse-app` | `${norse-cms.PRIVATE_URL}`   | `${norse-cms.PRIVATE_URL}/adresources`     |
 | `CMS_ADMIN_URL`            | both        | `https://cms.c211.io`        | `https://mboa-cms.c211.io/adresources`     |
 | `INTERNAL_APP_URL`         | `norse-cms` | `${_self.PRIVATE_URL}`       | `${_self.PRIVATE_URL}` (no base path: the code adds it) |
@@ -93,11 +89,10 @@ openssl rand -base64 32
 `CMS_ADMIN_URL` must be the public URL, because browsers follow it: password-reset
 links on `norse-cms`, and the redirect from `<tenant host>/admin` on `norse-app`.
 
-`INTERNAL_APP_URL` is required: its default is loopback, which you found doesn't
-work on App Platform, and scheduled PDF delivery needs it.
+`INTERNAL_APP_URL` is required: its default is loopback, which doesn't work on App
+Platform, and scheduled PDF delivery needs it.
 
-**Everything else**: copy the values from that app's `norse-search`. "Public" is
-`norse-app`, "CMS" is `norse-cms`.
+**Everything else**: "Public" is `norse-app`, "CMS" is `norse-cms`.
 
 | Variable                                                                 | Public | CMS |
 | ------------------------------------------------------------------------ | :----: | :-: |
@@ -110,7 +105,7 @@ work on App Platform, and scheduled PDF delivery needs it.
 | `ARCJET_*`                                                               | ✓      |     |
 | `EMS_SERVICE_URL`, `WEBHOOK_ALERT_URL`, `GOOGLE_SITE_VERIFICATION`       | ✓      |     |
 | `CUSTOM_AUTH_HOST`, `CUSTOM_AUTH_PROTOCOL` (MBOA)                        | ✓      |     |
-| `DATABASE_URI`, `DATABASE_POOL_MIN`, `DATABASE_POOL_MAX`, `PAYLOAD_SECRET` |        | ✓   |
+| `DATABASE_URI`, `DATABASE_POOL_MIN`, `DATABASE_POOL_MAX`, `DATABASE_POOL_IDLE_TIMEOUT_MS`, `PAYLOAD_SECRET` |        | ✓   |
 | `MEDIA_S3_*`, `MEDIA_DO_CDN_ENDPOINT`                                    |        | ✓   |
 | `SENDGRID_API_KEY`                                                       |        | ✓   |
 | `KEYCLOAK_ADMIN_CLIENT_ID`, `KEYCLOAK_ADMIN_SECRET`                     |        | ✓   |
@@ -121,175 +116,74 @@ work on App Platform, and scheduled PDF delivery needs it.
 
 This list comes from the variables each built image reads, plus a search of the
 source for the ones read indirectly (such as `KEYCLOAK_ADMIN_*`, which a scan of the
-image misses). `NEXT_PUBLIC_API_URL` is no longer read by anything. Leave anything
-else that `norse-search` sets and this table doesn't list off the new components,
-and watch the logs. `NEXT_PUBLIC_*` values are baked in from GitHub at build time.
+image misses). `NEXT_PUBLIC_API_URL` is no longer read by anything. `NEXT_PUBLIC_*`
+values are baked in from GitHub at build time.
 
 Do not set `NORSE_ROLE`: the role is baked into the images, and a different value
 makes the server refuse to start. `NEXT_PUBLIC_CUSTOM_BASE_PATH` and
 `NEXT_PUBLIC_WITH_TRAILING_SLASHES` are baked in too, so they have no effect at
 runtime. `CUSTOM_AUTH_HOST`, `CUSTOM_AUTH_PROTOCOL` and `NEXTAUTH_URL` go on MBOA's
-`norse-app` with their current values.
+`norse-app`.
 
 ## Component settings (dashboard)
 
-Add each with Create → Components → Container image:
+Both components are container images from DigitalOcean Container Registry, with
+**autodeploy on**. Leave the run command empty: the image defines it.
 
-| Setting      | Multi-tenant                                                 | MBOA                       |
-| ------------ | ------------------------------------------------------------ | -------------------------- |
-| Source       | DigitalOcean Container Registry, the image above, **autodeploy on** | same                |
-| Run command  | leave empty (the image defines it)                           | same                       |
-| HTTP port    | the same as `norse-search`                                   | same                       |
-| Health check | `/api/health`                                                | `/adresources/api/health/` |
+| Setting      | Multi-tenant    | MBOA                       |
+| ------------ | --------------- | -------------------------- |
+| Health check | `/api/health`   | `/adresources/api/health/` |
 
-The CMS renders PDFs and runs jobs, so start `norse-cms` at the size of `norse-search`,
-with **one instance**. Size `norse-app` like `norse-search` too, and reduce it later if
-metrics allow. All three components are billed while `norse-search` is still there.
+`norse-cms` has `initial_delay_seconds: 60` on its health check, because it runs
+migrations on start. It also renders PDFs and runs jobs.
 
-Before editing an app, **download its app spec** (Settings → App Spec).
+Production sizes:
 
-Also add `norse-cms` to whatever watches `norse-search`: log forwarding, uptime
-checks, alerts, and the Prometheus scrape list (`/api/metrics`, with
-`PROMETHEUS_TOKEN`).
+| App                       | Size               | `norse-app` instances | `norse-cms` instances |
+| ------------------------- | ------------------ | --------------------- | --------------------- |
+| `norse2-prod-search`      | `apps-d-1vcpu-4gb` | 3-10 (autoscaling)    | 2                     |
+| `norse2-prod-search-mboa` | `apps-d-1vcpu-2gb` | 2-4 (autoscaling)     | 2                     |
 
-## Before you start
+Every `norse-cms` instance runs `payload migrate` on start and the Payload job crons;
+Payload locks queued jobs across instances.
 
-- [ ] **Registry plan:** the release adds four repositories. Check your Container
-      Registry plan's repository limit and storage.
-- [ ] **MBOA's build values:** MBOA's app builds from GitHub today, so its
-      `NEXT_PUBLIC_*` values come from its own spec. The images get them from
-      `deploy-images.yaml`: base path, trailing slashes and the geospatial filtering flag
-      on, and Umami in production only. Compare with the MBOA production spec first, in particular
-      `NEXT_PUBLIC_ALLOW_SEARCH_ENGINES`, which CI sets to `true` on every production image.
-- [ ] **MBOA's production release trigger:** if MBOA production also builds from a
-      branch, then after the switch it deploys on a `v*` tag like multi-tenant.
-- [ ] **MBOA's routing rule:** the MBOA images expect requests with `/adresources`
-      still in the path. Check that the rule pointing at `norse-search` preserves
-      it. If it strips the prefix today, the rule pointing at `norse-app` must not.
-- [ ] **Consumers of `/api/tenants/<id>/config`:** this route moves to the CMS
-      hostname. Nothing in this repo or Norse-API calls it, so find any external
-      consumer of `PAYLOAD_APP_CONFIG_API_KEY` and point it at the CMS.
-- [ ] **Keycloak's domain check:** `/api/keycloak/domain-check` answers on both
-      components, so its URL can stay as it is.
+Keep spec files out of the repository: they hold secrets. Download an app's spec
+(Settings → App Spec) before editing it.
 
-## App spec changes
+## Checks
 
-Change each app's spec in three steps, so traffic only moves after the new components
-are tested. Download the current spec first and keep it: it is your rollback after
-version 3. Keep spec files out of the repository.
+`<base>` is empty for multi-tenant and `/adresources` for MBOA, whose URLs end in `/`.
+E2E does not run on production, so check it by hand after a risky change.
 
-| Version          | All domains  | Test domain  | CMS domain  | Components  |
-| ---------------- | ------------ | ------------ | ----------- | ----------- |
-| 1. Add           | old          | `norse-app`  | `norse-cms` | old + 2 new |
-| 2. Route traffic | `norse-app`  | old          | `norse-cms` | old + 2 new |
-| 3. Remove old    | `norse-app`  | removed      | `norse-cms` | 2 new       |
-
-Rollout steps 2 and 3 are version 1, step 4 is version 2, and removing `norse-search`
-is version 3. In version 2 the test domain keeps a route to the old component, so you
-can compare the two.
-
-**Version 1:**
-
-- Add `domains`: the CMS domain and a test domain, both `ALIAS`. Keep the `PRIMARY`.
-- Add `ingress` rules above the all-domains rule, each with its `authority.exact`. Umami
-  keeps its rule, first, and its component doesn't change. The rules use
-  the prefix `/`, so paths arrive unchanged.
-- Add `norse-cms` and `norse-app` to `services`, with the variables listed under
-  [Environment variables](#environment-variables). Copy `EV[...]` values only within the same app.
-- Generate one new `PAYLOAD_API_ROUTE_SECRET` for the app. Use the same value on both
-  components, with `type: SECRET`. Keep that value in versions 2 and 3 of the file.
-- Turn off the old component's autodeploy: `deploy_on_push: false`, or for an image
-  source `deploy_on_push: { enabled: false }`.
-
-Both new components use this shape. Only the repository, tag and health path differ:
-
-```yaml
-- name: norse-cms
-  http_port: 8080
-  instance_count: 1
-  instance_size_slug: apps-s-1vcpu-1gb-fixed
-  image:
-    registry: connect211-cr
-    registry_type: DOCR
-    repository: norse-cms # norse-cms-mboa, norse-app, norse-app-mboa
-    tag: production # development on the dev apps
-    deploy_on_push:
-      enabled: true
-  health_check:
-    http_path: /api/health # /adresources/api/health/ on MBOA
-    # norse-cms only, because it runs migrations on start:
-    initial_delay_seconds: 60
-    period_seconds: 10
-    failure_threshold: 9
-```
-
-**Version 2:** swap the components on two rules. The all-domains rule goes to `norse-app`
-and the test domain rule goes to the old component.
-
-**Version 3:** remove the old component, the test domain and its rule. Also remove the
-test domain from the tenant's `trustedDomains`.
-
-## Rollout: development
-
-### 1. Push the images
-
-Actions → **Development Deploy** → Run workflow → branch `development`, tick
-**images_only**. Wait for all four images.
-
-### 2. Add `norse-cms` to both dev apps
-
-Add the component, its variables, its domain and its routing rule. Public traffic
-still goes to `norse-search`. On start it runs `payload migrate`.
-
-**Check each CMS** (`<base>` is empty for multi-tenant, `/adresources` for MBOA, and
-MBOA URLs end in `/`):
+**CMS**
 
 - `https://<cms domain><base>/` redirects to the admin, and you can sign in.
 - `https://<cms domain><base>/en` is a 404.
 - `https://<cms domain><base>/api/healthz` reports Postgres and Redis `ok`.
 
-### 3. Add `norse-app` to both dev apps
-
-Add the component and its variables, plus a **test domain** routed to it (for example
-`stg-mboa-next.c211.io`), above the rule matching all domains. So the page can resolve
-a tenant, add that domain to the tenant's `trustedDomains` in the CMS admin. Remove it
-from both places after the flip. Sign-in on the test domain redirects to the domain in
-`NEXTAUTH_URL`, so test sign-in after the flip.
-
-While the old component is still there, turn off its autodeploy
-(`deploy_on_push: false`, on MBOA a GitHub source). Otherwise a push starts a deployment
-of its own, and CI can mistake that for the image deployment it is waiting for.
-
-**Check the private connection** from `norse-app`'s Console tab. It returns the
-tenant, and `401` without the header:
+**Private connection**, from `norse-app`'s Console tab. It prints the status and tenant
+id, because the response holds tenant credentials. Without the header the status is `401`:
 
 ```bash
-node -e "fetch(process.env.PAYLOAD_CMS_URL + '/api/internal/tenants/by-host?host=<tenant host>', { headers: { 'x-internal-api-key': process.env.PAYLOAD_API_ROUTE_SECRET } }).then(async (r) => console.log(r.status, (await r.text()).slice(0, 80)))"
+node -e "fetch(process.env.PAYLOAD_CMS_URL + '/api/internal/tenants/by-host?host=<tenant host>', { headers: { 'x-internal-api-key': process.env.PAYLOAD_API_ROUTE_SECRET } }).then(async r => console.log(r.status, (await r.json().catch(() => null))?.id))"
 ```
 
 On MBOA use `/api/internal/tenants/by-host/?host=<tenant host>`.
 
-### 4. Flip the traffic
-
-In Networking, point the rule that matches all domains at `norse-app` instead of
-`norse-search`.
-
-**Check:**
+**Public app**
 
 - `norse-app`'s logs show no `cms_request_failed` or
   `tenant_basic_config_fetch_failed`.
-- Pages load with the right branding and locales on several tenants, and search
-  works. For MBOA, check `https://stg-mboa.c211.io/adresources/`, including a second
-  language and a detail page.
+- Pages load with the right branding and locales on several tenants, and search works.
+  On MBOA check `https://mn.gov/adresources/` in a browser: mn.gov's bot protection
+  blocks `curl`.
 - Sign-in works on a tenant with accounts, a login-wall tenant still requires login,
   and MBOA sign-in works.
 - `<tenant host>/admin` redirects to the same page on the CMS domain, and
   `/api/users/me` is 404.
 - `/api/healthz` on a tenant host reports Postgres `disabled`.
 
-### 5. Check what needs the CMS
-
-These have never run against a real split deployment, so test each of them:
+**What needs the CMS**
 
 - Printable directories: auto-translation on save, cover or logo upload, "Send to
   me now". The last one checks PDF rendering through `INTERNAL_APP_URL`.
@@ -298,82 +192,30 @@ These have never run against a real split deployment, so test each of them:
 - A password-reset email links to the CMS domain.
 - Translation jobs, and the admin's Analytics and Scorecards pages.
 
-### 6. Run the real pipeline
+## Testing on another hostname
 
-Run **Development Deploy** on `development`, without `images_only`. It should deploy
-the CMS images, then the public images, then pass e2e. If it times out waiting,
-check that autodeploy is on for both components.
-
-## Rollout: production
-
-Do this only after development has run cleanly for a few days.
-
-### 7. Push the production images
-
-Merge to `main` as usual, **without a tag yet**. Then Actions → **Production Deploy**
-→ Run workflow on `main`, with **images_only** ticked (it is the default).
-
-### 8. Add the components
-
-Steps 2 and 3 on both production apps. From this moment `norse-cms` runs Payload
-jobs and migrations against production too. `norse-search` runs the same jobs until
-you remove it; Payload locks queued jobs, as it already does across instances.
-
-From this moment any run of **Production Deploy** is a live deploy, because the
-components auto-deploy the `production` tag. Don't run it by hand again: **images_only**
-skips the wait for the CMS, so the public images could go live before migrations
-finish. Releases now come only from `v*` tags. To retry a failed one, use **Re-run
-jobs** on the tag's run, or create a new tag if the fix needs new code.
-
-### 9. Flip the traffic
-
-In a low-traffic window, MBOA first because it is a single tenant, then
-multi-tenant. Same flip and checks as step 4, with `https://mn.gov/adresources/` for
-MBOA. E2E does not run on production, so do the checks by hand, including those in
-step 5 that don't send email to real recipients.
-
-Requests through the mn.gov proxy are the one path development can't rehearse, so
-check them specifically.
-
-### 10. Finish
-
-- Tell admins the new URLs: `https://cms.c211.io/admin` and
-  `https://mboa-cms.c211.io/adresources/admin/`. They must sign in again, and the
-  tenant is no longer preselected from the host, so tenant admins may need to pick
-  theirs.
-- The next `v*` tag runs the full pipeline. Watch that first run.
-- After a few days without problems, remove `norse-search` from each app, and later
-  the old `norse` repository.
-- Remove the manual trigger from `production-deploy.yaml`: `workflow_dispatch`, the
-  `images_only` input it passes, and the `if` on the `deploy` job. Step 7 was its only
-  use. After that only a `v*` tag can build production images.
-
-Remove `norse-search` soon rather than keeping it indefinitely: it restarts with
-every deployment of the app, runs `payload migrate` from its old image each time,
-and keeps running jobs with old code.
+To try a build or change on a hostname that isn't live, add it as an `ALIAS` domain
+with a rule to `norse-app` above the all-domains rule. Add it to the tenant's
+`trustedDomains`, **last in the list**, because several features use the first entry as
+the tenant's main domain. Remove it from both places afterwards. Sign-in on such a
+domain redirects to the domain in `NEXTAUTH_URL`.
 
 ## Rollback
 
-| Situation                     | What to do                                                                        |
-| ----------------------------- | --------------------------------------------------------------------------------- |
-| `norse-cms` misbehaves        | Nothing public depends on it before the flip. Fix or remove the component.         |
-| Problems after the flip       | Point the all-domains rule back at `norse-search`. Takes one deployment.           |
-| After removing `norse-search` | Restore the app spec you downloaded, or re-add the component from its last image.  |
+CI tags every image with `sha-<short commit>`, and tag builds also with the version
+(for example `2.32.0`). To go back, set `tag` in the spec to the previous value on
+`norse-app`, then on `norse-cms`. A pinned component ignores new releases until you set
+its tag back to `production`.
 
-`norse-search` runs the code from before the split, and it reads
-`PAYLOAD_API_ROUTE_SECRET` itself, so its own variables keep working.
-
-Check the migrations before relying on this: the split added none, but a later
-release may. Going back to `norse-search` is only safe while its code still works
-with the current schema, so treat rollback as available until the first
-non-additive migration after the split.
+Check the migrations first. Old code is only safe while it still works with the current
+schema, and `norse-cms` doesn't undo migrations on the way back.
 
 ## Logs to watch
 
 | Event                              | App    | Meaning                                                                                      |
 | ---------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
 | `cms_request_failed`               | public | A call to the CMS failed. See `status`, `body`, and `cfRay` (set means it went through Cloudflare). |
-| `tenant_basic_config_fetch_failed` | public | The proxy could not read a tenant's locales and login wall, so the page got defaults, **without its login wall**. |
+| `tenant_basic_config_fetch_failed` | public | The proxy could not read a tenant's locales and login wall. With `servedStale: true` the page got the last good config; otherwise it got defaults, **without its login wall**. |
 | `CMS internal API route failed`    | CMS    | An `/api/internal/*` handler threw and answered 500.                                         |
 
 The secret is never logged in full: `tenant_basic_config_fetch_failed` shows its

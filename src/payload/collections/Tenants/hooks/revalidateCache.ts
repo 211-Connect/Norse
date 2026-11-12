@@ -34,6 +34,8 @@ export async function revalidateCache({
       );
       if (doc?.id) {
         await cacheService.del(`tenant:${doc.id}`);
+        // Read only by app builds before the key moved into `tenant:<id>`;
+        // remove once no such build runs.
         await cacheService.del(`tenant_api_key:${doc.id}`);
       }
     } catch (error) {

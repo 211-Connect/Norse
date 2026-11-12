@@ -1,14 +1,19 @@
 import type { Page } from '@playwright/test';
 
 import { baseURL } from '../playwright.config';
+import esCommon from '../public/locales/es/common.json' with { type: 'json' };
 import { getCurrentTenant } from './fixtures/tenants';
 import {
+  applyTestLocationOnSearchPage,
   expect,
   expectSearchDialogDismissed,
+  getResultTotalNumber,
   goHome,
   LOCALE,
+  openTopicSearch,
+  switchLanguage,
   test,
-  waitForPageStabilized,
+  waitForSearchResultsSettled,
 } from './helpers';
 import {
   AUTOCOMPLETE_TIMEOUT_MS,
@@ -251,8 +256,10 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
       timeout: UI_SHELL_TIMEOUT_MS,
     });
     // The Next.js route-change toploader can still be animating over the
-    // header at this point and intercept the click below.
-    await waitForPageStabilized(page);
+    // header at this point and intercept the click below. Settle on the
+    // page's own signals, not `networkidle`: WA's injected trackers keep
+    // requests open long enough that networkidle is reached only by chance.
+    await waitForSearchResultsSettled(page);
 
     // The trigger reflects the seeded stale location before we touch anything.
     const changeLocation = page
@@ -308,10 +315,7 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
       }),
       { waitUntil: 'domcontentloaded' },
     );
-    await expect(page.locator('#search-container')).toBeVisible({
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await waitForPageStabilized(page);
+    await waitForSearchResultsSettled(page);
 
     const changeLocation = page
       .getByRole('button', { name: /change location/i })
@@ -361,5 +365,57 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });
+  });
+
+  test('clearing the location in a non-English locale restores the unfiltered results', async ({
+    context,
+    page,
+  }) => {
+    // The clear button commits the translated "Everywhere" label. Only the
+    // English word used to be recognised as "no location", so a translated
+    // label reached the URL, was geocoded as a real place, and left the search
+    // filtered around wherever that phrase resolved to.
+    await goHome(page);
+    await switchLanguage(page, 'es');
+    await openTopicSearch(page);
+    await waitForSearchResultsSettled(page);
+    const totalWithoutLocation = await getResultTotalNumber(page);
+    expect(totalWithoutLocation).toBeGreaterThan(0);
+
+    await applyTestLocationOnSearchPage(page, testLocation);
+
+    await page
+      .getByRole('button', { name: /cambiar ubicación/i })
+      .first()
+      .click();
+    const locationInput = page.locator('#location-input');
+    const clearButton = page
+      .getByTestId('location-field')
+      .getByTestId('search-clear-btn');
+    await expect(clearButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await clearButton.click();
+    await expect(locationInput).toHaveValue(esCommon.search.everywhere, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+
+    await page.getByTestId('search-submit-btn').click();
+    await expectSearchDialogDismissed(page);
+
+    await expect
+      .poll(() => new URL(page.url()).searchParams.has('location'), {
+        timeout: SEARCH_NAV_TIMEOUT_MS,
+      })
+      .toBe(false);
+    await waitForSearchResultsSettled(page);
+    expect(new URL(page.url()).searchParams.has('coords')).toBe(false);
+    await expect
+      .poll(() => getResultTotalNumber(page), {
+        timeout: SEARCH_NAV_TIMEOUT_MS,
+      })
+      .toBe(totalWithoutLocation);
+
+    const cookieNames = (await context.cookies()).map(({ name }) => name);
+    expect(cookieNames).not.toContain('user-pref-location');
+    expect(cookieNames).not.toContain('user-pref-coords');
   });
 });

@@ -38,9 +38,11 @@ describe('servesPath', () => {
   const appApi = [
     '/api/auth/session',
     '/api/cms-admin-redirect/collections',
+    '/api/locale',
     '/api/share/t1',
     '/api/resource-titles',
     '/api/search-config/t1/en',
+    '/api/search-pins',
     '/api/webhook',
   ];
   const cmsPaths = [

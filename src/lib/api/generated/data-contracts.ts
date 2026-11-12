@@ -207,6 +207,29 @@ export interface SearchResponseDto {
   relevance_cutoff?: RelevanceCutoffDto | null;
 }
 
+export interface SearchPinDto {
+  /** Document id, the same `_id` as a list hit. */
+  id: string;
+  service_at_location_id: string | null;
+  name: string | null;
+  physical_address: PhysicalAddressDto | null;
+  /**
+   * Longitude, latitude
+   * @maxItems 2
+   * @minItems 2
+   * @example [-77.43,37.54]
+   */
+  coordinates: number[];
+}
+
+export interface SearchPinsResponseDto {
+  /** Located documents matching the search. Classic search counts up to 10000. */
+  total: number;
+  /** Whether matches past the pin limit were cut. */
+  truncated: boolean;
+  pins: SearchPinDto[];
+}
+
 export interface AiSearchOptionDto {
   code: string;
   score: number;
@@ -245,6 +268,21 @@ export interface CreateShortUrlDto {
    * @example "https://example.org/resource/1"
    */
   url: string;
+}
+
+export interface HealthResponseDto {
+  /** @example "up" */
+  status: "up";
+  /**
+   * The Norse-API release serving this request: its git release tag, or `<branch>-<commit>` for a non-release build, or `unknown` when the build did not record one. Not the API contract version (`x-api-version`). Every response also carries it in the `x-norse-api-release` header.
+   * @example "v1.3.0"
+   */
+  release: string;
+  /**
+   * The git commit the release was built from, or `unknown`.
+   * @example "30048b24e37b4c1f8a2e5d6b7c8d9e0f1a2b3c4d"
+   */
+  commit: string;
 }
 
 export type CreateFavoriteDto = object;
@@ -1107,7 +1145,7 @@ export interface HeatmapPointResponse {
    */
   lat: number;
   /**
-   * Aggregate weight (number of searches) at this location
+   * Aggregate Umami visits at this location
    * @example 15
    */
   weight: number;
@@ -1483,6 +1521,8 @@ export interface SearchQueryApiDto {
    * @example "BM-1400,BM-1700"
    */
   taxonomy?: string | string[];
+  /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
+  organization_id?: string;
   /**
    * @min 0
    * @default 0
@@ -2322,6 +2362,62 @@ export interface SearchControllerGetResourcesPostParams {
 
 export type SearchControllerGetResourcesPostData = SearchResponseDto;
 
+export interface SearchControllerGetPinsParams {
+  /**
+   * Matching engine used to select results: `text` (default, lexical), `taxonomy` (HSIS code scope), `more_like_this`, and `hybrid` (lexical + semantic vector + geographic proximity). Orthogonal to `sort`, which controls result ordering.
+   * @default "text"
+   */
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
+  /**
+   * Result offset must stay within Elasticsearch max_result_window: page * limit may not exceed 10000 (ES can only return the first 10000 hits), e.g. with the default limit of 25 the highest page is 400.
+   * @min 1
+   * @default 1
+   */
+  page?: number;
+  /** Comma delimited list of longitude,latitude */
+  coords?: string[];
+  filters?: object;
+  /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
+  organization_id?: string;
+  /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
+  taxonomy?: string | string[];
+  /**
+   * Radius in miles. Only takes effect when `coords` is also set.
+   * @min 0
+   * @default 0
+   */
+  distance?: number;
+  /**
+   * Searcher age used to match minimum_age/service.maximum_age
+   * @min 0
+   */
+  age?: number;
+  /**
+   * @min 25
+   * @max 300
+   * @default 25
+   */
+  limit?: number;
+  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
+  geo_type?: "boundary" | "proximity";
+  /**
+   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. Pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default; `top` hard-sorts them first; `ignore` disables them). For `hybrid` search, `boost` folds pinned/priority into the relevance score; for other query types, `ignore` removes the priority sort tier while other modes preserve it. Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
+   * @default "relevance"
+   */
+  sort?: "relevance" | "distance" | "name" | "organization";
+  /**
+   * Opt-in trimming of low-relevance results (hybrid search only; ignored for other query types). `off` (default) returns the full matched set and leaves the response document unchanged. `on` keeps results scoring at least a fraction of the top score — 0.2 of the top, tightened stepwise (up to 0.5) when more than 1,000 results would survive, and never less than the top-20 results' own scores — and **returns everything when the scores are too flat for that to remove anything meaningful** — a uniformly weak result set is reported as such rather than cut arbitrarily. The cut is computed on semantic and lexical relevance only: proximity still filters and ranks, but never decides what is irrelevant, since how far someone will travel is their own choice and not a property of the resource. It is applied as a membership filter rather than a score threshold, so `sort` still orders whatever survives — cut by relevance, then sort by distance, name or organization. When a cutoff applies, `hits.total` reports the kept count and the pre-cutoff total is preserved in `relevance_cutoff.matched_before_cutoff`. A `relevance_cutoff` object is added to the response whenever this param is `on`.
+   * @default "off"
+   */
+  relevance_cutoff?: "off" | "on";
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
+
+export type SearchControllerGetPinsData = SearchPinsResponseDto;
+
 export interface SearchControllerPredictNeedsClassificationParams {
   query: string;
   /**
@@ -2369,7 +2465,7 @@ export type ShortUrlControllerGetShortUrlByIdData = ShortUrlResponseDto;
 
 export type ShortUrlControllerGetOrCreateShortUrlData = ShortUrlResponseDto;
 
-export type HealthControllerGetStatusData = any;
+export type HealthControllerGetStatusData = HealthResponseDto;
 
 export interface FavoriteControllerCreateParams {
   /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */

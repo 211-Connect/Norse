@@ -3,6 +3,15 @@ import arcjet, {
   type ArcjetNextRequest,
   createRemoteClient,
 } from '@arcjet/next';
+import { trace, TraceFlags } from '@opentelemetry/api';
+import { hostname } from 'node:os';
+import { performance } from 'node:perf_hooks';
+
+import {
+  type Outcome,
+  recordDependency,
+  toOperation,
+} from '@/lib/telemetry/dependency';
 
 import {
   ARCJET_PROXIES,
@@ -63,6 +72,25 @@ export const FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE = 5;
  */
 export const DENIED_LOG_MAX_PER_MINUTE = 30;
 
+/** Wall-clock duration and event-loop utilization of an Arcjet decision. */
+export interface ArcjetTiming {
+  durationMs: number;
+  eventLoopUtilization: number;
+}
+
+/**
+ * Host name of this process instance, computed once at module load. Logged
+ * with Arcjet failure lines so multi-instance logs on App Platform can be
+ * grouped per container.
+ */
+const INSTANCE = (() => {
+  try {
+    return hostname();
+  } catch {
+    return 'unknown';
+  }
+})();
+
 export type ArcjetProtectResult =
   | {
       denied: false;
@@ -73,6 +101,9 @@ export type ArcjetProtectResult =
        */
       conclusion:
         'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
+      /** `decision.id`; absent when no decision came back (SKIPPED/THREW). */
+      decisionId?: string;
+      timing?: ArcjetTiming;
     }
   | {
       /** Denied by Arcjet but the host is not enforced (see ARCJET_ENFORCEMENT). */
@@ -81,12 +112,16 @@ export type ArcjetProtectResult =
       deniedBots: string[];
       /** `decision.reason.type`: 'BOT' | 'FILTER' | ... (ISS-2366). */
       reasonType: string;
+      decisionId?: string;
+      timing?: ArcjetTiming;
     }
   | {
       denied: true;
       conclusion: 'DENY';
       deniedBots: string[];
       reasonType: string;
+      decisionId?: string;
+      timing?: ArcjetTiming;
     };
 
 /** The denied shapes of `ArcjetProtectResult`. */
@@ -167,6 +202,32 @@ export interface ArcjetProtectOptions {
   sampleDeniedLog?: () => boolean;
   /** Where a DENY is enforced. */
   enforcement?: ArcjetEnforcement;
+  /** Test seam: returns a stop() that yields timing for the wrapped call. */
+  startTimer?: () => () => ArcjetTiming;
+  /** Test seam: instance name. */
+  instance?: string;
+  /** Test seam: current trace context. */
+  traceContext?: () => { traceId?: string; traceSampled?: boolean };
+}
+
+function defaultStartTimer() {
+  const start = performance.now();
+  const elu = performance.eventLoopUtilization();
+  return (): ArcjetTiming => ({
+    durationMs: Math.round(performance.now() - start),
+    eventLoopUtilization:
+      Math.round(performance.eventLoopUtilization(elu).utilization * 1000) /
+      1000,
+  });
+}
+
+function defaultTraceContext() {
+  const ctx = trace.getActiveSpan()?.spanContext();
+  if (!ctx || !trace.isSpanContextValid(ctx)) return {};
+  return {
+    traceId: ctx.traceId,
+    traceSampled: (ctx.traceFlags & TraceFlags.SAMPLED) === TraceFlags.SAMPLED,
+  };
 }
 
 export function createArcjetProtect(
@@ -179,7 +240,29 @@ export function createArcjetProtect(
   const sampleDeniedLog =
     options.sampleDeniedLog ?? createMinuteSampler(DENIED_LOG_MAX_PER_MINUTE);
   const enforcement = options.enforcement ?? ARCJET_ENFORCEMENT;
+  const startTimer = options.startTimer ?? defaultStartTimer;
+  const instance = options.instance ?? INSTANCE;
+  const traceContext = options.traceContext ?? defaultTraceContext;
   let deniedSampledOut = 0;
+
+  /**
+   * One downstream sample per Arcjet decision. `SKIPPED`/`NO_CLIENT_IP`
+   * return before this is called: no call happened. A failed decision that
+   * reached the Decide API timeout is a timeout; any other failure is an
+   * error.
+   */
+  function recordDecision(timing: ArcjetTiming, failed: boolean): void {
+    let outcome: Outcome = 'ok';
+    if (failed) {
+      outcome = timing.durationMs >= ARCJET_TIMEOUT_MS ? 'timeout' : 'error';
+    }
+    recordDependency(
+      'arcjet',
+      toOperation('arcjet', 'decide'),
+      outcome,
+      timing.durationMs / 1000,
+    );
+  }
 
   function logFingerprintFailed(
     request: ArcjetRequestLike,
@@ -191,15 +274,27 @@ export function createArcjetProtect(
       message: string;
       decisionId?: string;
     },
+    timing: ArcjetTiming,
   ) {
-    const base = { ...requestContext(request, pathName), ...detail };
+    const traceInfo = traceContext();
+    const base = {
+      ...requestContext(request, pathName),
+      ...detail,
+      durationMs: timing.durationMs,
+      eventLoopUtilization: timing.eventLoopUtilization,
+      instance,
+      ...(traceInfo.traceId !== undefined && { traceId: traceInfo.traceId }),
+      ...(traceInfo.traceSampled !== undefined && {
+        traceSampled: traceInfo.traceSampled,
+      }),
+    };
     if (sampleHeaderLog()) {
-      log('warn', 'arcjet_fingerprint_failed', {
+      log('debug', 'arcjet_fingerprint_failed', {
         ...base,
         headers: redactHeaders(request.headers),
       });
     } else {
-      log('warn', 'arcjet_fingerprint_failed_sampled_out', base);
+      log('debug', 'arcjet_fingerprint_failed_sampled_out', base);
     }
   }
 
@@ -216,12 +311,12 @@ export function createArcjetProtect(
       forwardedFor: maskIpList(request.headers.get('x-forwarded-for') ?? ''),
     };
     if (sampleHeaderLog()) {
-      log('warn', 'arcjet_no_client_ip', {
+      log('debug', 'arcjet_no_client_ip', {
         ...base,
         headers: redactHeaders(request.headers),
       });
     } else {
-      log('warn', 'arcjet_no_client_ip_sampled_out', base);
+      log('debug', 'arcjet_no_client_ip_sampled_out', base);
     }
   }
 
@@ -230,7 +325,7 @@ export function createArcjetProtect(
       deniedSampledOut += 1;
       return;
     }
-    log('warn', 'arcjet_denied', {
+    log('debug', 'arcjet_denied', {
       ...data,
       sampledOutSinceLast: deniedSampledOut,
     });
@@ -267,18 +362,29 @@ export function createArcjetProtect(
       protectOptions = { ipSrc };
     }
 
+    // Timed scope: only the protect call itself, not the MBOA probe above.
+    const stopTimer = startTimer();
     let decision: ArcjetDecision;
     try {
       decision = await client.protect(request, protectOptions);
     } catch (error) {
+      const timing = stopTimer();
       // Fail open: a protection outage must never take the site down.
-      logFingerprintFailed(request, pathName, log, {
-        conclusion: 'THREW',
-        errorType: error instanceof Error ? error.name : typeof error,
-        message: error instanceof Error ? error.message : String(error),
-      });
-      return { denied: false, conclusion: 'THREW' };
+      logFingerprintFailed(
+        request,
+        pathName,
+        log,
+        {
+          conclusion: 'THREW',
+          errorType: error instanceof Error ? error.name : typeof error,
+          message: error instanceof Error ? error.message : String(error),
+        },
+        timing,
+      );
+      recordDecision(timing, true);
+      return { denied: false, conclusion: 'THREW', timing };
     }
+    const timing = stopTimer();
 
     if (decision.isDenied()) {
       const deniedBots = deniedBotsOf(decision);
@@ -293,38 +399,64 @@ export function createArcjetProtect(
         enforced,
       });
       if (!enforced) {
+        recordDecision(timing, false);
         return {
           denied: false,
           conclusion: 'DENIED_NOT_ENFORCED',
           deniedBots,
           reasonType,
+          decisionId: decision.id,
+          timing,
         };
       }
-      return { denied: true, conclusion: 'DENY', deniedBots, reasonType };
+      recordDecision(timing, false);
+      return {
+        denied: true,
+        conclusion: 'DENY',
+        deniedBots,
+        reasonType,
+        decisionId: decision.id,
+        timing,
+      };
     }
 
     if (decision.isErrored()) {
       // Includes a Decide API timeout (ARCJET_TIMEOUT_MS): fail open.
-      logFingerprintFailed(request, pathName, log, {
-        conclusion: decision.conclusion,
-        errorType: decision.reason.type,
-        message: errorMessageOf(decision),
+      logFingerprintFailed(
+        request,
+        pathName,
+        log,
+        {
+          conclusion: decision.conclusion,
+          errorType: decision.reason.type,
+          message: errorMessageOf(decision),
+          decisionId: decision.id,
+        },
+        timing,
+      );
+      recordDecision(timing, true);
+      return {
+        denied: false,
+        conclusion: 'ERROR',
         decisionId: decision.id,
-      });
-      return { denied: false, conclusion: 'ERROR' };
+        timing,
+      };
     }
 
     for (const match of dryRunMatchesOf(decision)) {
-      log('warn', 'arcjet_dry_run_match', {
+      log('debug', 'arcjet_dry_run_match', {
         ...requestContext(request, pathName),
         ...match,
         decisionId: decision.id,
       });
     }
 
+    recordDecision(timing, false);
     return {
       denied: false,
       conclusion: decision.conclusion === 'CHALLENGE' ? 'CHALLENGE' : 'ALLOW',
+      decisionId: decision.id,
+      timing,
     };
   }
 

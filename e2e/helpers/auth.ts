@@ -16,10 +16,6 @@ function isAuthHost(urlString: string): boolean {
 }
 
 export async function loginViaKeycloak(page: Page) {
-  const identity =
-    process.env.TEST_USER_EMAIL || getTestEmailForCurrentTenant();
-  const password = process.env.TEST_USER_PASSWORD || 'test-password';
-
   await goHome(page);
 
   const logoutButton = page.getByRole('button', { name: /log out/i });
@@ -45,34 +41,56 @@ export async function loginViaKeycloak(page: Page) {
     timeout: AUTH_NAV_TIMEOUT_MS,
   });
 
-  const url = page.url();
-  if (isAuthHost(url)) {
-    const identityInput = page
-      .locator('input[name="username"], #username')
-      .first();
-    await identityInput.waitFor({
-      state: 'visible',
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await identityInput.fill(identity);
-
-    const passwordInput = page
-      .locator('input[name="password"], #password, input[type="password"]')
-      .first();
-    await passwordInput.waitFor({
-      state: 'visible',
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await passwordInput.fill(password);
-
-    await Promise.all([
-      page.waitForURL((url) => !isAuthHost(url.href), {
-        timeout: AUTH_NAV_TIMEOUT_MS,
-        waitUntil: 'domcontentloaded',
-      }),
-      page.locator('#kc-login').click(),
-    ]);
+  if (isAuthHost(page.url())) {
+    await submitKeycloakCredentials(page);
   }
 
   await expectAuthenticatedShell(page);
+}
+
+/** Asserts the browser is on the Keycloak sign-in form (not auto-signed-in). */
+export async function expectKeycloakSignInForm(page: Page) {
+  await expect
+    .poll(() => isAuthHost(page.url()), { timeout: AUTH_NAV_TIMEOUT_MS })
+    .toBe(true);
+  await expect(
+    page.locator('input[name="username"], #username').first(),
+  ).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+}
+
+/**
+ * On the Keycloak sign-in form: fills the test account's credentials, submits
+ * and waits for the redirect back to the app. Does not navigate afterwards, so
+ * callers can assert on the page the app lands on (e.g. a post-login toast).
+ */
+export async function submitKeycloakCredentials(page: Page) {
+  const identity =
+    process.env.TEST_USER_EMAIL || getTestEmailForCurrentTenant();
+  const password = process.env.TEST_USER_PASSWORD || 'test-password';
+
+  const identityInput = page
+    .locator('input[name="username"], #username')
+    .first();
+  await identityInput.waitFor({
+    state: 'visible',
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await identityInput.fill(identity);
+
+  const passwordInput = page
+    .locator('input[name="password"], #password, input[type="password"]')
+    .first();
+  await passwordInput.waitFor({
+    state: 'visible',
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await passwordInput.fill(password);
+
+  await Promise.all([
+    page.waitForURL((url) => !isAuthHost(url.href), {
+      timeout: AUTH_NAV_TIMEOUT_MS,
+      waitUntil: 'domcontentloaded',
+    }),
+    page.locator('#kc-login').click(),
+  ]);
 }

@@ -70,5 +70,13 @@
     "purge": "Borrar todos los favoritos de esta lista",
     "delete": "Eliminar esta lista",
     "share": "Comparte esta lista"
+  },
+  "unavailable": {
+    "title": "No pudimos abrir esta lista",
+    "description": "Esta lista es privada o ha sido eliminada.",
+    "hint_owner": "Si esta es su lista, inicie sesión con la cuenta que usó para crearla.",
+    "hint_owner_signed_in": "Si esta es su lista, asegúrese de haber iniciado sesión con la cuenta que usó para crearla.",
+    "hint_shared": "Si alguien compartió este enlace con usted, pídale que verifique que la lista todavía existe y que es pública.",
+    "sign_in": "Iniciar sesión"
   }
 }

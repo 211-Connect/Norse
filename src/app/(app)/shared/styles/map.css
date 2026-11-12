@@ -19,3 +19,15 @@
   outline-offset: 2px;
   border-radius: 9999px;
 }
+
+.point-focus-target {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+/* Above the pins and the legend, which comes later in the page. */
+.maplibregl-popup {
+  z-index: 2;
+}

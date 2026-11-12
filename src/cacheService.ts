@@ -1,6 +1,8 @@
+import { ROOT_CONTEXT, context } from '@opentelemetry/api';
 import { Redis } from 'ioredis';
 
 import { createLogger } from '@/lib/logger';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 const log = createLogger('cache');
 
@@ -9,7 +11,7 @@ const CONNECT_RETRY_COOLDOWN_MS = 10_000;
 /** Cap on ioredis's reconnect backoff once a connection drops. */
 const MAX_RECONNECT_DELAY_MS = 5_000;
 
-class CacheService {
+export class CacheService {
   private client: Redis | null = null;
   private readonly isEnabled = Boolean(process.env.CACHE_REDIS_URI);
   private isConnecting = false;
@@ -58,6 +60,21 @@ class CacheService {
   private async _connect(): Promise<void> {
     if (this.client) return;
 
+    // ROOT_CONTEXT: the first request that touches the cache creates the
+    // client, and ioredis keeps the async context its socket was created in.
+    // Every later reconnect (connect, CLIENT, AUTH, INFO ready check) and the
+    // `ready`/`error` handlers would otherwise run in that request's context:
+    // their spans would join its trace for the life of the process and their
+    // logs would carry its trace_id. With `requireParentSpan: true` the
+    // handshake now records no span at all. Commands still trace normally:
+    // each one is a child of whoever awaits it. This resets the OTel context
+    // only: Next.js's own request stores (separate AsyncLocalStorage) stay
+    // attached to the socket, so nothing in these callbacks may read
+    // headers(), cookies() or other request-scoped state.
+    await context.with(ROOT_CONTEXT, () => this.createAndConnect());
+  }
+
+  private async createAndConnect(): Promise<void> {
     try {
       this.client = new Redis(process.env.CACHE_REDIS_URI!, {
         db: this.db,
@@ -145,11 +162,12 @@ class CacheService {
         log.warn({ key }, 'Cache set skipped; Redis disabled');
         return;
       }
-      if (ttl !== undefined && ttl > 0) {
-        await this.client.setex(key, ttl, value);
-      } else {
-        await this.client.set(key, value);
-      }
+      const client = this.client;
+      await trackDependency('redis', 'set', () =>
+        ttl !== undefined && ttl > 0
+          ? client.setex(key, ttl, value)
+          : client.set(key, value),
+      );
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis set error');
     }
@@ -159,7 +177,8 @@ class CacheService {
     try {
       await this.ensureConnection();
       if (!this.client) return null;
-      return await this.client.get(key);
+      const client = this.client;
+      return await trackDependency('redis', 'get', () => client.get(key));
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis get error');
       return null;
@@ -174,11 +193,14 @@ class CacheService {
     try {
       await this.ensureConnection();
       if (!this.client) return null;
-      const count = await this.client.incr(key);
-      if (count === 1) {
-        await this.client.expire(key, ttl);
-      }
-      return count;
+      const client = this.client;
+      return await trackDependency('redis', 'incr', async () => {
+        const count = await client.incr(key);
+        if (count === 1) {
+          await client.expire(key, ttl);
+        }
+        return count;
+      });
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis incr error');
       return null;
@@ -189,7 +211,8 @@ class CacheService {
     try {
       await this.ensureConnection();
       if (!this.client) return;
-      await this.client.del(key);
+      const client = this.client;
+      await trackDependency('redis', 'del', () => client.del(key));
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis del error');
     }

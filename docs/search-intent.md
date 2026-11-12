@@ -40,13 +40,17 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
     otherwise the tenant's engine type;
   - query, label, organization, location and distance are trimmed, and empty values are dropped;
   - taxonomy codes are split, trimmed and de-duplicated;
-  - "Everywhere" means no location; coords are written only as a pair; distance only with a location
+  - "Everywhere" (the literal `EVERYWHERE_LOCATION`, never its translated label) means no location; coords are written only as a pair; distance only with a location
     or coords;
   - a new search starts on page 1.
 - **Writers that edit the URL the visitor is on** (filter navigation, the coords redirect) lift it, change
   the intent and serialize it, through `rewriteSearchUrl` (`rewrite.ts`). They read the URL as the page
   does, so a repeated or bracketed plain key is written back once, as its first value; `taxonomy` repeats
   and repeated pass-through keys are kept. No writer emits `key[n]` for a plain key (ISS-2409).
+- **No writer re-emits a crawl-trap key** (`amp;…`, ISS-2307): `rewriteSearchUrl` drops them from the
+  pass-through, and pagination, sort and the language switch drop them when they copy the current URL. The
+  lift still reads them as unrecognised pass-through, but the edge answers such a request with 410 before
+  the page runs (see [bot-protection.md](/docs/bot-protection.md#crawl-trap-amp-keys-iss-2307)).
 - **Hand-built `/search` URLs** live only in `features/search/utils/handBuiltSearchLinks.ts`, each
   pinned by a fixture. `tests/search-url-writers.test.ts` fails on any other one.
 

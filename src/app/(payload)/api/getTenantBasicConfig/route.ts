@@ -1,6 +1,6 @@
 import { cmsOnly, isInternalRequest } from '@/lib/cms/internal-route';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
-import { withCache } from '@/utilities/withCache';
+import { ONE_HOUR, withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 
 export const GET = cmsOnly(async (request: Request) => {
@@ -35,7 +35,7 @@ export const GET = cmsOnly(async (request: Request) => {
         },
       };
     },
-    { redis: true, memory: true },
+    { redis: true, memory: true, ttl: ONE_HOUR },
   );
 
   if (tenantBasicConfig) {

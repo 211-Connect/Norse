@@ -28,6 +28,7 @@ export type CacheKey =
   | `resource_directory:${Domain}:${Locale}`
   | `app_config:${Domain}:${Locale}`
   | `search_results:${TenantId}:${Locale}:${Hash}`
+  | `search_pins:${TenantId}:${Locale}:${Hash}`
   | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
   | `resource:${TenantId}:${ResourceId}:${Locale}`
@@ -73,18 +74,35 @@ export const withCache = async <T>(
   fetchFunction: () => Promise<T>,
   config: CacheConfig = DEFAULT_CACHE_CONFIG,
   shouldCache: (value: T) => boolean = () => true,
+  /**
+   * Reports, exactly once per call, whether memory or Redis served the value
+   * without calling `fetchFunction` (`true`) or the value had to be fetched
+   * (`false`). Optional: existing callers behave unchanged.
+   */
+  onResult?: (hit: boolean) => void,
 ): Promise<T | null> => {
   const {
     redis = DEFAULT_CACHE_CONFIG.redis,
     memory = DEFAULT_CACHE_CONFIG.memory,
   } = config;
 
+  // Telemetry must never break the cache.
+  const report = (hit: boolean) => {
+    try {
+      onResult?.(hit);
+    } catch {
+      // ignore: a caller's observer is not allowed to fail the read
+    }
+  };
+
   if (memory) {
     try {
       const memCachedValue = memoryCache.get(key);
       if (memCachedValue !== undefined) {
         try {
-          return JSON.parse(memCachedValue);
+          const parsed = JSON.parse(memCachedValue);
+          report(true);
+          return parsed;
         } catch (parseError) {
           log.error(
             { err: parseError, key },
@@ -111,6 +129,7 @@ export const withCache = async <T>(
               log.error({ err: error, key }, 'Error writing to memory cache');
             }
           }
+          report(true);
           return parsed;
         } catch (parseError) {
           log.error(
@@ -160,7 +179,16 @@ export const withCache = async <T>(
     return { value, serialized };
   });
 
-  const result = await promise;
+  let result: Awaited<typeof promise>;
+  try {
+    result = await promise;
+  } catch (error) {
+    // The origin failed: still one report per call, then let the failure
+    // propagate. `false` = the value was not served from cache.
+    report(false);
+    throw error;
+  }
+  report(false);
   // The caller that started the fetch keeps the original; joiners get their
   // own copy, like a cache hit.
   if (!shared || result.serialized === null) return result.value;

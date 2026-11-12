@@ -13,6 +13,10 @@ import {
   clearLocationCookies,
   setLocationCookies,
 } from '../../lib/location-cookies';
+import {
+  EVERYWHERE_LOCATION,
+  isEverywhereLocation,
+} from '../../lib/search-utils';
 import { cn, toBbox } from '../../lib/utils';
 import {
   prevSearchLocationAtom,
@@ -97,8 +101,12 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   // "Everywhere" is an option of its own, not a place: never geocode it
   // (that would suggest e.g. "Everywhere Street, Houston").
   const everywhereLabel = t('search.everywhere', 'Everywhere');
-  const isEverywhere = (value: string) =>
-    value.trim().toLowerCase() === everywhereLabel.toLowerCase();
+  const isEverywhere = useCallback(
+    (value: string) =>
+      isEverywhereLocation(value) ||
+      value.trim().toLowerCase() === everywhereLabel.toLowerCase(),
+    [everywhereLabel],
+  );
   const rawLocationQuery = isStandalone ? searchLocation : prevSearchLocation;
   const locationQuery = isEverywhere(rawLocationQuery) ? '' : rawLocationQuery;
   const debouncedSearchLocation = useDebounce(
@@ -225,7 +233,9 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
                     coords.type === 'invalid' ? [] : (coordinates ?? []),
                 }
               : {}),
-            searchLocation: value,
+            // The state holds the sentinel, not the translated label, so URL
+            // writers can recognise "no location" in every locale.
+            searchLocation: isEverywhere(value) ? EVERYWHERE_LOCATION : value,
             searchLocationValidationError: '',
             // Capture place metadata for advanced geospatial filtering
             searchPlaceType: coords.place_type ?? [],
@@ -234,7 +244,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         });
       }
     },
-    [findCoords, setSearch, isStandalone, props, userCoordinates],
+    [findCoords, isEverywhere, setSearch, isStandalone, props, userCoordinates],
   );
 
   // Called on every keystroke (Autocomplete's onInputChange) — purely a live
@@ -328,7 +338,11 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         blockMode
         onDecommit={handleDecommit}
         onEscape={handleClear}
-        value={searchLocation}
+        value={
+          isEverywhereLocation(searchLocation)
+            ? everywhereLabel
+            : searchLocation
+        }
         clearButtonLabel={t('call_to_action.remove')}
         autoSelectIndex={autoSelectIndex}
         autoSelectOnBlurIndex={autoSelectIndex}

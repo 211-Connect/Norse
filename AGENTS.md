@@ -20,16 +20,20 @@ Other docs, load only when the task touches that area:
 - [docs/printable-directories.md](/docs/printable-directories.md) — curated branded PDF directory feature.
 - [docs/translation-usage.md](/docs/translation-usage.md) — metering, monthly limits, alert email and admin usage table for printable directory auto-translation.
 - [docs/search.md](/docs/search.md) — how the search dialog's autocomplete, `queryType`/`query` model, and the `/search` request pipeline work, including organization search.
+- [docs/map-pins.md](/docs/map-pins.md) — every search result on the map: per-tenant flag, `GET /search/pins`, canvas circles plus list pins, the 10,000 cap and its caching.
 - [docs/search-intent.md](/docs/search-intent.md) — how a `/search` URL is read into a typed search intent and envelope (slots, lift, generations, serializer), how the resolver machine decides what the page and dialog do (including the AI-classification deep-link gate), and how to add a slot.
 - [docs/scorecards.md](/docs/scorecards.md) — managing per-tenant AI-classification taxonomy-to-need weights.
 - [docs/scheduled-pdf-delivery.md](/docs/scheduled-pdf-delivery.md) — emailing printable directory PDFs on a weekly/monthly schedule: daily Payload job, server-side rendering via an internal Pages API route.
 - [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
 - [docs/tenant-api-key.md](/docs/tenant-api-key.md) — per-tenant Norse API authentication key (`x-api-key`), caching, and bulk backfill endpoint.
-- [docs/bot-protection.md](/docs/bot-protection.md) — Arcjet bot protection on directory pages: covered routes, env-only enforcement (no Payload setting), rollout and recovery runbook.
+- [docs/bot-protection.md](/docs/bot-protection.md) — Arcjet bot protection on directory pages: covered routes, env-only enforcement (no Payload setting), rollout and recovery runbook; robots.txt rules and the `amp;` crawl-trap 410.
 - [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md) — counting Arcjet denials per tenant (in-memory, pushed to Norse-API each minute, stored hourly) for the Blocked Bots analytics widget; classification rules.
 - [docs/cms-app-separation-plan.md](/docs/cms-app-separation-plan.md) — `NORSE_ROLE` (`app`/`cms`/`all`): running the public app without a database and the Payload CMS as a separate app; the `@/lib/cms` bridge, the CMS internal API, the lint rule, env per app and rollout.
 - [docs/cms-app-release-plan.md](/docs/cms-app-release-plan.md) — rollout of the CMS/app split for multi-tenant and MBOA: images, hostnames, environment per app, dashboard settings, step-by-step release with checks and rollback.
-- [docs/tracing.md](/docs/tracing.md) — OpenTelemetry tracing setup, propagated to the Norse API via `traceparent`, and how to view traces locally.
+- [docs/locale-routing.md](/docs/locale-routing.md) — how a request's language is chosen: prefixed vs unprefixed paths, the `NEXT_LOCALE` cookie and the only two places allowed to write it (document navigations in the proxy, the language switcher via `POST /api/locale`), `useLocalePrefix`.
+- [docs/seo.md](/docs/seo.md) — technical SEO on existing pages: self-referencing canonical on resource detail pages; status of the sitemap, `/search` canonical and HTML caching.
+- [docs/cms-app-release-plan.md](/docs/cms-app-release-plan.md) — running the split CMS/app deployment for multi-tenant and MBOA: images, hostnames, environment per app, dashboard settings, how releases deploy, checks and rollback.
+- [docs/observability.md](/docs/observability.md) — traces, metrics and logs: OTLP pipeline, service names (`norse-app`/`norse-cms`), sampling and trace boundaries (app → CMS link), Postgres/Redis spans, env vars, Prometheus metric names, log fields, Arcjet failure reading guide, and the local stack.
 
 ## Feature documentation
 
@@ -64,6 +68,7 @@ and the `mboa` tenant's special deployment).
 - No default `React` import in TSX (ESLint `no-restricted-imports`); use named imports only.
 - `tsconfig.json` has `strict: false` but `strictNullChecks: true` — null/undefined handling is checked, other strict rules are not.
 - ESLint ignores generated/vendored code: `src/payload/migrations`, `src/payload/payload-types.ts`, `src/lib/api/generated`, `.agents/`, `.claude/`, `widget/`. Don't hand-edit files under these paths — regenerate instead.
+- Before adding or upgrading a package, run `npm view <pkg> deprecated` and check peer ranges.
 
 ## Available Skills
 

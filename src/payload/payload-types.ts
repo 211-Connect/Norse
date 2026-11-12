@@ -320,6 +320,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -511,6 +512,7 @@ export interface TenantMedia {
   id: number;
   tenant?: (string | null) | Tenant;
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -903,6 +905,10 @@ export interface ResourceDirectory {
        */
       pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
       resultsLimit: number;
+      /**
+       * Plots up to 10,000 results of a search on the map as small circles, with the current page in the brand colour, instead of only the current page. The results list is capped at the same 10,000.
+       */
+      showAllResultsOnMap?: boolean | null;
       radiusSelectValues?:
         | {
             value: number;
@@ -1467,6 +1473,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -1570,6 +1577,7 @@ export interface TenantsSelect<T extends boolean = true> {
 export interface TenantMediaSelect<T extends boolean = true> {
   tenant?: T;
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1860,6 +1868,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               searchEngine?: T;
               pinnedResourcesMode?: T;
               resultsLimit?: T;
+              showAllResultsOnMap?: T;
               radiusSelectValues?:
                 | T
                 | {
