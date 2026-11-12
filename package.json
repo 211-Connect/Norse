@@ -26,7 +26,8 @@
     "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy",
     "test:e2e:share-link": "npx playwright test --project=share-link",
     "test:e2e:resource-direct-link": "npx playwright test --project=resource-direct-link",
-    "test:e2e:organization": "npx playwright test --project=organization"
+    "test:e2e:organization": "npx playwright test --project=organization",
+    "test:e2e:mboa-qa-checklist": "E2E_TENANT_KEY=MBOA npx playwright test --project=mboa-qa-checklist"
   },
   "engines": {
     "node": "24.x"

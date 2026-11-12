@@ -4,7 +4,7 @@ import { SEARCH_NAV_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from '../timeouts';
 import { LOCALE } from './navigation';
 import { toSingleRegexLiteral } from './url';
 
-export async function switchLanguage(page: Page, locale: 'en' | 'es') {
+export async function switchLanguage(page: Page, locale: string) {
   const previousPathname = new URL(page.url()).pathname;
 
   // Header is the only place with a language Select; search comboboxes are portaled / in main.
