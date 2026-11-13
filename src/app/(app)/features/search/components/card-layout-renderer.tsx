@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
@@ -16,11 +18,14 @@ import {
 interface CardLayoutRendererProps {
   layout: SearchCardLayoutConfig;
   result: ResultType;
+  /** Prototype (v2): extra lines at the end of the card, such as the matched-need badges. */
+  footer?: ReactNode;
 }
 
 export function CardLayoutRenderer({
   layout,
   result,
+  footer,
 }: CardLayoutRendererProps) {
   const appConfig = useAppConfig();
 
@@ -77,6 +82,7 @@ export function CardLayoutRenderer({
       >
         <CardContent className="flex min-w-0 flex-col gap-2">
           {renderedComponents}
+          {footer}
         </CardContent>
       </Card>
 
