@@ -6,46 +6,21 @@ import { useCallback, useMemo, useTransition } from 'react';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
-/**
- * Prototype (round 17). The page reads its questions, emergency band and intent from one
- * `GET /v2/search` call (draft contract, v2-search--api-contract). The URL is the only state:
- * an answer writes `needs`, `passed_needs`, `urgency` or `other`, and the same call runs again.
- */
+import {
+  answerChanges,
+  nextV2Params,
+  type V2Changes,
+  type V2Question,
+  type V2Response,
+} from './v2-contract';
 
-export type V2Option = { value: string; label: string; resultsCount?: number };
-export type V2Question = {
-  id: string;
-  type: 'emergency' | 'confirm_urgency' | 'find_need' | 'narrow';
-  level: 'red' | 'orange' | 'low';
-  importance: 'critical' | 'high' | 'medium' | 'low';
-  parameter: 'urgency' | 'needs';
-  reason: string;
-  stem: string;
-  options: V2Option[];
-  multiSelect: boolean;
-  allowOther: boolean;
-  noneOfThese: boolean;
-  hotlines?: { label: string; number: string }[];
-};
-export type V2Response = {
-  intent: {
-    query?: string;
-    needs: { value: string; state: 'use' | 'ask'; source: string; confidence?: number }[];
-    passed_needs: string[];
-    boost_needs: string[];
-    urgency: { value: string; source: string; state: string };
-  };
-  emergency: {
-    band: 'popup' | 'soft' | 'none' | 'unknown';
-    show_hotline: boolean;
-    hotlines: { label: string; number: string }[];
-  };
-  clarification: { rulesVersion: string; questions: V2Question[] };
-  total: number;
-  versions: { model: string | null; rules: string; scorecard: string | null };
-  timing_ms: { classify: number; total: number };
-  prototype?: { services: string; classifier: string };
-};
+export * from './v2-contract';
+
+/**
+ * Prototype (round 17). The page reads its questions, the emergency question and intent from one
+ * `GET /v2/search` call (ADR 0039, OpenAPI draft). The URL is the only state: an answer writes
+ * `needs`, `passed_needs`, `urgency` or `other`, and the same call runs again.
+ */
 
 /** The draft v2 parameters, in the order the call sends them. */
 const CALL_KEYS = [
@@ -58,6 +33,7 @@ const CALL_KEYS = [
   'location',
   'coords',
   'distance',
+  'page',
 ] as const;
 
 /** At most this many guided questions before the results (Lucas, round 10). */
@@ -112,8 +88,6 @@ export function useV2Search() {
   return { ...result, query };
 }
 
-type Changes = Record<string, string | string[] | null>;
-
 /** URL writes. An answer is a new history entry, so the browser's Back button undoes one answer. */
 export function useV2Navigate() {
   const { params, needs, passedNeeds, asked } = useV2Url();
@@ -122,14 +96,9 @@ export function useV2Navigate() {
   const [isPending, startTransition] = useTransition();
 
   const write = useCallback(
-    (changes: Changes, history: 'push' | 'replace' = 'push') => {
-      const next = new URLSearchParams(params.toString());
-      for (const [key, value] of Object.entries(changes)) {
-        const text = Array.isArray(value) ? value.join(',') : value;
-        if (text === null || text === '') next.delete(key);
-        else next.set(key, text);
-      }
-      next.delete('page');
+    (changes: V2Changes, history: 'push' | 'replace' = 'push') => {
+      // A new query text drops urgency, needs and passed_needs (Decision 51).
+      const next = nextV2Params(params, changes);
       startTransition(() => {
         router[history](`${pathname}?${next.toString()}`, { scroll: false });
       });
@@ -138,31 +107,16 @@ export function useV2Navigate() {
   );
 
   /**
-   * One answer. Picked needs join `needs`; the options left unpicked join `passed_needs`, so the
-   * rules engine never offers them again. "None of these" and Skip pass every option.
-   * U-0 never reaches the URL: the caller keeps the emergency in memory.
+   * One answer. Each picked option writes its own `parameter` (Decision 55); unpicked need
+   * options join `passed_needs`, so the rules engine never offers them again.
    */
   const answer = useCallback(
-    (question: V2Question, picked: string[], extra: Changes = {}) => {
-      const changes: Changes = {
+    (question: V2Question, picked: string[], extra: V2Changes = {}) => {
+      write({
         asked: [...new Set([...asked, question.id])],
+        ...answerChanges(question, picked, { needs, passedNeeds }),
         ...extra,
-      };
-      if (question.parameter === 'needs') {
-        const offered = question.options.map((o) => o.value);
-        changes.needs = [...new Set([...needs, ...picked])];
-        changes.passed_needs = [
-          ...new Set([
-            ...passedNeeds,
-            ...offered.filter((v) => !picked.includes(v)),
-          ]),
-        ];
-      } else {
-        // Skip on an urgency question writes U-X ("not known"), so the question is not asked again.
-        const level = picked.find((v) => v !== 'U-0');
-        changes.urgency = level ?? 'U-X';
-      }
-      write(changes);
+      });
     },
     [asked, needs, passedNeeds, write],
   );
@@ -170,9 +124,12 @@ export function useV2Navigate() {
   return { write, answer, isPending };
 }
 
-/** The colour style of a question card: red for danger, orange when it changes results a lot. */
+/**
+ * The colour style of a question card: red for the emergency question, orange when it changes
+ * results a lot. The emergency question's own `level` (popup or soft card) is read where it shows.
+ */
 export const styleOf = (q: V2Question) =>
-  q.level === 'red'
+  q.type === 'emergency'
     ? 'emergency'
     : q.level === 'orange'
       ? q.type === 'confirm_urgency'

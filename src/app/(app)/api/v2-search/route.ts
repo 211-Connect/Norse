@@ -15,6 +15,7 @@ const FORWARD = [
   'coords',
   'distance',
   'taxonomy',
+  'page',
 ] as const;
 
 /**
