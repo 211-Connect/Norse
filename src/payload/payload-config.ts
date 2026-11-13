@@ -46,6 +46,7 @@ import {
 import { defaultLocale, locales } from './i18n/locales';
 import { getNorseRole, runsPayload } from '@/lib/norse-role';
 import { deliverScheduledPdfs } from './jobs/deliverScheduledPdfs';
+import { holdsJobRunnerLock } from './jobs/jobRunnerLock';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { tracedTask } from './jobs/tracedTask';
@@ -94,20 +95,26 @@ const config = buildConfig({
     tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs].map(
       tracedTask,
     ),
-    // Jobs run on the CMS only, never in the public app (NORSE_ROLE=app).
-    shouldAutoRun: () => runsPayload(),
+    // Jobs run on the CMS only, never in the public app (NORSE_ROLE=app), and
+    // on one CMS instance at a time: the holder of the job runner lock, which
+    // also queues scheduled jobs (docs/payload-jobs.md).
+    shouldAutoRun: (payload) =>
+      runsPayload() ? holdsJobRunnerLock(payload) : false,
     autoRun: [
       {
         queue: 'translation',
         cron: '* * * * *',
+        disableScheduling: true,
       },
       {
         queue: 'cache',
         cron: '* * * * *',
+        disableScheduling: true,
       },
       {
         queue: 'pdfDelivery',
         cron: '* * * * *',
+        disableScheduling: true,
       },
     ],
     // Make jobs collection visible to super admins only
