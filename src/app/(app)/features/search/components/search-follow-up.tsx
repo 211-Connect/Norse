@@ -885,6 +885,17 @@ function EmergencyPopup({
         <DialogPrimitive.Content
           data-testid="emergency-popup"
           className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl"
+          // Focus starts on the question, not on an answer: Enter must not answer by accident,
+          // and a screen reader reads the question and the numbers first.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            document.getElementById('emergency-popup-question')?.focus();
+          }}
+          // Closed, focus goes to the same question on the page, not to the top of the page.
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            document.getElementById('emergency-question')?.focus();
+          }}
         >
           <DialogPrimitive.Title className="sr-only">
             Emergency help
@@ -896,6 +907,7 @@ function EmergencyPopup({
             question={question}
             hotlines={hotlines}
             headingId="emergency-popup-question"
+            inDialog
             onAnswer={(option) => {
               setOpen(false);
               onAnswer(option);
@@ -970,6 +982,7 @@ export function EmergencyBox({
   onAnswer,
   onSkip,
   headingId = 'emergency-question',
+  inDialog = false,
 }: {
   question?: Question;
   hotlines?: V2Hotline[];
@@ -977,6 +990,8 @@ export function EmergencyBox({
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
   headingId?: string;
+  /** In the popup the dialog is announced already, so the box is not a second alert. */
+  inDialog?: boolean;
 }) {
   const soft = level === 'orange';
   return (
@@ -988,13 +1003,14 @@ export function EmergencyBox({
       )}
       data-testid="search-emergency"
       data-level={level}
-      role={soft ? undefined : 'alert'}
+      role={soft || inDialog ? undefined : 'alert'}
     >
       {question && (
         <h2
           id={headingId}
+          tabIndex={-1}
           className={cn(
-            'font-semibold',
+            'font-semibold outline-none',
             soft ? 'text-lg text-orange-900' : 'text-xl text-red-700',
           )}
         >
