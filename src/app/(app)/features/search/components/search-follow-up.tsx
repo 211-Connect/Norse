@@ -42,6 +42,7 @@ import {
   useState,
   useTransition,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
@@ -1217,6 +1218,7 @@ export const valueOfLabel = (q: V2Question, label: string) =>
  * (real ml-broker classifier, real rules engine). It hides while the guided flow (`refine=1`) is open.
  */
 export function SearchRefineQuestion() {
+  const { t } = useTranslation();
   const { data, isFetching, query: label } = useV2Search();
   const { refine, params, asked } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
@@ -1423,7 +1425,9 @@ export function SearchRefineQuestion() {
                     {option.label}
                     {typeof option.keeps === 'number' && (
                       <span className="text-muted-foreground text-xs font-normal">
-                        {resultCount(option.keeps)}
+                        {t('search.v2_option_services_count', {
+                          count: option.keeps,
+                        })}
                       </span>
                     )}
                   </button>

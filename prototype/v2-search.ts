@@ -100,7 +100,7 @@ const words = (text: string) =>
 /**
  * The fake search. It stands in for keyword + kNN: a service is a match when its text shares a word
  * with the query or when the model scores one of its needs at 0.12 or more. Boosted needs and the
- * urgency only reorder. A query that matches nothing returns the whole catalog, ranked.
+ * urgency only reorder. A query with words that matches nothing returns no services (Decision 49).
  */
 function search(query: string, sentNeeds: string[], boostNeeds: string[], scores: Record<string, number>, urgency?: string) {
   const qWords = words(query);
@@ -115,7 +115,8 @@ function search(query: string, sentNeeds: string[], boostNeeds: string[], scores
     return { service, matchedNeeds, match: textHits > 0 || model >= 0.12 || matchedNeeds.length > 0, score: textHits + 2 * model + 3 * boost + soon };
   });
   const matched = ranked.filter((r) => r.match);
-  const pool = matched.length ? matched : ranked;
+  // Decision 49: the list is empty only when the query itself matches nothing. A query with no content words still ranks the catalog.
+  const pool = matched.length || qWords.length ? matched : ranked;
   // Decision 18: every sent need first, then some, then none; the boost orders inside each group.
   const group = (r: (typeof ranked)[number]) =>
     r.matchedNeeds.length === sentNeeds.length ? 0 : r.matchedNeeds.length > 0 ? 1 : 2;

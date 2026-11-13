@@ -136,3 +136,10 @@ test('emergencyQuestionOf reads the emergency only from the questions (Decision 
   assert.equal(emergencyQuestionOf(response)?.level, 'red');
   assert.equal(emergencyQuestionOf(undefined), undefined);
 });
+
+test('withoutNX: N-X is never sent in needs= (Decision 43: the route would answer 400)', async () => {
+  const { withoutNX } = await import('../src/app/(app)/features/search/v2/v2-contract');
+  assert.equal(withoutNX('N-HOU-02,N-X,N-FOD-01'), 'N-HOU-02,N-FOD-01');
+  assert.equal(withoutNX('N-X'), null);
+  assert.equal(withoutNX(null), null);
+});

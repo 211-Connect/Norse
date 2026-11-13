@@ -186,3 +186,12 @@ export const nextQuestionOf = (
   response?.clarification.questions.find(
     (q) => !(q.type === 'emergency' && asked.includes(q.id)),
   );
+
+/** `needs=` never carries N-X: it means "not yet known" and the route answers 400 (Decision 43). */
+export const withoutNX = (needs: string | null) => {
+  const kept = (needs ?? '')
+    .split(',')
+    .map((v) => v.trim())
+    .filter((v) => v && v !== 'N-X');
+  return kept.length ? kept.join(',') : null;
+};

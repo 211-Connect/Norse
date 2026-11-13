@@ -197,8 +197,8 @@ const codeList = (
   encode: (value) => [[key, value.join(',')]],
 });
 
-/** v2 needs: Tier 1 (`N-HOU`), Tier 2 (`N-HOU-02`) and `N-X`. Confirmed needs boost; they never filter. */
-const needs = codeList('needs', /^N-(X|[A-Z]{3}(-\d{2})?)$/);
+/** v2 needs: Tier 1 (`N-HOU`) and Tier 2 (`N-HOU-02`). `N-X` is not a pick (ADR 0039 Decision 43). Confirmed needs boost; they never filter. */
+const needs = codeList('needs', /^N-[A-Z]{3}(-\d{2})?$/);
 /** Needs a person saw as options and did not pick, so they are not offered again. */
 const passedNeeds = codeList('passed_needs', /^N-(X|[A-Z]{3}(-\d{2})?)$/);
 /** Question ids already answered on the guided flow. Changes only what is asked, never the results. */

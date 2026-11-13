@@ -11,6 +11,7 @@ import {
   useState,
   useTransition,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   DEFAULT_HOTLINES,
@@ -197,6 +198,7 @@ export function SearchGuide({
  * Order: the emergency question, then the location step, then the API's questions, at most 3 in all.
  */
 export function SearchGuideFromUrl() {
+  const { t } = useTranslation();
   const { data, isFetching, error, query } = useV2Search();
   const { params, asked } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
@@ -456,7 +458,9 @@ export function SearchGuideFromUrl() {
                   <span className="flex-1">{option.label}</span>
                   {typeof option.keeps === 'number' && (
                     <span className="text-muted-foreground shrink-0 text-xs font-normal">
-                      {resultCount(option.keeps)}
+                      {t('search.v2_option_services_count', {
+                        count: option.keeps,
+                      })}
                     </span>
                   )}
                 </button>

@@ -9,6 +9,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import {
   answerChanges,
   nextV2Params,
+  withoutNX,
   type V2Changes,
   type V2Question,
   type V2Response,
@@ -51,7 +52,7 @@ export function useV2Url() {
   return {
     params,
     query,
-    needs: list(params.get('needs')),
+    needs: list(withoutNX(params.get('needs'))),
     passedNeeds: list(params.get('passed_needs')),
     urgency: params.get('urgency') ?? undefined,
     refine: params.get('refine') === '1',
@@ -65,7 +66,8 @@ export function useV2Search() {
   const callString = useMemo(() => {
     const call = new URLSearchParams();
     for (const key of CALL_KEYS) {
-      const value = params.get(key);
+      const raw = params.get(key);
+      const value = key === 'needs' ? withoutNX(raw) : raw;
       if (value) call.set(key, value);
     }
     return call.toString();

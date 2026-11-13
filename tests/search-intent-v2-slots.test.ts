@@ -13,7 +13,7 @@ const URL_ =
 
 test('v2 slots read codes in URL order, without repeats or invalid codes', () => {
   const { intent } = liftQueryString(URL_);
-  assert.deepStrictEqual(intent.needs, { stated: true, value: ['N-HOU-02', 'N-X'] });
+  assert.deepStrictEqual(intent.needs, { stated: true, value: ['N-HOU-02'] });
   assert.deepStrictEqual(intent.passedNeeds, { stated: true, value: ['N-MON-02'] });
   assert.deepStrictEqual(intent.urgency, { stated: true, value: 'U-2' });
   assert.deepStrictEqual(intent.other, { stated: true, value: 'no car' });
@@ -44,7 +44,7 @@ test('v2 slots write back to the same intent', () => {
 
 test('needs, passed needs, urgency and Other text reach the search call; refine and asked do not', () => {
   const query = toFindResourcesQuery(liftQueryString(URL_).intent);
-  assert.deepStrictEqual(query.needs, ['N-HOU-02', 'N-X']);
+  assert.deepStrictEqual(query.needs, ['N-HOU-02']);
   assert.deepStrictEqual(query.passedNeeds, ['N-MON-02']);
   assert.equal(query.urgency, 'U-2');
   assert.equal(query.other, 'no car');
