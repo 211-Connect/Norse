@@ -94,7 +94,12 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
           searchAtom,
           {
             ...DEFAULT_SEARCH_STATE,
-            searchTerm: queryLabel,
+            // A link with `query` and no `query_label` (v2 links, a reload) still shows its words.
+            searchTerm:
+              queryLabel ||
+              (queryType === 'text' || queryType === 'hybrid' || !queryType
+                ? query
+                : ''),
             query,
             queryLabel,
             queryType,
