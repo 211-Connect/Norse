@@ -46,4 +46,4 @@ http.createServer((req, res) => {
     if (p === '/search') return void v2Search(readParams(u.searchParams)).then(({ services }) => { const hits = services.map(svc); send({ search: { hits: { total: { value: hits.length }, hits } }, facets: [] }); }, (err) => { console.error(err); res.writeHead(500); res.end(); });
     send(null);
   });
-}).listen(4100, () => console.log('stub on 4100'));
+}).listen(Number(process.env.STUB_PORT ?? 4100), () => console.log(`stub on ${process.env.STUB_PORT ?? 4100}`));
