@@ -912,67 +912,6 @@ export const QUESTION_STYLES = {
   none: QUIET,
 };
 
-/**
- * The popup for a red emergency question (Decision 54). It opens once per search; closing it
- * leaves the red box with the numbers on the page.
- */
-function EmergencyPopup({
-  question,
-  hotlines,
-  onAnswer,
-}: {
-  question: Question;
-  hotlines: V2Hotline[];
-  onAnswer: (answer: Answer) => void;
-}) {
-  const [open, setOpen] = useState(true);
-  return (
-    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
-        <DialogPrimitive.Content
-          data-testid="emergency-popup"
-          className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl"
-          // Focus starts on the question, not on an answer: Enter must not answer by accident,
-          // and a screen reader reads the question and the numbers first.
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            document.getElementById('emergency-popup-question')?.focus();
-          }}
-          // Closed, focus goes to the same question on the page, not to the top of the page.
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            document.getElementById('emergency-question')?.focus();
-          }}
-        >
-          <DialogPrimitive.Title className="sr-only">
-            Emergency help
-          </DialogPrimitive.Title>
-          <DialogPrimitive.Description className="sr-only">
-            Call a number now, or answer the question.
-          </DialogPrimitive.Description>
-          <EmergencyBox
-            question={question}
-            hotlines={hotlines}
-            headingId="emergency-popup-question"
-            inDialog
-            onAnswer={(option) => {
-              setOpen(false);
-              onAnswer(option);
-            }}
-          />
-          <DialogPrimitive.Close
-            className="min-h-11 cursor-pointer self-end rounded-lg border px-4 font-semibold"
-            data-testid="emergency-popup-close"
-          >
-            Close and see results
-          </DialogPrimitive.Close>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
-  );
-}
-
 /** 988 and 911 both show by default, because the danger may not be self-harm. */
 export const DEFAULT_HOTLINES: V2Hotline[] = [
   { label: 'Suicide and Crisis Lifeline', number: '988' },
@@ -1019,9 +958,10 @@ export function HotlineNumbers({
 }
 
 /**
- * The emergency box: the hotline numbers, the emergency question's text and its options (urgency
- * answers only; none for a caller U-0). `soft` is the calmer orange card (importance below critical).
- * Without a question it is the numbers alone, so a skip never takes the numbers away.
+ * The emergency card: the question, the hotline numbers and the answers (urgency answers only;
+ * none for a caller U-0), in the page like every other question and with no popup (Lucas,
+ * 2026-11-13). `soft` is the calmer orange card (importance below critical). Without a question
+ * it is the numbers alone, so a skip never takes the numbers away. It is the one live region.
  */
 export function EmergencyBox({
   question,
@@ -1030,7 +970,6 @@ export function EmergencyBox({
   onAnswer,
   onSkip,
   headingId = 'emergency-question',
-  inDialog = false,
 }: {
   question?: Question;
   hotlines?: V2Hotline[];
@@ -1038,27 +977,25 @@ export function EmergencyBox({
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
   headingId?: string;
-  /** In the popup the dialog is announced already, so the box is not a second alert. */
-  inDialog?: boolean;
 }) {
   return (
     <section
       aria-label="Emergency help"
       className={cn(
-        'flex flex-col gap-3 rounded-lg border p-4',
+        'flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
         soft ? 'border-orange-400 bg-orange-50' : 'border-red-700 bg-red-50',
       )}
       data-testid="search-emergency"
       data-soft={soft}
-      role={soft || inDialog ? undefined : 'alert'}
+      role={soft ? 'status' : 'alert'}
     >
       {question && (
         <h2
           id={headingId}
           tabIndex={-1}
           className={cn(
-            'font-semibold outline-none',
-            soft ? 'text-lg text-orange-900' : 'text-xl text-red-700',
+            'text-base font-semibold outline-none md:text-xl',
+            soft ? 'text-orange-900' : 'text-red-700',
           )}
         >
           {question.text}
@@ -1066,42 +1003,40 @@ export function EmergencyBox({
       )}
       <HotlineNumbers hotlines={hotlines} soft={soft} />
       {question && (question.answers.length > 0 || onSkip) && (
-        <>
-          <div
-            role="group"
-            aria-labelledby={headingId}
-            className="flex flex-col gap-2"
-          >
-            {question.answers.map((option) => (
-              <button
-                key={option.label}
-                type="button"
-                className={cn(
-                  'min-h-11 cursor-pointer rounded-lg border bg-white px-4 py-2 text-left font-medium',
-                  soft
-                    ? 'border-orange-400 text-orange-900'
-                    : 'border-red-700 text-red-700',
-                )}
-                onClick={() => onAnswer?.(option)}
-              >
-                {option.label}
-              </button>
-            ))}
-            {onSkip && (
-              <button
-                type="button"
-                className={cn(
-                  'min-h-11 cursor-pointer justify-self-start px-1 text-left text-sm underline',
-                  soft ? 'text-orange-900' : 'text-red-700',
-                )}
-                data-testid="emergency-skip"
-                onClick={onSkip}
-              >
-                Skip to results
-              </button>
-            )}
-          </div>
-        </>
+        <div
+          role="group"
+          aria-labelledby={headingId}
+          className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
+        >
+          {question.answers.map((option) => (
+            <button
+              key={option.label}
+              type="button"
+              className={cn(
+                'flex min-h-11 cursor-pointer items-center rounded-lg border bg-white px-3 py-2 text-left text-sm font-medium',
+                soft
+                  ? 'border-orange-400 text-orange-900'
+                  : 'border-red-700 text-red-700',
+              )}
+              onClick={() => onAnswer?.(option)}
+            >
+              {option.label}
+            </button>
+          ))}
+          {onSkip && (
+            <button
+              type="button"
+              className={cn(
+                'col-span-2 min-h-11 cursor-pointer justify-self-start px-1 text-left text-sm underline',
+                soft ? 'text-orange-900' : 'text-red-700',
+              )}
+              data-testid="emergency-skip"
+              onClick={onSkip}
+            >
+              Skip to results
+            </button>
+          )}
+        </div>
       )}
     </section>
   );
@@ -1354,18 +1289,10 @@ export function SearchRefineQuestion() {
   const cardTitle =
     v2?.id === 'start' ? 'Tell us a bit more' : style.title;
 
-  // The emergency question never compacts. Red also opens the popup. Scrolled away, a row leads back.
+  // The emergency question never compacts. It is a card in the page like the others, with no popup. Scrolled away, a row leads back.
   if (v2 && type === 'emergency') {
     return (
       <div ref={pin.holderRef} className="mt-3">
-        {!soft && (
-          <EmergencyPopup
-            key={label}
-            question={question}
-            hotlines={hotlines}
-            onAnswer={(option) => answer([option.label])}
-          />
-        )}
         <EmergencyBox
           question={question}
           hotlines={hotlines}
