@@ -39,7 +39,8 @@ http.createServer((req, res) => {
     if (p === '/search/predict') return send(predict(q));
     if (p === '/search/re-rank') return send({ hsis_taxonomies: ['BD-5000'] });
     if (p === '/suggestion') return send({ taxonomies: [], organizations: [] });
-    if (p === '/v2/search') return void v2Search(readParams(u.searchParams)).then(({ services, body }) => send({ results: services.slice(0, 25).map(svc), ...body }), (err) => { console.error(err); res.writeHead(500); res.end(); });
+    // The v2 shape: v1 hits plus `matched_needs` on each hit when needs were sent (ADR 0039 Decision 56).
+    if (p === '/v2/search') return void v2Search(readParams(u.searchParams)).then(({ services, body }) => { const sent = readParams(u.searchParams).needs.length > 0; const page = Math.max(1, Number(u.searchParams.get('page')) || 1); const hits = services.slice((page - 1) * 25, page * 25).map((s, i) => ({ ...svc(s, i), ...(sent ? { matched_needs: s.matchedNeeds } : {}) })); send({ search: { hits: { total: { value: services.length, relation: 'eq' }, hits } }, facets: {}, ...body }); }, (err) => { console.error(err); res.writeHead(500); res.end(); });
     if (p === '/search') return void v2Search(readParams(u.searchParams)).then(({ services }) => { const hits = services.map(svc); send({ search: { hits: { total: { value: hits.length }, hits } }, facets: [] }); }, (err) => { console.error(err); res.writeHead(500); res.end(); });
     send(null);
   });

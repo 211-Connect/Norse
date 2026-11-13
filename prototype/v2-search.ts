@@ -1,5 +1,5 @@
-// Prototype only. A local stand-in for Norse-API `GET /v2/search`, shaped like the draft contract
-// (v2-search--api-contract artifact v19). Two parts are real, one is fake:
+// Prototype only. A local stand-in for Norse-API `GET /v2/search`, shaped like the OpenAPI draft
+// (ArchitectureDocs proposed-changes/v2-search/openapi-v2-search.draft.yaml, ADR 0039). Two parts are real, one is fake:
 // - real: ml-broker `search-classification` (needs, urgency, emergency scores), called over HTTP;
 // - real: the Norse-API v2 rules engine (`decide`, `finalize`), imported from its branch checkout;
 // - fake: the services. They come from the synthetic CATALOG in sune.mjs, not from Elasticsearch.
@@ -18,7 +18,7 @@ type Rules = typeof import('../../../NorseApiWorktree-rules/src/v2/rules/index')
 let rules: Rules | undefined;
 const loadRules = async () => (rules ??= (await import(RULES_PATH)) as Rules);
 
-const URGENCY = new Set(['U-1', 'U-2', 'U-3', 'U-4', 'U-X']);
+const URGENCY = new Set(['U-0', 'U-1', 'U-2', 'U-3', 'U-4', 'U-X']);
 const HOTLINES = [
   { label: 'Suicide and Crisis Lifeline', number: '988' },
   { label: 'Emergency', number: '911' },
@@ -46,15 +46,16 @@ export function readParams(params: URLSearchParams): V2Params {
     other: (params.get('other') ?? '').trim().slice(0, 200),
     needs: list(params.get('needs') ?? params.get('taxonomy')).filter((c) => c.startsWith('N-')),
     passedNeeds: list(params.get('passed_needs')),
-    // U-0 is refused here as in the URL: an emergency answer is never stored in a link.
-    urgency: urgency && URGENCY.has(urgency) ? urgency : undefined,
+    // A caller may send U-0 (Decision 50); the page never writes it. U-X counts as no answer (Decision 51).
+    urgency: urgency && URGENCY.has(urgency) && urgency !== 'U-X' ? urgency : undefined,
     clarify: params.get('clarify') === 'never' ? 'never' : 'auto',
   };
 }
 
 type Classified = {
-  needs: { status: 'ok' | 'error'; scores?: Record<string, number>; urgency?: { level: 'U-1' | 'U-2' | 'U-3' | 'U-4'; score: number } };
-  emergency: { status: 'ok' | 'error'; score?: number; floorHit?: boolean; calmContext?: boolean; dvShelter?: boolean } | null;
+  needs: { status: 'ok' | 'error'; scores?: Record<string, number> };
+  urgency?: { level: 'U-1' | 'U-2' | 'U-3' | 'U-4'; score: number };
+  emergency: { status: 'ok' | 'error'; score?: number; floor_hit?: boolean; calm_context?: boolean; dv_shelter?: boolean } | null;
   modelVersion?: string;
   ms: number;
 };
@@ -76,9 +77,10 @@ async function classify(query: string): Promise<Classified> {
     for (const s of body.needs.scores) scores[s.code] = s.score;
     const e = body.emergency;
     return {
-      needs: { status: 'ok', scores, urgency: { level: body.urgency.level, score: body.urgency.score } },
+      needs: { status: 'ok', scores },
+      urgency: { level: body.urgency.level, score: body.urgency.score },
       emergency: e.status === 'ok'
-        ? { status: 'ok', score: e.score, floorHit: e.floor_hit, calmContext: e.calm_context, dvShelter: e.dv_shelter }
+        ? { status: 'ok', score: e.score, floor_hit: e.floor_hit, calm_context: e.calm_context, dv_shelter: e.dv_shelter }
         : { status: 'error' },
       modelVersion: body.model_version,
       ms: Date.now() - started,
@@ -100,7 +102,7 @@ const words = (text: string) =>
  * with the query or when the model scores one of its needs at 0.12 or more. Boosted needs and the
  * urgency only reorder. A query that matches nothing returns the whole catalog, ranked.
  */
-function search(query: string, boostNeeds: string[], scores: Record<string, number>, urgency?: string) {
+function search(query: string, sentNeeds: string[], boostNeeds: string[], scores: Record<string, number>, urgency?: string) {
   const qWords = words(query);
   const ranked = CATALOG.map((service: Service) => {
     const text = `${service.name} ${service.org} ${service.summary}`.toLowerCase();
@@ -108,47 +110,87 @@ function search(query: string, boostNeeds: string[], scores: Record<string, numb
     const model = Math.max(0, ...service.needs.map((n: string) => Math.max(scores[n] ?? 0, (scores[familyOf(n)] ?? 0) * 0.5)));
     const boost = boostNeeds.filter((code) => carries(service, code)).length;
     const soon = urgency && service.urgency.includes(urgency) ? 0.5 : 0;
-    return { service, match: textHits > 0 || model >= 0.12, score: textHits + 2 * model + 3 * boost + soon };
+    // Decision 56: the sent needs= codes this service carries, in the order sent.
+    const matchedNeeds = sentNeeds.filter((code) => carries(service, code));
+    return { service, matchedNeeds, match: textHits > 0 || model >= 0.12 || matchedNeeds.length > 0, score: textHits + 2 * model + 3 * boost + soon };
   });
   const matched = ranked.filter((r) => r.match);
   const pool = matched.length ? matched : ranked;
-  pool.sort((a, b) => b.score - a.score || Number(a.service.id) - Number(b.service.id));
-  return { services: pool.map((r) => r.service), strongTextMatch: CATALOG.some((s: Service) => query.length >= 6 && s.org.toLowerCase() === query.toLowerCase()) };
+  // Decision 18: every sent need first, then some, then none; the boost orders inside each group.
+  const group = (r: (typeof ranked)[number]) =>
+    r.matchedNeeds.length === sentNeeds.length ? 0 : r.matchedNeeds.length > 0 ? 1 : 2;
+  pool.sort((a, b) => (sentNeeds.length ? group(a) - group(b) : 0) || b.score - a.score || Number(a.service.id) - Number(b.service.id));
+  return { services: pool.map((r) => ({ ...r.service, matchedNeeds: r.matchedNeeds })), strongTextMatch: CATALOG.some((s: Service) => query.length >= 6 && s.org.toLowerCase() === query.toLowerCase()) };
 }
+
+type Option = { label: string; parameter: 'needs' | 'passed_needs' | 'urgency'; value: string; results_count?: number | null };
+type EngineQuestion = Record<string, unknown> & {
+  id: string; type: string; level: string; parameter?: Option['parameter'];
+  options: (Omit<Option, 'parameter'> & { parameter?: Option['parameter'] })[];
+  hotlines?: { label: string; number: string }[];
+};
+
+/**
+ * The engine on the rules branch may still emit the older question shape. This brings it to the
+ * draft: `parameter` on each option (Decision 55), no U-0 option and level red or orange on the
+ * emergency question (Decision 54), no N-X option (Decision 43). A newer engine passes through.
+ */
+function toContractQuestion(q: EngineQuestion, band: string): Record<string, unknown> {
+  const { parameter, ...rest } = q;
+  const options = q.options
+    .filter((o) => o.value !== 'N-X' && !(q.type === 'emergency' && o.value === 'U-0'))
+    .map((o) => ({ ...o, parameter: o.parameter ?? parameter ?? 'needs' }));
+  const level = q.type === 'emergency' ? (band === 'soft' ? 'orange' : q.level === 'orange' ? 'orange' : 'red') : q.level;
+  return { ...rest, level, options };
+}
+
+/** A caller `urgency=U-0` (Decision 50): the emergency question as a popup with the numbers, no options. */
+const callerEmergencyQuestion = (hotlines: { label: string; number: string }[]) => ({
+  id: 'emergency', type: 'emergency', level: 'red', importance: 'critical', value: 0.999, priority: 3.999,
+  uncertainty: 0, reason: 'emergency_band', step: 0, stem: 'Help is one call away.', options: [],
+  multi_select: false, allow_other: false, none_of_these: false, hotlines,
+});
 
 export async function v2Search(params: V2Params) {
   const started = Date.now();
   const { decide, finalize } = await loadRules();
   const text = [params.query, params.other].filter(Boolean).join('. ').slice(0, 512);
   const signals = await classify(text);
+  // U-0 goes to the engine as no answer, so it does not plan time questions around it.
+  const engineUrgency = params.urgency === 'U-0' ? undefined : params.urgency;
   const decision = decide(
-    { hasText: Boolean(text), needs: params.needs, passedNeeds: params.passedNeeds, urgency: params.urgency as never, clarify: params.clarify },
-    { needs: signals.needs, emergency: signals.emergency },
-    { topAreas: ['N-FOD', 'N-HOU', 'N-MON', 'N-HLT', 'N-SAF'], hotlines: HOTLINES },
+    { has_text: Boolean(text), needs: params.needs, passed_needs: params.passedNeeds, urgency: engineUrgency as never, clarify: params.clarify },
+    { needs: signals.needs, urgency: signals.urgency, emergency: signals.emergency },
+    { top_areas: ['N-FOD', 'N-HOU', 'N-MON', 'N-HLT', 'N-SAF'], hotlines: HOTLINES },
   );
-  const boost = [...new Set([...params.needs, ...decision.boostNeeds])];
+  const boost = [...new Set([...params.needs, ...decision.boost_needs])];
   const urgency = params.urgency ?? (decision.urgency.state === 'use' ? decision.urgency.value : undefined);
-  const { services, strongTextMatch } = search(text, boost, signals.needs.scores ?? {}, urgency);
+  const { services, strongTextMatch } = search(text, params.needs, boost, signals.needs.scores ?? {}, urgency);
   const byCode: Record<string, number> = {};
-  for (const code of decision.countCodes) byCode[code] = services.filter((s: Service) => carries(s, code)).length;
-  const clarification = finalize(decision, { counts: { total: services.length, byCode }, strongTextMatch });
+  for (const code of decision.count_codes) byCode[code] = services.filter((s) => carries(s, code)).length;
+  const engine = finalize(decision, { counts: { total: services.length, by_code: byCode }, strong_text_match: strongTextMatch });
+  const band = (decision as { emergency?: { band?: string } }).emergency?.band ?? 'none';
+  let questions = (engine.questions as unknown as EngineQuestion[]).map((q) => toContractQuestion(q, band));
+  if (params.urgency === 'U-0') {
+    questions = [callerEmergencyQuestion(HOTLINES), ...questions.filter((q) => q.type !== 'emergency')].slice(0, 3);
+  }
   return {
     services,
     body: {
       intent: {
-        query: params.query || undefined,
+        query: params.query || null,
         needs: decision.needs.map((n) => ({ value: n.code, state: n.state, source: n.source, confidence: n.confidence })),
-        passed_needs: params.passedNeeds,
-        boost_needs: boost,
-        urgency: decision.urgency,
+        urgency: params.urgency === 'U-0' ? { value: 'U-0', source: 'caller', state: 'use' } : decision.urgency,
       },
-      emergency: { band: decision.emergency.band, show_hotline: decision.emergency.showHotline, hotlines: decision.emergency.showHotline ? HOTLINES : [] },
-      clarification,
-      total: services.length,
-      cacheable: decision.cacheable,
-      versions: { model: signals.modelVersion ?? null, rules: decision.rulesVersion, scorecard: null },
-      timing_ms: { classify: signals.ms, total: Date.now() - started },
-      prototype: { services: 'synthetic catalog', classifier: signals.needs.status === 'ok' ? 'ml-broker (real)' : 'ml-broker unavailable' },
+      clarification: { rules_version: engine.rules_version, questions },
+      model_version: signals.modelVersion ?? null,
+      rules_version: decision.rules_version,
+      prototype: {
+        services: 'synthetic catalog',
+        classifier: signals.needs.status === 'ok' ? 'ml-broker (real)' : 'ml-broker unavailable',
+        emergency_band: band,
+        timing_ms: { classify: signals.ms, total: Date.now() - started },
+      },
     },
   };
 }
