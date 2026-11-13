@@ -797,8 +797,10 @@ export function OtherBox({
   className,
   onSubmit,
   placeholder,
+  autoFocus,
 }: {
   className?: string;
+  autoFocus?: boolean;
   onSubmit: (text: string) => void;
   placeholder: string;
 }) {
@@ -815,6 +817,7 @@ export function OtherBox({
         aria-label={placeholder}
         placeholder={placeholder}
         value={text}
+        autoFocus={autoFocus}
         onChange={(event) => setText(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
@@ -849,6 +852,50 @@ const QUIET = {
   title: 'Tell us more to get better results',
   button: 'border-control-border bg-white',
 };
+
+/** Nothing left to ask: one quiet line that opens the free-text box (Lucas, 2026-11-13, F1). */
+function AddMoreLine({
+  noted,
+  onSubmit,
+}: {
+  noted: string;
+  onSubmit: (text: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="border-primary/30 bg-primary/10 flex flex-col gap-2 rounded-lg border px-3"
+      data-testid="search-refine-question"
+      data-question="done"
+    >
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="add-more-box"
+        className="text-primary flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 text-left text-sm font-semibold"
+        onClick={() => setOpen((v) => !v)}
+      >
+        Add more about your situation
+        <ChevronDown
+          className={cn('size-4 shrink-0', open && 'rotate-180')}
+          aria-hidden="true"
+        />
+      </button>
+      <div id="add-more-box" hidden={!open} className="pb-3">
+        {open && (
+          <OtherBox
+            autoFocus
+            placeholder="Tell us in your own words"
+            onSubmit={onSubmit}
+          />
+        )}
+      </div>
+      <p className="pb-2 text-sm empty:hidden" role="status">
+        {noted}
+      </p>
+    </div>
+  );
+}
 
 /** Colour follows the type of question. */
 export const QUESTION_STYLES = {
@@ -1343,6 +1390,15 @@ export function SearchRefineQuestion() {
   }
   // A skipped emergency question stays as the numbers alone.
   const hotline = Boolean(emergencyQ);
+
+  if (!v2) {
+    return (
+      <div className="mt-3 flex flex-col gap-3">
+        {hotline && <EmergencyBox hotlines={hotlines} level={level} />}
+        <AddMoreLine noted={noted} onSubmit={submitOther} />
+      </div>
+    );
+  }
 
   return (
     <div
