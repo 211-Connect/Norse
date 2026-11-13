@@ -427,14 +427,16 @@ const TYPE_RANK = { find_need: 0, confirm_urgency: 1, narrow: 2 };
 /** A neutral id: it can sit in the URL without saying what was asked. */
 export const EMERGENCY_ID = 'urgency';
 
-/** High danger offers no "not urgent": that answer reads badly after a search about self-harm. */
+/**
+ * High danger offers no "not urgent": that answer reads badly after a search about self-harm.
+ * No "I'm in an emergency right now" answer (ADR 0039 Decision 54): the hotline numbers are the action.
+ */
 const emergencyQuestion = (band) => ({
   id: EMERGENCY_ID,
   type: 'emergency',
   text: 'Are you in an emergency right now?',
   why: 'The search shows possible danger.',
   answers: [
-    { label: "I'm in an emergency right now", add: [], emergency: true },
     { label: 'I need help today', add: ['U-1'], remove: ['U-0'] },
     { label: 'I need help soon', add: ['U-2'], remove: ['U-0'] },
     ...(band === 'middle'

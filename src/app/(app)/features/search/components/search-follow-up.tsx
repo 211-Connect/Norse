@@ -62,10 +62,13 @@ import {
   removedToken,
 } from '../sune-demo/sune.mjs';
 import {
+  emergencyQuestionOf,
+  nextQuestionOf,
   styleOf,
   useV2Navigate,
   useV2Search,
   useV2Url,
+  type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
 
@@ -74,7 +77,6 @@ type Answer = {
   add: string[];
   remove?: string[];
   keeps?: number;
-  emergency?: boolean;
 };
 type Question = {
   id: string;
@@ -100,11 +102,6 @@ const refineCollapsedAtom = atom(false);
 const PIN_TOP = 48;
 const PINNED =
   'fixed inset-x-0 top-12 z-30 flex max-h-[calc(100dvh-8rem)] flex-col gap-1 overflow-y-auto overscroll-contain border-b bg-white px-2.5 py-1 shadow-sm print:hidden';
-/**
- * The search a person called an emergency. It stays in memory, never in the URL:
- * the URL lands in browser history, and a copied link must not answer for someone else.
- */
-export const emergencySearchAtom = atom('');
 /** U-0 stays out of the URL for the same reason. The words of the search still show the danger. */
 export const urlCodes = (codes: string[]) =>
   codes.filter((code) => code !== 'U-0');
@@ -134,14 +131,11 @@ function useSuneSearch() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [stated.join(), label],
   );
-  const emergencySearch = useAtomValue(emergencySearchAtom);
-  const emergency = Boolean(label.trim()) && emergencySearch === label.trim();
+  // Decision 54: no "I'm in an emergency" answer, so nothing is kept in memory for it.
+  const emergency = false;
   const answered = useMemo(
-    () => [
-      ...(params.get('refined') ?? '').split(',').filter(Boolean),
-      ...(emergency ? [EMERGENCY_ID] : []),
-    ],
-    [params, emergency],
+    () => (params.get('refined') ?? '').split(',').filter(Boolean),
+    [params],
   );
   const decision = useMemo(
     () => decideRefine(label, codes, answered) as Decision,
@@ -869,73 +863,161 @@ export const QUESTION_STYLES = {
   none: QUIET,
 };
 
-/** The numbers a person can call. 988 and 911 both show, because the danger may not be self-harm. */
-export function HotlineNumbers() {
+/**
+ * The popup for a red emergency question (Decision 54). It opens once per search; closing it
+ * leaves the red box with the numbers on the page.
+ */
+function EmergencyPopup({
+  question,
+  hotlines,
+  onAnswer,
+}: {
+  question: Question;
+  hotlines: V2Hotline[];
+  onAnswer: (answer: Answer) => void;
+}) {
+  const [open, setOpen] = useState(true);
+  return (
+    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+        <DialogPrimitive.Content
+          data-testid="emergency-popup"
+          className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl"
+        >
+          <DialogPrimitive.Title className="sr-only">
+            Emergency help
+          </DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">
+            Call a number now, or answer the question.
+          </DialogPrimitive.Description>
+          <EmergencyBox
+            question={question}
+            hotlines={hotlines}
+            headingId="emergency-popup-question"
+            onAnswer={(option) => {
+              setOpen(false);
+              onAnswer(option);
+            }}
+          />
+          <DialogPrimitive.Close
+            className="min-h-11 cursor-pointer self-end rounded-lg border px-4 font-semibold"
+            data-testid="emergency-popup-close"
+          >
+            Close and see results
+          </DialogPrimitive.Close>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}
+
+/** 988 and 911 both show by default, because the danger may not be self-harm. */
+export const DEFAULT_HOTLINES: V2Hotline[] = [
+  { label: 'Suicide and Crisis Lifeline', number: '988' },
+  { label: 'Emergency', number: '911' },
+];
+
+/** The numbers a person can call. They come with the emergency question (`hotlines[]`). */
+export function HotlineNumbers({
+  hotlines = DEFAULT_HOTLINES,
+  soft = false,
+}: {
+  hotlines?: V2Hotline[];
+  soft?: boolean;
+}) {
   return (
     <div className="flex flex-col gap-3" data-testid="search-hotline">
-      <p className="text-lg font-semibold">
+      <p className={cn('font-semibold', soft ? 'text-base' : 'text-lg')}>
         You can talk to someone right now.
       </p>
       <div className="flex flex-wrap gap-2">
-        <a
-          href="tel:988"
-          className="flex min-h-11 items-center gap-2 rounded-lg bg-red-700 px-4 font-semibold text-white no-underline"
-        >
-          <Phone className="size-4" aria-hidden="true" />
-          Call 988
-        </a>
-        <a
-          href="tel:911"
-          className="flex min-h-11 items-center gap-2 rounded-lg border border-red-700 bg-white px-4 font-semibold text-red-700 no-underline"
-        >
-          Call 911
-        </a>
+        {hotlines.map((line, i) => (
+          <a
+            key={line.number}
+            href={`tel:${line.number}`}
+            aria-label={`Call ${line.number}, ${line.label}`}
+            className={cn(
+              'flex min-h-11 items-center gap-2 rounded-lg px-4 font-semibold no-underline',
+              i === 0
+                ? soft
+                  ? 'bg-orange-700 text-white'
+                  : 'bg-red-700 text-white'
+                : soft
+                  ? 'border border-orange-700 bg-white text-orange-900'
+                  : 'border border-red-700 bg-white text-red-700',
+            )}
+          >
+            {i === 0 && <Phone className="size-4" aria-hidden="true" />}
+            Call {line.number}
+          </a>
+        ))}
       </div>
     </div>
   );
 }
 
 /**
- * The red box. It holds the numbers, the emergency question, or both. With no question
- * it stays as the numbers alone, so an answer never takes the numbers away.
+ * The emergency box: the hotline numbers, the emergency question's text and its options (urgency
+ * answers only; none for a caller U-0). `level` red is the popup's box, orange the soft card.
+ * Without a question it is the numbers alone, so a skip never takes the numbers away.
  */
 export function EmergencyBox({
   question,
-  hotline,
+  hotlines,
+  level = 'red',
   onAnswer,
   onSkip,
+  headingId = 'emergency-question',
 }: {
   question?: Question;
-  hotline: boolean;
+  hotlines?: V2Hotline[];
+  level?: 'red' | 'orange';
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
+  headingId?: string;
 }) {
+  const soft = level === 'orange';
   return (
     <section
       aria-label="Emergency help"
-      className="flex flex-col gap-3 rounded-lg border border-red-700 bg-red-50 p-4"
+      className={cn(
+        'flex flex-col gap-3 rounded-lg border p-4',
+        soft ? 'border-orange-400 bg-orange-50' : 'border-red-700 bg-red-50',
+      )}
       data-testid="search-emergency"
-      role={hotline ? 'alert' : undefined}
+      data-level={level}
+      role={soft ? undefined : 'alert'}
     >
-      {hotline && <HotlineNumbers />}
       {question && (
+        <h2
+          id={headingId}
+          className={cn(
+            'font-semibold',
+            soft ? 'text-lg text-orange-900' : 'text-xl text-red-700',
+          )}
+        >
+          {question.text}
+        </h2>
+      )}
+      <HotlineNumbers hotlines={hotlines} soft={soft} />
+      {question && (question.answers.length > 0 || onSkip) && (
         <>
-          <h2
-            id="emergency-question"
-            className="text-xl font-semibold text-red-700"
-          >
-            {question.text}
-          </h2>
           <div
             role="group"
-            aria-labelledby="emergency-question"
+            aria-labelledby={headingId}
             className="flex flex-col gap-2"
           >
             {question.answers.map((option) => (
               <button
                 key={option.label}
                 type="button"
-                className="min-h-11 cursor-pointer rounded-lg border border-red-700 bg-white px-4 py-2 text-left font-medium text-red-700"
+                className={cn(
+                  'min-h-11 cursor-pointer rounded-lg border bg-white px-4 py-2 text-left font-medium',
+                  soft
+                    ? 'border-orange-400 text-orange-900'
+                    : 'border-red-700 text-red-700',
+                )}
                 onClick={() => onAnswer?.(option)}
               >
                 {option.label}
@@ -944,7 +1026,10 @@ export function EmergencyBox({
             {onSkip && (
               <button
                 type="button"
-                className="min-h-11 cursor-pointer justify-self-start px-1 text-left text-sm text-red-700 underline"
+                className={cn(
+                  'min-h-11 cursor-pointer justify-self-start px-1 text-left text-sm underline',
+                  soft ? 'text-orange-900' : 'text-red-700',
+                )}
                 data-testid="emergency-skip"
                 onClick={onSkip}
               >
@@ -959,22 +1044,29 @@ export function EmergencyBox({
 }
 
 /** The numbers in one thin row, for the pinned block on a phone. */
-function PinnedNumbers() {
+function PinnedNumbers({
+  hotlines = DEFAULT_HOTLINES,
+}: {
+  hotlines?: V2Hotline[];
+}) {
   return (
     <div className="flex gap-2" data-testid="search-hotline-pinned">
-      <a
-        href="tel:988"
-        className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-red-700 px-3 text-sm font-semibold text-white no-underline"
-      >
-        <Phone className="size-4" aria-hidden="true" />
-        Call 988
-      </a>
-      <a
-        href="tel:911"
-        className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-red-700 bg-white px-3 text-sm font-semibold text-red-700 no-underline"
-      >
-        Call 911
-      </a>
+      {hotlines.map((line, i) => (
+        <a
+          key={line.number}
+          href={`tel:${line.number}`}
+          aria-label={`Call ${line.number}, ${line.label}`}
+          className={cn(
+            'flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold no-underline',
+            i === 0
+              ? 'bg-red-700 text-white'
+              : 'border border-red-700 bg-white text-red-700',
+          )}
+        >
+          {i === 0 && <Phone className="size-4" aria-hidden="true" />}
+          Call {line.number}
+        </a>
+      ))}
     </div>
   );
 }
@@ -1106,13 +1198,12 @@ export function toCardQuestion(q: V2Question): Question & { values: string[] } {
     id: q.id,
     type: styleOf(q),
     text: q.stem,
-    multi: q.multiSelect,
+    multi: q.multi_select,
     values: q.options.map((o) => o.value),
     answers: q.options.map((o) => ({
       label: o.label,
       add: [o.value],
-      keeps: o.resultsCount,
-      emergency: o.value === 'U-0',
+      keeps: o.results_count ?? undefined,
     })),
   };
 }
@@ -1127,13 +1218,13 @@ export const valueOfLabel = (q: V2Question, label: string) =>
  */
 export function SearchRefineQuestion() {
   const { data, isFetching, query: label } = useV2Search();
-  const { refine, params } = useV2Url();
+  const { refine, params, asked } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
-  const [emergencySearch, setEmergencySearch] = useAtom(emergencySearchAtom);
   const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
   const setFlagged = useSetAtom(flaggedAtom);
-  const emergency = Boolean(label) && emergencySearch === label;
-  const v2 = data?.clarification.questions[0];
+  // The emergency comes only from the emergency question (Decision 54).
+  const emergencyQ = emergencyQuestionOf(data);
+  const v2 = nextQuestionOf(data, asked);
   const isPending = isFetching || isWriting;
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = v2
@@ -1162,9 +1253,12 @@ export function SearchRefineQuestion() {
   }, [question.id]);
 
   if (!label || refine || !data) return null;
-  const hotline = data.emergency.show_hotline || emergency;
   const type: keyof typeof QUESTION_STYLES = v2 ? styleOf(v2) : 'none';
   const style = QUESTION_STYLES[type];
+  const hotlines = emergencyQ?.hotlines?.length
+    ? emergencyQ.hotlines
+    : DEFAULT_HOTLINES;
+  const level = emergencyQ?.level === 'orange' ? 'orange' : 'red';
 
   const submitOther = (text: string) => {
     const other = [params.get('other'), text].filter(Boolean).join('. ');
@@ -1184,44 +1278,38 @@ export function SearchRefineQuestion() {
       labels.map((l) => valueOfLabel(v2, l)),
     );
   };
-  const answerEmergency = (option: Answer) => {
-    // In memory only, so the URL never records it.
-    if (option.emergency) {
-      moveFocus.current = true;
-      return setEmergencySearch(label);
-    }
-    answer([option.label]);
+  // Skip on the emergency question writes no urgency (U-X counts as no answer, Decision 51):
+  // it only marks the question seen, so the numbers stay and the next question comes.
+  const skipEmergency = () => {
+    if (!emergencyQ) return;
+    moveFocus.current = true;
+    write({ asked: [...new Set([...asked, emergencyQ.id])] });
   };
   const cardTitle =
     v2?.id === 'start' ? 'Your search is vague. Help us help you.' : style.title;
 
-  // A person in an emergency gets the numbers and the results, and no more questions.
-  if (emergency) {
+  // The emergency question never compacts. Red also opens the popup. Scrolled away, a row leads back.
+  if (v2 && type === 'emergency') {
     return (
       <div ref={pin.holderRef} className="mt-3">
-        <EmergencyBox hotline />
-        {pin.pinned && (
-          <div className={PINNED}>
-            <PinnedNumbers />
-          </div>
+        {v2.level === 'red' && (
+          <EmergencyPopup
+            key={label}
+            question={question}
+            hotlines={hotlines}
+            onAnswer={(option) => answer([option.label])}
+          />
         )}
-      </div>
-    );
-  }
-
-  // The emergency question never compacts. Scrolled away, a row leads back to it.
-  if (type === 'emergency') {
-    return (
-      <div ref={pin.holderRef} className="mt-3">
         <EmergencyBox
           question={question}
-          hotline={hotline}
-          onAnswer={answerEmergency}
-          onSkip={() => answer()}
+          hotlines={hotlines}
+          level={level}
+          onAnswer={(option) => answer([option.label])}
+          onSkip={skipEmergency}
         />
         {pin.pinned && (
           <div className={PINNED}>
-            {hotline && <PinnedNumbers />}
+            <PinnedNumbers hotlines={hotlines} />
             <button
               type="button"
               className="min-h-11 cursor-pointer text-left text-sm font-semibold text-red-700 underline"
@@ -1235,6 +1323,8 @@ export function SearchRefineQuestion() {
       </div>
     );
   }
+  // A skipped emergency question stays as the numbers alone.
+  const hotline = Boolean(emergencyQ);
 
   return (
     <div
@@ -1242,9 +1332,9 @@ export function SearchRefineQuestion() {
       className="mt-3 flex flex-col gap-3"
       style={{ height: pin.height }}
     >
-      {hotline && <EmergencyBox hotline />}
+      {hotline && <EmergencyBox hotlines={hotlines} level={level} />}
       <div className={cn(pin.pinned && PINNED)}>
-        {pin.pinned && hotline && <PinnedNumbers />}
+        {pin.pinned && hotline && <PinnedNumbers hotlines={hotlines} />}
         <section
           aria-label="Refine your search"
           aria-busy={isPending}
@@ -1339,7 +1429,7 @@ export function SearchRefineQuestion() {
                   </button>
                 );
               })}
-              {(!v2 || v2.allowOther) && (
+              {(!v2 || v2.allow_other) && (
                 <OtherBox
                   className="col-span-2"
                   placeholder={
@@ -1357,7 +1447,7 @@ export function SearchRefineQuestion() {
                   className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
                   onClick={() => answer()}
                 >
-                  {v2.noneOfThese ? 'None of these' : 'Skip'}
+                  {v2.none_of_these ? 'None of these' : 'Skip'}
                 </button>
               )}
               {picks.length > 0 && (
@@ -1411,7 +1501,8 @@ export function SearchClassifierPeek() {
             </p>
             <p>
               Urgency: {data.intent.urgency.value} ({data.intent.urgency.source},{' '}
-              {data.intent.urgency.state}). Emergency band: {data.emergency.band}.
+              {data.intent.urgency.state}). Emergency question:{' '}
+              {emergencyQuestionOf(data)?.level ?? 'none'}.
             </p>
             <p>
               Questions:{' '}
@@ -1420,9 +1511,10 @@ export function SearchClassifierPeek() {
                 .join(', ') || 'none'}
             </p>
             <p>
-              Versions: model {data.versions.model ?? 'none'}, rules{' '}
-              {data.versions.rules}. Time: classify {data.timing_ms.classify} ms,
-              total {data.timing_ms.total} ms.
+              Versions: model {data.model_version ?? 'none'}, rules{' '}
+              {data.rules_version}. Time: classify{' '}
+              {data.prototype?.timing_ms.classify ?? '?'} ms, total{' '}
+              {data.prototype?.timing_ms.total ?? '?'} ms.
             </p>
           </>
         )}

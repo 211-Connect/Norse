@@ -1,7 +1,7 @@
 'use client';
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowLeft, X } from 'lucide-react';
 import {
   FormEvent,
@@ -13,8 +13,8 @@ import {
 } from 'react';
 
 import {
+  DEFAULT_HOTLINES,
   EmergencyBox,
-  emergencySearchAtom,
   flaggedAtom,
   OtherBox,
   PICKED,
@@ -27,7 +27,10 @@ import {
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
 import {
+  emergencyQuestionOf,
   MAX_GUIDED,
+  nextQuestionOf,
+  totalOf,
   useV2Navigate,
   useV2Search,
   useV2Url,
@@ -200,25 +203,31 @@ export function SearchGuideFromUrl() {
   const searchLocation = useAtomValue(searchLocationAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const setFlagged = useSetAtom(flaggedAtom);
-  const [emergencySearch, setEmergencySearch] = useAtom(emergencySearchAtom);
   const requireLocation = useFlag('requireUserLocation');
   const [locationError, setLocationError] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const emergency = Boolean(query) && emergencySearch === query;
-  const v2 = data?.clarification.questions[0];
+  // The emergency comes only from the emergency question (Decision 54).
+  const emergencyQ = emergencyQuestionOf(data);
+  const v2 = nextQuestionOf(data, asked);
   const hasLocation = Boolean(params.get('location') || params.get('coords'));
   const locationDone = hasLocation || asked.includes(LOCATION_STEP);
   const used = asked.length;
   // The emergency question never waits behind the location step.
   const showLocation =
-    !emergency && !locationDone && v2?.type !== 'emergency' && used < MAX_GUIDED;
+    !locationDone && v2?.type !== 'emergency' && used < MAX_GUIDED;
   const question =
-    !emergency && !showLocation && used < MAX_GUIDED ? v2 : undefined;
+    v2?.type === 'emergency' || (!showLocation && used < MAX_GUIDED)
+      ? v2
+      : undefined;
   const card = question ? toCardQuestion(question) : undefined;
   const style = card ? QUESTION_STYLES[card.type ?? 'narrow'] : undefined;
   const isEmergency = question?.type === 'emergency';
-  const hotline = Boolean(data?.emergency.show_hotline) || emergency;
+  const hotline = Boolean(emergencyQ);
+  const hotlines = emergencyQ?.hotlines?.length
+    ? emergencyQ.hotlines
+    : DEFAULT_HOTLINES;
+  const level = emergencyQ?.level === 'orange' ? 'orange' : 'red';
   const isPending = isFetching || isWriting;
   const { picks, toggle, clear } = useAnswerPicks(question?.id);
   const left =
@@ -227,7 +236,7 @@ export function SearchGuideFromUrl() {
   const canDeferLocation = showLocation && !requireLocation;
   const canSkip = !showLocation || !requireLocation;
   const finished =
-    Boolean(data) && !isPending && !showLocation && !question && !emergency;
+    Boolean(data) && !isPending && !showLocation && !question;
 
   // With nothing left to ask, the guide closes and the results stay. Replace, so Back skips it.
   useEffect(() => {
@@ -271,10 +280,9 @@ export function SearchGuideFromUrl() {
       labels.map((l) => valueOfLabel(question, l)),
     );
   };
-  // An emergency never waits behind another question. In memory only, never in the URL.
-  const emergencyNow = () => {
-    setEmergencySearch(query);
-    write({ refine: null });
+  // Skip on the emergency question writes no urgency (U-X counts as no answer, Decision 51).
+  const skipEmergency = () => {
+    if (emergencyQ) write({ asked: [...new Set([...asked, emergencyQ.id])] });
   };
   // Picks made on this step count: leaving for the results must not drop them.
   const seeResults = () => {
@@ -354,7 +362,9 @@ export function SearchGuideFromUrl() {
         </p>
       )}
 
-      {hotline && !isEmergency && <EmergencyBox hotline />}
+      {hotline && !isEmergency && (
+        <EmergencyBox hotlines={hotlines} level={level} />
+      )}
 
       {showLocation && (
         <div className="flex flex-col gap-3">
@@ -391,10 +401,10 @@ export function SearchGuideFromUrl() {
           </h2>
           <EmergencyBox
             question={card}
-            hotline={hotline}
-            onAnswer={(option) =>
-              option.emergency ? emergencyNow() : answerQuestion([option.label])
-            }
+            hotlines={hotlines}
+            level={level}
+            onAnswer={(option) => answerQuestion([option.label])}
+            onSkip={skipEmergency}
           />
         </>
       )}
@@ -452,7 +462,7 @@ export function SearchGuideFromUrl() {
                 </button>
               );
             })}
-            {question.allowOther && (
+            {question.allow_other && (
               <OtherBox
                 key={question.id}
                 placeholder="Other: type your own"
@@ -473,7 +483,7 @@ export function SearchGuideFromUrl() {
                 Continue
               </button>
             ) : (
-              question.noneOfThese && (
+              question.none_of_these && (
                 <button
                   type="button"
                   disabled={isPending}
@@ -491,7 +501,7 @@ export function SearchGuideFromUrl() {
 
       {data && (
         <p className="sr-only" role="status" data-testid="guide-results-count">
-          {resultCount(data.total)} found so far.
+          {resultCount(totalOf(data))} found so far.
         </p>
       )}
 
@@ -520,7 +530,7 @@ export function SearchGuideFromUrl() {
               data-testid="guide-see-results"
               onClick={seeResults}
             >
-              {data ? `Skip to results (${data.total})` : 'Skip to results'}
+              {data ? `Skip to results (${totalOf(data)})` : 'Skip to results'}
             </button>
           )}
         </div>
