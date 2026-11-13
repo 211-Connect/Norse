@@ -181,7 +181,7 @@ export function SearchInlineBox({
           type="submit"
           aria-label="Search"
           disabled={isBusy || isPending}
-          className="bg-primary text-primary-foreground absolute right-2.5 bottom-2.5 flex size-9 cursor-pointer items-center justify-center rounded-lg disabled:opacity-60 md:right-3 md:bottom-3"
+          className="bg-primary text-primary-foreground absolute right-2.5 bottom-2.5 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] disabled:opacity-60 md:right-3 md:bottom-3"
         >
           <ArrowUp className="size-5" aria-hidden="true" />
         </button>
@@ -214,7 +214,7 @@ export function SearchInlineBox({
               ? `Change location, now ${searchLocation}`
               : 'Add your location'
           }
-          className="text-primary flex cursor-pointer items-center gap-1.5 text-sm font-medium"
+          className="text-primary relative flex cursor-pointer items-center gap-1.5 text-sm font-medium after:absolute after:inset-x-0 after:-inset-y-3 after:content-['']"
           onClick={openLocation}
         >
           <MapPin className="size-4" aria-hidden="true" />

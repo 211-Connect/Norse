@@ -114,7 +114,7 @@ function GuideShell({
           </DialogPrimitive.Description>
           <DialogPrimitive.Close
             aria-label="Close"
-            className="absolute top-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-lg"
+            className="absolute top-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-['']"
           >
             <X className="size-5" aria-hidden="true" />
           </DialogPrimitive.Close>

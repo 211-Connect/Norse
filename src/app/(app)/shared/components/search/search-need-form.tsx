@@ -79,7 +79,7 @@ export function SearchNeedInput({
         <button
           type="submit"
           aria-label="Search"
-          className="bg-primary text-primary-foreground absolute right-3 bottom-3 flex size-9 cursor-pointer items-center justify-center rounded-lg"
+          className="bg-primary text-primary-foreground absolute right-3 bottom-3 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-['']"
         >
           <ArrowUp className="size-5" aria-hidden="true" />
         </button>

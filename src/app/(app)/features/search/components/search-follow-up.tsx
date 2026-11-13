@@ -828,7 +828,7 @@ export function OtherBox({
       <button
         type="button"
         aria-label="Send your answer"
-        className="bg-primary text-primary-foreground absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-lg"
+        className="bg-primary text-primary-foreground absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1.5 after:content-['']"
         onClick={send}
       >
         <ArrowUp className="size-4" aria-hidden="true" />
