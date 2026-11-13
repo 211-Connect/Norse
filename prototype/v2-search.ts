@@ -172,7 +172,7 @@ export async function v2Search(params: V2Params) {
   const byCode: Record<string, number> = {};
   for (const code of decision.count_codes) byCode[code] = services.filter((s) => carries(s, code)).length;
   const engine = finalize(decision, { counts: { total: services.length, by_code: byCode }, strong_text_match: strongTextMatch });
-  const band = (decision as { emergency?: { band?: string } }).emergency?.band ?? 'none';
+  const band = (decision as { emergency_band?: string }).emergency_band ?? 'none';
   let questions = (engine.questions as unknown as EngineQuestion[]).map((q) => toContractQuestion(q, band));
   if (params.urgency === 'U-0') {
     questions = [callerEmergencyQuestion(HOTLINES), ...questions.filter((q) => q.type !== 'emergency')].slice(0, 3);
