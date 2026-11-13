@@ -8,3 +8,6 @@ export const dialogsAtom = atom({
 });
 
 export const promptAuthAtom = atom((get) => get(dialogsAtom).promptAuth);
+
+/** True while the red emergency popup is open. Quick exit then shows at every width, above the dim layer. */
+export const emergencyPopupOpenAtom = atom(false);

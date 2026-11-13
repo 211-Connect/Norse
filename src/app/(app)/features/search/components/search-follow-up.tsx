@@ -45,6 +45,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
+import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
@@ -103,6 +104,12 @@ const refineCollapsedAtom = atom(false);
 /** The results help panel: the phone's list item and the desktop button both open it. */
 const resultsHelpOpenAtom = atom(false);
 const HELP_ITEM_ID = 'results-help-item';
+/**
+ * "No, I am safe now" hides the emergency question for this visit only: client state, nothing in
+ * the URL. This is the manager's proposal, not yet confirmed by Lucas. It lives only here.
+ */
+const emergencySafeThisVisitAtom = atom(false);
+const isSafeAnswer = (answer: { add: string[] }) => answer.add.includes('U-3');
 /** The height of the sticky search bar. Below it, a phone pins the refine row. */
 const PIN_TOP = 48;
 const PINNED =
@@ -943,6 +950,101 @@ export const QUESTION_STYLES = {
   none: QUIET,
 };
 
+/**
+ * The popup for the strong band (importance `critical`, with options). It opens once per search.
+ * Not modal on purpose: a modal traps Tab, and Quick exit must stay reachable by click and by Tab.
+ * The dim layer is drawn by hand; the floating Quick exit sits above it at every width.
+ * The popup is the one announcement (role dialog); the card behind it is silent.
+ */
+function EmergencyPopup({
+  question,
+  hotlines,
+  onAnswer,
+}: {
+  question: Question;
+  hotlines: V2Hotline[];
+  onAnswer: (answer: Answer) => void;
+}) {
+  const [open, setOpen] = useState(true);
+  const setPopupOpen = useSetAtom(emergencyPopupOpenAtom);
+  useEffect(() => {
+    setPopupOpen(open);
+    return () => setPopupOpen(false);
+  }, [open, setPopupOpen]);
+  return (
+    <DialogPrimitive.Root modal={false} open={open} onOpenChange={setOpen}>
+      <DialogPrimitive.Portal>
+        {open && (
+          <div
+            aria-hidden="true"
+            className="fixed inset-0 z-50 bg-black/50"
+            data-testid="emergency-popup-dim"
+          />
+        )}
+        <DialogPrimitive.Content
+          data-testid="emergency-popup"
+          className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl"
+          // Tab runs from the last control on to Quick exit, and Shift+Tab from the first back to it,
+          // instead of looping inside the popup. Quick exit must stay reachable by keyboard.
+          onKeyDown={(event) => {
+            if (event.key !== 'Tab') return;
+            const items = Array.from(
+              event.currentTarget.querySelectorAll<HTMLElement>(
+                'a[href], button',
+              ),
+            );
+            const edge = items[event.shiftKey ? 0 : items.length - 1];
+            const exit = document.querySelector<HTMLElement>(
+              '[data-testid=quick-exit-floating]',
+            );
+            if (exit && document.activeElement === edge) {
+              event.preventDefault();
+              event.stopPropagation();
+              exit.focus();
+            }
+          }}
+          // Only Close (or an answer) ends it: a stray tap on the dim layer must not.
+          onInteractOutside={(event) => event.preventDefault()}
+          // Focus starts on the question, not on an answer: Enter must not answer by accident,
+          // and a screen reader reads the question and the numbers first.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            document.getElementById('emergency-popup-question')?.focus();
+          }}
+          // Closed, focus goes to the same question in the page card, which stays visible.
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            document.getElementById('emergency-question')?.focus();
+          }}
+        >
+          <DialogPrimitive.Title className="sr-only">
+            Emergency help
+          </DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">
+            Call a number now, or answer the question.
+          </DialogPrimitive.Description>
+          <EmergencyBox
+            question={question}
+            hotlines={hotlines}
+            headingId="emergency-popup-question"
+            announce={false}
+            onAnswer={(option) => {
+              setOpen(false);
+              onAnswer(option);
+            }}
+          />
+          <DialogPrimitive.Close
+            className="min-h-11 cursor-pointer self-end rounded-lg border px-4 font-semibold"
+            data-testid="emergency-popup-close"
+          >
+            Close and see results
+          </DialogPrimitive.Close>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}
+
 /** 988 and 911 both show by default, because the danger may not be self-harm. */
 export const DEFAULT_HOTLINES: V2Hotline[] = [
   { label: 'Suicide and Crisis Lifeline', number: '988' },
@@ -1001,6 +1103,7 @@ export function EmergencyBox({
   onAnswer,
   onSkip,
   headingId = 'emergency-question',
+  announce = true,
 }: {
   question?: Question;
   hotlines?: V2Hotline[];
@@ -1008,6 +1111,8 @@ export function EmergencyBox({
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
   headingId?: string;
+  /** False while the popup holds the one announcement, so the card behind it is not a second alert. */
+  announce?: boolean;
 }) {
   return (
     <section
@@ -1018,7 +1123,7 @@ export function EmergencyBox({
       )}
       data-testid="search-emergency"
       data-soft={soft}
-      role={soft ? 'status' : 'alert'}
+      role={announce ? (soft ? 'status' : 'alert') : undefined}
     >
       {question && (
         <h2
@@ -1256,7 +1361,12 @@ export function SearchRefineQuestion() {
   const setFlagged = useSetAtom(flaggedAtom);
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
-  const v2 = nextQuestionOf(data, asked);
+  const safeThisVisit = useAtomValue(emergencySafeThisVisitAtom);
+  const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
+  const v2 = nextQuestionOf(
+    data,
+    safeThisVisit && emergencyQ ? [...asked, emergencyQ.id] : asked,
+  );
   const isPending = isFetching || isWriting;
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = v2
@@ -1317,18 +1427,32 @@ export function SearchRefineQuestion() {
     moveFocus.current = true;
     write({ asked: [...new Set([...asked, emergencyQ.id])] });
   };
-  const cardTitle =
-    v2?.id === 'start' ? 'Tell us a bit more' : style.title;
+  // Strong band (critical) with answers: popup. Soft band, or a caller U-0 (no options, already answered): the card.
+  const popup = !soft && question.answers.length > 0;
+  const onEmergencyAnswer = (option: Answer) => {
+    if (isSafeAnswer(option)) setSafeThisVisit(true);
+    answer([option.label]);
+  };
+  const cardTitle = v2?.id === 'start' ? 'Tell us a bit more' : style.title;
 
-  // The emergency question never compacts. It is a card in the page like the others, with no popup. Scrolled away, a row leads back.
+  // The emergency question never compacts. Critical with answers also opens the popup; the card stays. Scrolled away, a row leads back.
   if (v2 && type === 'emergency') {
     return (
       <div ref={pin.holderRef} className="mt-3">
+        {popup && (
+          <EmergencyPopup
+            key={label}
+            question={question}
+            hotlines={hotlines}
+            onAnswer={onEmergencyAnswer}
+          />
+        )}
         <EmergencyBox
           question={question}
           hotlines={hotlines}
           soft={soft}
-          onAnswer={(option) => answer([option.label])}
+          announce={!popup}
+          onAnswer={onEmergencyAnswer}
           onSkip={skipEmergency}
         />
         {pin.pinned && (
@@ -1535,8 +1659,8 @@ export function SearchClassifierPeek() {
                 .join(', ') || 'none'}
             </p>
             <p>
-              Urgency: {data.intent.urgency.value} ({data.intent.urgency.source},{' '}
-              {data.intent.urgency.state}). Emergency question:{' '}
+              Urgency: {data.intent.urgency.value} ({data.intent.urgency.source}
+              , {data.intent.urgency.state}). Emergency question:{' '}
               {emergencyQuestionOf(data)?.importance ?? 'none'}.
             </p>
             <p>
