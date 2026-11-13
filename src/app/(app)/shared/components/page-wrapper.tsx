@@ -17,6 +17,7 @@ import { PageSearchState, SearchStateSync } from './search-state-sync';
 import { SyncLocalFavoritesOnAuthEffect } from './sync-local-favorites-on-auth-effect';
 import { Toaster } from './ui/sonner';
 import { UmamiScript } from './umami-script';
+import { ThumbmarkFingerprint } from './thumbmark-fingerprint';
 import { ArcjetScript } from './arcjet-script';
 
 interface PageWrapperProps {
@@ -72,6 +73,7 @@ export const PageWrapper = ({
           websiteId={appConfig.umamiWebsiteId}
           nonce={nonce}
         />
+        <ThumbmarkFingerprint />
         <ArcjetScript
           scriptUrl={process.env.NEXT_PUBLIC_ARCJET_SCRIPT_URL}
           nonce={nonce}

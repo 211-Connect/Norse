@@ -90,10 +90,7 @@ export default async function PrivacyPolicyPage({ params }) {
         ) : (
           <>
             <p className="mb-2">
-              This web app collects certain information from users of the app.
-              All data collected is completely anonymous, unless you expressly
-              give us permission to store it (as in the case of registering for
-              an account).
+              This web app handles information from users as described below.
             </p>
 
             <h2 className="mt-4 mb-2 text-xl font-bold">
@@ -101,13 +98,15 @@ export default async function PrivacyPolicyPage({ params }) {
             </h2>
 
             <p className="mb-2">
-              We collect anonymized browsing data such as keywords being
-              searched for, and which resource get viewed the most.
+              We collect browsing data such as keywords being searched for and
+              which resources are viewed most. We do not connect this data to
+              information provided when registering an account.
             </p>
             <p className="mb-2">
-              We do <strong>not</strong> connect this data to personally
-              identifiable information. It&apos;s collected and stored
-              anonymously.
+              The app generates a browser fingerprint and, when available,
+              stores it in the current tab&apos;s session storage. When Umami
+              analytics is enabled, the fingerprint may be sent to Umami as a
+              distinct ID to help link browsing activity across sessions.
             </p>
             <p className="mb-2">
               In the case of visitors who register a user account, we also store
@@ -122,14 +121,14 @@ export default async function PrivacyPolicyPage({ params }) {
               settings and resources for later access.
             </p>
             <p className="mb-2">
-              Anonymous tracking data is stored so that we can improve the user
+              Browsing data is stored so that we can improve the user
               experience, and determine how effective our tools are.
             </p>
 
             <h2 className="mt-4 mb-2 text-xl font-bold">How we collect data</h2>
             <p className="mb-2">Data is collected one of two ways:</p>
             <ol className="mb-2 list-disc pl-8">
-              <li>Anonymously using Google Analytics tracking scripts.</li>
+              <li>Using analytics tools, including Umami when enabled.</li>
               <li>
                 Through form fields that are filled out voluntarily by viewers.
               </li>
