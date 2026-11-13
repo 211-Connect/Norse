@@ -1,6 +1,7 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
+import { Phone } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
@@ -44,7 +45,21 @@ export function SearchPageShell({
   }, []);
 
   return (
-    <div className="flex h-full w-full flex-col md:flex-row">
+    <div className="flex h-full w-full flex-col">
+      {/* Always on, on every search state, also when the classifier fails (ADR 0039 Decision 45). */}
+      <p
+        className="border-b bg-red-50 px-2.5 py-1 text-sm print:hidden"
+        data-testid="always-on-911"
+      >
+        <a
+          href="tel:911"
+          className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-red-700 underline"
+        >
+          <Phone className="size-4" aria-hidden="true" />
+          In an emergency, call 911
+        </a>
+      </p>
+    <div className="flex min-h-0 w-full flex-1 flex-col md:flex-row">
       <FilterPanel
         legacyAiClarifyState={legacyAiClarifyState}
         onLegacyAiClarifyAction={handleLegacyDialogClose}
@@ -63,6 +78,7 @@ export function SearchPageShell({
           <ResultsViewToggle />
         </>
       )}
+    </div>
     </div>
   );
 }
