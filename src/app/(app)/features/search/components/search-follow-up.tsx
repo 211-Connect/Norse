@@ -1281,7 +1281,8 @@ export const valueOfLabel = (q: V2Question, label: string) =>
  * (real ml-broker classifier, real rules engine). It hides while the guided flow (`refine=1`) is open.
  */
 export function SearchRefineQuestion() {
-  const { t } = useTranslation();
+  // The count key lives in `common`; the search page's default namespace is `page-search`.
+  const { t } = useTranslation('common');
   const { data, isFetching, query: label } = useV2Search();
   const { refine, params, asked } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();

@@ -198,7 +198,8 @@ export function SearchGuide({
  * Order: the emergency question, then the location step, then the API's questions, at most 3 in all.
  */
 export function SearchGuideFromUrl() {
-  const { t } = useTranslation();
+  // The count key lives in `common`; the search page's default namespace is `page-search`.
+  const { t } = useTranslation('common');
   const { data, isFetching, error, query } = useV2Search();
   const { params, asked } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
