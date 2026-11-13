@@ -125,16 +125,3 @@ export function useV2Navigate() {
 
   return { write, answer, isPending };
 }
-
-/**
- * The colour style of a question card: red for the emergency question, orange when it changes
- * results a lot. The emergency question's own `level` (popup or soft card) is read where it shows.
- */
-export const styleOf = (q: V2Question) =>
-  q.type === 'emergency'
-    ? 'emergency'
-    : q.level === 'orange'
-      ? q.type === 'confirm_urgency'
-        ? 'confirm_urgency'
-        : 'find_need'
-      : 'narrow';

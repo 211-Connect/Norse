@@ -64,6 +64,7 @@ import {
 } from '../sune-demo/sune.mjs';
 import {
   emergencyQuestionOf,
+  isSoftEmergency,
   nextQuestionOf,
   styleOf,
   useV2Navigate,
@@ -1019,13 +1020,13 @@ export function HotlineNumbers({
 
 /**
  * The emergency box: the hotline numbers, the emergency question's text and its options (urgency
- * answers only; none for a caller U-0). `level` red is the popup's box, orange the soft card.
+ * answers only; none for a caller U-0). `soft` is the calmer orange card (importance below critical).
  * Without a question it is the numbers alone, so a skip never takes the numbers away.
  */
 export function EmergencyBox({
   question,
   hotlines,
-  level = 'red',
+  soft = false,
   onAnswer,
   onSkip,
   headingId = 'emergency-question',
@@ -1033,14 +1034,13 @@ export function EmergencyBox({
 }: {
   question?: Question;
   hotlines?: V2Hotline[];
-  level?: 'red' | 'orange';
+  soft?: boolean;
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
   headingId?: string;
   /** In the popup the dialog is announced already, so the box is not a second alert. */
   inDialog?: boolean;
 }) {
-  const soft = level === 'orange';
   return (
     <section
       aria-label="Emergency help"
@@ -1049,7 +1049,7 @@ export function EmergencyBox({
         soft ? 'border-orange-400 bg-orange-50' : 'border-red-700 bg-red-50',
       )}
       data-testid="search-emergency"
-      data-level={level}
+      data-soft={soft}
       role={soft || inDialog ? undefined : 'alert'}
     >
       {question && (
@@ -1324,7 +1324,7 @@ export function SearchRefineQuestion() {
   const hotlines = emergencyQ?.hotlines?.length
     ? emergencyQ.hotlines
     : DEFAULT_HOTLINES;
-  const level = emergencyQ?.level === 'orange' ? 'orange' : 'red';
+  const soft = isSoftEmergency(emergencyQ);
 
   const submitOther = (text: string) => {
     const other = [params.get('other'), text].filter(Boolean).join('. ');
@@ -1358,7 +1358,7 @@ export function SearchRefineQuestion() {
   if (v2 && type === 'emergency') {
     return (
       <div ref={pin.holderRef} className="mt-3">
-        {v2.level === 'red' && (
+        {!soft && (
           <EmergencyPopup
             key={label}
             question={question}
@@ -1369,7 +1369,7 @@ export function SearchRefineQuestion() {
         <EmergencyBox
           question={question}
           hotlines={hotlines}
-          level={level}
+          soft={soft}
           onAnswer={(option) => answer([option.label])}
           onSkip={skipEmergency}
         />
@@ -1395,7 +1395,7 @@ export function SearchRefineQuestion() {
   if (!v2) {
     return (
       <div className="mt-3 flex flex-col gap-3">
-        {hotline && <EmergencyBox hotlines={hotlines} level={level} />}
+        {hotline && <EmergencyBox hotlines={hotlines} soft={soft} />}
         <AddMoreLine noted={noted} onSubmit={submitOther} />
       </div>
     );
@@ -1407,7 +1407,7 @@ export function SearchRefineQuestion() {
       className="mt-3 flex flex-col gap-3"
       style={{ height: pin.height }}
     >
-      {hotline && <EmergencyBox hotlines={hotlines} level={level} />}
+      {hotline && <EmergencyBox hotlines={hotlines} soft={soft} />}
       <div className={cn(pin.pinned && PINNED)}>
         {pin.pinned && hotline && <PinnedNumbers hotlines={hotlines} />}
         <section
@@ -1579,7 +1579,7 @@ export function SearchClassifierPeek() {
             <p>
               Urgency: {data.intent.urgency.value} ({data.intent.urgency.source},{' '}
               {data.intent.urgency.state}). Emergency question:{' '}
-              {emergencyQuestionOf(data)?.level ?? 'none'}.
+              {emergencyQuestionOf(data)?.importance ?? 'none'}.
             </p>
             <p>
               Questions:{' '}

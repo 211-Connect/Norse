@@ -29,6 +29,7 @@ import {
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
 import {
   emergencyQuestionOf,
+  isSoftEmergency,
   MAX_GUIDED,
   nextQuestionOf,
   totalOf,
@@ -230,7 +231,7 @@ export function SearchGuideFromUrl() {
   const hotlines = emergencyQ?.hotlines?.length
     ? emergencyQ.hotlines
     : DEFAULT_HOTLINES;
-  const level = emergencyQ?.level === 'orange' ? 'orange' : 'red';
+  const soft = isSoftEmergency(emergencyQ);
   const isPending = isFetching || isWriting;
   const { picks, toggle, clear } = useAnswerPicks(question?.id);
   const left =
@@ -366,7 +367,7 @@ export function SearchGuideFromUrl() {
       )}
 
       {hotline && !isEmergency && (
-        <EmergencyBox hotlines={hotlines} level={level} />
+        <EmergencyBox hotlines={hotlines} soft={soft} />
       )}
 
       {showLocation && (
@@ -405,7 +406,7 @@ export function SearchGuideFromUrl() {
           <EmergencyBox
             question={card}
             hotlines={hotlines}
-            level={level}
+            soft={soft}
             onAnswer={(option) => answerQuestion([option.label])}
             onSkip={skipEmergency}
           />

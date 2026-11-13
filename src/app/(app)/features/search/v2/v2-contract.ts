@@ -20,8 +20,6 @@ export type V2Hotline = { label: string; number: string };
 export type V2Question = {
   id: string;
   type: 'emergency' | 'confirm_urgency' | 'find_need' | 'narrow';
-  /** Emergency question: red is the popup, orange the soft card (Decision 54). */
-  level: 'red' | 'orange' | 'low';
   importance: 'critical' | 'high' | 'medium' | 'low';
   value?: number;
   priority?: number;
@@ -77,6 +75,28 @@ export const totalOf = (response: V2Response) => {
 };
 
 /** The emergency lives only in this question; there is no top-level `emergency` (Decision 54). */
+/** The look of a question card. The page chooses it from `type` and `importance`; the API sends no `level`. */
+export type QuestionStyle = 'emergency' | 'confirm_urgency' | 'find_need' | 'narrow';
+
+/**
+ * Red for the emergency question; orange for a question that changes the results a lot
+ * (`importance` critical or high); quiet for the rest.
+ */
+export const styleOf = (
+  q: Pick<V2Question, 'type' | 'importance'>,
+): QuestionStyle =>
+  q.type === 'emergency'
+    ? 'emergency'
+    : q.importance === 'critical' || q.importance === 'high'
+      ? q.type === 'confirm_urgency'
+        ? 'confirm_urgency'
+        : 'find_need'
+      : 'narrow';
+
+/** A critical emergency question is the full red card; a lower importance is the calmer orange card. */
+export const isSoftEmergency = (q?: Pick<V2Question, 'importance'>) =>
+  Boolean(q) && q!.importance !== 'critical';
+
 export const emergencyQuestionOf = (response?: V2Response) =>
   response?.clarification.questions.find((q) => q.type === 'emergency');
 

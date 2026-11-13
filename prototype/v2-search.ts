@@ -126,28 +126,30 @@ function search(query: string, sentNeeds: string[], boostNeeds: string[], scores
 
 type Option = { label: string; parameter: 'needs' | 'passed_needs' | 'urgency'; value: string; results_count?: number | null };
 type EngineQuestion = Record<string, unknown> & {
-  id: string; type: string; level: string; parameter?: Option['parameter'];
+  id: string; type: string; level?: string; parameter?: Option['parameter'];
   options: (Omit<Option, 'parameter'> & { parameter?: Option['parameter'] })[];
   hotlines?: { label: string; number: string }[];
 };
 
 /**
  * The engine on the rules branch may still emit the older question shape. This brings it to the
- * draft: `parameter` on each option (Decision 55), no U-0 option and level red or orange on the
- * emergency question (Decision 54), no N-X option (Decision 43). A newer engine passes through.
+ * draft: `parameter` on each option (Decision 55), no U-0 option on the
+ * emergency question (Decision 54), no `level`, no N-X option (Decision 43). A newer engine passes through.
  */
 function toContractQuestion(q: EngineQuestion, band: string): Record<string, unknown> {
-  const { parameter, ...rest } = q;
+  // The API stops sending `level` (the page reads `type` and `importance`), so the stub drops it too.
+  const { parameter, level: _level, ...rest } = q as EngineQuestion & { importance?: string };
   const options = q.options
     .filter((o) => o.value !== 'N-X' && !(q.type === 'emergency' && o.value === 'U-0'))
     .map((o) => ({ ...o, parameter: o.parameter ?? parameter ?? 'needs' }));
-  const level = q.type === 'emergency' ? (band === 'soft' ? 'orange' : q.level === 'orange' ? 'orange' : 'red') : q.level;
-  return { ...rest, level, options };
+  // The soft band (middle danger) was `level: orange`; the page now reads `importance` for it.
+  const importance = q.type === 'emergency' && band === 'soft' ? 'high' : rest.importance;
+  return { ...rest, importance, options };
 }
 
 /** A caller `urgency=U-0` (Decision 50): the emergency question as a popup with the numbers, no options. */
 const callerEmergencyQuestion = (hotlines: { label: string; number: string }[]) => ({
-  id: 'emergency', type: 'emergency', level: 'red', importance: 'critical', value: 0.999, priority: 3.999,
+  id: 'emergency', type: 'emergency', importance: 'critical', value: 0.999, priority: 3.999,
   uncertainty: 0, reason: 'emergency_band', step: 0, stem: 'Help is one call away.', options: [],
   multi_select: false, allow_other: false, none_of_these: false, hotlines,
 });
