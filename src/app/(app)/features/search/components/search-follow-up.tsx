@@ -840,13 +840,13 @@ export function OtherBox({
 const ORANGE = {
   card: 'border-orange-400 bg-orange-50',
   label: 'text-orange-800',
-  title: 'Refine: this will change your results',
+  title: 'This changes your results',
   button: 'border-orange-400 text-orange-900 bg-white',
 };
 const QUIET = {
   card: 'border-primary/30 bg-primary/10',
   label: 'text-primary',
-  title: 'Help us refine your search',
+  title: 'Tell us more to get better results',
   button: 'border-control-border bg-white',
 };
 
@@ -1304,7 +1304,7 @@ export function SearchRefineQuestion() {
     write({ asked: [...new Set([...asked, emergencyQ.id])] });
   };
   const cardTitle =
-    v2?.id === 'start' ? 'Your search is vague. Help us help you.' : style.title;
+    v2?.id === 'start' ? 'Tell us a bit more' : style.title;
 
   // The emergency question never compacts. Red also opens the popup. Scrolled away, a row leads back.
   if (v2 && type === 'emergency') {
