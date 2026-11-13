@@ -100,6 +100,9 @@ type Decision = {
 /** True from the moment the box is emptied until the next search: tags and refine go with it. */
 export const searchClearedAtom = atom(false);
 const refineCollapsedAtom = atom(false);
+/** The results help panel: the phone's list item and the desktop button both open it. */
+const resultsHelpOpenAtom = atom(false);
+const HELP_ITEM_ID = 'results-help-item';
 /** The height of the sticky search bar. Below it, a phone pins the refine row. */
 const PIN_TOP = 48;
 const PINNED =
@@ -465,7 +468,7 @@ export function SearchResultsHelp() {
   const setFlagged = useSetAtom(flaggedAtom);
   const setSuggestions = useSetAtom(suggestionsAtom);
   const [shown, setShown] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useAtom(resultsHelpOpenAtom);
   const dragging = useRef(false);
   const onDragging = (value: boolean) => {
     dragging.current = value;
@@ -597,6 +600,8 @@ export function SearchResultsHelp() {
         className={cn(
           // Below xl the floating Quick exit holds the bottom edge.
           'fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg max-xl:bottom-20 print:hidden',
+          // A phone gets the list item at the end of the results instead (Lucas, 2026-11-13).
+          'max-md:hidden',
           // Before it appears it stays in the tab order, so a keyboard user can still reach it.
           !shown &&
             'pointer-events-none opacity-0 focus:pointer-events-auto focus:opacity-100',
@@ -609,6 +614,14 @@ export function SearchResultsHelp() {
         <DialogPrimitive.Content
           className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl max-xl:bottom-20 max-xl:max-h-[calc(100dvh-6rem)] md:left-auto md:w-96"
           data-testid="search-results-help-panel"
+          // On a phone the opener is the list item, so focus goes back to it.
+          onCloseAutoFocus={(event) => {
+            const item = document.getElementById(HELP_ITEM_ID);
+            if (item && item.offsetParent) {
+              event.preventDefault();
+              item.focus();
+            }
+          }}
           onEscapeKeyDown={(event) => {
             // Escape cancels a keyboard drag or the Add box, not the whole panel.
             if (adding || dragging.current) event.preventDefault();
@@ -790,6 +803,24 @@ export function SearchResultsHelp() {
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
+  );
+}
+
+/** Phone only: the help opener as the last item of the results list, not a floating button. */
+export function ResultsHelpItem() {
+  const { label } = useSuneSearch();
+  const setOpen = useSetAtom(resultsHelpOpenAtom);
+  if (!label.trim()) return null;
+  return (
+    <button
+      id={HELP_ITEM_ID}
+      type="button"
+      className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white md:hidden print:hidden"
+      data-testid="results-help-item"
+      onClick={() => setOpen(true)}
+    >
+      Not getting the results you expected?
+    </button>
   );
 }
 

@@ -28,6 +28,7 @@ import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { PrintableDirectoryContextBanner } from './printable-directory-context-banner';
 import { RenderResults } from './render-results';
 import { ResultTotal } from './result-total';
+import { ResultsHelpItem } from './search-follow-up';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
 import { SaveQueryToDirectoryButton } from './save-query-to-directory-button';
@@ -179,7 +180,8 @@ export function ResultsSection({
       id="search-container"
       aria-labelledby={SEARCH_RESULTS_HEADING_ID}
       className={cn(
-        'flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5',
+        // max-md:pb-24 keeps the phone's bottom bar off the last card and the help item.
+        'flex w-full flex-col gap-3 overflow-y-auto p-2.5 max-md:pb-24 lg:max-w-100 xl:max-w-137.5',
         className,
       )}
     >
@@ -224,6 +226,7 @@ export function ResultsSection({
       <div className="flex flex-col gap-6">
         <RenderResults cardLayout={cardLayout} />
         <ResultsPagination />
+        <ResultsHelpItem />
       </div>
     </section>
   );

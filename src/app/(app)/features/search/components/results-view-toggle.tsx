@@ -32,29 +32,37 @@ export function ResultsViewToggle() {
   };
 
   return (
-    <div
-      role="group"
-      aria-label="Show results as"
-      className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 flex rounded-lg border bg-white p-0.5 shadow-lg md:hidden print:hidden"
-      data-testid="results-view-toggle"
-    >
-      {VIEWS.map(({ id, label, Icon }) => (
-        <button
-          key={id}
-          type="button"
-          aria-pressed={view === id}
-          className={cn(
-            'flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md px-3 text-sm font-semibold',
-            view === id
-              ? 'bg-primary text-primary-foreground'
-              : 'text-foreground',
-          )}
-          onClick={() => choose(id)}
-        >
-          <Icon className="size-4" aria-hidden="true" />
-          {label}
-        </button>
-      ))}
-    </div>
+    <>
+      {/* One bottom bar on a phone: Quick exit sits on its left, this List and Map on its right. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-20 h-[calc(max(1rem,env(safe-area-inset-bottom))+3.9rem)] border-t bg-white md:hidden print:hidden"
+        data-testid="phone-bottom-bar"
+      />
+      <div
+        role="group"
+        aria-label="Show results as"
+        className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 flex rounded-lg border bg-white p-0.5 shadow-lg md:hidden print:hidden"
+        data-testid="results-view-toggle"
+      >
+        {VIEWS.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={view === id}
+            className={cn(
+              'flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md px-3 text-sm font-semibold',
+              view === id
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground',
+            )}
+            onClick={() => choose(id)}
+          >
+            <Icon className="size-4" aria-hidden="true" />
+            {label}
+          </button>
+        ))}
+      </div>
+    </>
   );
 }
