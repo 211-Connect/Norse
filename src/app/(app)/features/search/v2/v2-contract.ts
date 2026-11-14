@@ -76,7 +76,8 @@ export const totalOf = (response: V2Response) => {
 
 /** The emergency lives only in this question; there is no top-level `emergency` (Decision 54). */
 /** The look of a question card. The page chooses it from `type` and `importance`; the API sends no `level`. */
-export type QuestionStyle = 'emergency' | 'confirm_urgency' | 'find_need' | 'narrow';
+export type QuestionStyle =
+  'emergency' | 'confirm_urgency' | 'find_need' | 'narrow';
 
 /**
  * Red for the emergency question; orange for a question that changes the results a lot
@@ -189,7 +190,10 @@ export function answerChanges(
   if (needOptions.length || chosen.some((o) => o.parameter === 'needs')) {
     changes.needs = [...needs];
   }
-  if (needOptions.length || chosen.some((o) => o.parameter === 'passed_needs')) {
+  if (
+    needOptions.length ||
+    chosen.some((o) => o.parameter === 'passed_needs')
+  ) {
     changes.passed_needs = [...passed];
   }
   return changes;
@@ -215,3 +219,6 @@ export const withoutNX = (needs: string | null) => {
     .filter((v) => v && v !== 'N-X');
   return kept.length ? kept.join(',') : null;
 };
+
+/** At most this many guided questions before the results (Lucas, round 10). */
+export const MAX_GUIDED = 3;

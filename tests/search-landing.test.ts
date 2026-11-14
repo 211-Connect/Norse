@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import {
   isDirectResultsLink,
   landingStep,
+  progressLabel,
   resultsUrlFor,
   toLandingUrl,
 } from '../src/app/(app)/features/search/v2/landing';
@@ -139,4 +140,9 @@ test('the home search dialog hands its URL to the landing page, same query strin
     '/find?query=rent&sllc=1&refine=1',
   );
   assert.equal(toLandingUrl('/search'), '/find');
+});
+
+test('progress: names the cap, not an exact count', () => {
+  assert.equal(progressLabel(0), 'Question 1 of up to 3');
+  assert.equal(progressLabel(1), 'Question 2 of up to 3');
 });

@@ -30,6 +30,7 @@ import {
   valueOfLabel,
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
+import { progressLabel } from '@/app/(app)/features/search/v2/landing';
 import {
   emergencyQuestionOf,
   isSoftEmergency,
@@ -438,7 +439,7 @@ export function SearchGuideFromUrl({
             data-testid="guide-progress"
             id="guide-progress"
           >
-            Question {used + 1}
+            {progressLabel(used)}
           </p>
         )}
       </div>

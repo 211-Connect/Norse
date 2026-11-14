@@ -5,6 +5,7 @@
  */
 import type { SearchEngine } from '@/types/appConfig';
 
+import { MAX_GUIDED } from './v2-contract';
 import {
   applyWriterRules,
   liftQueryString,
@@ -86,3 +87,7 @@ export function toLandingUrl(resultsUrl: string): string {
   const at = resultsUrl.indexOf('?');
   return `${LANDING_PATH}${at === -1 ? '' : resultsUrl.slice(at)}`;
 }
+
+/** The progress line. The total can shrink after an answer, so it names the cap, not a count. */
+export const progressLabel = (answered: number): string =>
+  `Question ${answered + 1} of up to ${MAX_GUIDED}`;

@@ -15,6 +15,7 @@ import {
   type V2Changes,
   type V2Question,
   type V2Response,
+  MAX_GUIDED,
 } from './v2-contract';
 
 export * from './v2-contract';
@@ -39,8 +40,7 @@ const CALL_KEYS = [
   'page',
 ] as const;
 
-/** At most this many guided questions before the results (Lucas, round 10). */
-export const MAX_GUIDED = 3;
+export { MAX_GUIDED };
 
 const list = (value: string | null) =>
   (value ?? '')
