@@ -108,8 +108,8 @@ const HELP_ITEM_ID = 'results-help-item';
  * "No, I am safe now" hides the emergency question for this visit only: client state, nothing in
  * the URL. This is the manager's proposal, not yet confirmed by Lucas. It lives only here.
  */
-const emergencySafeThisVisitAtom = atom(false);
-const isSafeAnswer = (answer: { add: string[] }) => answer.add.includes('U-3');
+export const emergencySafeThisVisitAtom = atom(false);
+export const isSafeAnswer = (answer: { add: string[] }) => answer.add.includes('U-3');
 /** The height of the sticky search bar. Below it, a phone pins the refine row. */
 const PIN_TOP = 48;
 const PINNED =
@@ -956,7 +956,7 @@ export const QUESTION_STYLES = {
  * The dim layer is drawn by hand; the floating Quick exit sits above it at every width.
  * The popup is the one announcement (role dialog); the card behind it is silent.
  */
-function EmergencyPopup({
+export function EmergencyPopup({
   question,
   hotlines,
   onAnswer,

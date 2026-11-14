@@ -16,7 +16,10 @@ import { useTranslation } from 'react-i18next';
 import {
   DEFAULT_HOTLINES,
   EmergencyBox,
+  EmergencyPopup,
+  emergencySafeThisVisitAtom,
   flaggedAtom,
+  isSafeAnswer,
   OtherBox,
   PICKED,
   PickMark,
@@ -126,9 +129,31 @@ function GuideShell({
   );
 }
 
+/** The landing page's card: the same content as the floating card, in the page flow. */
+function PageShell({
+  children,
+  dataStep,
+}: {
+  children: ReactNode;
+  dataStep: string;
+  onClose?: () => void;
+}) {
+  return (
+    <section
+      aria-label="Questions about your search"
+      data-testid="landing-guide"
+      data-step={dataStep}
+      className="flex flex-col gap-4 rounded-2xl border bg-white p-5 shadow-sm"
+    >
+      {children}
+    </section>
+  );
+}
+
 /**
- * Step 1, on any page: the need box. Submitting writes `/search?query=…&refine=1`, so the search
- * runs at once and the questions open over the results (Q4 = A, Lucas 2026-11-11).
+ * Step 1, on any page: the need box. Submitting opens the landing page (`/find?query=…`), where
+ * the questions come before the results (Lucas, 2026-11-13). A deep link `/search?…&refine=1`
+ * still opens these questions over the results (Q4 = A, Lucas 2026-11-11).
  */
 export function SearchGuide({
   focusByDefault = 'search',
@@ -158,7 +183,7 @@ export function SearchGuide({
   const submitNeed = async (event: FormEvent) => {
     event.preventDefault();
     const sent = navigate({
-      extraParams: { refine: '1' },
+      landing: true,
       locationPayload: await buildSearchLocationPayload(
         searchCoordinates,
         userCoordinates,
@@ -171,7 +196,9 @@ export function SearchGuide({
   return (
     <GuideShell
       dataStep="need"
-      focusId={focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID}
+      focusId={
+        focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID
+      }
       onClose={() => setOpen(false)}
     >
       <form
@@ -198,12 +225,30 @@ export function SearchGuide({
  * the `/v2/search` response, so a reload, a shared link or the Back button shows the same step.
  * Order: the emergency question, then the location step, then the API's questions, at most 3 in all.
  */
-export function SearchGuideFromUrl() {
+export function SearchGuideFromUrl({
+  placement = 'dialog',
+}: {
+  /**
+   * `dialog` is the floating card over the results (`refine=1`). `page` is the landing page: the
+   * same steps and question cards inline, and the way out is the results page, not a closed card.
+   */
+  placement?: 'dialog' | 'page';
+} = {}) {
+  const onPage = placement === 'page';
   // The count key lives in `common`; the search page's default namespace is `page-search`.
   const { t } = useTranslation('common');
   const { data, isFetching, error, query } = useV2Search();
   const { params, asked } = useV2Url();
-  const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
+  const {
+    answer: writeAnswer,
+    answerToResults,
+    toResults,
+    write,
+    isPending: isWriting,
+  } = useV2Navigate();
+  const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
+  // Answers given since this page opened: Back undoes one of them (each is a history entry).
+  const askedAtStart = useRef(asked.length);
   const searchLocation = useAtomValue(searchLocationAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const setFlagged = useSetAtom(flaggedAtom);
@@ -217,9 +262,14 @@ export function SearchGuideFromUrl() {
   const hasLocation = Boolean(params.get('location') || params.get('coords'));
   const locationDone = hasLocation || asked.includes(LOCATION_STEP);
   const used = asked.length;
-  // The emergency question never waits behind the location step.
+  // The emergency question never waits behind the location step. On the landing page, an engine
+  // with no question at all sends the person straight to the results, so no location step either.
+  const hasQuestions = (data?.clarification.questions.length ?? 0) > 0;
   const showLocation =
-    !locationDone && v2?.type !== 'emergency' && used < MAX_GUIDED;
+    !locationDone &&
+    v2?.type !== 'emergency' &&
+    used < MAX_GUIDED &&
+    (!onPage || hasQuestions || used > 0);
   const question =
     v2?.type === 'emergency' || (!showLocation && used < MAX_GUIDED)
       ? v2
@@ -239,12 +289,14 @@ export function SearchGuideFromUrl() {
   const total = Math.min(MAX_GUIDED, used + left);
   const canDeferLocation = showLocation && !requireLocation;
   const canSkip = !showLocation || !requireLocation;
-  const finished =
-    Boolean(data) && !isPending && !showLocation && !question;
+  const finished = Boolean(data) && !isPending && !showLocation && !question;
 
-  // With nothing left to ask, the guide closes and the results stay. Replace, so Back skips it.
+  // With nothing left to ask, the guide closes and the results stay (the landing page goes to the
+  // results). Replace, so Back skips it.
   useEffect(() => {
-    if (finished) write({ refine: null }, 'replace');
+    if (!finished) return;
+    if (onPage) toResults({}, 'replace');
+    else write({ refine: null }, 'replace');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finished]);
 
@@ -275,6 +327,11 @@ export function SearchGuideFromUrl() {
   if (!query || finished) return null;
 
   const closeGuide = () => write({ refine: null });
+  const canGoBack = onPage && asked.length > askedAtStart.current;
+  const goBack = () => window.history.back();
+  // Skip this question: no pick. Needs offered and not picked are passed; an urgency question
+  // reads as not known. The next question comes.
+  const skipQuestion = () => answerQuestion([]);
   const notNow = () => write({ asked: [...asked, LOCATION_STEP] });
   const answerQuestion = (labels: string[]) => {
     if (!question) return;
@@ -291,6 +348,15 @@ export function SearchGuideFromUrl() {
   // Picks made on this step count: leaving for the results must not drop them.
   const seeResults = () => {
     if (requireLocation && !hasLocation) return setLocationError(true);
+    if (onPage) {
+      if (question && picks.length) {
+        return answerToResults(
+          question,
+          picks.map((l) => valueOfLabel(question, l)),
+        );
+      }
+      return toResults();
+    }
     if (question && picks.length) {
       return writeAnswer(
         question,
@@ -323,30 +389,52 @@ export function SearchGuideFromUrl() {
     );
   };
 
+  const Shell = onPage ? PageShell : GuideShell;
   return (
-    <GuideShell
+    <Shell
       dataStep={showLocation ? 'location' : question ? 'question' : 'loading'}
       onClose={closeGuide}
     >
-      <div className="flex flex-col items-start gap-1 pr-10">
-        <button
-          type="button"
-          className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
-          data-testid="guide-back-to-search"
-          onClick={backToSearch}
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to search
-        </button>
-        <p className="text-muted-foreground text-sm">
-          Your search:{' '}
-          <span className="text-foreground font-medium">
-            &ldquo;{query}&rdquo;
-          </span>
-        </p>
+      <div
+        className={cn('flex flex-col items-start gap-1', !onPage && 'pr-10')}
+      >
+        {onPage ? (
+          canGoBack && (
+            <button
+              type="button"
+              className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
+              data-testid="guide-back"
+              onClick={goBack}
+            >
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              Back
+            </button>
+          )
+        ) : (
+          <>
+            <button
+              type="button"
+              className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
+              data-testid="guide-back-to-search"
+              onClick={backToSearch}
+            >
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              Back to search
+            </button>
+            <p className="text-muted-foreground text-sm">
+              Your search:{' '}
+              <span className="text-foreground font-medium">
+                &ldquo;{query}&rdquo;
+              </span>
+            </p>
+          </>
+        )}
         {total > 0 && (showLocation || question) && (
           <p
-            className={cn('text-sm font-semibold', style?.label ?? 'text-primary')}
+            className={cn(
+              'text-sm font-semibold',
+              style?.label ?? 'text-primary',
+            )}
             data-testid="guide-progress"
             id="guide-progress"
           >
@@ -400,6 +488,18 @@ export function SearchGuideFromUrl() {
 
       {card && isEmergency && question && (
         <>
+          {/* Critical with answers: the red popup, as on the results page. The card stays. */}
+          {onPage && !soft && card.answers.length > 0 && (
+            <EmergencyPopup
+              key={query}
+              question={card}
+              hotlines={hotlines}
+              onAnswer={(option) => {
+                if (isSafeAnswer(option)) setSafeThisVisit(true);
+                answerQuestion([option.label]);
+              }}
+            />
+          )}
           <h2 ref={headingRef} tabIndex={-1} className="sr-only">
             {card.text}
           </h2>
@@ -407,7 +507,11 @@ export function SearchGuideFromUrl() {
             question={card}
             hotlines={hotlines}
             soft={soft}
-            onAnswer={(option) => answerQuestion([option.label])}
+            announce={!(onPage && !soft && card.answers.length > 0)}
+            onAnswer={(option) => {
+              if (onPage && isSafeAnswer(option)) setSafeThisVisit(true);
+              answerQuestion([option.label]);
+            }}
             onSkip={skipEmergency}
           />
         </>
@@ -419,7 +523,10 @@ export function SearchGuideFromUrl() {
             <h2
               ref={headingRef}
               id="guide-question"
-              aria-describedby={cn('guide-progress', card.multi && 'guide-hint')}
+              aria-describedby={cn(
+                'guide-progress',
+                card.multi && 'guide-hint',
+              )}
               tabIndex={-1}
               className="text-2xl font-semibold outline-none"
             >
@@ -511,8 +618,20 @@ export function SearchGuideFromUrl() {
         </p>
       )}
 
-      {(canSkip || canDeferLocation) && (
-        <div className="flex min-h-11 items-center justify-between gap-3">
+      {onPage && question && !isEmergency && picks.length === 0 && (
+        <button
+          type="button"
+          disabled={isPending}
+          className="border-control-border -mt-1 min-h-11 cursor-pointer self-start rounded-lg border bg-white px-5 font-semibold disabled:opacity-60"
+          data-testid="guide-skip-question"
+          onClick={skipQuestion}
+        >
+          Skip this question
+        </button>
+      )}
+
+      {(canSkip || canDeferLocation || onPage) && (
+        <div className="flex min-h-11 flex-wrap items-center justify-between gap-3">
           {canDeferLocation && (
             <button
               type="button"
@@ -523,7 +642,7 @@ export function SearchGuideFromUrl() {
               Not now
             </button>
           )}
-          {canSkip && (
+          {(canSkip || onPage) && (
             <button
               type="button"
               disabled={isWriting}
@@ -536,12 +655,18 @@ export function SearchGuideFromUrl() {
               data-testid="guide-see-results"
               onClick={seeResults}
             >
-              {data ? `Skip to results (${totalOf(data)})` : 'Skip to results'}
+              {onPage
+                ? data
+                  ? `Show results now (${totalOf(data)})`
+                  : 'Show results now'
+                : data
+                  ? `Skip to results (${totalOf(data)})`
+                  : 'Skip to results'}
             </button>
           )}
         </div>
       )}
-    </GuideShell>
+    </Shell>
   );
 }
 

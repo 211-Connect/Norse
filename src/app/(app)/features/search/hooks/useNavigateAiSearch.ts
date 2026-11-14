@@ -7,6 +7,7 @@ import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-d
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { withPrintableDirectoryContext } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
+import { toLandingUrl } from '../v2/landing';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
@@ -38,12 +39,15 @@ export const useNavigateAiSearch = ({
       scenario,
       taxonomies,
       extraParams,
+      landing,
       locationPayload,
     }: {
       scenario?: AiClassificationScenario;
       taxonomies?: string[];
       /** Prototype (round 17): v2 slots to add, such as `refine=1` for the guided questions. */
       extraParams?: Record<string, string>;
+      /** Prototype: open the landing page (its questions come before the results) instead of the results. */
+      landing?: boolean;
       locationPayload: SearchLocationPayload;
     }) => {
       const query = (search.query || search.searchTerm || '').trim();
@@ -66,9 +70,10 @@ export const useNavigateAiSearch = ({
         searchParams,
       );
       const extra = new URLSearchParams(extraParams ?? {}).toString();
-      const url = extra
+      const withExtra = extra
         ? `${built}${built.includes('?') ? '&' : '?'}${extra}`
         : built;
+      const url = landing ? toLandingUrl(withExtra) : withExtra;
 
       persistSearchDistancePreference(distance);
       startTransition(() => {

@@ -6,6 +6,8 @@ import { useCallback, useMemo, useTransition } from 'react';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
+import { resultsUrlFor } from './landing';
+
 import {
   answerChanges,
   nextV2Params,
@@ -93,6 +95,7 @@ export function useV2Search() {
 /** URL writes. An answer is a new history entry, so the browser's Back button undoes one answer. */
 export function useV2Navigate() {
   const { params, needs, passedNeeds, asked } = useV2Url();
+  const appConfig = useAppConfig();
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -123,5 +126,33 @@ export function useV2Navigate() {
     [asked, needs, passedNeeds, write],
   );
 
-  return { write, answer, isPending };
+  /**
+   * Leave the landing page for the results page, carrying the answers in the URL. `changes` are
+   * applied first (the last pick on this step). Replace drops the landing step from history, so
+   * Back from the results goes to where the person came from, not into the questions again.
+   */
+  const toResults = useCallback(
+    (changes: V2Changes = {}, history: 'push' | 'replace' = 'push') => {
+      const next = nextV2Params(params, changes);
+      startTransition(() => {
+        router[history](
+          resultsUrlFor(next.toString(), appConfig.search.searchEngine),
+          { scroll: true },
+        );
+      });
+    },
+    [appConfig.search.searchEngine, params, router],
+  );
+
+  /** The last pick on a landing step, then the results page. */
+  const answerToResults = useCallback(
+    (question: V2Question, picked: string[]) =>
+      toResults({
+        asked: [...new Set([...asked, question.id])],
+        ...answerChanges(question, picked, { needs, passedNeeds }),
+      }),
+    [asked, needs, passedNeeds, toResults],
+  );
+
+  return { write, answer, toResults, answerToResults, isPending };
 }
