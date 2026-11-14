@@ -10,7 +10,6 @@ import { useBreakpoint } from '@/app/(app)/shared/hooks/use-breakpoint';
 import { resultsViewAtom } from '@/app/(app)/shared/store/results';
 
 import { useSearchResults } from '../context/search-results-context';
-import { EmergencyLine } from './emergency-line';
 import { FilterPanel } from './filter/filter-panel';
 import { MapContainer } from './map-container';
 import { ResultsSection } from './results-section';
@@ -46,8 +45,6 @@ export function SearchPageShell({
 
   return (
     <div className="flex h-full w-full flex-col">
-      {/* Always on, on every search state, also when the classifier fails (ADR 0039 Decision 45). */}
-      <EmergencyLine />
       <div className="flex min-h-0 w-full flex-1 flex-col md:flex-row">
         <FilterPanel
           legacyAiClarifyState={legacyAiClarifyState}

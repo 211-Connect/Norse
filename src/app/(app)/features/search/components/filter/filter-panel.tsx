@@ -29,6 +29,7 @@ import {
   SearchRefineQuestion,
   SearchResultsHelp,
 } from '../search-follow-up';
+import { EmergencyLine } from '../emergency-line';
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
 import { useFacetUiConfig } from './use-facet-ui-config';
@@ -96,6 +97,8 @@ export function FilterPanel({
       )}
       id="filter-panel"
     >
+      {/* Always on, in every search state, also when the classifier fails (ADR 0039 Decision 45). */}
+      <EmergencyLine />
       <div className="flex items-center print:hidden">
         <MainSearchLayout
           className="flex-1"
