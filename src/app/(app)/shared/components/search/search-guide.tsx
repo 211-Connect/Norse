@@ -438,7 +438,7 @@ export function SearchGuideFromUrl({
             data-testid="guide-progress"
             id="guide-progress"
           >
-            Question {used + 1} of {Math.max(total, used + 1)}
+            Question {used + 1}
           </p>
         )}
       </div>

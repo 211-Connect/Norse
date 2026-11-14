@@ -1,7 +1,7 @@
 'use client';
 
-import { ArrowUp } from 'lucide-react';
-import { FormEvent, useEffect, useState } from 'react';
+import { ArrowUp, Pencil } from 'lucide-react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 import { SearchGuideFromUrl } from '@/app/(app)/shared/components/search/search-guide';
 import { SEARCH_INPUT_ID } from '@/app/(app)/shared/lib/constants';
@@ -20,14 +20,31 @@ export function SearchLanding() {
   const { write, isPending } = useV2Navigate();
   const [text, setText] = useState(query);
   const [emptyError, setEmptyError] = useState(false);
+  // Once the questions start, the box shrinks to one line; Edit opens it again.
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const compact = Boolean(query) && !editing;
+
+  useEffect(() => {
+    if (editing) inputRef.current?.focus();
+  }, [editing]);
 
   // Back and Forward change the URL, so the box follows it.
   useEffect(() => setText(query), [query]);
+
+  const closeEdit = () => {
+    setEditing(false);
+    // Focus goes back to the Edit button once it is rendered.
+    setTimeout(() => document.getElementById('landing-edit')?.focus(), 0);
+  };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const next = text.trim();
     if (!next) return setEmptyError(true);
+    // Same text: the answers stay, the questions come back.
+    if (next === query) return closeEdit();
+    setEditing(false);
     // A new search starts the questions again: `asked` goes, and a new text drops the old answers.
     write({
       query: next,
@@ -39,12 +56,35 @@ export function SearchLanding() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-4 md:py-10">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-4 pb-28 md:py-10">
       <h1 className="text-3xl font-semibold">Find help</h1>
       <div>
         <EmergencyLine />
+        {compact && (
+          <div
+            className="border-control-border flex items-center gap-2 rounded-lg border bg-white pl-4 shadow-sm"
+            data-testid="landing-compact"
+          >
+            <p className="min-w-0 flex-1 truncate py-3 text-base">
+              <span className="sr-only">Your search: </span>
+              {query}
+            </p>
+            <button
+              type="button"
+              id="landing-edit"
+              aria-label="Edit your search"
+              onClick={() => setEditing(true)}
+              className="text-primary flex min-h-11 min-w-11 cursor-pointer items-center gap-1 px-3 text-sm font-semibold"
+              data-testid="landing-edit"
+            >
+              <Pencil className="size-4" aria-hidden="true" />
+              Edit
+            </button>
+          </div>
+        )}
         <form
           className="relative w-full"
+          hidden={compact}
           onSubmit={submit}
           aria-busy={isPending}
           data-testid="landing-form"
@@ -58,6 +98,7 @@ export function SearchLanding() {
           <div className="relative">
             <textarea
               id={SEARCH_INPUT_ID}
+              ref={inputRef}
               rows={2}
               value={text}
               autoFocus={!query}
@@ -68,6 +109,10 @@ export function SearchLanding() {
                 setEmptyError(false);
               }}
               onKeyDown={(event) => {
+                if (event.key === 'Escape' && query && editing) {
+                  setText(query);
+                  return closeEdit();
+                }
                 if (event.key === 'Enter' && !event.shiftKey) {
                   event.preventDefault();
                   event.currentTarget.form?.requestSubmit();
@@ -98,7 +143,7 @@ export function SearchLanding() {
         </form>
       </div>
       {query ? (
-        <SearchGuideFromUrl placement="page" />
+        !editing && <SearchGuideFromUrl placement="page" />
       ) : (
         <p className="text-muted-foreground text-sm">
           We ask up to 3 short questions, so your results fit. You can skip any
