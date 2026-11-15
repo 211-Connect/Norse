@@ -49,6 +49,8 @@ import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
+import { DialButton } from './no-dial';
+
 import {
   applyAnswers,
   classifySune,
@@ -1066,10 +1068,10 @@ export function HotlineNumbers({
       </p>
       <div className="flex flex-wrap gap-2">
         {hotlines.map((line, i) => (
-          <a
+          <DialButton
             key={line.number}
-            href={`tel:${line.number}`}
-            aria-label={`Call ${line.number}, ${line.label}`}
+            number={line.number}
+            ariaLabel={`Call ${line.number}, ${line.label}`}
             className={cn(
               'flex min-h-11 items-center gap-2 rounded-lg px-4 font-semibold no-underline',
               i === 0
@@ -1083,7 +1085,7 @@ export function HotlineNumbers({
           >
             {i === 0 && <Phone className="size-4" aria-hidden="true" />}
             Call {line.number}
-          </a>
+          </DialButton>
         ))}
       </div>
     </div>
@@ -1187,10 +1189,10 @@ function PinnedNumbers({
   return (
     <div className="flex gap-2" data-testid="search-hotline-pinned">
       {hotlines.map((line, i) => (
-        <a
+        <DialButton
           key={line.number}
-          href={`tel:${line.number}`}
-          aria-label={`Call ${line.number}, ${line.label}`}
+          number={line.number}
+          ariaLabel={`Call ${line.number}, ${line.label}`}
           className={cn(
             'flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold no-underline',
             i === 0
@@ -1200,7 +1202,7 @@ function PinnedNumbers({
         >
           {i === 0 && <Phone className="size-4" aria-hidden="true" />}
           Call {line.number}
-        </a>
+        </DialButton>
       ))}
     </div>
   );

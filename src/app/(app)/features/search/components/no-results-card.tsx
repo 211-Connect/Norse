@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
@@ -18,6 +17,8 @@ import {
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
+
+import { DialButton } from './no-dial';
 
 export function NoResultsCard() {
   const { t } = useTranslation('page-search');
@@ -52,12 +53,12 @@ export function NoResultsCard() {
         <p className="font-semibold">{text}</p>
 
         {appConfig?.contact?.number && (
-          <LocalizedLink
-            href={`tel:${appConfig.contact.number}`}
+          <DialButton
+            number={appConfig.contact.number}
             className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
           >
             <Phone className="size-4" /> {appConfig.contact.number}
-          </LocalizedLink>
+          </DialButton>
         )}
       </CardFooter>
     </Card>

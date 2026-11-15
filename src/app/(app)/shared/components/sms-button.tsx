@@ -6,6 +6,7 @@ import { useCallback, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
+import { PROTOTYPE_NO_DIAL } from '../../features/search/components/no-dial';
 import { useAppConfig } from '../hooks/use-app-config';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
@@ -57,6 +58,11 @@ export function SmsButton({ shareMessage, className }: SmsButtonProps) {
   }, [shareMessage]);
 
   const handleClick = () => {
+    // Prototype safety switch: no text opens or sends while the no-dial test mode is on.
+    if (PROTOTYPE_NO_DIAL) {
+      toast.info('Test mode: no text sent');
+      return;
+    }
     trackEvent(AnalyticsEvent.SmsClick, AnalyticsTools.Umami);
 
     if (shouldUseNativeSmsApp) {

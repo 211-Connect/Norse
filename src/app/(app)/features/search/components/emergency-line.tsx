@@ -1,5 +1,6 @@
 import { Phone } from 'lucide-react';
 
+import { DialButton } from './no-dial';
 import { DEFAULT_HOTLINES } from './search-follow-up';
 
 /** The numbers come from the shared default hotlines (911 and 988), never a per-tenant list. */
@@ -30,23 +31,23 @@ export function EmergencyLine() {
       className="mb-2 flex flex-wrap items-center gap-1.5 print:hidden"
       data-testid="always-on-911"
     >
-      <a
-        href={`tel:${EMERGENCY_NUMBER}`}
+      <DialButton
+        number={EMERGENCY_NUMBER}
         className={`${CHIP} border-red-700 bg-red-50 font-semibold text-red-700 hover:bg-red-100 focus-visible:ring-red-700`}
-        data-testid="always-on-911-link"
+        testId="always-on-911-link"
       >
         <Phone className="size-3 shrink-0" aria-hidden="true" />
         Emergency: call {EMERGENCY_NUMBER}
-      </a>
-      <a
-        href={`tel:${CRISIS_NUMBER}`}
+      </DialButton>
+      <DialButton
+        number={CRISIS_NUMBER}
         className={`${CHIP} border-gray-400 bg-white font-medium text-gray-800 hover:bg-gray-50 focus-visible:ring-gray-700`}
-        data-testid="always-on-988-link"
+        testId="always-on-988-link"
       >
         <Phone className="size-3 shrink-0" aria-hidden="true" />
         Crisis line: {CRISIS_NUMBER}
         <span className="sr-only"> (call or text)</span>
-      </a>
+      </DialButton>
     </section>
   );
 }
