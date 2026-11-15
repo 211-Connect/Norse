@@ -1,19 +1,11 @@
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
-import { Suspense } from 'react';
 
-import Alert from '@/app/(app)/features/home/components/alert';
-import { CategoriesSection } from '@/app/(app)/features/home/components/categories-section';
-import { HeroSection } from '@/app/(app)/features/home/components/hero-section';
-import { HighlightsSection } from '@/app/(app)/features/home/components/highlights-section';
-import { DataProviders } from '@/app/(app)/shared/components/data-providers';
-import { DirectoryDownloadDialog } from '@/app/(app)/shared/components/directory-print/directory-download-dialog';
+import { HomePageBody } from '@/app/(app)/features/home/components/home-page-body';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import { TourProvider } from '@/app/(app)/shared/context/tour-provider';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 
-import { NewHomeContent } from '../../features/home/components/new-home-content';
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';
 
 const i18nNamespaces = ['page-home', 'page-directories', 'common', 'page-list'];
@@ -65,26 +57,7 @@ export default async function HomePage({ params }) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <h1 className="sr-only">Search by Keyword or Topic</h1>
-      <Suspense fallback={null}>
-        <DirectoryDownloadDialog locale={locale} />
-      </Suspense>
-      <TourProvider>
-        {appConfig?.newLayout?.enabled ? (
-          <NewHomeContent />
-        ) : (
-          <>
-            <HeroSection />
-            <Alert />
-
-            <HighlightsSection />
-
-            <CategoriesSection className="p-4 sm:p-8" />
-
-            <DataProviders />
-          </>
-        )}
-      </TourProvider>
+      <HomePageBody locale={locale} />
     </PageWrapper>
   );
 }

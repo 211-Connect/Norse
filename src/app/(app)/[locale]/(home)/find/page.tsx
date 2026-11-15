@@ -3,6 +3,7 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Metadata } from 'next/types';
 
+import { HomePageBody } from '@/app/(app)/features/home/components/home-page-body';
 import { SearchLanding } from '@/app/(app)/features/search/components/search-landing';
 import {
   liftQueryString,
@@ -15,7 +16,14 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 
 type Raw = Record<string, string | string[] | undefined>;
 
-const i18nNamespaces = ['page-search', 'page-resource', 'page-list', 'common'];
+const i18nNamespaces = [
+  'page-search',
+  'page-resource',
+  'page-list',
+  'common',
+  'page-home',
+  'page-directories',
+];
 
 const toQueryString = (raw: Raw) =>
   new URLSearchParams(
@@ -82,6 +90,7 @@ export default async function FindPage({
       }}
       nonce={nonce}
     >
+      <HomePageBody locale={locale} />
       <SearchLanding />
     </PageWrapper>
   );

@@ -30,7 +30,6 @@ import {
   valueOfLabel,
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
-import { progressLabel } from '@/app/(app)/features/search/v2/landing';
 import {
   emergencyQuestionOf,
   isSoftEmergency,
@@ -65,16 +64,19 @@ const LOCATION_STEP = 'location';
 /**
  * The floating card. The header stays clear of it. Non-modal, so Quick exit and the nav still work.
  */
-function GuideShell({
+export function GuideShell({
   children,
   dataStep,
   focusId,
   onClose,
+  onEscape,
 }: {
   children: ReactNode;
   dataStep: string;
   focusId?: string;
   onClose: () => void;
+  /** Return true to keep the card open on Escape (the landing page's edit mode uses it). */
+  onEscape?: () => boolean;
 }) {
   const [top, setTop] = useState(0);
   // The dim layer starts under the header, so the logo and nav stay clear.
@@ -110,6 +112,9 @@ function GuideShell({
             if (focusId) document.getElementById(focusId)?.focus();
           }}
           onCloseAutoFocus={(event) => event.preventDefault()}
+          onEscapeKeyDown={(event) => {
+            if (onEscape?.()) event.preventDefault();
+          }}
         >
           <DialogPrimitive.Title className="sr-only">
             Find help
@@ -130,7 +135,10 @@ function GuideShell({
   );
 }
 
-/** The landing page's card: the same content as the floating card, in the page flow. */
+/**
+ * The landing page's questions. The card itself is the landing popup (`GuideShell`, in
+ * `search-landing.tsx`), so this is plain content inside it.
+ */
 function PageShell({
   children,
   dataStep,
@@ -144,10 +152,29 @@ function PageShell({
       aria-label="Questions about your search"
       data-testid="landing-guide"
       data-step={dataStep}
-      className="flex flex-col gap-4 rounded-2xl border bg-white p-5 shadow-sm"
+      className="flex flex-col gap-4"
     >
       {children}
     </section>
+  );
+}
+
+/** Calm placeholder for one question card: a heading bar and 3 option bars. No motion if reduced. */
+export function GuideSkeleton() {
+  const bar = 'rounded-lg bg-gray-200 motion-safe:animate-pulse';
+  return (
+    <div
+      aria-hidden="true"
+      className="flex flex-col gap-3"
+      data-testid="guide-skeleton"
+    >
+      <div className={cn(bar, 'h-8 w-3/4')} />
+      <div className="flex flex-col gap-2">
+        <div className={cn(bar, 'h-12 w-full')} />
+        <div className={cn(bar, 'h-12 w-full')} />
+        <div className={cn(bar, 'h-12 w-full')} />
+      </div>
+    </div>
   );
 }
 
@@ -285,11 +312,11 @@ export function SearchGuideFromUrl({
   const soft = isSoftEmergency(emergencyQ);
   const isPending = isFetching || isWriting;
   const { picks, toggle, clear } = useAnswerPicks(question?.id);
-  const left =
-    (showLocation ? 1 : 0) + (data?.clarification.questions.length ?? 0);
-  const total = Math.min(MAX_GUIDED, used + left);
   const canDeferLocation = showLocation && !requireLocation;
   const canSkip = !showLocation || !requireLocation;
+  // The one left button of a question step, in the row with Show results now.
+  const canSkipQuestion =
+    onPage && Boolean(question) && !isEmergency && picks.length === 0;
   const finished = Boolean(data) && !isPending && !showLocation && !question;
 
   // With nothing left to ask, the guide closes and the results stay (the landing page goes to the
@@ -430,18 +457,6 @@ export function SearchGuideFromUrl({
             </p>
           </>
         )}
-        {total > 0 && (showLocation || question) && (
-          <p
-            className={cn(
-              'text-sm font-semibold',
-              style?.label ?? 'text-primary',
-            )}
-            data-testid="guide-progress"
-            id="guide-progress"
-          >
-            {progressLabel(used)}
-          </p>
-        )}
       </div>
 
       {error && (
@@ -449,42 +464,20 @@ export function SearchGuideFromUrl({
           We could not load the next question. Your results are ready.
         </p>
       )}
-      {!data && !error && (
-        <p role="status" className="text-muted-foreground">
-          Looking at your search…
-        </p>
-      )}
+      {/* One calm status line for the whole wait; the skeleton keeps the card's room. */}
+      <p
+        role="status"
+        className={cn(
+          'text-muted-foreground text-sm',
+          !(isPending || !data) || error ? 'sr-only' : '',
+        )}
+        data-testid="guide-loading"
+      >
+        {(isPending || !data) && !error ? 'Looking at your search…' : ''}
+      </p>
 
       {hotline && !isEmergency && (
         <EmergencyBox hotlines={hotlines} soft={soft} />
-      )}
-
-      {showLocation && (
-        <div className="flex flex-col gap-3">
-          <h2
-            ref={headingRef}
-            aria-describedby="guide-progress"
-            tabIndex={-1}
-            className="text-2xl font-semibold outline-none"
-          >
-            Where should we look?
-          </h2>
-          <p>
-            {requireLocation
-              ? 'We need your location to show services you can use.'
-              : 'Adding your location greatly improves your results.'}
-          </p>
-          <LocationSearchBar inputId={LOCATION_INPUT_ID} className="w-full" />
-          {locationError && (
-            <p
-              role="alert"
-              className="border-red-700 text-red-700 rounded-lg border bg-red-50 p-3 font-semibold"
-            >
-              Add your location to continue. We can only show services where you
-              are.
-            </p>
-          )}
-        </div>
       )}
 
       {card && isEmergency && question && (
@@ -518,96 +511,142 @@ export function SearchGuideFromUrl({
         </>
       )}
 
-      {card && !isEmergency && style && question && (
-        <div className="flex flex-col gap-3" aria-busy={isPending}>
-          <div>
-            <h2
-              ref={headingRef}
-              id="guide-question"
-              aria-describedby={cn(
-                'guide-progress',
-                card.multi && 'guide-hint',
-              )}
-              tabIndex={-1}
-              className="text-2xl font-semibold outline-none"
-            >
-              {card.text}
-            </h2>
-            {card.multi && (
-              <p id="guide-hint" className="text-muted-foreground">
-                Pick all that fit.
-              </p>
-            )}
-          </div>
+      {(!data || showLocation || (card && !isEmergency)) && (
+        <div className="relative" data-testid="guide-step-body">
+          {!data && !error && <GuideSkeleton />}
+          {data && isPending && (
+            <div className="absolute inset-0 z-10 bg-white">
+              <GuideSkeleton />
+            </div>
+          )}
           <div
-            role="group"
-            aria-labelledby="guide-question"
-            className="flex flex-col gap-2"
-          >
-            {card.answers.map((option) => {
-              const on = picks.includes(option.label);
-              return (
-                <button
-                  key={option.label}
-                  type="button"
-                  disabled={isPending}
-                  aria-pressed={card.multi ? on : undefined}
-                  className={cn(
-                    'flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left font-medium disabled:opacity-60',
-                    !card.multi && 'justify-between',
-                    style.button,
-                    on && PICKED,
-                  )}
-                  onClick={() =>
-                    card.multi
-                      ? toggle(option.label)
-                      : answerQuestion([option.label])
-                  }
-                >
-                  {card.multi && <PickMark on={on} />}
-                  <span className="flex-1">{option.label}</span>
-                  {typeof option.keeps === 'number' && (
-                    <span className="text-muted-foreground shrink-0 text-xs font-normal">
-                      {t('search.v2_option_services_count', {
-                        count: option.keeps,
-                      })}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-            {question.allow_other && (
-              <OtherBox
-                key={question.id}
-                placeholder="Other: type your own"
-                onSubmit={submitOther}
-              />
+            className={cn(
+              'flex flex-col gap-4',
+              data && isPending && 'invisible',
             )}
-            <p className="sr-only" role="status">
-              {picks.length > 0 ? `${picks.length} picked.` : ''}
-            </p>
-            {picks.length > 0 ? (
-              <button
-                type="button"
-                disabled={isPending}
-                className="bg-primary text-primary-foreground min-h-12 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60"
-                data-testid="guide-continue"
-                onClick={() => answerQuestion(picks)}
-              >
-                Continue
-              </button>
-            ) : (
-              question.none_of_these && (
-                <button
-                  type="button"
-                  disabled={isPending}
-                  className="border-control-border min-h-12 cursor-pointer rounded-lg border bg-white px-5 text-left font-medium"
-                  data-testid="guide-none"
-                  onClick={() => answerQuestion([])}
+            // The old question cannot be clicked or tabbed to while the next one loads.
+            inert={data && isPending ? true : undefined}
+          >
+            {showLocation && (
+              <div className="flex flex-col gap-3">
+                <h2
+                  ref={headingRef}
+                  tabIndex={-1}
+                  className="text-2xl font-semibold outline-none"
                 >
-                  None of these
-                </button>
-              )
+                  Where should we look?
+                </h2>
+                <p>
+                  {requireLocation
+                    ? 'We need your location to show services you can use.'
+                    : 'Adding your location greatly improves your results.'}
+                </p>
+                <LocationSearchBar
+                  inputId={LOCATION_INPUT_ID}
+                  className="w-full"
+                />
+                {locationError && (
+                  <p
+                    role="alert"
+                    className="border-red-700 text-red-700 rounded-lg border bg-red-50 p-3 font-semibold"
+                  >
+                    Add your location to continue. We can only show services
+                    where you are.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {card && !isEmergency && style && question && (
+              <div className="flex flex-col gap-3" aria-busy={isPending}>
+                <div>
+                  <h2
+                    ref={headingRef}
+                    id="guide-question"
+                    aria-describedby={card.multi ? 'guide-hint' : undefined}
+                    tabIndex={-1}
+                    className="text-2xl font-semibold outline-none"
+                  >
+                    {card.text}
+                  </h2>
+                  {card.multi && (
+                    <p id="guide-hint" className="text-muted-foreground">
+                      Pick all that fit.
+                    </p>
+                  )}
+                </div>
+                <div
+                  role="group"
+                  aria-labelledby="guide-question"
+                  className="flex flex-col gap-2"
+                >
+                  {card.answers.map((option) => {
+                    const on = picks.includes(option.label);
+                    return (
+                      <button
+                        key={option.label}
+                        type="button"
+                        disabled={isPending}
+                        aria-pressed={card.multi ? on : undefined}
+                        className={cn(
+                          'flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left font-medium disabled:opacity-60',
+                          !card.multi && 'justify-between',
+                          style.button,
+                          on && PICKED,
+                        )}
+                        onClick={() =>
+                          card.multi
+                            ? toggle(option.label)
+                            : answerQuestion([option.label])
+                        }
+                      >
+                        {card.multi && <PickMark on={on} />}
+                        <span className="flex-1">{option.label}</span>
+                        {typeof option.keeps === 'number' && (
+                          <span className="text-muted-foreground shrink-0 text-xs font-normal">
+                            {t('search.v2_option_services_count', {
+                              count: option.keeps,
+                            })}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                  {question.allow_other && (
+                    <OtherBox
+                      key={question.id}
+                      placeholder="Other: type your own"
+                      onSubmit={submitOther}
+                    />
+                  )}
+                  <p className="sr-only" role="status">
+                    {picks.length > 0 ? `${picks.length} picked.` : ''}
+                  </p>
+                  {picks.length > 0 ? (
+                    <button
+                      type="button"
+                      disabled={isPending}
+                      className="bg-primary text-primary-foreground min-h-12 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60"
+                      data-testid="guide-continue"
+                      onClick={() => answerQuestion(picks)}
+                    >
+                      Continue
+                    </button>
+                  ) : (
+                    question.none_of_these && (
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        className="border-control-border min-h-12 cursor-pointer rounded-lg border bg-white px-5 text-left font-medium"
+                        data-testid="guide-none"
+                        onClick={() => answerQuestion([])}
+                      >
+                        None of these
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -619,20 +658,19 @@ export function SearchGuideFromUrl({
         </p>
       )}
 
-      {onPage && question && !isEmergency && picks.length === 0 && (
-        <button
-          type="button"
-          disabled={isPending}
-          className="border-control-border -mt-1 min-h-11 cursor-pointer self-start rounded-lg border bg-white px-5 font-semibold disabled:opacity-60"
-          data-testid="guide-skip-question"
-          onClick={skipQuestion}
-        >
-          Skip this question
-        </button>
-      )}
-
       {(canSkip || canDeferLocation || onPage) && (
         <div className="flex min-h-11 flex-wrap items-center justify-between gap-3">
+          {canSkipQuestion && (
+            <button
+              type="button"
+              disabled={isPending}
+              className="border-control-border min-h-11 cursor-pointer rounded-lg border bg-white px-5 font-semibold disabled:opacity-60"
+              data-testid="guide-skip-question"
+              onClick={skipQuestion}
+            >
+              Skip this question
+            </button>
+          )}
           {canDeferLocation && (
             <button
               type="button"

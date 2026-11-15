@@ -1,9 +1,14 @@
 'use client';
 
-import { ArrowUp, Pencil } from 'lucide-react';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { Pencil } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useEffect, useState } from 'react';
 
-import { SearchGuideFromUrl } from '@/app/(app)/shared/components/search/search-guide';
+import { NeedBox } from '@/app/(app)/shared/components/search/need-box';
+import {
+  GuideShell,
+  SearchGuideFromUrl,
+} from '@/app/(app)/shared/components/search/search-guide';
 import { SEARCH_INPUT_ID } from '@/app/(app)/shared/lib/constants';
 
 import { useV2Navigate, useV2Url } from '../v2/use-v2-search';
@@ -22,11 +27,11 @@ export function SearchLanding() {
   const [emptyError, setEmptyError] = useState(false);
   // Once the questions start, the box shrinks to one line; Edit opens it again.
   const [editing, setEditing] = useState(false);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const router = useRouter();
   const compact = Boolean(query) && !editing;
 
   useEffect(() => {
-    if (editing) inputRef.current?.focus();
+    if (editing) document.getElementById(SEARCH_INPUT_ID)?.focus();
   }, [editing]);
 
   // Back and Forward change the URL, so the box follows it.
@@ -55,101 +60,91 @@ export function SearchLanding() {
     });
   };
 
+  // Escape in edit mode goes back to the compact bar; otherwise it closes the popup (home page).
+  const onEscape = () => {
+    if (!(query && editing)) return false;
+    setText(query);
+    closeEdit();
+    return true;
+  };
+
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-4 pb-28 md:py-10">
-      <h1 className="text-3xl font-semibold">Find help</h1>
-      <div>
-        <EmergencyLine />
-        {compact && (
-          <div
-            className="border-control-border flex items-center gap-2 rounded-lg border bg-white pl-4 shadow-sm"
-            data-testid="landing-compact"
-          >
-            <p className="min-w-0 flex-1 truncate py-3 text-base">
-              <span className="sr-only">Your search: </span>
-              {query}
-            </p>
+    <GuideShell
+      dataStep="landing"
+      focusId={query ? undefined : SEARCH_INPUT_ID}
+      onClose={() => router.push('/')}
+      onEscape={onEscape}
+    >
+      <div className="flex flex-col gap-4 pt-6" data-testid="landing-popup">
+        <div>
+          <EmergencyLine />
+          {compact && (
             <button
               type="button"
               id="landing-edit"
-              aria-label="Edit your search"
+              aria-label={`Edit your search: ${query}`}
               onClick={() => setEditing(true)}
-              className="text-primary flex min-h-11 min-w-11 cursor-pointer items-center gap-1 px-3 text-sm font-semibold"
-              data-testid="landing-edit"
+              className="border-control-border flex min-h-12 w-full cursor-pointer items-center gap-2 rounded-lg border bg-white pl-4 text-left shadow-sm"
+              data-testid="landing-compact"
             >
-              <Pencil className="size-4" aria-hidden="true" />
-              Edit
+              <span className="min-w-0 flex-1 truncate py-3 text-base">
+                {query}
+              </span>
+              <span
+                className="text-primary flex min-h-11 items-center gap-1 px-3 text-sm font-semibold"
+                data-testid="landing-edit"
+                aria-hidden="true"
+              >
+                <Pencil className="size-4" />
+                Edit
+              </span>
             </button>
-          </div>
-        )}
-        <form
-          className="relative w-full"
-          hidden={compact}
-          onSubmit={submit}
-          aria-busy={isPending}
-          data-testid="landing-form"
-        >
-          <label
-            htmlFor={SEARCH_INPUT_ID}
-            className="mb-2 block text-xl font-semibold"
+          )}
+          <form
+            className="flex flex-col gap-2"
+            hidden={compact}
+            onSubmit={submit}
+            aria-busy={isPending}
+            data-testid="landing-form"
           >
-            What do you need help with?
-          </label>
-          <div className="relative">
-            <textarea
-              id={SEARCH_INPUT_ID}
-              ref={inputRef}
-              rows={2}
+            <label htmlFor={SEARCH_INPUT_ID} className="text-2xl font-semibold">
+              What do you need help with?
+            </label>
+            <NeedBox
+              inputId={SEARCH_INPUT_ID}
               value={text}
+              rows={3}
               autoFocus={!query}
+              disabled={isPending}
               placeholder="For example: I need help with rent."
-              aria-describedby={emptyError ? 'landing-empty-error' : undefined}
-              onChange={(event) => {
-                setText(event.target.value);
+              describedBy={emptyError ? 'landing-empty-error' : undefined}
+              onChange={(value) => {
+                setText(value);
                 setEmptyError(false);
               }}
-              onKeyDown={(event) => {
-                if (event.key === 'Escape' && query && editing) {
-                  setText(query);
-                  return closeEdit();
-                }
-                if (event.key === 'Enter' && !event.shiftKey) {
-                  event.preventDefault();
-                  event.currentTarget.form?.requestSubmit();
-                }
-              }}
-              className="border-control-border focus-visible:ring-primary focus:border-primary block min-h-16 w-full resize-none rounded-lg border bg-white py-3 pr-14 pl-4 text-base shadow-sm outline-none focus:outline-none focus-visible:ring-2 focus-visible:outline-none"
-              data-testid="landing-input"
+              testId="landing-input"
+              submitTestId="landing-submit"
             />
-            <button
-              type="submit"
-              aria-label="Search"
-              disabled={isPending}
-              className="bg-primary text-primary-foreground absolute right-2.5 bottom-2.5 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] disabled:opacity-60"
-              data-testid="landing-submit"
-            >
-              <ArrowUp className="size-5" aria-hidden="true" />
-            </button>
-          </div>
-          {emptyError && (
-            <p
-              id="landing-empty-error"
-              role="alert"
-              className="mt-2 text-sm font-semibold text-red-700"
-            >
-              Tell us what you need help with first.
-            </p>
-          )}
-        </form>
+            {emptyError && (
+              <p
+                id="landing-empty-error"
+                role="alert"
+                className="text-sm font-semibold text-red-700"
+              >
+                Tell us what you need help with first.
+              </p>
+            )}
+          </form>
+        </div>
+        {query ? (
+          !editing && <SearchGuideFromUrl placement="page" />
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            We ask up to 3 short questions, so your results fit. You can skip
+            any of them.
+          </p>
+        )}
       </div>
-      {query ? (
-        !editing && <SearchGuideFromUrl placement="page" />
-      ) : (
-        <p className="text-muted-foreground text-sm">
-          We ask up to 3 short questions, so your results fit. You can skip any
-          of them.
-        </p>
-      )}
-    </div>
+    </GuideShell>
   );
 }
