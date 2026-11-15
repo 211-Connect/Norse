@@ -1,0 +1,140 @@
+// Prototype search UX polish (Lucas, 2026-11-14): no-dial safety, suggestions, the compact bar,
+// the dropped progress label, and the results-page new-search fix.
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { test } from 'node:test';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+import { buildSearchUrl } from '../src/app/(app)/features/search/utils/buildSearchUrl';
+import { EmergencyLine } from '../src/app/(app)/features/search/components/emergency-line';
+import {
+  DialButton,
+  noDialNotice,
+  PROTOTYPE_NO_DIAL,
+} from '../src/app/(app)/features/search/components/no-dial';
+import {
+  DEFAULT_HOTLINES,
+  EmergencyBox,
+  HotlineNumbers,
+} from '../src/app/(app)/features/search/components/search-follow-up';
+import { SearchCrisisButton } from '../src/app/(app)/shared/components/search/search-need-form';
+import { pickNeedSuggestions } from '../src/app/(app)/shared/components/search/need-suggestions';
+import { nextV2Params } from '../src/app/(app)/features/search/v2/v2-contract';
+
+const read = (path: string) => readFileSync(path, 'utf8');
+const APP = 'src/app/(app)/';
+
+// Item 8: safety. The switch is on, and no rendered emergency control has a tel: or sms: href.
+test('no-dial: the switch is on and the notice names the number', () => {
+  assert.equal(PROTOTYPE_NO_DIAL, true);
+  assert.equal(
+    noDialNotice('911'),
+    'Test mode: no call placed (would call 911)',
+  );
+});
+
+test('no-dial: every emergency control renders as a button with no tel: or sms: href', () => {
+  const html = [
+    renderToStaticMarkup(createElement(EmergencyLine)),
+    renderToStaticMarkup(createElement(HotlineNumbers, {})),
+    renderToStaticMarkup(createElement(HotlineNumbers, { soft: true })),
+    renderToStaticMarkup(
+      createElement(EmergencyBox, { hotlines: DEFAULT_HOTLINES }),
+    ),
+    renderToStaticMarkup(createElement(SearchCrisisButton)),
+    renderToStaticMarkup(
+      createElement(DialButton, { number: '211', children: 'Call 211' }),
+    ),
+  ].join('\n');
+  assert.doesNotMatch(html, /href="(tel|sms):/i);
+  assert.doesNotMatch(html, /tel:|sms:/i);
+  assert.match(html, /data-no-dial="true"/);
+  assert.match(html, /<button type="button"/);
+  assert.match(html, /988/);
+  assert.match(html, /911/);
+});
+
+// Item 3: suggestions.
+test('suggestions: short phrases match, sentences and exact text do not, no duplicates', () => {
+  const local = ['Food Banks', 'Getting Enough Food', 'Rent Help'];
+  assert.deepEqual(
+    pickNeedSuggestions('food', local, ['food banks', 'Food Pantry']),
+    ['Food Banks', 'Getting Enough Food', 'Food Pantry'],
+  );
+  assert.deepEqual(pickNeedSuggestions('food banks', local), []);
+  assert.deepEqual(pickNeedSuggestions('I need food for my kids', local), []);
+  assert.deepEqual(pickNeedSuggestions('  ', local), []);
+});
+
+// Item 4: the progress label is gone, with every reference to it.
+test('progress label: removed from the guide and the landing helpers', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  assert.doesNotMatch(guide, /guide-progress|progressLabel/);
+  assert.doesNotMatch(
+    read(`${APP}features/search/v2/landing.ts`),
+    /progressLabel/,
+  );
+});
+
+test('skip: Skip this question sits in the same row as Show results now', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  const row = guide.slice(guide.indexOf('canSkipQuestion && ('));
+  assert.ok(
+    row.indexOf('guide-skip-question') < row.indexOf('guide-see-results'),
+  );
+  assert.equal(guide.match(/data-testid="guide-skip-question"/g)?.length, 1);
+});
+
+// Item 2: the whole compact bar is one button.
+test('compact bar: one button with an accessible name, whole bar clickable', () => {
+  const landing = read(`${APP}features/search/components/search-landing.tsx`);
+  const bar = landing.slice(
+    landing.indexOf('{compact && ('),
+    landing.indexOf('<form'),
+  );
+  assert.match(
+    bar,
+    /<button[\s\S]*aria-label=\{`Edit your search: \$\{query\}`\}/,
+  );
+  assert.match(
+    bar,
+    /onClick=\{\(\) => setEditing\(true\)\}[\s\S]*data-testid="landing-compact"/,
+  );
+  assert.match(bar, /w-full/);
+});
+
+// Item 7: a new search from the results page.
+test('new search from the results page: no predicted taxonomy, no old answers', () => {
+  const url = buildSearchUrl({
+    query: 'need food for my kids tonight',
+    searchEngine: 'v2' as never,
+    skipLegacyLinkCheck: true,
+  });
+  assert.doesNotMatch(url, /taxonomy=/);
+  for (const key of [
+    'asked',
+    'needs',
+    'passed_needs',
+    'urgency',
+    'other',
+    'refine',
+  ]) {
+    assert.doesNotMatch(url, new RegExp(`[?&]${key}=`));
+  }
+  // The inline box must not send predicted codes: they make the v2 call skip the area question.
+  const box = read(`${APP}shared/components/search/search-inline-box.tsx`);
+  assert.doesNotMatch(box, /predictSearchNeeds|taxonomies:/);
+});
+
+test('a changed query text drops the old answers from the v2 call', () => {
+  const current = new URLSearchParams(
+    'query=rent&needs=N-HOU-02&passed_needs=N-HOU-01&urgency=U-3&other=x&asked=emergency',
+  );
+  const next = nextV2Params(current, {
+    query: 'need food for my kids tonight',
+  });
+  for (const key of ['needs', 'passed_needs', 'urgency']) {
+    assert.equal(next.get(key), null, key);
+  }
+});
