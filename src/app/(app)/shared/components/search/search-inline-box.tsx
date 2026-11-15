@@ -3,12 +3,10 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowUp, MapPin, Search } from 'lucide-react';
 import { ReactNode, useEffect, useRef, useState, useTransition } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { searchClearedAtom } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
-import { predictSearchNeeds } from '@/app/(app)/shared/services/ai-classification-search-service';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useDismissOutside } from '../../hooks/use-dismiss-outside';
@@ -31,7 +29,6 @@ export function SearchInlineBox({
   belowSearch?: ReactNode;
   className?: string;
 }) {
-  const { i18n } = useTranslation('common');
   const appConfig = useAppConfig();
   const { setSearch } = useMainSearchLayoutContext();
   const searchTerm = useAtomValue(searchTermAtom);
@@ -102,13 +99,10 @@ export function SearchInlineBox({
     if (isBusy) return;
     setIsBusy(true);
     setCleared(false);
-    const prediction = await predictSearchNeeds(
-      { query },
-      i18n.language,
-      appConfig.tenantId,
-    );
+    // No predicted `taxonomy` in the URL (Lucas, 2026-11-14): predicted need and urgency codes there
+    // make the v2 call treat the need as known, so it returns no area question and the results
+    // page asked nothing. The home popup and the landing page send the text alone, and so does this.
     navigate({
-      taxonomies: prediction?.hsis_taxonomies,
       locationPayload: await buildSearchLocationPayload(
         searchCoordinates,
         userCoordinates,
