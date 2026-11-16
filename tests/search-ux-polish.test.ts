@@ -171,3 +171,15 @@ test('refine card: quiet questions start collapsed on a phone only', () => {
   assert.match(src, /const quiet = !v2 \|\| QUESTION_STYLES\[styleOf\(v2\)\] === QUIET;/);
   assert.match(src, /if \(quiet && window\.matchMedia\(PHONE_QUERY\)\.matches\) \{\s*setCollapsed\(true\);/);
 });
+
+// Lucas 2026-11-13: "No, I am safe now" writes nothing to the URL; the page hides the question for the visit.
+test('safe answer: no URL write, both pages hide the emergency question for the visit', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  const card = read(`${APP}features/search/components/search-follow-up.tsx`);
+  assert.equal(guide.match(/setSafeThisVisit\(true\);\s*return;/g)?.length, 2);
+  assert.equal(card.match(/setSafeThisVisit\(true\);\s*return;/g)?.length, 1);
+  assert.match(guide, /safeThisVisit && emergencyQ \? \[\.\.\.asked, emergencyQ\.id\] : asked/);
+  assert.doesNotMatch(guide + card, /safeAnsweredInUrl/);
+  // The v2 option has no value; the older card used U-3.
+  assert.match(card, /answer\.add\.every\(\(v\) => v == null\)/);
+});

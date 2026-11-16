@@ -30,7 +30,6 @@ import {
   valueOfLabel,
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
-import { safeAnsweredInUrl } from '@/app/(app)/features/search/v2/v2-contract';
 import {
   emergencyQuestionOf,
   isSoftEmergency,
@@ -283,7 +282,7 @@ export function SearchGuideFromUrl({
     isPending: isWriting,
   } = useV2Navigate();
   const safeThisVisit =
-    useAtomValue(emergencySafeThisVisitAtom) || safeAnsweredInUrl(asked, params);
+    useAtomValue(emergencySafeThisVisitAtom);
   const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
   // One emergency prompt at a time (Lucas 2026-11-16): the card under an open popup stays quiet.
   const popupOpen = useAtomValue(emergencyPopupOpenAtom);
@@ -298,7 +297,12 @@ export function SearchGuideFromUrl({
 
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
-  const v2 = nextQuestionOf(data, asked);
+  // Lucas 2026-11-13: "No, I am safe now" writes nothing to the URL; the page hides the
+  // emergency question for this visit.
+  const v2 = nextQuestionOf(
+    data,
+    safeThisVisit && emergencyQ ? [...asked, emergencyQ.id] : asked,
+  );
   // A place already saved for this visit counts: the results page uses it, so asking for it again
   // with the same place filled in is a wasted step (Lucas UX pass, 2026-11-16).
   const hasLocation = Boolean(
@@ -517,7 +521,10 @@ export function SearchGuideFromUrl({
               question={card}
               hotlines={hotlines}
               onAnswer={(option) => {
-                if (isSafeAnswer(option)) setSafeThisVisit(true);
+                if (isSafeAnswer(option)) {
+                  setSafeThisVisit(true);
+                  return;
+                }
                 answerQuestion([option.label]);
               }}
             />
@@ -533,7 +540,10 @@ export function SearchGuideFromUrl({
               announce={!(onPage && !soft && card.answers.length > 0)}
               onAnswer={(option) => {
                 // Landing too (Lucas 2026-11-16): a safe answer clears the numbers box for the visit.
-                if (isSafeAnswer(option)) setSafeThisVisit(true);
+                if (isSafeAnswer(option)) {
+                  setSafeThisVisit(true);
+                  return;
+                }
                 answerQuestion([option.label]);
               }}
               onSkip={skipEmergency}

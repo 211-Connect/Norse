@@ -223,14 +223,6 @@ export const withoutNX = (needs: string | null) => {
 /** At most this many guided questions before the results (Lucas, round 10). */
 export const MAX_GUIDED = 3;
 
-/**
- * The URL already holds a safe answer: the emergency question is asked and urgency is U-X ("No, I
- * am safe now" writes U-X; Skip writes no urgency). A reload or a landing -> results move keeps it.
- */
-export const safeAnsweredInUrl = (
-  asked: readonly string[],
-  params: { get(key: string): string | null },
-) => asked.includes('emergency') && params.get('urgency') === 'U-X';
 
 /**
  * The rules engine asks one area at a time, so a question can offer a single need (live NY run

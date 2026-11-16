@@ -81,7 +81,7 @@ import {
   type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
-import { cardWording, safeAnsweredInUrl } from '../v2/v2-contract';
+import { cardWording } from '../v2/v2-contract';
 
 type Answer = {
   label: string;
@@ -117,7 +117,10 @@ const HELP_ITEM_ID = 'results-help-item';
  * the URL. This is the manager's proposal, not yet confirmed by Lucas. It lives only here.
  */
 export const emergencySafeThisVisitAtom = atom(false);
-export const isSafeAnswer = (answer: { add: string[] }) => answer.add.includes('U-3');
+/** "No, I am safe now": the v2 option has no value (it writes nothing); the older card used U-3. */
+export const isSafeAnswer = (answer: { add: (string | null)[] }) =>
+  answer.add.includes('U-3') ||
+  (answer.add.length > 0 && answer.add.every((v) => v == null));
 /** The height of the sticky search bar. Below it, a phone pins the refine row. */
 const PIN_TOP = 48;
 const PINNED =
@@ -1372,8 +1375,7 @@ export function SearchRefineQuestion() {
   const setFlagged = useSetAtom(flaggedAtom);
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
-  const safeThisVisit = useAtomValue(emergencySafeThisVisitAtom) ||
-    safeAnsweredInUrl(asked, params);
+  const safeThisVisit = useAtomValue(emergencySafeThisVisitAtom);
   const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
   // One emergency prompt at a time (Lucas 2026-11-16): while the popup is open, the card under it
   // does not repeat the same question.
@@ -1451,7 +1453,10 @@ export function SearchRefineQuestion() {
   // Strong band (critical) with answers: popup. Soft band, or a caller U-0 (no options, already answered): the card.
   const popup = !soft && question.answers.length > 0;
   const onEmergencyAnswer = (option: Answer) => {
-    if (isSafeAnswer(option)) setSafeThisVisit(true);
+    if (isSafeAnswer(option)) {
+      setSafeThisVisit(true);
+      return;
+    }
     answer([option.label]);
   };
   const cardTitle = v2?.id === 'start' ? 'Tell us a bit more' : style.title;
