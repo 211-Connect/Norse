@@ -85,7 +85,12 @@ export function SearchLanding() {
     <GuideShell
       dataStep="landing"
       focusId={query ? undefined : SEARCH_INPUT_ID}
-      onClose={() => router.push('/')}
+      onClose={() => {
+        router.push('/');
+        // Keyboard and screen-reader users keep their place (UX pass 2026-11-16): Escape or Close
+        // left focus on <body>. Focus the home search box once the home page has rendered it.
+        focusWhenReady('/', '[data-testid="search-trigger"]');
+      }}
       onEscape={onEscape}
     >
       <div className="flex flex-col gap-4 pt-6" data-testid="landing-popup">
@@ -163,4 +168,23 @@ export function SearchLanding() {
       </div>
     </GuideShell>
   );
+}
+
+/**
+ * Focus the first element matching `selector` once the page at `path` has rendered it. The landing
+ * page has its own search box behind the dialog, so the path check keeps focus off the old page.
+ * Gives up after about 3 seconds.
+ */
+function focusWhenReady(path: string, selector: string, triesLeft = 30) {
+  const el =
+    window.location.pathname === path
+      ? document.querySelector<HTMLElement>(selector)
+      : null;
+  if (el) {
+    el.focus();
+    return;
+  }
+  if (triesLeft > 0) {
+    setTimeout(() => focusWhenReady(path, selector, triesLeft - 1), 100);
+  }
 }

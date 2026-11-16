@@ -157,3 +157,10 @@ test('guide actions: the row sticks to the bottom of the dialog and stays one ro
   assert.match(row.slice(0, 600), /max-sm:flex-nowrap/);
   assert.match(row, /max-sm:sr-only">Skip this question/);
 });
+
+// UX pass 2026-11-16: Escape or Close on the landing left focus on <body> after going home.
+test('landing close: focus goes to the home search box, after the path is home', () => {
+  const landing = read(`${APP}features/search/components/search-landing.tsx`);
+  assert.match(landing, /focusWhenReady\('\/', '\[data-testid="search-trigger"\]'\)/);
+  assert.match(landing, /window\.location\.pathname === path/);
+});
