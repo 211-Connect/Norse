@@ -50,6 +50,11 @@ http.createServer((req, res) => {
     // Decision 43: the route rejects needs=N-X with 400.
     // Real backend (2026-11-16 standup demo): V2_UPSTREAM=http://127.0.0.1:8091 V2_TENANT=<tenant uuid> forwards
     // /v2/search and /search to a local Norse-API v2 build, which reads the real Elasticsearch index of that tenant.
+    if (process.env.V2_UPSTREAM && p.startsWith('/geocoding/')) {
+      return void fetch(new URL(p + u.search, process.env.V2_UPSTREAM), { headers: { 'x-tenant-id': process.env.V2_TENANT, 'accept-language': 'en' } })
+        .then(async (r) => { const text = await r.text(); console.log('  geocode', r.status); res.writeHead(r.status, { 'content-type': 'application/json' }); res.end(text); })
+        .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
+    }
     if (process.env.V2_UPSTREAM && (p === '/v2/search' || p === '/search')) {
       // Send only v2 parameters. The page's tenant_id is the stub tenant and would not match the header;
       // `taxonomy` from the page holds N- need codes, which v2 reads as `needs` (it filters on `taxonomy`).
