@@ -164,3 +164,10 @@ test('landing close: focus goes to the home search box, after the path is home',
   assert.match(landing, /focusWhenReady\('\/', '\[data-testid="search-trigger"\]'\)/);
   assert.match(landing, /new URL\(document\.URL\)\.pathname === path/);
 });
+
+// Lucas 2026-11-06: on a phone a quiet question starts small; orange and red open.
+test('refine card: quiet questions start collapsed on a phone only', () => {
+  const src = read(`${APP}features/search/components/search-follow-up.tsx`);
+  assert.match(src, /const quiet = !v2 \|\| QUESTION_STYLES\[styleOf\(v2\)\] === QUIET;/);
+  assert.match(src, /if \(quiet && window\.matchMedia\(PHONE_QUERY\)\.matches\) \{\s*setCollapsed\(true\);/);
+});

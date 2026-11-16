@@ -1219,6 +1219,9 @@ function PinnedNumbers({
  * Prototype: on a phone the refine card pins under the search bar once the page scrolls
  * to it, and compacts to one line. A tap opens it, and more scrolling compacts it again.
  */
+/** The phone breakpoint the refine card uses (below md). */
+const PHONE_QUERY = '(max-width: 767.98px)';
+
 function usePhonePin(
   collapsed: boolean,
   setCollapsed: (next: boolean) => void,
@@ -1231,7 +1234,7 @@ function usePhonePin(
   live.current.collapsed = collapsed;
 
   useEffect(() => {
-    const phone = window.matchMedia('(max-width: 767.98px)');
+    const phone = window.matchMedia(PHONE_QUERY);
     const read = () => {
       const holder = holderRef.current;
       if (!holder) return;
@@ -1392,10 +1395,16 @@ export function SearchRefineQuestion() {
   const { picks, toggle } = useAnswerPicks(question.id);
   const [noted, setNoted] = useState('');
   const pin = usePhonePin(collapsed, setCollapsed);
-  // A new question must not arrive hidden at the top of the page.
+  // Lucas 2026-11-06: on a phone a quiet question starts small and stays small, also at the top;
+  // an orange or red one opens. Wider screens: a new question must not arrive hidden.
+  const quiet = !v2 || QUESTION_STYLES[styleOf(v2)] === QUIET;
   useEffect(() => {
+    if (quiet && window.matchMedia(PHONE_QUERY).matches) {
+      setCollapsed(true);
+      return;
+    }
     if (!pin.pinned) setCollapsed(false);
-     
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id]);
   // An answer removes the control in focus, so focus goes to the next question.
   const questionRef = useRef<HTMLHeadingElement>(null);
