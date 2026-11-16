@@ -43,7 +43,9 @@ http.createServer((req, res) => {
     if (p === '/style.json') return send(style);
     if (p === '/api/internal/app-config') return send(appConfig);
     if (p === '/api/getTenantBasicConfig') return send(basic);
-    if (p === '/search/predict') return send(predict(q));
+    // Live mode: the v1 predict gate must not add need codes from the fake classifier to the URL;
+    // the real /v2/search classifies (known gap (a), ISS-2348).
+    if (p === '/search/predict') return send(process.env.V2_UPSTREAM ? { scenario: 'search', hsis_taxonomies: [], options: [] } : predict(q));
     if (p === '/search/re-rank') return send({ hsis_taxonomies: ['BD-5000'] });
     if (p === '/suggestion') return send({ taxonomies: [], organizations: [] });
     // The v2 shape: v1 hits plus `matched_needs` on each hit when needs were sent (ADR 0039 Decision 56).
