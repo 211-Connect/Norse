@@ -71,3 +71,11 @@ export const NEED_DESCRIPTIONS: Readonly<Record<string, string>> = {
 
 export const needDescription = (code: string | undefined): string | undefined =>
   code ? NEED_DESCRIPTIONS[code] : undefined;
+
+/**
+ * Lucas 2026-11-16: on a phone, one short line (about 5 words, cut with an ellipsis); on desktop,
+ * hidden until the pointer is on the option (the full text is also the option's title).
+ * The option button needs the `group` class.
+ */
+export const NEED_DESC_CLASS =
+  'text-muted-foreground block max-w-[16rem] truncate text-xs font-normal md:hidden md:max-w-none md:whitespace-normal md:group-hover:block md:group-focus-visible:block';

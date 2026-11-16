@@ -1,6 +1,10 @@
 'use client';
 
-import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
+import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
+import {
+  NEED_DESC_CLASS,
+  needDescription,
+} from '@/app/(app)/features/search/v2/need-descriptions';
 import {
   type Announcements,
   DndContext,
@@ -969,6 +973,7 @@ export function EmergencyPopup({
   onAnswer: (answer: Answer) => void;
 }) {
   const [open, setOpen] = useState(true);
+  useLockPageScroll(open);
   const setPopupOpen = useSetAtom(emergencyPopupOpenAtom);
   useEffect(() => {
     setPopupOpen(open);
@@ -1571,8 +1576,9 @@ export function SearchRefineQuestion() {
                     type="button"
                     disabled={isPending}
                     aria-pressed={question.multi ? on : undefined}
+                    title={needDescription(option.add[0])}
                     className={cn(
-                      'flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
+                      'group flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
                       question.multi
                         ? 'items-center gap-2'
                         : 'flex-col items-start justify-center',
@@ -1589,7 +1595,7 @@ export function SearchRefineQuestion() {
                     <span className="flex flex-col">
                       {option.label}
                       {needDescription(option.add[0]) && (
-                        <span className="text-muted-foreground text-xs font-normal">
+                        <span className={NEED_DESC_CLASS}>
                           {needDescription(option.add[0])}
                         </span>
                       )}

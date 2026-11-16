@@ -41,8 +41,12 @@ import {
   useV2Url,
 } from '@/app/(app)/features/search/v2/use-v2-search';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
+import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
 import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
-import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
+import {
+  NEED_DESC_CLASS,
+  needDescription,
+} from '@/app/(app)/features/search/v2/need-descriptions';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useFlag } from '../../hooks/use-flag';
@@ -81,6 +85,7 @@ export function GuideShell({
   onEscape?: () => boolean;
 }) {
   const [top, setTop] = useState(0);
+  useLockPageScroll();
   // The dim layer starts under the header, so the logo and nav stay clear.
   useEffect(() => {
     const header = document.querySelector('header');
@@ -103,7 +108,7 @@ export function GuideShell({
           id={SEARCH_DIALOG_ID}
           data-testid={SEARCH_DIALOG_ID}
           data-step={dataStep}
-          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem]"
+          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem]"
           style={{
             top: top + 24,
             // Below xl the floating Quick exit holds the bottom edge.
@@ -608,8 +613,9 @@ export function SearchGuideFromUrl({
                         type="button"
                         disabled={isPending}
                         aria-pressed={card.multi ? on : undefined}
+                        title={needDescription(option.add[0])}
                         className={cn(
-                          'flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left font-medium disabled:opacity-60',
+                          'group flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left font-medium disabled:opacity-60',
                           !card.multi && 'justify-between',
                           style.button,
                           on && PICKED,
@@ -625,7 +631,7 @@ export function SearchGuideFromUrl({
                           {option.label}
                           {/* Lucas 2026-11-16: say what kind of need this is (SUNE spoken description). */}
                           {needDescription(option.add[0]) && (
-                            <span className="text-muted-foreground text-sm font-normal">
+                            <span className={NEED_DESC_CLASS}>
                               {needDescription(option.add[0])}
                             </span>
                           )}
