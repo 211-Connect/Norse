@@ -81,6 +81,7 @@ import {
   type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
+import { safeAnsweredInUrl } from '../v2/v2-contract';
 
 type Answer = {
   label: string;
@@ -1369,7 +1370,8 @@ export function SearchRefineQuestion() {
   const setFlagged = useSetAtom(flaggedAtom);
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
-  const safeThisVisit = useAtomValue(emergencySafeThisVisitAtom);
+  const safeThisVisit = useAtomValue(emergencySafeThisVisitAtom) ||
+    safeAnsweredInUrl(asked, params);
   const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
   // One emergency prompt at a time (Lucas 2026-11-16): while the popup is open, the card under it
   // does not repeat the same question.

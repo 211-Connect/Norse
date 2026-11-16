@@ -8,6 +8,7 @@ import {
   groupByMatchedNeeds,
   isSoftEmergency,
   nextV2Params,
+  safeAnsweredInUrl,
   styleOf,
   type V2Question,
   type V2Response,
@@ -168,4 +169,14 @@ test('isSoftEmergency: critical is the full red card, anything lower the calmer 
   assert.equal(isSoftEmergency({ importance: 'critical' }), false);
   assert.equal(isSoftEmergency({ importance: 'high' }), true);
   assert.equal(isSoftEmergency(undefined), false);
+});
+
+test('safeAnsweredInUrl: "No, I am safe now" (asked=emergency, urgency=U-X) survives a reload; Skip does not count', () => {
+  const p = (q: string) => new URLSearchParams(q);
+  assert.equal(safeAnsweredInUrl(['emergency'], p('urgency=U-X')), true);
+  // Skip writes asked=emergency and no urgency: the numbers box stays.
+  assert.equal(safeAnsweredInUrl(['emergency'], p('')), false);
+  // Not asked yet, or another urgency answer: not a safe answer.
+  assert.equal(safeAnsweredInUrl([], p('urgency=U-X')), false);
+  assert.equal(safeAnsweredInUrl(['emergency'], p('urgency=U-1')), false);
 });

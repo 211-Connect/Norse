@@ -30,6 +30,7 @@ import {
   valueOfLabel,
 } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
+import { safeAnsweredInUrl } from '@/app/(app)/features/search/v2/v2-contract';
 import {
   emergencyQuestionOf,
   isSoftEmergency,
@@ -281,6 +282,8 @@ export function SearchGuideFromUrl({
     write,
     isPending: isWriting,
   } = useV2Navigate();
+  const safeThisVisit =
+    useAtomValue(emergencySafeThisVisitAtom) || safeAnsweredInUrl(asked, params);
   const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
   // One emergency prompt at a time (Lucas 2026-11-16): the card under an open popup stays quiet.
   const popupOpen = useAtomValue(emergencyPopupOpenAtom);
@@ -318,7 +321,8 @@ export function SearchGuideFromUrl({
   const card = question ? toCardQuestion(question) : undefined;
   const style = card ? QUESTION_STYLES[card.type ?? 'narrow'] : undefined;
   const isEmergency = question?.type === 'emergency';
-  const hotline = Boolean(emergencyQ);
+  // "No, I am safe now" removes the numbers box for this visit; the 911 and 988 chips stay.
+  const hotline = Boolean(emergencyQ) && !safeThisVisit;
   const hotlines = emergencyQ?.hotlines?.length
     ? emergencyQ.hotlines
     : DEFAULT_HOTLINES;
@@ -528,7 +532,8 @@ export function SearchGuideFromUrl({
               soft={soft}
               announce={!(onPage && !soft && card.answers.length > 0)}
               onAnswer={(option) => {
-                if (onPage && isSafeAnswer(option)) setSafeThisVisit(true);
+                // Landing too (Lucas 2026-11-16): a safe answer clears the numbers box for the visit.
+                if (isSafeAnswer(option)) setSafeThisVisit(true);
                 answerQuestion([option.label]);
               }}
               onSkip={skipEmergency}
