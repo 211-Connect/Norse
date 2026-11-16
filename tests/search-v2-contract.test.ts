@@ -4,6 +4,7 @@ import { test } from 'node:test';
 
 import {
   answerChanges,
+  cardWording,
   emergencyQuestionOf,
   groupByMatchedNeeds,
   isSoftEmergency,
@@ -179,4 +180,21 @@ test('safeAnsweredInUrl: "No, I am safe now" (asked=emergency, urgency=U-X) surv
   // Not asked yet, or another urgency answer: not a safe answer.
   assert.equal(safeAnsweredInUrl([], p('urgency=U-X')), false);
   assert.equal(safeAnsweredInUrl(['emergency'], p('urgency=U-1')), false);
+});
+
+test('cardWording: a one-need question is one tap, not "Pick all that fit"', () => {
+  const opt = (value: string) => ({ label: value, parameter: 'needs', value, results_count: null });
+  const none = { label: 'None', parameter: 'passed_needs', value: 'x', results_count: null };
+  assert.deepEqual(
+    cardWording({ stem: 'Do any of these also fit?', multi_select: true, options: [opt('N-SAF-04')] } as never),
+    { text: 'Does this also fit?', multi: false },
+  );
+  assert.deepEqual(
+    cardWording({ stem: 'Which kind of help with Food & Water?', multi_select: true, options: [opt('N-FOD-01'), none] } as never),
+    { text: 'Which kind of help with Food & Water?', multi: false },
+  );
+  assert.deepEqual(
+    cardWording({ stem: 'Do any of these also fit?', multi_select: true, options: [opt('a'), opt('b')] } as never),
+    { text: 'Do any of these also fit?', multi: true },
+  );
 });

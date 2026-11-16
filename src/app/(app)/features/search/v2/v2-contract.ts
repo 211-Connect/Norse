@@ -231,3 +231,21 @@ export const safeAnsweredInUrl = (
   asked: readonly string[],
   params: { get(key: string): string | null },
 ) => asked.includes('emergency') && params.get('urgency') === 'U-X';
+
+/**
+ * The rules engine asks one area at a time, so a question can offer a single need (live NY run
+ * 2026-11-16: 66 of 198 searches). "Pick all that fit" over one checkbox reads wrong, so the page
+ * shows it as a one-tap question: not multi-select, and "Do any of these also fit?" becomes
+ * "Does this also fit?". Two or more options keep the engine's wording.
+ */
+export function cardWording(q: Pick<V2Question, 'stem' | 'multi_select' | 'options'>): {
+  text: string;
+  multi: boolean;
+} {
+  const single = q.options.filter((o) => o.parameter === 'needs').length === 1;
+  if (!single) return { text: q.stem, multi: q.multi_select };
+  return {
+    text: q.stem === 'Do any of these also fit?' ? 'Does this also fit?' : q.stem,
+    multi: false,
+  };
+}

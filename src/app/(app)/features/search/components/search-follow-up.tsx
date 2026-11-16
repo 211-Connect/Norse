@@ -81,7 +81,7 @@ import {
   type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
-import { safeAnsweredInUrl } from '../v2/v2-contract';
+import { cardWording, safeAnsweredInUrl } from '../v2/v2-contract';
 
 type Answer = {
   label: string;
@@ -1341,8 +1341,7 @@ export function toCardQuestion(q: V2Question): Question & { values: string[] } {
   return {
     id: q.id,
     type: styleOf(q),
-    text: q.stem,
-    multi: q.multi_select,
+    ...cardWording(q),
     values: q.options.map((o) => o.value),
     answers: q.options.map((o) => ({
       label: o.label,
