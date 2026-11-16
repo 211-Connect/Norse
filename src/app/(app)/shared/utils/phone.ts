@@ -33,8 +33,12 @@ export function formatPhoneNumber(raw: string | null | undefined): string {
  * `tel:` URI for a phone number. Extensions use a pause (`,`) rather than
  * RFC 3966 `;ext=`, because phone dialers dial the pause and ignore `;ext=`.
  */
+// Prototype: the live-data demo shows real service numbers, so no Call button may dial them.
+// Same intent as PROTOTYPE_NO_DIAL in features/search/components/no-dial.tsx (a client module).
+const PROTOTYPE_NO_DIAL_SERVICES = true;
+
 export function getPhoneHref(raw: string | null | undefined): string {
-  if (!raw) {
+  if (!raw || PROTOTYPE_NO_DIAL_SERVICES) {
     return '';
   }
 

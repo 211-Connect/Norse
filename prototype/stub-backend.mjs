@@ -26,6 +26,13 @@ const appConfig = {
   badges: [], suggestions: ['Getting Enough Food', 'A Place to Sleep Tonight', 'Money for Basic Needs', 'Getting Around', 'Child Care or Adult Day Care'].map((value) => ({ value, taxonomies: 'BD' })), tenantId: '00000000-0000-4000-8000-000000000001',
   topics: { iconSize: 'small', list: [['Care', ['Child Care', 'Support Networks']], ['Emergency', ['Domestic Violence', 'Help Hotlines']], ['Food', ['Food Banks', 'Meal Programs']], ['Housing', ['Shelter', 'Help Pay for Housing']], ['Money', ['Financial Assistance']], ['Health', ['Medical', 'Dental']]].map(([name, s]) => ({ name, subtopics: s.map((n) => ({ name: n, queryType: 'text', query: n })) })) },
 };
+// Live demo: name and map follow the real tenant when V2_UPSTREAM is set.
+if (process.env.V2_UPSTREAM) {
+  appConfig.brand.name = process.env.V2_BRAND ?? 'Live tenant data';
+  appConfig.meta.title = appConfig.brand.name;
+  appConfig.footer.copyright = 'Live results from a real tenant index (prototype)';
+  if (process.env.V2_COORDS) appConfig.search.map.center = process.env.V2_COORDS.split(',').map(Number);
+}
 const basic = { enabledLocales: ['en'], defaultLocale: 'en', auth: { requiresLogin: false, allowedEmailDomains: [], publicPages: [] }, seo: { noindex: true } };
 const style = { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#dfeaf2' } }] };
 http.createServer((req, res) => {
@@ -41,6 +48,24 @@ http.createServer((req, res) => {
     if (p === '/suggestion') return send({ taxonomies: [], organizations: [] });
     // The v2 shape: v1 hits plus `matched_needs` on each hit when needs were sent (ADR 0039 Decision 56).
     // Decision 43: the route rejects needs=N-X with 400.
+    // Real backend (2026-11-16 standup demo): V2_UPSTREAM=http://127.0.0.1:8091 V2_TENANT=<tenant uuid> forwards
+    // /v2/search and /search to a local Norse-API v2 build, which reads the real Elasticsearch index of that tenant.
+    if (process.env.V2_UPSTREAM && (p === '/v2/search' || p === '/search')) {
+      // Send only v2 parameters. The page's tenant_id is the stub tenant and would not match the header;
+      // `taxonomy` from the page holds N- need codes, which v2 reads as `needs` (it filters on `taxonomy`).
+      const v2 = readParams(u.searchParams);
+      const up = new URL('/v2/search', process.env.V2_UPSTREAM);
+      up.searchParams.set('query', [v2.query, v2.other].filter(Boolean).join('. '));
+      if (v2.needs.length) up.searchParams.set('needs', v2.needs.join(','));
+      if (v2.passedNeeds.length) up.searchParams.set('passed_needs', v2.passedNeeds.join(','));
+      if (v2.urgency) up.searchParams.set('urgency', v2.urgency);
+      if (v2.clarify === 'never') up.searchParams.set('clarify', 'never');
+      for (const k of ['page', 'limit', 'coords']) if (u.searchParams.get(k)) up.searchParams.set(k, u.searchParams.get(k));
+      if (process.env.V2_COORDS && !up.searchParams.get('coords')) up.searchParams.set('coords', process.env.V2_COORDS);
+      return void fetch(up, { headers: { 'x-tenant-id': process.env.V2_TENANT, 'accept-language': 'en' } })
+        .then(async (r) => { const text = await r.text(); console.log('  upstream', r.status, text.length); res.writeHead(r.status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' }); res.end(text); })
+        .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
+    }
     if (p === '/v2/search' && readParams(u.searchParams).needs.includes('N-X')) { res.writeHead(400, { 'content-type': 'application/json' }); return void res.end(JSON.stringify({ error: 'needs=N-X is not allowed' })); }
     if (p === '/v2/search') return void v2Search(readParams(u.searchParams)).then(({ services, body }) => { const sent = readParams(u.searchParams).needs.length > 0; const page = Math.max(1, Number(u.searchParams.get('page')) || 1); const hits = services.slice((page - 1) * 25, page * 25).map((s, i) => ({ ...svc(s, i), ...(sent ? { matched_needs: s.matchedNeeds } : {}) })); send({ search: { hits: { total: { value: services.length, relation: 'eq' }, hits } }, facets: {}, ...body }); }, (err) => { console.error(err); res.writeHead(500); res.end(); });
     if (p === '/search') return void v2Search(readParams(u.searchParams)).then(({ services }) => { const hits = services.map(svc); send({ search: { hits: { total: { value: hits.length }, hits } }, facets: [] }); }, (err) => { console.error(err); res.writeHead(500); res.end(); });
