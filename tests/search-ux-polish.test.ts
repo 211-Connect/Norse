@@ -148,3 +148,12 @@ test('landing wait: one status line, no skeleton and no buttons before the first
   assert.match(guide, /\{!waiting && \(canSkip \|\| canDeferLocation \|\| onPage\) && \(/);
   assert.match(guide, /\{data && \(showLocation \|\| \(card && !isEmergency\)\) && \(/);
 });
+
+// UX pass 2026-11-16: on a 390x700 phone the actions sat 211 px below the fold of the dialog.
+test('guide actions: the row sticks to the bottom of the dialog and stays one row on a phone', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  const row = guide.slice(guide.indexOf('(canSkip || canDeferLocation || onPage) && ('));
+  assert.match(row.slice(0, 600), /sticky -bottom-5/);
+  assert.match(row.slice(0, 600), /max-sm:flex-nowrap/);
+  assert.match(row, /max-sm:sr-only">Skip this question/);
+});

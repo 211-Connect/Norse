@@ -698,16 +698,28 @@ export function SearchGuideFromUrl({
       )}
 
       {!waiting && (canSkip || canDeferLocation || onPage) && (
-        <div className="flex min-h-11 flex-wrap items-center justify-between gap-3">
+        <div
+          className={cn(
+            'flex min-h-11 flex-wrap items-center justify-between gap-3',
+            // Both placements sit in the scrolling guide dialog (p-5). The actions stay in view: on a
+            // 390x700 phone "Show results now" sat 211 px below the fold (UX pass 2026-11-16).
+            // -bottom-5 covers the dialog's own bottom padding, so no content shows under the row.
+            'sticky -bottom-5 z-10 -mx-5 -mb-5 border-t bg-white px-5 py-3 max-sm:flex-nowrap max-sm:gap-2',
+          )}
+        >
           {canSkipQuestion && (
             <button
               type="button"
               disabled={isPending}
-              className="border-control-border min-h-11 cursor-pointer rounded-lg border bg-white px-5 font-semibold disabled:opacity-60"
+              className="border-control-border min-h-11 shrink-0 cursor-pointer rounded-lg border bg-white px-5 font-semibold disabled:opacity-60 max-sm:px-4"
               data-testid="guide-skip-question"
               onClick={skipQuestion}
             >
-              Skip this question
+              {/* One row on a phone: the short label there, the full one for screen readers. */}
+              <span className="sm:hidden" aria-hidden="true">
+                Skip
+              </span>
+              <span className="max-sm:sr-only">Skip this question</span>
             </button>
           )}
           {canDeferLocation && (
@@ -725,7 +737,7 @@ export function SearchGuideFromUrl({
               type="button"
               disabled={isWriting}
               className={cn(
-                'ml-auto min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60',
+                'ml-auto min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60 max-sm:px-3',
                 picks.length > 0
                   ? 'border-primary text-primary border bg-white'
                   : 'bg-primary text-primary-foreground',
