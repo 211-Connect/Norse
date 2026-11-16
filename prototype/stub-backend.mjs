@@ -69,6 +69,9 @@ http.createServer((req, res) => {
       if (v2.clarify === 'never') up.searchParams.set('clarify', 'never');
       for (const k of ['page', 'limit', 'coords']) if (u.searchParams.get(k)) up.searchParams.set(k, u.searchParams.get(k));
       if (process.env.V2_COORDS && !up.searchParams.get('coords')) up.searchParams.set('coords', process.env.V2_COORDS);
+      // v2 is meant to run with the relevance cut (ADR 0039: cut after the need boost). Without it every
+      // search returns the whole area and the result count means nothing. V2_CUTOFF=off turns it off.
+      up.searchParams.set('relevance_cutoff', process.env.V2_CUTOFF === 'off' ? 'off' : 'on');
       return void fetch(up, { headers: { 'x-tenant-id': process.env.V2_TENANT, 'accept-language': 'en' } })
         .then(async (r) => {
           let text = await r.text(); console.log('  upstream', r.status, text.length);
