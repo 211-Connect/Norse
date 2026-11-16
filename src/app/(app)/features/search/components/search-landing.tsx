@@ -11,7 +11,11 @@ import {
 } from '@/app/(app)/shared/components/search/search-guide';
 import { SEARCH_INPUT_ID } from '@/app/(app)/shared/lib/constants';
 
-import { useV2Navigate, useV2Url } from '../v2/use-v2-search';
+import {
+  useV2Navigate,
+  useV2Prefetch,
+  useV2Url,
+} from '../v2/use-v2-search';
 import { EmergencyLine } from './emergency-line';
 
 /**
@@ -22,7 +26,12 @@ import { EmergencyLine } from './emergency-line';
  */
 export function SearchLanding() {
   const { query } = useV2Url();
-  const { write, isPending } = useV2Navigate();
+  const { write, isPending: isWriting } = useV2Navigate();
+  const prefetch = useV2Prefetch();
+  // Lucas 2026-11-16: after Enter nothing moves until the answer is known. The box stays as it is,
+  // with a spinner, while the search loads; then the page shows a question or the results.
+  const [loading, setLoading] = useState(false);
+  const isPending = isWriting || loading;
   const [text, setText] = useState(query);
   const [emptyError, setEmptyError] = useState(false);
   // Once the questions start, the box shrinks to one line; Edit opens it again.
@@ -43,21 +52,25 @@ export function SearchLanding() {
     setTimeout(() => document.getElementById('landing-edit')?.focus(), 0);
   };
 
-  const submit = (event: FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
     const next = text.trim();
     if (!next) return setEmptyError(true);
     // Same text: the answers stay, the questions come back.
     if (next === query) return closeEdit();
-    setEditing(false);
     // A new search starts the questions again: `asked` goes, and a new text drops the old answers.
-    write({
+    const changes = {
       query: next,
       query_label: null,
       other: null,
       asked: null,
       refine: null,
-    });
+    };
+    setLoading(true);
+    await prefetch(changes);
+    setLoading(false);
+    setEditing(false);
+    write(changes);
   };
 
   // Escape in edit mode goes back to the compact bar; otherwise it closes the popup (home page).
@@ -116,6 +129,7 @@ export function SearchLanding() {
               rows={3}
               autoFocus={!query}
               disabled={isPending}
+              busy={isPending}
               placeholder="For example: I need help with rent."
               describedBy={emptyError ? 'landing-empty-error' : undefined}
               onChange={(value) => {
@@ -136,12 +150,14 @@ export function SearchLanding() {
             )}
           </form>
         </div>
-        {query ? (
-          !editing && <SearchGuideFromUrl placement="page" />
+        {query && !editing ? (
+          <SearchGuideFromUrl placement="page" />
         ) : (
-          <p className="text-muted-foreground text-sm">
-            We ask up to 3 short questions, so your results fit. You can skip
-            any of them.
+          // Same line, same place while the search loads, so the card keeps its size.
+          <p className="text-muted-foreground text-sm" role="status">
+            {isPending
+              ? 'Looking at your search…'
+              : 'We ask up to 3 short questions, so your results fit. You can skip any of them.'}
           </p>
         )}
       </div>

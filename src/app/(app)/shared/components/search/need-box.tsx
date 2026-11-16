@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, Loader2 } from 'lucide-react';
 import { ReactNode, useMemo } from 'react';
 
 import { useSearchSuggestions } from '../../hooks/api/use-search-suggestions';
@@ -48,6 +48,7 @@ export function NeedBox({
   placeholder,
   autoFocus = false,
   disabled = false,
+  busy = false,
   describedBy,
   inputClassName,
   buttonClassName,
@@ -61,6 +62,8 @@ export function NeedBox({
   placeholder: string;
   autoFocus?: boolean;
   disabled?: boolean;
+  /** Shows a spinner in the submit button while the search loads. */
+  busy?: boolean;
   describedBy?: string;
   inputClassName?: string;
   buttonClassName?: string;
@@ -102,7 +105,14 @@ export function NeedBox({
           )}
           data-testid={submitTestId}
         >
-          <ArrowUp className="size-5" aria-hidden="true" />
+          {busy ? (
+            <Loader2
+              className="size-5 motion-safe:animate-spin"
+              aria-hidden="true"
+            />
+          ) : (
+            <ArrowUp className="size-5" aria-hidden="true" />
+          )}
         </button>
       </div>
       <p className="sr-only" role="status">

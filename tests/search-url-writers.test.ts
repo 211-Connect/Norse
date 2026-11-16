@@ -56,6 +56,10 @@ const ALLOWED_EDITS: Record<string, { count: number; why: string }> = {
     count: 1,
     why: 'prototype: the results help popup writes its taxonomy rank tokens',
   },
+  'app/(app)/features/search/components/search-landing.tsx': {
+    count: 1,
+    why: 'prototype landing page (2026-11-13): Close on the popup goes home with router.push("/")',
+  },
   'app/(app)/features/search/v2/use-v2-search.ts': {
     count: 1,
     why: 'prototype round 17: an answer writes needs, passed_needs, urgency, other, asked and refine',

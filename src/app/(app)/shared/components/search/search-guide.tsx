@@ -2,7 +2,7 @@
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft, Loader2, X } from 'lucide-react';
 import {
   FormEvent,
   ReactNode,
@@ -204,7 +204,7 @@ export function SearchGuide({
 
   useEffect(
     () => () => restoreFocusElement?.focus({ preventScroll: true }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [],
   );
 
@@ -287,7 +287,11 @@ export function SearchGuideFromUrl({
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
   const v2 = nextQuestionOf(data, asked);
-  const hasLocation = Boolean(params.get('location') || params.get('coords'));
+  // A place already saved for this visit counts: the results page uses it, so asking for it again
+  // with the same place filled in is a wasted step (Lucas UX pass, 2026-11-16).
+  const hasLocation = Boolean(
+    params.get('location') || params.get('coords') || searchLocation,
+  );
   const locationDone = hasLocation || asked.includes(LOCATION_STEP);
   const used = asked.length;
   // The emergency question never waits behind the location step. On the landing page, an engine
@@ -318,6 +322,9 @@ export function SearchGuideFromUrl({
   const canSkipQuestion =
     onPage && Boolean(question) && !isEmergency && picks.length === 0;
   const finished = Boolean(data) && !isPending && !showLocation && !question;
+  // Lucas 2026-11-16: after Enter the card does not change until the answer is known. One status
+  // line while the first answer loads (no skeleton, no buttons), then a question or the results.
+  const waiting = (!data && !error) || finished;
 
   // With nothing left to ask, the guide closes and the results stay (the landing page goes to the
   // results). Replace, so Back skips it.
@@ -325,7 +332,7 @@ export function SearchGuideFromUrl({
     if (!finished) return;
     if (onPage) toResults({}, 'replace');
     else write({ refine: null }, 'replace');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [finished]);
 
   // A new step is an action the person took, so moving focus to it is expected.
@@ -349,7 +356,7 @@ export function SearchGuideFromUrl({
       coords: coords || null,
       asked: [...asked, LOCATION_STEP],
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [searchLocation]);
 
   if (!query || finished) return null;
@@ -468,12 +475,20 @@ export function SearchGuideFromUrl({
       <p
         role="status"
         className={cn(
-          'text-muted-foreground text-sm',
-          !(isPending || !data) || error ? 'sr-only' : '',
+          'text-muted-foreground flex items-center gap-2 text-sm',
+          !(isPending || waiting) || error ? 'sr-only' : '',
         )}
         data-testid="guide-loading"
       >
-        {(isPending || !data) && !error ? 'Looking at your search…' : ''}
+        {(isPending || waiting) && !error && (
+          <>
+            <Loader2
+              className="size-4 motion-safe:animate-spin"
+              aria-hidden="true"
+            />
+            Looking at your search…
+          </>
+        )}
       </p>
 
       {hotline && !isEmergency && (
@@ -511,9 +526,8 @@ export function SearchGuideFromUrl({
         </>
       )}
 
-      {(!data || showLocation || (card && !isEmergency)) && (
+      {data && (showLocation || (card && !isEmergency)) && (
         <div className="relative" data-testid="guide-step-body">
-          {!data && !error && <GuideSkeleton />}
           {data && isPending && (
             <div className="absolute inset-0 z-10 bg-white">
               <GuideSkeleton />
@@ -658,7 +672,7 @@ export function SearchGuideFromUrl({
         </p>
       )}
 
-      {(canSkip || canDeferLocation || onPage) && (
+      {!waiting && (canSkip || canDeferLocation || onPage) && (
         <div className="flex min-h-11 flex-wrap items-center justify-between gap-3">
           {canSkipQuestion && (
             <button

@@ -138,3 +138,13 @@ test('a changed query text drops the old answers from the v2 call', () => {
     assert.equal(next.get(key), null, key);
   }
 });
+
+// Lucas 2026-11-16: after Enter the card does not change until the answer is known
+// (no question-shaped skeleton, no buttons), then it shows a question or the results.
+test('landing wait: one status line, no skeleton and no buttons before the first answer', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  assert.match(guide, /const waiting = \(!data && !error\) \|\| finished;/);
+  assert.doesNotMatch(guide, /\{!data && !error && <GuideSkeleton \/>\}/);
+  assert.match(guide, /\{!waiting && \(canSkip \|\| canDeferLocation \|\| onPage\) && \(/);
+  assert.match(guide, /\{data && \(showLocation \|\| \(card && !isEmergency\)\) && \(/);
+});

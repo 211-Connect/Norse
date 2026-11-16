@@ -1,6 +1,10 @@
 'use client';
 
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useTransition } from 'react';
 
@@ -62,34 +66,67 @@ export function useV2Url() {
   };
 }
 
+/** The `/v2/search` parameters of a page URL, in one stable string (the query cache key). */
+function v2CallString(params: URLSearchParams): string {
+  const call = new URLSearchParams();
+  for (const key of CALL_KEYS) {
+    const raw = params.get(key);
+    const value = key === 'needs' ? withoutNX(raw) : raw;
+    if (value) call.set(key, value);
+  }
+  return call.toString();
+}
+
+async function fetchV2(
+  tenantId: string | undefined,
+  callString: string,
+  signal?: AbortSignal,
+): Promise<V2Response> {
+  const res = await fetch(
+    `/api/v2-search?tenant_id=${encodeURIComponent(tenantId ?? '')}&${callString}`,
+    { signal },
+  );
+  if (!res.ok) throw new Error(`v2 search ${res.status}`);
+  return (await res.json()) as V2Response;
+}
+
 export function useV2Search() {
   const { params, query } = useV2Url();
   const { tenantId } = useAppConfig();
-  const callString = useMemo(() => {
-    const call = new URLSearchParams();
-    for (const key of CALL_KEYS) {
-      const raw = params.get(key);
-      const value = key === 'needs' ? withoutNX(raw) : raw;
-      if (value) call.set(key, value);
-    }
-    return call.toString();
-  }, [params]);
+  const callString = useMemo(() => v2CallString(params), [params]);
 
   const result = useQuery({
     queryKey: ['v2-search', tenantId, callString],
     enabled: Boolean(query && tenantId),
     placeholderData: keepPreviousData,
     staleTime: 60_000,
-    queryFn: async ({ signal }) => {
-      const res = await fetch(
-        `/api/v2-search?tenant_id=${encodeURIComponent(tenantId ?? '')}&${callString}`,
-        { signal },
-      );
-      if (!res.ok) throw new Error(`v2 search ${res.status}`);
-      return (await res.json()) as V2Response;
-    },
+    queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
   });
   return { ...result, query };
+}
+
+/**
+ * Load the `/v2/search` answer for the URL that `changes` would make, into the same cache entry
+ * the next page reads. The landing box waits on it, so the page moves only once the answer is
+ * known (Lucas, 2026-11-16). A failed call resolves too: the next page shows its own error.
+ */
+export function useV2Prefetch() {
+  const { params } = useV2Url();
+  const { tenantId } = useAppConfig();
+  const queryClient = useQueryClient();
+  return useCallback(
+    async (changes: V2Changes) => {
+      const callString = v2CallString(nextV2Params(params, changes));
+      await queryClient
+        .fetchQuery({
+          queryKey: ['v2-search', tenantId, callString],
+          staleTime: 60_000,
+          queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
+        })
+        .catch(() => undefined);
+    },
+    [params, queryClient, tenantId],
+  );
 }
 
 /** URL writes. An answer is a new history entry, so the browser's Back button undoes one answer. */
