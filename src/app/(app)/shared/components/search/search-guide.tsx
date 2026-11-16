@@ -109,7 +109,7 @@ export function GuideShell({
           id={SEARCH_DIALOG_ID}
           data-testid={SEARCH_DIALOG_ID}
           data-step={dataStep}
-          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem]"
+          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain scroll-pb-24 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem]"
           style={{
             top: top + 24,
             // Below xl the floating Quick exit holds the bottom edge.
