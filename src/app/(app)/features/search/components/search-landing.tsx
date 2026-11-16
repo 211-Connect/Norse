@@ -177,7 +177,7 @@ export function SearchLanding() {
  */
 function focusWhenReady(path: string, selector: string, triesLeft = 30) {
   const el =
-    window.location.pathname === path
+    new URL(document.URL).pathname === path
       ? document.querySelector<HTMLElement>(selector)
       : null;
   if (el) {

@@ -162,5 +162,5 @@ test('guide actions: the row sticks to the bottom of the dialog and stays one ro
 test('landing close: focus goes to the home search box, after the path is home', () => {
   const landing = read(`${APP}features/search/components/search-landing.tsx`);
   assert.match(landing, /focusWhenReady\('\/', '\[data-testid="search-trigger"\]'\)/);
-  assert.match(landing, /window\.location\.pathname === path/);
+  assert.match(landing, /new URL\(document\.URL\)\.pathname === path/);
 });
