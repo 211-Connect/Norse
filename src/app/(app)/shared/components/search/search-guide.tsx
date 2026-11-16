@@ -41,6 +41,7 @@ import {
   useV2Url,
 } from '@/app/(app)/features/search/v2/use-v2-search';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
+import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useFlag } from '../../hooks/use-flag';
@@ -275,6 +276,8 @@ export function SearchGuideFromUrl({
     isPending: isWriting,
   } = useV2Navigate();
   const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
+  // One emergency prompt at a time (Lucas 2026-11-16): the card under an open popup stays quiet.
+  const popupOpen = useAtomValue(emergencyPopupOpenAtom);
   // Answers given since this page opened: Back undoes one of them (each is a history entry).
   const askedAtStart = useRef(asked.length);
   const searchLocation = useAtomValue(searchLocationAtom);
@@ -512,17 +515,19 @@ export function SearchGuideFromUrl({
           <h2 ref={headingRef} tabIndex={-1} className="sr-only">
             {card.text}
           </h2>
-          <EmergencyBox
-            question={card}
-            hotlines={hotlines}
-            soft={soft}
-            announce={!(onPage && !soft && card.answers.length > 0)}
-            onAnswer={(option) => {
-              if (onPage && isSafeAnswer(option)) setSafeThisVisit(true);
-              answerQuestion([option.label]);
-            }}
-            onSkip={skipEmergency}
-          />
+          {!(onPage && !soft && card.answers.length > 0 && popupOpen) && (
+            <EmergencyBox
+              question={card}
+              hotlines={hotlines}
+              soft={soft}
+              announce={!(onPage && !soft && card.answers.length > 0)}
+              onAnswer={(option) => {
+                if (onPage && isSafeAnswer(option)) setSafeThisVisit(true);
+                answerQuestion([option.label]);
+              }}
+              onSkip={skipEmergency}
+            />
+          )}
         </>
       )}
 

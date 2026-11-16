@@ -142,7 +142,7 @@ function useSuneSearch() {
       (stated.length ? stated : (classifySune(label).codes as string[])).filter(
         (code) => code !== 'U-X' && lookup(code),
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [stated.join(), label],
   );
   // Decision 54: no "I'm in an emergency" answer, so nothing is kept in memory for it.
@@ -1365,6 +1365,9 @@ export function SearchRefineQuestion() {
   const emergencyQ = emergencyQuestionOf(data);
   const safeThisVisit = useAtomValue(emergencySafeThisVisitAtom);
   const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
+  // One emergency prompt at a time (Lucas 2026-11-16): while the popup is open, the card under it
+  // does not repeat the same question.
+  const popupOpen = useAtomValue(emergencyPopupOpenAtom);
   const v2 = nextQuestionOf(
     data,
     safeThisVisit && emergencyQ ? [...asked, emergencyQ.id] : asked,
@@ -1385,7 +1388,7 @@ export function SearchRefineQuestion() {
   // A new question must not arrive hidden at the top of the page.
   useEffect(() => {
     if (!pin.pinned) setCollapsed(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [question.id]);
   // An answer removes the control in focus, so focus goes to the next question.
   const questionRef = useRef<HTMLHeadingElement>(null);
@@ -1449,14 +1452,16 @@ export function SearchRefineQuestion() {
             onAnswer={onEmergencyAnswer}
           />
         )}
-        <EmergencyBox
-          question={question}
-          hotlines={hotlines}
-          soft={soft}
-          announce={!popup}
-          onAnswer={onEmergencyAnswer}
-          onSkip={skipEmergency}
-        />
+        {!(popup && popupOpen) && (
+          <EmergencyBox
+            question={question}
+            hotlines={hotlines}
+            soft={soft}
+            announce={!popup}
+            onAnswer={onEmergencyAnswer}
+            onSkip={skipEmergency}
+          />
+        )}
         {pin.pinned && (
           <div className={PINNED}>
             <PinnedNumbers hotlines={hotlines} />
@@ -1473,8 +1478,9 @@ export function SearchRefineQuestion() {
       </div>
     );
   }
-  // A skipped emergency question stays as the numbers alone.
-  const hotline = Boolean(emergencyQ);
+  // A skipped emergency question stays as the numbers alone. "No, I am safe now" removes the box
+  // for this visit (Lucas 2026-11-16); the always-on 911 and 988 chips above the search box stay.
+  const hotline = Boolean(emergencyQ) && !safeThisVisit;
 
   if (!v2) {
     return (
