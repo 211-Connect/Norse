@@ -55,8 +55,16 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
     needs,
   );
   // Decision 49: no result matches a selected need, so the list is keyword matches only.
+  // A hit with no `matched_needs` field means "not checked" (an index with no need tags); the
+  // notice then would say "No services found" about services that were never tagged.
+  const needsChecked = (data?.search?.hits.hits ?? []).some((hit) =>
+    Array.isArray(hit.matched_needs),
+  );
   const noMatch =
-    currentPage === 1 && groups.length > 0 && groups.every((g) => g === 'none');
+    needsChecked &&
+    currentPage === 1 &&
+    groups.length > 0 &&
+    groups.every((g) => g === 'none');
 
   return (
     <>

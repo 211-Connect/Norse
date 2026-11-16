@@ -1,5 +1,6 @@
 'use client';
 
+import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
 import {
   type Announcements,
   DndContext,
@@ -1585,7 +1586,14 @@ export function SearchRefineQuestion() {
                     }
                   >
                     {question.multi && <PickMark on={on} />}
-                    {option.label}
+                    <span className="flex flex-col">
+                      {option.label}
+                      {needDescription(option.add[0]) && (
+                        <span className="text-muted-foreground text-xs font-normal">
+                          {needDescription(option.add[0])}
+                        </span>
+                      )}
+                    </span>
                     {typeof option.keeps === 'number' && (
                       <span className="text-muted-foreground text-xs font-normal">
                         {t('search.v2_option_services_count', {

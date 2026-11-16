@@ -70,7 +70,13 @@ http.createServer((req, res) => {
       for (const k of ['page', 'limit', 'coords']) if (u.searchParams.get(k)) up.searchParams.set(k, u.searchParams.get(k));
       if (process.env.V2_COORDS && !up.searchParams.get('coords')) up.searchParams.set('coords', process.env.V2_COORDS);
       return void fetch(up, { headers: { 'x-tenant-id': process.env.V2_TENANT, 'accept-language': 'en' } })
-        .then(async (r) => { const text = await r.text(); console.log('  upstream', r.status, text.length); res.writeHead(r.status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' }); res.end(text); })
+        .then(async (r) => {
+          let text = await r.text(); console.log('  upstream', r.status, text.length);
+          // No hit carries any need: the live index has no need tags yet (dagster PR #780), so
+          // matched_needs is "not checked", not "none". Drop it so the page shows no false notice.
+          try { const d = JSON.parse(text); const hits = d?.search?.hits?.hits ?? [];
+            if (hits.length && hits.every((h) => !h.matched_needs?.length)) { for (const h of hits) delete h.matched_needs; text = JSON.stringify(d); } } catch {}
+          res.writeHead(r.status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' }); res.end(text); })
         .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
     }
     if (p === '/v2/search' && readParams(u.searchParams).needs.includes('N-X')) { res.writeHead(400, { 'content-type': 'application/json' }); return void res.end(JSON.stringify({ error: 'needs=N-X is not allowed' })); }

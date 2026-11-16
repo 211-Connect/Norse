@@ -42,6 +42,7 @@ import {
 } from '@/app/(app)/features/search/v2/use-v2-search';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
+import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useFlag } from '../../hooks/use-flag';
@@ -620,7 +621,15 @@ export function SearchGuideFromUrl({
                         }
                       >
                         {card.multi && <PickMark on={on} />}
-                        <span className="flex-1">{option.label}</span>
+                        <span className="flex flex-1 flex-col">
+                          {option.label}
+                          {/* Lucas 2026-11-16: say what kind of need this is (SUNE spoken description). */}
+                          {needDescription(option.add[0]) && (
+                            <span className="text-muted-foreground text-sm font-normal">
+                              {needDescription(option.add[0])}
+                            </span>
+                          )}
+                        </span>
                         {typeof option.keeps === 'number' && (
                           <span className="text-muted-foreground shrink-0 text-xs font-normal">
                             {t('search.v2_option_services_count', {
