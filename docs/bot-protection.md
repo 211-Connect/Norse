@@ -77,6 +77,13 @@ arcjetProtect                    src/lib/arcjet/index.ts
   list `ARCJET_ALLOWED_BOTS`, and a `filter` in `DRY_RUN` that denies
   requests with no `User-Agent` (ISS-1744). AI training crawlers are denied
   and also disallowed in `src/app/robotsRules.ts`; keep the two lists in agreement.
+- **Advanced signals script.** Set the repository Actions variable
+  `NEXT_PUBLIC_ARCJET_SCRIPT_URL` to `https://signals-cdn.arcjet.com/aj-sig.js`.
+  The shared deploy workflow passes it only to the public-app image build, where
+  the Dockerfile bakes it into the Next.js bundle. The CSP derives the script
+  and frame origin from this URL and allows Arcjet's signals API. Changing the
+  variable alone does not trigger a build; dispatch the development workflow
+  or wait for the next deployment.
 - **Client IP** (`src/lib/arcjet/client-ip.ts`): the SDK resolves it through
   `cloudflare()` and `MBOA_PROXY_IP`. MBOA internal traffic (only private hops
   behind the mn.gov proxy) gets `ipSrc` set to the hop that proxy appended;
