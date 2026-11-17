@@ -1077,15 +1077,20 @@ export interface SearchEventExportRow {
    */
   queryType: "text" | "taxonomy" | "hybrid";
   /**
-   * Search ZIP/postal code from reverse geocoding
+   * Search ZIP/postal code from event metadata; older events are reverse-geocoded.
    * @example "94102"
    */
   searchZipCode: string | null;
   /**
-   * Search city from reverse geocoding
+   * Search city from event metadata; older events are reverse-geocoded.
    * @example "San Francisco"
    */
   searchCity: string | null;
+  /**
+   * Search county/district from event metadata or reverse geocoding
+   * @example "Cook County"
+   */
+  searchCounty: string | null;
   /**
    * Search latitude coordinate
    * @example 37.7749
@@ -1097,15 +1102,20 @@ export interface SearchEventExportRow {
    */
   searchLongitude: number | null;
   /**
-   * User ZIP/postal code from reverse geocoding
+   * User ZIP/postal code from event metadata; older events are reverse-geocoded.
    * @example "94102"
    */
   userZipCode: string | null;
   /**
-   * User city from reverse geocoding
+   * User city from event metadata; older events are reverse-geocoded.
    * @example "San Francisco"
    */
   userCity: string | null;
+  /**
+   * User county/district from event metadata or reverse geocoding
+   * @example "Cook County"
+   */
+  userCounty: string | null;
   /**
    * User latitude coordinate
    * @example 37.7749
