@@ -1,3 +1,5 @@
+import type { AreaMatch } from './areaSearch';
+
 export type HybridSearchConfigCache = {
   tenant_id: string;
   vector_score_weight: number | null;
@@ -14,4 +16,6 @@ export type HybridSearchConfigCache = {
   taxonomy_num_candidates: number | null;
   pinned_resources_mode: 'ignore' | 'boost' | 'top';
   enable_organization_search: boolean;
+  area_match: AreaMatch;
+  include_unlocated_in_area_search: boolean;
 };

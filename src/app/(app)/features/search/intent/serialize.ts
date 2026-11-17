@@ -4,6 +4,7 @@ import {
 } from '@/app/(app)/shared/lib/search-utils';
 import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import type { SearchEngine } from '@/types/appConfig';
+import { isRegionId } from '@/types/areaSearch';
 
 import { ENVELOPE_KEYS, type SearchEnvelope } from './envelope';
 import {
@@ -111,6 +112,8 @@ function writerFilters(
  * - Taxonomy codes are split on commas, trimmed and de-duplicated.
  * - "Everywhere" is no location; coords are written only as a pair; distance only with a location or
  *   coords.
+ * - A region is written only with a location and only as a valid Region id; with a region there is no
+ *   distance (an area is searched as its shape, never as a radius).
  * - A new search starts on the first page.
  *
  * Writers apply them before serializing. Re-serializing a lifted URL does not, so a URL is never
@@ -128,6 +131,8 @@ export function applyWriterRules(
   const location = valueOf(intent.location)?.trim();
   const hasLocation = Boolean(location) && !isEverywhereLocation(location);
   const hasCoords = valueOf(intent.coords)?.length === 2;
+  const region = valueOf(intent.region)?.trim();
+  const hasRegion = hasLocation && isRegionId(region);
   const taxonomy = parseCommaSeparatedValues(valueOf(intent.taxonomy));
   const aiOptions = valueOf(intent.aiOptions);
   const filters = writerFilters(valueOf(intent.filters));
@@ -153,7 +158,11 @@ export function applyWriterRules(
           : UNSTATED,
       location: hasLocation ? stated(location!) : UNSTATED,
       coords: hasCoords ? intent.coords : UNSTATED,
-      distance: hasLocation || hasCoords ? trimmed(intent.distance) : UNSTATED,
+      region: hasRegion ? stated(region!) : UNSTATED,
+      distance:
+        (hasLocation || hasCoords) && !hasRegion
+          ? trimmed(intent.distance)
+          : UNSTATED,
       filters: filters ? stated(filters) : UNSTATED,
     },
     envelope: unpaged,

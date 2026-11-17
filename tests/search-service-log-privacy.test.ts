@@ -52,10 +52,17 @@ globalThis.fetch = (async (input: RequestInfo | URL) => {
   );
 }) as typeof fetch;
 
-const { findResources, findResourcesV2 } =
+const { findResources } =
   await import('../src/app/(app)/shared/services/search-service');
 
-const FORBIDDEN = [SECRET_QUERY, 'coords=', 'location=', 'query='];
+const FORBIDDEN = [
+  SECRET_QUERY,
+  'coords=',
+  'location=',
+  'query=',
+  'region=',
+  'county:53033',
+];
 
 type LogEntry = Record<string, unknown> & { msg?: string };
 
@@ -122,14 +129,17 @@ test('v1 failure logs no search text through the real logger', async () => {
   assert.equal(errorEntry.page, 2);
 });
 
-test('v2 failure logs no search text through the real logger', async () => {
+test('area search failure logs no search text and sends no radius', async () => {
   const before = lines.length;
-  await findResourcesV2(
+  await findResources(
     {
       query: SECRET_QUERY,
       queryLabel: SECRET_QUERY,
       location: 'X',
       coordinates: [1, 2],
+      region: 'county:53033',
+      areaMatch: 'serving',
+      includeUnlocated: true,
       distance: '5',
     },
     'en',
@@ -142,6 +152,9 @@ test('v2 failure logs no search text through the real logger', async () => {
   const url = requestedUrls.at(-1) ?? '';
   for (const secret of [
     `query=${SECRET_QUERY}`,
+    'region=county%3A53033',
+    'area_match=serving',
+    'include_unlocated=true',
     'coords=1%2C2',
     SECRET_LOCATION,
   ]) {
@@ -150,18 +163,14 @@ test('v2 failure logs no search text through the real logger', async () => {
       `expected request URL to contain ${secret}`,
     );
   }
+  assert.ok(!url.includes('distance='), 'an area search sends no radius');
 
   const entries = parse(linesSince(before));
   assert.ok(entries.length > 0, 'expected at least one log line');
   assertNoSearchText(entries);
 
-  const errorEntry = entries.find(
-    (entry) => entry.msg === 'Search API error (V2)',
-  );
+  const errorEntry = entries.find((entry) => entry.msg === 'Search API error');
   assert.ok(errorEntry, 'expected the search error line');
-  assert.equal(errorEntry.api, 'v2');
-  assert.equal(errorEntry.errName, 'FetchError');
-  assert.equal(errorEntry.status, 400);
   assert.equal(errorEntry.tenantId, TENANT_V2);
 });
 

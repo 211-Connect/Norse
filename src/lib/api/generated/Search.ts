@@ -47,11 +47,13 @@ export class Search<
       ...params,
     });
   /**
-   * No description
+   * @description Deprecated: search an area with `GET /search?region=…` instead (see docs/area-search.md). This endpoint will be removed.
    *
    * @tags Search
    * @name SearchControllerGetResourcesPost
+   * @summary Search resources by a GeoJSON shape (deprecated)
    * @request POST:/search
+   * @deprecated
    */
   searchControllerGetResourcesPost = (
     query: SearchControllerGetResourcesPostParams = {},

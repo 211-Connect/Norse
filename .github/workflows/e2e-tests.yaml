@@ -113,6 +113,7 @@ jobs:
             --project=translations \
             --project=search-geocode \
             --project=search-dialog-location \
+            --project=area-search \
             --project=favorites \
             --project=accessibility \
             --project=resource-direct-link \

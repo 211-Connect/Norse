@@ -201,10 +201,42 @@ export interface RelevanceCutoffDto {
   candidates_examined: number;
 }
 
+export interface LatLngDto {
+  /** @example 39.0086 */
+  lat: number;
+  /** @example -94.3462 */
+  lng: number;
+}
+
+export interface RegionSummaryDto {
+  /** @example "county:29095" */
+  id: string;
+  type: "state" | "county" | "place" | "zip";
+  /** @example "Jackson County, MO" */
+  name: string;
+  /**
+   * Postal code of the state.
+   * @example "MO"
+   */
+  state: string;
+  /** A representative point, e.g. to bias an address search. */
+  centroid?: LatLngDto;
+}
+
+export interface ResolvedLocationDto {
+  /** The Regions searched, in the order asked. */
+  regions: RegionSummaryDto[];
+  /** The `area_match` applied: as sent, else the tenant default. */
+  area_match: "located" | "located_or_serving" | "serving";
+  /** The `include_unlocated` applied: as sent, else the tenant default. */
+  include_unlocated: boolean;
+}
+
 export interface SearchResponseDto {
   search: SearchHitsContainer;
   facets: string[];
   relevance_cutoff?: RelevanceCutoffDto | null;
+  resolved_location?: ResolvedLocationDto;
 }
 
 export interface SearchPinDto {
@@ -660,6 +692,16 @@ export interface ForwardGeocodeResponseDto {
    */
   region?: string;
   /**
+   * The hit's own name, without its context (Mapbox only), e.g. `Seattle`, `King County` or `98101`.
+   * @example "Seattle"
+   */
+  name?: string;
+  /**
+   * Postal code of the US state (Mapbox only), e.g. `WA`.
+   * @example "WA"
+   */
+  state_code?: string;
+  /**
    * Country name
    * @example "United States"
    */
@@ -674,6 +716,11 @@ export interface ForwardGeocodeResponseDto {
    * @example [-74.007,40.712,-74.005,40.714]
    */
   bbox?: number[];
+  /**
+   * Id of the Region this hit is an area of (Mapbox only): `region` → state, `district` → county, `place` → city or CDP of the same name, `postcode` → ZIP. Pass it to `GET /search` as `region`. `null` for a point (address, POI, neighborhood, locality) and for an area with no Region yet (e.g. a city not seeded, a PO-box ZIP) — search those with `coords` and `distance`. See docs/area-search.md.
+   * @example "county:53077"
+   */
+  region_id?: string | null;
 }
 
 export interface ReverseGeocodeResponseDto {
@@ -713,6 +760,16 @@ export interface ReverseGeocodeResponseDto {
    */
   region?: string;
   /**
+   * The hit's own name, without its context (Mapbox only), e.g. `Seattle`, `King County` or `98101`.
+   * @example "Seattle"
+   */
+  name?: string;
+  /**
+   * Postal code of the US state (Mapbox only), e.g. `WA`.
+   * @example "WA"
+   */
+  state_code?: string;
+  /**
    * Country name
    * @example "United States"
    */
@@ -727,6 +784,34 @@ export interface ReverseGeocodeResponseDto {
    * @example [-74.007,40.712,-74.005,40.714]
    */
   bbox?: number[];
+}
+
+export interface RegionAttributionDto {
+  text: string;
+  url?: string;
+}
+
+export interface RegionDetailDto {
+  /** @example "county:29095" */
+  id: string;
+  type: "state" | "county" | "place" | "zip";
+  /** @example "Jackson County, MO" */
+  name: string;
+  /**
+   * Postal code of the state.
+   * @example "MO"
+   */
+  state: string;
+  /** A representative point, e.g. to bias an address search. */
+  centroid?: LatLngDto;
+  /** Counties only. */
+  fips?: string;
+  /** ZIPs only. */
+  zip?: string;
+  /** GeoJSON geometry (Polygon or MultiPolygon). */
+  geometry: Record<string, any>;
+  /** Present when the source licence requires it; show it. */
+  attribution?: RegionAttributionDto;
 }
 
 export interface AnalyticsWebsiteName {
@@ -1514,6 +1599,15 @@ export interface SearchQueryApiDto {
    * @example "-120.740135,47.751076"
    */
   coords?: string;
+  /**
+   * Search an area instead of a point: one or more Region ids (comma list, up to 20), e.g. `county:53077` or `county:53077,county:53033` — `state:XX`, `county:<5-digit FIPS>`, `place:<7-digit Census GEOID>` or `zip:<5 digits>`. A resource matching any of them is returned; `area_match` says what matching means. Takes precedence over `coords`: `distance` and `geo_type` are ignored, and `coords`, if sent, only sets the origin for `sort=distance`. Unknown ids are a 400. Ids come from `GET /geocoding/forward` (`region_id`). See docs/area-search.md.
+   * @example "county:53077"
+   */
+  region?: string;
+  /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
+  area_match?: "located" | "located_or_serving" | "serving";
+  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
+  include_unlocated?: boolean;
   /** @example {"county":"King","language":["en","es"]} */
   filters?: Record<string, any>;
   /**
@@ -1634,6 +1728,13 @@ export interface PrintableDirectoryDefaultQueryConfigDto {
    * @example 25
    */
   radius?: number | null;
+  /**
+   * Region the directory is scoped to (`region` on GET /search), for an area default location such as a county or city. When set, query sources without their own location search this Region and `radius` is not applied; `coords` is then only the origin for distance sort. See docs/area-search.md.
+   * @example "county:53077"
+   */
+  regionId?: string | null;
+  /** `area_match` for `regionId` searches. Null: the tenant default from the CMS. */
+  areaMatch?: "located" | "located_or_serving" | "serving" | null;
 }
 
 export interface PrintableDirectorySourceQueryResponseDto {
@@ -2260,13 +2361,22 @@ export interface SearchControllerGetResourcesParams {
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
+  /**
+   * Search an area instead of a point: one or more Region ids (comma list, up to 20), e.g. `county:53077` or `county:53077,county:53033` — `state:XX`, `county:<5-digit FIPS>`, `place:<7-digit Census GEOID>` or `zip:<5 digits>`. A resource matching any of them is returned; `area_match` says what matching means. Takes precedence over `coords`: `distance` and `geo_type` are ignored, and `coords`, if sent, only sets the origin for `sort=distance`. Unknown ids are a 400. Ids come from `GET /geocoding/forward` (`region_id`). See docs/area-search.md.
+   * @example "county:53077"
+   */
+  region?: string;
+  /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
+  area_match?: "located" | "located_or_serving" | "serving";
+  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
+  include_unlocated?: boolean;
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
-   * Radius in miles. Only takes effect when `coords` is also set.
+   * Radius in miles. Only takes effect when `coords` is also set; ignored with `region`.
    * @min 0
    * @default 0
    */
@@ -2282,7 +2392,7 @@ export interface SearchControllerGetResourcesParams {
    * @default 25
    */
   limit?: number;
-  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
+  /** Controls how coords/distance combine with a resource's declared service_area. `distance` 0 (the default) means no radius filter. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required (a result with no map point skips the distance check). `proximity`: a result with a map point must be within `distance` of `coords`, with no service_area check; a result with no map point is returned only if its service_area contains `coords`. With `distance` 0, `proximity` applies no geo filter. `boundary` (deprecated, use `region`): ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. Ignored when `region` is set. */
   geo_type?: "boundary" | "proximity";
   /**
    * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. Pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default; `top` hard-sorts them first; `ignore` disables them). For `hybrid` search, `boost` folds pinned/priority into the relevance score; for other query types, `ignore` removes the priority sort tier while other modes preserve it. Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
@@ -2320,6 +2430,15 @@ export interface SearchControllerGetResourcesPostParams {
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
+  /**
+   * Search an area instead of a point: one or more Region ids (comma list, up to 20), e.g. `county:53077` or `county:53077,county:53033` — `state:XX`, `county:<5-digit FIPS>`, `place:<7-digit Census GEOID>` or `zip:<5 digits>`. A resource matching any of them is returned; `area_match` says what matching means. Takes precedence over `coords`: `distance` and `geo_type` are ignored, and `coords`, if sent, only sets the origin for `sort=distance`. Unknown ids are a 400. Ids come from `GET /geocoding/forward` (`region_id`). See docs/area-search.md.
+   * @example "county:53077"
+   */
+  region?: string;
+  /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
+  area_match?: "located" | "located_or_serving" | "serving";
+  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
+  include_unlocated?: boolean;
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;
@@ -2342,7 +2461,7 @@ export interface SearchControllerGetResourcesPostParams {
    * @default 25
    */
   limit?: number;
-  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape. */
+  /** Controls how coords/distance combine with a resource's declared service_area. `distance` 0 (the default) means no radius filter. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required (a result with no map point skips the distance check). `proximity`: a result with a map point must be within `distance` of `coords`, with no service_area check; a result with no map point is returned only if its service_area contains `coords`. With `distance` 0, `proximity` applies no geo filter. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape. */
   geo_type?: "boundary" | "proximity";
   /**
    * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. Pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default; `top` hard-sorts them first; `ignore` disables them). For `hybrid` search, `boost` folds pinned/priority into the relevance score; for other query types, `ignore` removes the priority sort tier while other modes preserve it. Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
@@ -2376,13 +2495,22 @@ export interface SearchControllerGetPinsParams {
   page?: number;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
+  /**
+   * Search an area instead of a point: one or more Region ids (comma list, up to 20), e.g. `county:53077` or `county:53077,county:53033` — `state:XX`, `county:<5-digit FIPS>`, `place:<7-digit Census GEOID>` or `zip:<5 digits>`. A resource matching any of them is returned; `area_match` says what matching means. Takes precedence over `coords`: `distance` and `geo_type` are ignored, and `coords`, if sent, only sets the origin for `sort=distance`. Unknown ids are a 400. Ids come from `GET /geocoding/forward` (`region_id`). See docs/area-search.md.
+   * @example "county:53077"
+   */
+  region?: string;
+  /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
+  area_match?: "located" | "located_or_serving" | "serving";
+  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
+  include_unlocated?: boolean;
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
-   * Radius in miles. Only takes effect when `coords` is also set.
+   * Radius in miles. Only takes effect when `coords` is also set; ignored with `region`.
    * @min 0
    * @default 0
    */
@@ -2398,7 +2526,7 @@ export interface SearchControllerGetPinsParams {
    * @default 25
    */
   limit?: number;
-  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
+  /** Controls how coords/distance combine with a resource's declared service_area. `distance` 0 (the default) means no radius filter. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required (a result with no map point skips the distance check). `proximity`: a result with a map point must be within `distance` of `coords`, with no service_area check; a result with no map point is returned only if its service_area contains `coords`. With `distance` 0, `proximity` applies no geo filter. `boundary` (deprecated, use `region`): ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. Ignored when `region` is set. */
   geo_type?: "boundary" | "proximity";
   /**
    * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. Pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default; `top` hard-sorts them first; `ignore` disables them). For `hybrid` search, `boost` folds pinned/priority into the relevance score; for other query types, `ignore` removes the priority sort tier while other modes preserve it. Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
@@ -2763,6 +2891,18 @@ export interface GeocodingControllerReverseGeocodeParams {
 }
 
 export type GeocodingControllerReverseGeocodeData = ReverseGeocodeResponseDto[];
+
+export interface RegionPublicControllerGetParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  /**
+   * @pattern ^(state:[A-Z]{2}|county:\d{5}|place:\d{7}|zip:\d{5})$
+   * @example "county:29095"
+   */
+  id: string;
+}
+
+export type RegionPublicControllerGetData = RegionDetailDto;
 
 export type AnalyticsControllerGetInfoData = AnalyticsInfoResponse;
 

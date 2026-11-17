@@ -365,6 +365,52 @@ export const search: Tab = {
             update: superAdminOrSupportOrTenantAccess,
           },
         },
+        {
+          name: 'areaMatchMode',
+          type: 'select',
+          dbName: 'area_match',
+          label: 'Area search: which resources to list',
+          defaultValue: 'located_or_serving',
+          options: [
+            {
+              label: 'Only resources with an address in the area',
+              value: 'located',
+            },
+            {
+              label:
+                'Resources with an address in the area, plus resources without an address that serve it',
+              value: 'located_or_serving',
+            },
+            {
+              label:
+                'Every resource that serves the area, wherever its address is',
+              value: 'serving',
+            },
+          ],
+          admin: {
+            description:
+              'Used when a visitor picks a state, county, city or ZIP code; picking an address still searches a radius around it. A resource "serves" the area when its service area overlaps any part of it. Resources without an address are virtual services, hotlines and PO boxes. The last option also lists resources based elsewhere, such as a statewide hotline with an office in another county.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
+          name: 'includeUnlocatedInAreaSearch',
+          type: 'checkbox',
+          label:
+            'Area search: also list resources with no address and no service area',
+          defaultValue: false,
+          admin: {
+            description:
+              'They cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
       ],
     },
     {

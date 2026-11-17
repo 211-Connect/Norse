@@ -33,6 +33,8 @@ export type SearchResultsData = {
   sort: SortOption;
   /** Search origin from the URL `coords`, which is what the server sorts and filters by. */
   coordinates: number[] | null;
+  /** Area the server filtered by (URL `region`), whose outline the map draws; null for a point search. */
+  region: string | null;
 };
 
 export type SearchResultsContextValue = SearchResultsData & {

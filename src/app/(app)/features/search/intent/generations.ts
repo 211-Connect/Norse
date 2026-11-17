@@ -33,7 +33,8 @@ export type Modifier =
   | 'page'
   | 'age'
   | 'distance'
-  | 'coords';
+  | 'coords'
+  | 'region';
 
 type Shape = (intent: SearchIntent, envelope: SearchEnvelope) => boolean;
 
@@ -106,6 +107,7 @@ export function modifiersOf(
     ['age', intent.age.stated],
     ['distance', intent.distance.stated],
     ['coords', intent.coords.stated],
+    ['region', intent.region.stated],
   ];
   return flags.filter(([, on]) => on).map(([m]) => m);
 }

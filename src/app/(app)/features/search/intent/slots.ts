@@ -186,6 +186,9 @@ export const SEARCH_SLOTS = defineSlots({
   aiOptions,
   location: stringParam('location'),
   coords,
+  // The area searched (`state:WA`, `county:53033`, `place:5363000`, `zip:98101`), see
+  // docs/area-search.md. With it the location is an area, not a point: no radius.
+  region: stringParam('region'),
   distance: stringParam('distance'),
   filters,
   sort,

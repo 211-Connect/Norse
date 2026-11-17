@@ -919,6 +919,14 @@ export interface ResourceDirectory {
        * Must match one of the radius values above
        */
       defaultRadius?: number | null;
+      /**
+       * Used when a visitor picks a state, county, city or ZIP code; picking an address still searches a radius around it. A resource "serves" the area when its service area overlaps any part of it. Resources without an address are virtual services, hotlines and PO boxes. The last option also lists resources based elsewhere, such as a statewide hotline with an office in another county.
+       */
+      areaMatchMode?: ('located' | 'located_or_serving' | 'serving') | null;
+      /**
+       * They cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.
+       */
+      includeUnlocatedInAreaSearch?: boolean | null;
     };
     facets?:
       | {
@@ -1876,6 +1884,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     id?: T;
                   };
               defaultRadius?: T;
+              areaMatchMode?: T;
+              includeUnlocatedInAreaSearch?: T;
             };
         facets?:
           | T

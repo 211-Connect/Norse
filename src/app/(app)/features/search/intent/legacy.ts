@@ -8,6 +8,7 @@ import {
   isTaxonomySearch,
 } from '@/app/(app)/shared/lib/search-utils';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import { isRegionId } from '@/types/areaSearch';
 
 import type { Slot } from './slot';
 import type { SearchIntent } from './slots';
@@ -20,13 +21,15 @@ const nonEmpty = (slot: Slot<string>) => valueOf(slot) || undefined;
 
 /**
  * The intent in the shape the search service and the deep-link gate take. This is where the readings that the intent
- * deliberately does not make live: empty is absent, "Everywhere" is no location, age 0 is no age, and
+ * deliberately does not make live: empty is absent, "Everywhere" is no location, a malformed region is no
+ * region, age 0 is no age, and
  * sort falls back to relevance, or to distance for a located taxonomy search (and to relevance from distance without
  * valid coords).
  */
 export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
   const coordinates = valueOf(intent.coords);
   const location = nonEmpty(intent.location);
+  const region = nonEmpty(intent.region)?.trim();
   const taxonomy = valueOf(intent.taxonomy);
   const query = nonEmpty(intent.query);
   const queryType = nonEmpty(intent.queryType);
@@ -37,6 +40,7 @@ export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
     organizationId: nonEmpty(intent.organizationId),
     location: isEverywhereLocation(location) ? undefined : location,
     coordinates,
+    region: isRegionId(region) ? region : undefined,
     distance: nonEmpty(intent.distance),
     taxonomy: taxonomy?.length ? taxonomy : undefined,
     filters: valueOf(intent.filters) as FindResourcesQuery['filters'],

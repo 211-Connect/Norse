@@ -42,7 +42,7 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 
 ## Multi-tenant test matrix
 
-The full suite (`search-taxonomy`, `translations`, `search-geocode`,
+The full suite (`search-taxonomy`, `translations`, `search-geocode`, `area-search`,
 `favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
 `organization`, `mboa-qa-checklist`, `map-pins`) runs against the 7 tenants' dev hosts in CI — see
 `.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only).
@@ -106,6 +106,15 @@ codes/labels, broad queries, test-account emails, `aiSearchEnabled`,
   search is tenant-environment-gated by `organizationSearchEnabled` and
   currently enabled for DUPAGE and SCC (`e2e/fixtures/tenants.ts`).
 
+- `search-area.spec.ts` (project `area-search`) covers area search
+  ([docs/area-search.md](/docs/area-search.md)): picking a state, county, ZIP
+  and (where seeded) city gives `region=<id>`, no `distance`, no radius select,
+  a "Search area" legend row and `data-search-area="shown"` on `search-map`
+  (the outline is on the canvas); an address and an unseeded city stay point
+  searches. Also deep links, the saved-area cookie, pagination, a shared area
+  link with a distance cookie, and an invalid id. Picks are real geocoder
+  suggestions in `tenant.areaSearch`; `city`/`unseededCity` are optional and
+  skip where missing.
 - `search-map-pins.spec.ts` (project `map-pins`) covers every result on the
   search map ([docs/map-pins.md](/docs/map-pins.md)): an empty search's
   result total and legend, all pins loaded within `MAP_PINS_LOAD_TIMEOUT_MS`,
@@ -286,7 +295,7 @@ failure names the same step a manual tester would report.
 
 - `npm run test:e2e` — full suite (all projects, Desktop Chrome only).
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
-  `translations`, `search-geocode`, `search-taxonomy`, `share-link`,
+  `translations`, `search-geocode`, `area-search`, `search-taxonomy`, `share-link`,
   `resource-direct-link`, `organization`, `mboa-qa-checklist`, `map-pins`).
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`
   when no tenant/env is selected, otherwise it is derived from

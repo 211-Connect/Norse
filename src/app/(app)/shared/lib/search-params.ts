@@ -1,6 +1,7 @@
 import qs from 'qs';
 
 import { SearchEngine } from '@/types/appConfig';
+import { DEFAULT_AREA_MATCH } from '@/types/areaSearch';
 
 import { type FindResourcesQuery } from '../services/search-service';
 import { deriveQueryType } from './search-utils';
@@ -21,6 +22,8 @@ export function toSearchParams({
   searchEngine: SearchEngine;
 }) {
   const hasCoords = query.coordinates?.length === 2;
+  // An area is searched as its shape: no radius, and coords only order by distance.
+  const region = query.region;
 
   return {
     ...(query.query?.trim() && { query: query.query.trim() }),
@@ -32,8 +35,13 @@ export function toSearchParams({
     ...(query.organizationId && { organization_id: query.organizationId }),
     ...(Array.isArray(query.taxonomy) &&
       query.taxonomy.length > 0 && { taxonomy: query.taxonomy.join(',') }),
+    ...(region && {
+      region,
+      area_match: query.areaMatch ?? DEFAULT_AREA_MATCH,
+      include_unlocated: String(query.includeUnlocated ?? false),
+    }),
     ...(hasCoords && { coords: query.coordinates!.join(',') }),
-    ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+    ...(hasCoords && !region && { distance: query.distance?.trim() || '0' }),
     locale,
     ...(tenantId && { tenant_id: tenantId }),
     ...(query.filters &&
@@ -57,6 +65,9 @@ const PINS_PARAMS = [
   'query_type',
   'organization_id',
   'taxonomy',
+  'region',
+  'area_match',
+  'include_unlocated',
   'coords',
   'distance',
   'locale',

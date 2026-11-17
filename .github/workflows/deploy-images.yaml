@@ -55,7 +55,6 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
-            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -79,7 +78,6 @@ jobs:
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
-          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}
 
   deploy-app:
     needs: deploy-cms
@@ -94,7 +92,6 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
-            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -119,4 +116,3 @@ jobs:
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
-          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}
