@@ -919,6 +919,14 @@ export interface ResourceDirectory {
        * Must match one of the radius values above
        */
       defaultRadius?: number | null;
+      /**
+       * Applies when a visitor picks a state, county, city or ZIP code (not an address). "Located" uses where a resource is; "serving" uses its service area. The default also lists virtual resources and PO boxes whose service area covers the area. "Located in the area or serving it" adds resources located elsewhere that serve the area, e.g. statewide hotlines.
+       */
+      areaMatchMode?: ('located' | 'located_or_serving' | 'serving') | null;
+      /**
+       * These resources cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.
+       */
+      includeUnlocatedInAreaSearch?: boolean | null;
     };
     facets?:
       | {
@@ -1876,6 +1884,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     id?: T;
                   };
               defaultRadius?: T;
+              areaMatchMode?: T;
+              includeUnlocatedInAreaSearch?: T;
             };
         facets?:
           | T

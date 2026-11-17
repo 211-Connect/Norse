@@ -31,6 +31,7 @@ export type CacheKey =
   | `search_pins:${TenantId}:${Locale}:${Hash}`
   | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
+  | `region_area:${string}`
   | `resource:${TenantId}:${ResourceId}:${Locale}`
   | `resource_batch:${TenantId}:${Locale}:${Hash}`
   | `search_config:${TenantId}:${Locale}`

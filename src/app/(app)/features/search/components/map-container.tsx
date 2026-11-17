@@ -26,6 +26,7 @@ import {
   groupPinsBySite,
   omitPagePins,
 } from '../utils/map-pins';
+import { useRegionArea } from '../hooks/useRegionArea';
 import { useSearchPins } from '../hooks/useSearchPins';
 import { MapLegend } from './map-legend';
 import { MapPopup, MapSitePopup } from './map-popup';
@@ -97,8 +98,9 @@ export function MapContainer() {
   const appConfig = useAppConfig();
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  const { t } = useTranslation('page-search');
-  const { results, totalResults, pinsQuery } = useSearchResults();
+  const { t, i18n } = useTranslation('page-search');
+  const { results, totalResults, pinsQuery, region } = useSearchResults();
+  const searchArea = useRegionArea(region, i18n.language)?.geometry;
   // When the page holds every result, the pins could add nothing to it.
   const isWholeSearchOnPage = totalResults <= results.length;
   const { pins, isLoading: isLoadingPins } = useSearchPins(
@@ -180,15 +182,19 @@ export function MapContainer() {
               resetKey={results}
               fallback={<MapErrorFallback error="Failed to load map" />}
             >
-              <MapRenderer markers={pageMarkers} />
+              <MapRenderer markers={pageMarkers} searchArea={searchArea} />
             </ErrorBoundary>
           }
         >
-          <MapRenderer markers={mapMarkers} points={mapPoints ?? undefined} />
+          <MapRenderer
+            markers={mapMarkers}
+            points={mapPoints ?? undefined}
+            searchArea={searchArea}
+          />
           {mapPoints && mapPoints.length > 0 && (
             <MapLegend
               rows={legendRows}
-              showUserLocation={coords?.length === 2}
+              showUserLocation={coords?.length === 2 && !region}
               isLoadingPins={isLoadingPins}
             />
           )}

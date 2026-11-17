@@ -17,6 +17,8 @@ export type BuildSearchUrlArgs = Partial<{
   organizationId: string;
   location: string | null;
   coordinates: string | number[] | null;
+  /** A Region id when the location is an area; written only with a location, and drops the distance. */
+  region: string | null;
   distance: string | [string, string] | null;
   filters: Record<string, string[]> | null;
   taxonomies: string[] | null;
@@ -45,6 +47,7 @@ export function buildSearchUrl({
   organizationId,
   location,
   coordinates,
+  region,
   distance,
   filters,
   taxonomies,
@@ -66,6 +69,7 @@ export function buildSearchUrl({
       typeof coordinates === 'string'
         ? (coordinates.split(',') as unknown as number[])
         : coordinates,
+    region: region || null,
     distance: Array.isArray(distance) ? distance.join(',') : distance,
     filters,
   });

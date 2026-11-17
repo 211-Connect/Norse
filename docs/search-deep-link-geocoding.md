@@ -27,8 +27,8 @@ a place.
    - If the URL already has `location` but not `coords`, the middleware
      deliberately does nothing (`return`) and defers to the search page
      component — it does not have geocoding capability itself.
-   - Otherwise, it fills in `location`/`coords`/`distance` from the
-     `user-pref-*` cookies when the incoming URL doesn't specify them, so a
+   - Otherwise, it fills in `location`/`coords`/`distance` (or `region`
+     instead of `distance`, for an area) from the `user-pref-*` cookies when the incoming URL doesn't specify them, so a
      returning user's last-used place carries over to a fresh link that has
      no location info at all.
    - Deep links that already specify a `location` are never overwritten by
@@ -40,7 +40,10 @@ a place.
      present but `coords` is missing (the case the middleware deferred).
    - Forward-geocodes `searchQuery.location` via `forwardGeocode` (Mapbox).
    - On success: `redirect()`s to the same `/search` path with all original
-     params preserved (`qs.stringify(rawParams, ...)`) plus `coords` appended.
+     params preserved (`qs.stringify(rawParams, ...)`) plus `coords` appended,
+     and `region` (no `distance`) when the hit is an area with a `region_id`
+     (see [area-search.md](/docs/area-search.md)).
+   - Not called when the URL has `region`: an area search needs no coords.
    - On failure (no geocode match): logs a warning and continues rendering
      search results without `coords` rather than blocking the page.
 

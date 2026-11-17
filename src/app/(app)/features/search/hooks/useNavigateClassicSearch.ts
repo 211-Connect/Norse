@@ -55,6 +55,7 @@ export const useNavigateClassicSearch = ({
           ? {
               searchLocation: search.searchLocation,
               searchCoordinates: search.searchCoordinates,
+              searchRegion: search.searchRegion,
             }
           : {};
 
@@ -64,6 +65,7 @@ export const useNavigateClassicSearch = ({
             query,
             location: search.searchLocation,
             coordinates: search.searchCoordinates,
+            region: search.searchRegion,
             distance: search.searchDistance,
             searchEngine: appConfig.search.searchEngine,
           }),

@@ -471,6 +471,10 @@ export const setPointsData = (map: MapLibreMap, points: MarkerDef[]) => {
   TONES.forEach((tone) => addCircleLayers(map, tone));
 };
 
+/** The lowest result layer on the map, to draw an area under every circle; undefined before any. */
+export const getLowestPointsLayerId = (map: MapLibreMap) =>
+  TONES.map((tone) => layerIds(tone).stacks).find((id) => map.getLayer(id));
+
 export const removePointsLayer = (map: MapLibreMap) => {
   [...TONES].reverse().forEach((tone) => {
     const ids = layerIds(tone);

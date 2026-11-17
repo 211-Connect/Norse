@@ -22,6 +22,7 @@ import { useShareUrlBase } from '../../hooks/use-share-url-base';
 import { getLanguageName } from '@/app/(app)/shared/lib/language-names';
 
 import { getAccessPolicyLabel, orderLocales } from '../../utils';
+import { areaMatchLabel } from '../area-match-select';
 import { EditDirectoryDialog } from '../edit-directory-dialog';
 import { CopyShareUrlButton } from './copy-share-url-button';
 import { DirectoryImageThumbnail } from './directory-image-thumbnail';
@@ -176,16 +177,32 @@ export function GeneralInfoCard({
             </span>{' '}
             {directory.defaultQueryConfig?.locationName || '-'}
           </Typography>
-          <Typography as="p" variant="paragraph" size="sm">
-            <span className="font-medium">
-              {t('default_query_config.radius_label', {
-                ns: 'page-directories',
-                defaultValue: 'Default radius',
-              })}
-              :
-            </span>{' '}
-            {directory.defaultQueryConfig?.radius ?? '-'}
-          </Typography>
+          {directory.defaultQueryConfig?.regionId ? (
+            <Typography as="p" variant="paragraph" size="sm">
+              <span className="font-medium">
+                {t('default_query_config.area_match_label', {
+                  ns: 'page-directories',
+                  defaultValue: 'Resources in this area',
+                })}
+                :
+              </span>{' '}
+              {areaMatchLabel(
+                t,
+                directory.defaultQueryConfig.areaMatch ?? null,
+              )}
+            </Typography>
+          ) : (
+            <Typography as="p" variant="paragraph" size="sm">
+              <span className="font-medium">
+                {t('default_query_config.radius_label', {
+                  ns: 'page-directories',
+                  defaultValue: 'Default radius',
+                })}
+                :
+              </span>{' '}
+              {directory.defaultQueryConfig?.radius ?? '-'}
+            </Typography>
+          )}
           {canUploadLogo && (
             <div className="space-y-1">
               <Typography as="p" variant="paragraph" size="sm">

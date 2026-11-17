@@ -365,6 +365,50 @@ export const search: Tab = {
             update: superAdminOrSupportOrTenantAccess,
           },
         },
+        {
+          name: 'areaMatchMode',
+          type: 'select',
+          dbName: 'area_match',
+          label: 'Area search: which resources count as in the area',
+          defaultValue: 'located_or_serving',
+          options: [
+            {
+              label: 'Located in the area',
+              value: 'located',
+            },
+            {
+              label: 'Located in the area, or (without a location) serving it',
+              value: 'located_or_serving',
+            },
+            {
+              label: 'Located in the area or serving it',
+              value: 'serving',
+            },
+          ],
+          admin: {
+            description:
+              'Applies when a visitor picks a state, county, city or ZIP code (not an address). "Located" uses where a resource is; "serving" uses its service area. The default also lists virtual resources and PO boxes whose service area covers the area. "Located in the area or serving it" adds resources located elsewhere that serve the area, e.g. statewide hotlines.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
+          name: 'includeUnlocatedInAreaSearch',
+          type: 'checkbox',
+          label:
+            'Area search: include resources with no location and no service area',
+          defaultValue: false,
+          admin: {
+            description:
+              'These resources cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
       ],
     },
     {

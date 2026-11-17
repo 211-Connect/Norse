@@ -24,6 +24,8 @@ export function buildHybridSearchConfigCache(
   const pinnedResourcesMode =
     resourceDirectory.search?.searchSettings?.pinnedResourcesMode ?? 'boost';
 
+  const searchSettings = resourceDirectory.search?.searchSettings;
+
   const enableOrganizationSearch =
     resourceDirectory.featureFlags?.enableOrganizationSearch ?? false;
 
@@ -44,5 +46,9 @@ export function buildHybridSearchConfigCache(
     taxonomy_num_candidates: hybridSearchConfig?.taxonomyNumCandidates ?? null,
     pinned_resources_mode: pinnedResourcesMode,
     enable_organization_search: enableOrganizationSearch,
+    // Defaults for area searches (GET /search `region`) when the caller sends none.
+    area_match: searchSettings?.areaMatchMode ?? 'located_or_serving',
+    include_unlocated_in_area_search:
+      searchSettings?.includeUnlocatedInAreaSearch ?? false,
   };
 }

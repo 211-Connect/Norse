@@ -25,9 +25,12 @@ import {
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { usePrintableDirectoryCapability } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
 import { PrintableDirectoryDefaultQueryConfigDto } from '@/lib/api/generated/data-contracts';
+import { type AreaMatch } from '@/types/areaSearch';
 import { AccessPolicy } from '@/types/printableDirectories';
 
 import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
+
+import { AreaMatchSelect } from './area-match-select';
 import { getLanguageName } from '@/app/(app)/shared/lib/language-names';
 
 import { useShareUrlBase } from '../hooks/use-share-url-base';
@@ -112,6 +115,8 @@ export function EditDirectoryDialog({
     PrintableDirectoryDefaultQueryConfigDto['coords']
   > | null>(null);
   const [defaultRadius, setDefaultRadius] = useState('');
+  const [regionId, setRegionId] = useState<string | null>(null);
+  const [areaMatch, setAreaMatch] = useState<AreaMatch | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -127,6 +132,8 @@ export function EditDirectoryDialog({
       initialValues.defaultQueryConfig?.locationName ?? everywhereLabel,
     );
     setDefaultCoords(initialValues.defaultQueryConfig?.coords ?? null);
+    setRegionId(initialValues.defaultQueryConfig?.regionId ?? null);
+    setAreaMatch(initialValues.defaultQueryConfig?.areaMatch ?? null);
     setDefaultRadius(
       initialValues.defaultQueryConfig?.radius != null
         ? String(initialValues.defaultQueryConfig.radius)
@@ -149,8 +156,9 @@ export function EditDirectoryDialog({
     const normalizedLocationName =
       trimmedLocationName === everywhereLabel ? '' : trimmedLocationName;
     const parsedRadiusValue = Number(defaultRadius.trim());
+    // An area is searched as its shape: no radius (docs/area-search.md).
     const parsedRadius =
-      defaultRadius.trim() && Number.isFinite(parsedRadiusValue)
+      !regionId && defaultRadius.trim() && Number.isFinite(parsedRadiusValue)
         ? parsedRadiusValue
         : undefined;
 
@@ -160,6 +168,8 @@ export function EditDirectoryDialog({
             locationName: normalizedLocationName || undefined,
             coords: defaultCoords ?? undefined,
             radius: parsedRadius,
+            regionId,
+            areaMatch: regionId ? areaMatch : null,
           }
         : null;
 
@@ -346,8 +356,9 @@ export function EditDirectoryDialog({
             showIcon={false}
             placeholder=""
             initialValue={defaultLocationName}
-            onLocationChange={(location, coordinates) => {
+            onLocationChange={(location, coordinates, nextRegionId) => {
               setDefaultLocationName(location);
+              setRegionId(nextRegionId);
               setDefaultCoords(
                 coordinates
                   ? {
@@ -360,23 +371,31 @@ export function EditDirectoryDialog({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="edit-directory-default-radius">
-            {t('default_query_config.radius_label', {
-              ns: 'page-directories',
-              defaultValue: 'Default radius',
-            })}
-          </Label>
-          <Input
-            id="edit-directory-default-radius"
-            className="h-9 text-sm"
-            type="number"
-            min={0}
-            max={1000}
-            value={defaultRadius}
-            onChange={(event) => setDefaultRadius(event.target.value)}
+        {regionId ? (
+          <AreaMatchSelect
+            id="edit-directory-area-match"
+            value={areaMatch}
+            onChange={setAreaMatch}
           />
-        </div>
+        ) : (
+          <div className="space-y-2">
+            <Label htmlFor="edit-directory-default-radius">
+              {t('default_query_config.radius_label', {
+                ns: 'page-directories',
+                defaultValue: 'Default radius',
+              })}
+            </Label>
+            <Input
+              id="edit-directory-default-radius"
+              className="h-9 text-sm"
+              type="number"
+              min={0}
+              max={1000}
+              value={defaultRadius}
+              onChange={(event) => setDefaultRadius(event.target.value)}
+            />
+          </div>
+        )}
 
         {canUploadLogo && (
           <div className="space-y-1">

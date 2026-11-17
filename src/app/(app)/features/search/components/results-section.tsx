@@ -125,9 +125,10 @@ export function ResultsSection({
       organization_id: toSingleString(parsedParams.organization_id),
       coords: toSingleString(parsedParams.coords),
       location: toSingleString(parsedParams.location),
+      region: toSingleString(parsedParams.region),
     };
 
-    if (parsedDistance !== undefined) {
+    if (parsedDistance !== undefined && !nextParams.region) {
       nextParams.distance = parsedDistance;
     }
 

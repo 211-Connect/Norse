@@ -28,8 +28,8 @@ const ALLOWED: Record<string, { count: number; why: string }> = {
     why: 'the request URL for bot protection, not a link',
   },
   'app/(app)/shared/services/search-service.ts': {
-    count: 2,
-    why: 'Norse-API requests, not page URLs',
+    count: 1,
+    why: 'the Norse-API request, not a page URL',
   },
   'app/(app)/shared/lib/paths.ts': {
     count: 1,

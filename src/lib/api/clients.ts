@@ -10,6 +10,7 @@ import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { PrintableDirectoryDeliveries } from './generated/PrintableDirectoryDeliveries';
 import { PrintableDirectoryDeliveriesInternal } from './generated/PrintableDirectoryDeliveriesInternal';
+import { Region } from './generated/Region';
 import { Resource } from './generated/Resource';
 import { Search } from './generated/Search';
 import { ShortUrl } from './generated/ShortUrl';
@@ -69,6 +70,8 @@ export const favoriteListApiClient = new FavoriteList(
 );
 
 export const favoriteApiClient = new Favorite(clientArgs('favorite'));
+
+export const regionApiClient = new Region(clientArgs('region'));
 
 export const resourceApiClient = new Resource(clientArgs('resource'));
 

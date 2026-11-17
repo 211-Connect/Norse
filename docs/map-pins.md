@@ -65,9 +65,9 @@ MapContainer
 - **AI classification.** It needs no special handling: results load through
   `GET /search`, so pins use the same request. Pins are skipped only when the
   clarify dialog opens over the page and hides the map.
-- **`POST /search`.** Not supported, as it is being removed. With
-  `NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG` on, the list and pins
-  could disagree.
+- **Area search.** Pins take the same `region`, `area_match` and
+  `include_unlocated` as the list, so they show the same resources; the map
+  draws the area's outline under them (see docs/area-search.md).
 
 ## Map behavior
 
