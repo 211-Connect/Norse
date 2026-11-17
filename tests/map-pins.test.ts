@@ -97,17 +97,20 @@ test('no locations have no extent to fit', () => {
 });
 
 test('circles are known by place and count their resources', () => {
-  const { features } = toFeatureCollection([
-    { id: 'no-location', inList: true },
-    { id: 'one', coordinates: [-120, 46] },
-    { id: 'site', coordinates: [-121.123456, 47], count: 3, inList: true },
-  ]);
+  const { features } = toFeatureCollection(
+    [
+      { id: 'no-location', inList: true },
+      { id: 'one', coordinates: [-120, 46] },
+      { id: 'site', coordinates: [-121.123456, 47], count: 3, inList: true },
+    ],
+    'subtle',
+  );
 
   assert.deepEqual(
     features.map(({ properties }) => properties),
     [
-      { key: '-120.00000,46.00000', resources: 1, stack: 0 },
-      { key: '-121.12346,47.00000', resources: 3, stack: 1 },
+      { key: '-120.00000,46.00000', resources: 1, stack: 0, tone: 'subtle' },
+      { key: '-121.12346,47.00000', resources: 3, stack: 1, tone: 'subtle' },
     ],
   );
 });

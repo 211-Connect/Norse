@@ -95,6 +95,14 @@ export type TenantFixture = {
    * then, same convention as `aiScenarioQueries`.
    */
   organization?: { id: string; name: string; city?: string };
+  /**
+   * Set only for tenants/environments with "Show all results on the map"
+   * (`showAllResultsOnMap`) on, per environment. `resultTotal` is the
+   * `#result-total` text an empty search shows, e.g. `1-100 of 10,000+`: the
+   * page size and the total (capped at 10,000) with the flag on. The
+   * `map-pins` spec skips where it is missing.
+   */
+  mapPins?: Partial<Record<TenantEnv, { resultTotal: string }>>;
 };
 
 export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
@@ -132,6 +140,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     hasFacets: true,
     directResourceId: '01fc1648-60db-59d0-b5fc-ba5027767fb1',
     organizationSearchEnabled: { dev: false, prod: false },
+    mapPins: {
+      dev: { resultTotal: '10,000' },
+      prod: { resultTotal: '10,000' },
+    },
   },
   VA: {
     key: 'VA',
@@ -303,6 +315,12 @@ export function getRequiredOrganizationFixture(): {
     );
   }
   return tenant.organization;
+}
+
+/** The map-pins fixture for the current tenant and environment, if the flag is on there. */
+export function getMapPinsFixtureForCurrentTenant():
+  { resultTotal: string } | undefined {
+  return getCurrentTenant().mapPins?.[getCurrentTenantEnv()];
 }
 
 export function isOrganizationSearchEnabledForCurrentTenant(): boolean {
