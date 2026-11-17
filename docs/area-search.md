@@ -12,10 +12,10 @@ doc covers what Norse sends, stores and draws.
 
 Payload → Resource Directories → **Search** tab → Search settings:
 
-| Field (label starts "Area search:")              | Default              | Meaning                                                            |
-| ------------------------------------------------- | -------------------- | ------------------------------------------------------------------ |
-| `areaMatchMode` — which resources count as in the area | `located_or_serving` | What "in the area" means; see the modes below.                     |
-| `includeUnlocatedInAreaSearch`                    | off                  | Also return resources with neither a location nor a service area. |
+| Field (label starts "Area search:")                  | Default              | Meaning                                                                 |
+| ----------------------------------------------------- | -------------------- | ----------------------------------------------------------------------- |
+| `areaMatchMode` — which resources to list             | `located_or_serving` | Which resources an area search returns; see the options below.          |
+| `includeUnlocatedInAreaSearch` — also list resources with no address and no service area | off | They can't be placed in any area; when on, they appear in every area search. |
 
 Columns: `search_search_settings_area_match_mode` and
 `search_search_settings_include_unlocated_in_area_search` (migration
@@ -26,11 +26,20 @@ Both reach the app as `appConfig.search.areaMatch` /
 `search_config.area_match` / `include_unlocated_in_area_search` in Redis
 (`buildHybridSearchConfigCache`). Visitors get no control for them.
 
-| `area_match`         | resource with a location     | resource without a location   |
-| -------------------- | ---------------------------- | ----------------------------- |
-| `located`            | location inside the area     | left out                      |
-| `located_or_serving` | location inside the area     | service area overlaps it      |
-| `serving`            | inside, or service area overlaps | service area overlaps it  |
+"Address" here means the resource has a map point (`location.point`);
+"serves" means its `service_area` overlaps any part of the area.
+
+| `area_match`         | Admin label                                                                  | with an address                      | without an address    |
+| -------------------- | ---------------------------------------------------------------------------- | ------------------------------------ | --------------------- |
+| `located`            | Only resources with an address in the area                                   | address in the area                  | left out              |
+| `located_or_serving` | Resources with an address in the area, plus resources without an address that serve it | address in the area      | serves the area       |
+| `serving`            | Every resource that serves the area, wherever its address is                 | address in the area, or serves it    | serves the area       |
+
+"Serves" is always "overlaps". A "covers the whole area" option is not built:
+Elasticsearch `contains` fails on today's data because the Region shapes
+(simplemaps) and service areas (boundaries.io tiles) don't share edges
+(`state:WA` contains 0 WA services; overlaps 15,669). It would need a
+slightly shrunken copy of each Region shape in the `regions` index.
 
 ## Flow
 
@@ -71,7 +80,7 @@ search map                useRegionArea(region) → /api/region-area → GET /re
 
 The default location stores `defaultQueryConfig.regionId` when the picked
 place has one, and an optional `areaMatch` (null: the site default). With a
-region the radius field is replaced by a "Resources in this area" select,
+region the radius field is replaced by a "Which resources to list" select,
 and no radius is saved. Query sources saved from an area search store
 `region` with their `coords` and no `distance`.
 

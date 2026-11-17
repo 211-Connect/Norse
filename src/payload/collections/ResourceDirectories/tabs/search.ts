@@ -369,25 +369,27 @@ export const search: Tab = {
           name: 'areaMatchMode',
           type: 'select',
           dbName: 'area_match',
-          label: 'Area search: which resources count as in the area',
+          label: 'Area search: which resources to list',
           defaultValue: 'located_or_serving',
           options: [
             {
-              label: 'Located in the area',
+              label: 'Only resources with an address in the area',
               value: 'located',
             },
             {
-              label: 'Located in the area, or (without a location) serving it',
+              label:
+                'Resources with an address in the area, plus resources without an address that serve it',
               value: 'located_or_serving',
             },
             {
-              label: 'Located in the area or serving it',
+              label:
+                'Every resource that serves the area, wherever its address is',
               value: 'serving',
             },
           ],
           admin: {
             description:
-              'Applies when a visitor picks a state, county, city or ZIP code (not an address). "Located" uses where a resource is; "serving" uses its service area. The default also lists virtual resources and PO boxes whose service area covers the area. "Located in the area or serving it" adds resources located elsewhere that serve the area, e.g. statewide hotlines.',
+              'Used when a visitor picks a state, county, city or ZIP code; picking an address still searches a radius around it. A resource "serves" the area when its service area overlaps any part of it. Resources without an address are virtual services, hotlines and PO boxes. The last option also lists resources based elsewhere, such as a statewide hotline with an office in another county.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
@@ -398,11 +400,11 @@ export const search: Tab = {
           name: 'includeUnlocatedInAreaSearch',
           type: 'checkbox',
           label:
-            'Area search: include resources with no location and no service area',
+            'Area search: also list resources with no address and no service area',
           defaultValue: false,
           admin: {
             description:
-              'These resources cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.',
+              'They cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,

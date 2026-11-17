@@ -20,9 +20,9 @@ import {
 const SITE_DEFAULT = 'site_default';
 
 const LABELS: Record<AreaMatch, string> = {
-  located: 'Located in the area',
-  located_or_serving: 'Located in the area, or serving it if not located',
-  serving: 'Located in or serving the area',
+  located: 'Only resources with an address in the area',
+  located_or_serving: 'Address in the area, or no address and serving it',
+  serving: 'Every resource serving the area',
 };
 
 /** A directory's area match as shown to an editor; null is the site default. */
@@ -56,7 +56,7 @@ export function AreaMatchSelect({ id, value, onChange }: AreaMatchSelectProps) {
     <div className="space-y-2">
       <Label htmlFor={id}>
         {t('default_query_config.area_match_label', {
-          defaultValue: 'Resources in this area',
+          defaultValue: 'Which resources to list',
         })}
       </Label>
       <Select
@@ -80,7 +80,7 @@ export function AreaMatchSelect({ id, value, onChange }: AreaMatchSelectProps) {
       <p className="text-muted-foreground text-xs">
         {t('default_query_config.area_match_help', {
           defaultValue:
-            'The location is searched as its whole area, so no radius applies.',
+            'The whole area is searched, so no radius applies. "Serving" means the service area overlaps any part of the area.',
         })}
       </p>
     </div>

@@ -182,7 +182,7 @@ export function GeneralInfoCard({
               <span className="font-medium">
                 {t('default_query_config.area_match_label', {
                   ns: 'page-directories',
-                  defaultValue: 'Resources in this area',
+                  defaultValue: 'Which resources to list',
                 })}
                 :
               </span>{' '}
