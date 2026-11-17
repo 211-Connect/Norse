@@ -10,6 +10,10 @@ import {
   analyticsSelectedWebsiteIdsAtom,
 } from './DateRange';
 import { getUtcDayEnd, getUtcDayStart } from './utils';
+import {
+  getNormalizedCustomBasePath,
+  withOptionalTrailingSlash,
+} from '@/app/(app)/shared/lib/utils';
 export default function ExportCSVButton() {
   const range = useAtomValue(analyticsDateRangeAtom);
   const websiteIds = useAtomValue(analyticsSelectedWebsiteIdsAtom);
@@ -67,5 +71,7 @@ function buildExportUrl(params: {
     searchParams.set('websiteIds', params.websiteIds.join(','));
   }
 
-  return `/api/export-search-analytics?${searchParams}`;
+  return withOptionalTrailingSlash(
+    `${getNormalizedCustomBasePath()}/api/export-search-analytics?${searchParams}`,
+  );
 }

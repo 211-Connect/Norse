@@ -41,7 +41,7 @@ export const useNavigateAiSearch = ({
     }: {
       scenario?: AiClassificationScenario;
       taxonomies?: string[];
-      locationPayload: SearchLocationPayload;
+      locationPayload: Promise<SearchLocationPayload>;
     }) => {
       const query = (search.query || search.searchTerm || '').trim();
       if (!query) {
@@ -68,15 +68,25 @@ export const useNavigateAiSearch = ({
       startTransition(() => {
         setDialogOpen?.(false);
         setSearchEntry(ResourceEntry.SearchCard);
-        trackSearchEvent(
-          'hybrid',
-          {
-            query,
-            queryLabel: String(search.queryLabel ?? ''),
-            tenantId: appConfig.tenantId ?? '',
-            ...locationPayload,
+        void locationPayload.then(
+          (resolvedLocationPayload) => {
+            trackSearchEvent(
+              'hybrid',
+              {
+                query,
+                queryLabel: String(search.queryLabel ?? ''),
+                tenantId: appConfig.tenantId ?? '',
+                ...resolvedLocationPayload,
+              },
+              appConfig.sessionId,
+            );
           },
-          appConfig.sessionId,
+          (error) => {
+            console.error(
+              'Failed to resolve search location for analytics',
+              error,
+            );
+          },
         );
         router.push(url);
       });

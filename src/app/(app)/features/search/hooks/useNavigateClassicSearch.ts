@@ -3,6 +3,7 @@ import {
   ResourceEntry,
   trackSearchEvent,
 } from '@/app/(app)/shared/lib/analytics';
+import type { SearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 import { deriveQueryType } from '@/app/(app)/shared/lib/search-utils';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -33,7 +34,7 @@ export const useNavigateClassicSearch = ({
   const distance = useAtomValue(searchDistanceAtom);
 
   return useCallback(
-    async (locationPayload: Record<string, unknown>) => {
+    (locationPayload: Promise<SearchLocationPayload>) => {
       startTransition(() => {
         // When an organization is selected, keep the query empty (terminal
         // "show this org's resources" scope) instead of falling back to the
@@ -82,11 +83,24 @@ export const useNavigateClassicSearch = ({
           query: String(query ?? ''),
           queryLabel: String(search.queryLabel ?? ''),
           tenantId: appConfig.tenantId ?? '',
-          ...locationPayload,
           ...(utmSource ? { utm_source: utmSource } : {}),
         };
 
-        trackSearchEvent(queryType, umamiPayload, appConfig.sessionId);
+        void locationPayload.then(
+          (resolvedLocationPayload) => {
+            trackSearchEvent(
+              queryType,
+              { ...umamiPayload, ...resolvedLocationPayload },
+              appConfig.sessionId,
+            );
+          },
+          (error) => {
+            console.error(
+              'Failed to resolve search location for analytics',
+              error,
+            );
+          },
+        );
 
         setDialogOpen?.(false);
         setSearchEntry(ResourceEntry.SearchCard);
