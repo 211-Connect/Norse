@@ -35,6 +35,8 @@ type MapRendererProps = {
   points?: MarkerDef[];
   /** Outline of the searched area; the user's pin is hidden with it. */
   searchArea?: ServiceAreaGeoJSON;
+  /** An area search: no user pin, even before its outline has loaded. */
+  hideUserLocation?: boolean;
 };
 
 const NO_LOCATION: [number, number][] = [];
@@ -74,7 +76,11 @@ const MapRenderer = (props: MapRendererProps) => {
           markers={markers}
           serviceArea={props.serviceArea}
           // An area search shows the area, not the point it was picked from.
-          usersLocation={props.searchArea ? NO_LOCATION : userCoords}
+          usersLocation={
+            props.searchArea || props.hideUserLocation
+              ? NO_LOCATION
+              : userCoords
+          }
           disableUserLocation={props.disableUserLocation}
           points={props.points}
           searchArea={props.searchArea}

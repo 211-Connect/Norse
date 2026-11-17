@@ -183,7 +183,11 @@ export function MapContainer() {
               resetKey={results}
               fallback={<MapErrorFallback error="Failed to load map" />}
             >
-              <MapRenderer markers={pageMarkers} searchArea={searchArea} />
+              <MapRenderer
+                markers={pageMarkers}
+                searchArea={searchArea}
+                hideUserLocation={Boolean(region)}
+              />
             </ErrorBoundary>
           }
         >
@@ -191,6 +195,7 @@ export function MapContainer() {
             markers={mapMarkers}
             points={mapPoints ?? undefined}
             searchArea={searchArea}
+            hideUserLocation={Boolean(region)}
           />
           {((mapPoints && mapPoints.length > 0) || regionArea) && (
             <MapLegend

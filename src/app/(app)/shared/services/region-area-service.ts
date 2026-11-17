@@ -29,7 +29,8 @@ async function getRegionAreaOrigin(
   return {
     id: region.id,
     // Counties and ZIPs name their state; a city alone could be anywhere.
-    name: region.type === 'place' ? `${region.name}, ${region.state}` : region.name,
+    name:
+      region.type === 'place' ? `${region.name}, ${region.state}` : region.name,
     geometry: region.geometry as ServiceAreaGeoJSON,
   };
 }
