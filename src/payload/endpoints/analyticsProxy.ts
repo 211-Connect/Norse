@@ -1,6 +1,10 @@
 import type { Endpoint } from 'payload';
 
-import { analyticsApiClient } from '@/lib/api/clients';
+import {
+  analyticsApiClient,
+  crawlerTrafficInternalApiClient,
+} from '@/lib/api/clients';
+import { isSuperAdmin } from '@/payload/collections/Users/access/roles';
 
 import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
 import { getApiHeaders } from '@/lib/api';
@@ -270,6 +274,82 @@ const blockedTrafficEndpoint = proxyEndpoint(
   { skipWebsiteIdValidation: true },
 );
 
+type Granularity = 'hour' | 'day';
+
+function granularityParam(value: unknown): Granularity {
+  return value === 'hour' ? 'hour' : 'day';
+}
+
+/**
+ * Requests per crawler and outcome (blocked, logged, rate-limited, allowed,
+ * load-limited), counted per tenant by Norse, not by Umami, so the selected
+ * websites do not apply.
+ */
+const crawlerTrafficEndpoint = proxyEndpoint(
+  '/analytics/crawler-traffic',
+  (ctx, query) => {
+    const start = toISO(query?.startAt as string);
+    const end = toISO(query?.endAt as string);
+    return analyticsApiClient.analyticsControllerGetCrawlerTraffic(
+      { start, end, granularity: granularityParam(query?.granularity) },
+      { headers: ctx.headers },
+    );
+  },
+  { skipWebsiteIdValidation: true },
+);
+
+/**
+ * The same counts across every tenant, for super admins only. Norse-API's
+ * cross-tenant route is internal (internal API key, no tenant), so the role
+ * is checked here.
+ */
+const crawlerTrafficAllTenantsEndpoint = makeEndpoint(
+  '/analytics/crawler-traffic-all-tenants',
+  async (req) => {
+    if (!req.user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!isSuperAdmin(req.user)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    const internalApiKey = process.env.INTERNAL_API_KEY;
+    if (!internalApiKey) {
+      return Response.json(
+        { error: 'INTERNAL_API_KEY is not configured' },
+        { status: 500 },
+      );
+    }
+
+    try {
+      const response =
+        await crawlerTrafficInternalApiClient.crawlerTrafficAllTenantsInternalControllerGetAllTenants(
+          {
+            start: toISO(req.query?.startAt as string),
+            end: toISO(req.query?.endAt as string),
+            granularity: granularityParam(req.query?.granularity),
+          },
+          {
+            headers: {
+              'x-api-version': '1',
+              'x-internal-api-key': internalApiKey,
+            },
+            cache: 'no-store',
+          },
+        );
+      return Response.json(response.data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      return Response.json(
+        {
+          error: 'Failed to fetch /analytics/crawler-traffic-all-tenants',
+          detail: message,
+        },
+        { status: 502 },
+      );
+    }
+  },
+);
+
 export const analyticsProxyEndpoints: Endpoint[] = [
   infoEndpoint,
   statsEndpoint,
@@ -286,4 +366,6 @@ export const analyticsProxyEndpoints: Endpoint[] = [
   eventValuesEndpoint,
   eventCatalogEndpoint,
   blockedTrafficEndpoint,
+  crawlerTrafficEndpoint,
+  crawlerTrafficAllTenantsEndpoint,
 ];

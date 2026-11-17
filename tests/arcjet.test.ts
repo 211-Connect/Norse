@@ -31,6 +31,7 @@ import {
   maskIp,
   normalizeHost,
   parseHostList,
+  parseRateLimitPerMinute,
   parseTimeoutMs,
   redactHeaders,
   resolveArcjetClientIp,
@@ -352,9 +353,47 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
       NO_USER_AGENT_FILTER,
       'len(http.request.headers["user-agent"]) eq 0',
     );
-    // detectBot stays first and LIVE.
-    assert.equal(rules[0].type, 'BOT');
-    assert.equal(rules[0].mode, 'LIVE');
+    const bots = rules.filter((r) => r.type === 'BOT');
+    assert.equal(bots.length, 1);
+    assert.equal(bots[0].mode, 'LIVE');
+  });
+
+  test('rules contain the per-IP rate limit: LIVE sliding window, 60 a minute', () => {
+    const rules = buildArcjetRules(60).flat();
+    const limits = rules.filter((r) => r.type === 'RATE_LIMIT');
+    assert.equal(limits.length, 1);
+    assert.equal(limits[0].mode, 'LIVE');
+    assert.equal(
+      (limits[0] as { algorithm?: string }).algorithm,
+      'SLIDING_WINDOW',
+    );
+    assert.equal((limits[0] as { max?: number }).max, 60);
+    assert.equal((limits[0] as { interval?: number }).interval, 60);
+  });
+
+  test('a rate limit of 0 removes the rule', () => {
+    const rules = buildArcjetRules(0).flat();
+    assert.equal(rules.filter((r) => r.type === 'RATE_LIMIT').length, 0);
+  });
+
+  test('parseRateLimitPerMinute: default 60, 0 allowed, invalid falls back', () => {
+    assert.equal(parseRateLimitPerMinute(undefined), 60);
+    assert.equal(parseRateLimitPerMinute(''), 60);
+    assert.equal(parseRateLimitPerMinute('0'), 0);
+    assert.equal(parseRateLimitPerMinute('120'), 120);
+    assert.equal(parseRateLimitPerMinute('-1'), 60);
+    assert.equal(parseRateLimitPerMinute('abc'), 60);
+  });
+
+  test('an allowed decision reports the allowed crawlers', async () => {
+    const protect = createProtect(clientReturning(allow()));
+    const { log } = captureLog();
+    const result = await protect(makeRequest(), PATH, log);
+    assert.equal(result.conclusion, 'ALLOW');
+    assert.deepEqual(
+      result.conclusion === 'ALLOW' ? result.allowedBots : undefined,
+      ['GOOGLE_CRAWLER'],
+    );
   });
 });
 
@@ -551,6 +590,7 @@ describe('MBOA internal traffic (ISS-1734, ISS-1728)', () => {
     assert.deepEqual(stripTiming(result), {
       denied: false,
       conclusion: 'ALLOW',
+      allowedBots: ['GOOGLE_CRAWLER'],
     });
     assert.equal(calls(), 1, 'Arcjet protect must be called');
     assert.deepEqual(lastOptions(), { ipSrc: '10.215.199.3' });

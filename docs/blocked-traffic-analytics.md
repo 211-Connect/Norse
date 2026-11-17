@@ -1,98 +1,132 @@
-# Blocked traffic analytics (ISS-2366)
+# Crawler and blocked traffic analytics (ISS-2366)
 
 Requests that Arcjet denies in `protectPage` (`src/lib/arcjet-page.ts`) get a
 403 from `forbidden.tsx`, which renders no `PageWrapper`, so the Umami script
-never runs for them. Most of them are clients that run no JavaScript anyway
-(curl, scrapers, AI crawlers), so Umami never saw them. This feature counts
-them on the server and shows the count in a **Blocked
-Bots** widget in the Payload analytics dashboard, next to Page Views. A
-tenant sees "N page views, and M requests were blocked bots" instead of an
-unexplained change. Blocked requests are **not** in Page Views or any other
-widget.
+never runs for them. Most crawlers run no JavaScript anyway (curl, scrapers,
+AI crawlers, search engines), so Umami never sees them. Norse counts them on
+the server instead, **per crawler and per outcome**, and shows them in two
+Payload analytics dashboard widgets:
+
+- **Blocked Bots**: a stat card next to Page Views, "M requests were blocked
+  bots". Counts blocked and rate-limited requests (both got a 403).
+- **Crawler traffic**: a chart of every counted request per hour or per day,
+  stacked by outcome, and a table of the top crawlers. Super admins can
+  switch it to **All tenants**, which adds a per-tenant table.
+
+Counted requests are **not** in Page Views or any other Umami widget.
+
+## What is counted
+
+Each request is counted once, under one crawler name (Arcjet's bot name,
+e.g. `AHREFS_CRAWLER`) and one outcome:
+
+| Outcome | When | Crawler name |
+| --- | --- | --- |
+| `blocked` | Arcjet denied it on an enforced host (403) | first denied bot |
+| `rate_limited` | Arcjet's per-IP rate limit denied it on an enforced host (403) | usually none |
+| `logged` | Arcjet denied it on an observe-only host (not in `ARCJET_ENFORCED_HOSTS`, or in `ARCJET_UNENFORCED_HOSTS`, e.g. MBOA); the page was served | first denied bot |
+| `allowed` | Arcjet allowed it and identified it as an allowed crawler (Googlebot, Bingbot, link previews, monitors, AI assistants) | first allowed bot |
+| `shed` | a per-tenant load limit answered 429 ([load-shedding.md](/docs/load-shedding.md)) | none (counted before Arcjet runs) |
+
+Not counted:
+
+- people;
+- unidentified clients that Arcjet allowed. The November burst bot was one
+  of these.
+
+A request that carries several crawler names (e.g. Meta's
+`META_WEBINDEXER` + `FACEBOOK_CRAWLER`) is still counted once, so totals
+are not inflated. Each count also carries the crawler's `classification`
+(`seo` | `nefarious` | `unknown`).
+
+Code: `crawlerTrafficOf` in `src/lib/crawler-traffic.ts`.
 
 ## Why counters, not one event per request
 
-About 30 requests/s reach Norse and more than half are bots. One analytics
-event per denial would be ~15 writes/s (about 10 Umami rows each, with event
-data) into the database that serves the tenants' real analytics. Instead,
-each server instance increments an in-memory counter and pushes the deltas
-once a minute: about `instances × active tenants` small requests per
-minute, whatever the bot volume. Per-request detail (bot name, path) is
-already in the `arcjet_denied` logs and the Arcjet console (`decisionId`).
+About 30 requests/s reach Norse, and more than half are bots. One analytics
+event per request would be about 15 writes/s into the database that serves
+the tenants' real analytics. Instead, each server instance increments an
+in-memory counter and pushes the deltas once a minute. That is about
+`instances × active tenants` small requests per minute, whatever the bot
+volume. Per-request detail (path, decision) is already in the
+`arcjet_denied` logs and the Arcjet console (`decisionId`).
 
 ## Where it is configured
 
-- Nothing per tenant. A tenant's denials are attributed by host with
-  `getTenantByHost` (`@/lib/cms`) (`trustedDomains`), like the rest of the app. A denial
-  on a host that matches no tenant is counted for the shared "unknown"
-  tenant `UNKNOWN_TENANT_ID` (`00000000-0000-0000-0000-000000000000`),
-  pushed with the internal key only (it has no Payload document or Norse
-  API key). The page only renders for a host the proxy resolved to a
-  tenant, so this is not expected; if it happens (e.g. a domain missing
-  from `trustedDomains`), it shows up in Norse-API's
-  `blocked_traffic_hourly` for that tenant id instead of being lost.
-- `INTERNAL_API_KEY` and `API_URL`: the push uses Norse-API's internal
-  endpoint with the tenant's usual headers (`getInternalHeaders`). Already
-  required by scheduled PDF delivery.
+- Nothing per tenant.
+- A count is attributed to a tenant by host, with `getTenantByHost`
+  (`@/lib/cms`) (`trustedDomains`). A load-limit 429 uses the tenant id
+  the proxy resolved.
+- A request on a host that matches no tenant is counted for the shared
+  "unknown" tenant `UNKNOWN_TENANT_ID`
+  (`00000000-0000-0000-0000-000000000000`). Its pushes carry only the
+  internal key: it has no Payload document and no Norse API key.
+- `INTERNAL_API_KEY` and `API_URL`:
+  - the push uses Norse-API's internal endpoint with the tenant's usual
+    headers (`getInternalHeaders`);
+  - the All tenants view uses the internal key alone.
 
 ## Architecture
 
 ```
-protectPage (page, Node)                       Norse-API                     MongoDB
-─────────────────────────────────────────      ─────────────────────────     ───────────────────────
-arcjetProtect → DENY / DENIED_NOT_ENFORCED
-  ├ after(recordBlockedTraffic)  registered before forbidden()
-  │ forbidden() → 403 (DENY only)
-  └ recordBlockedTraffic, after the response
+protectPage (page, Node)                         Norse-API                       MongoDB
+───────────────────────────────────────────      ───────────────────────────     ─────────────────────────
+arcjetProtect → DENY / DENIED_NOT_ENFORCED / ALLOW with allowedBots
+  └ after(recordArcjetTraffic)
+      ├ crawlerTrafficOf → crawler, outcome, classification
       ├ getTenantByHost(host)   ← cached per host
-      ├ classifyBlockedTraffic → seo | nefarious | unknown
-      └ counter.record(tenant, class, enforced)   Map increment, current UTC hour
+      └ counter.record(...)     Map increment, current UTC hour
+load-limit 429 (HTTP hook / proxy)
+  └ reportLoadShed → counter.record(outcome: shed)
 
 every 60 s per instance (and best effort on SIGTERM):
-  counter.flush → one POST per tenant ─────────▶ POST /internal/blocked-traffic
-     { buckets: [{ hour, classification,          InternalApiGuard, x-tenant-id
-                   enforced, count }] }           bulkWrite $inc upsert ───────▶ blocked_traffic_hourly
-                                                                                 (tenant, hour, class, enforced)
+  counter.flush → POST per tenant (≤ 1000 buckets) ─▶ POST /internal/crawler-traffic
+     { buckets: [{ hour, crawler, outcome,             InternalApiGuard, x-tenant-id
+                   classification, count }] }          bulkWrite $inc upsert ──────▶ crawler_traffic_hourly
 Payload dashboard
-  BlockedBotsWidget → /api/analytics/blocked-traffic (analyticsProxy)
-                   → GET /analytics/blocked-traffic?start&end ◀───────────────── hourly rows, totals
+  BlockedBotsWidget    → /api/analytics/blocked-traffic   → GET /analytics/blocked-traffic
+                                                             (old blocked_traffic_hourly + new collection)
+  CrawlerTrafficWidget → /api/analytics/crawler-traffic   → GET /analytics/crawler-traffic?granularity=hour|day
+     (super admin)     → /api/analytics/crawler-traffic-all-tenants
+                                                          → GET /internal/crawler-traffic-all-tenants
 ```
 
 Files:
 
 | File | Role |
 | --- | --- |
-| `src/lib/arcjet-page.ts` | Schedules `recordBlockedTraffic` with `after()` inside the cached `decide`, so a page and its `generateMetadata` record one count per request, and the count never delays the 403. |
-| `src/lib/blocked-traffic.ts` | `recordBlockedTraffic`: tenant by host, classification, `counter.record`. Owns the per-process counter (on `globalThis`) and its push through the generated `blockedTrafficInternalApiClient` (10 s timeout). Never throws. |
-| `src/lib/blocked-traffic-counter.ts` | `createBlockedTrafficCounter`: the in-memory buckets, the 60 s flush timer (started on the first denial, `unref`'d), requeue on failure. Pure, unit-tested in `tests/blocked-traffic-counter.test.ts`. |
-| `src/lib/arcjet-classification.ts` | `classifyBlockedTraffic` — the rules, as a table in [architecture.md](/docs/architecture.md#blocked-traffic-analytics-iss-2366). |
-| `src/payload/endpoints/analyticsProxy.ts` | `/analytics/blocked-traffic` proxy (tenant analytics key, like every widget; website selection does not apply). |
-| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | The widget (`WidgetSlug.BlockedBots`): a stat card, like Page Views, showing blocked requests. Observe-only denials are not counted, because those requests were served. No trend: the endpoint has no previous-period comparison. |
+| `src/lib/arcjet-page.ts` | Schedules `recordArcjetTraffic` with `after()` inside the cached `decide`. A page and its `generateMetadata` record one count per request, and the count never delays the response. |
+| `src/lib/arcjet/index.ts` | Adds `allowedBots` to an `ALLOW` result: the identified crawlers Arcjet let through. |
+| `src/lib/crawler-traffic.ts` | `crawlerTrafficOf` (decision → crawler, outcome, classification), `recordArcjetTraffic` (tenant by host) and `recordCrawlerTraffic`. Owns the per-process counter (on `globalThis`) and its push through the generated `crawlerTrafficInternalApiClient` (10 s timeout). Never throws. |
+| `src/lib/crawler-traffic-counter.ts` | `createCrawlerTrafficCounter`: the in-memory buckets and the 60 s flush timer (started on the first count, `unref`'d). Requeues on failure, splits pushes at 1,000 buckets, and keeps at most 20,000 pending buckets. Pure; unit-tested in `tests/crawler-traffic-counter.test.ts`. |
+| `src/lib/arcjet-classification.ts` | `classifyBlockedTraffic` / `classifyBot`: the classification rules, as a table in [architecture.md](/docs/architecture.md#blocked-traffic-analytics-iss-2366). |
+| `src/lib/load-shed/report.ts` | Counts every load-limit 429 as `shed`. |
+| `src/payload/endpoints/analyticsProxy.ts` | Proxies `/analytics/blocked-traffic` and `/analytics/crawler-traffic` with the tenant analytics key, like every widget (website selection does not apply). Proxies `/analytics/crawler-traffic-all-tenants` for super admins only. |
+| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | Stat card: blocked plus rate-limited requests. Observe-only denials are left out, because those requests were served. No trend: the endpoint has no previous-period comparison. |
+| `src/payload/components/analytics/widgets/CrawlerTrafficWidget.tsx` | Chart by outcome, hourly or daily (hourly only for ranges up to 31 days), and the top 15 crawlers. For super admins, an All tenants switch with a per-tenant table. |
 
-Norse-API side (storage, endpoints, validation): `docs/blocked-traffic.md`
+Norse-API side (storage, endpoints, validation): `docs/crawler-traffic.md`
 in the Norse-API repo.
-
-### What a bucket counts
-
-| Key | Values |
-| --- | --- |
-| tenant | from the request host (`getTenantByHost`); `UNKNOWN_TENANT_ID` when no tenant matches |
-| `hour` | start of the UTC hour the denial happened in |
-| `classification` | `seo` \| `nefarious` \| `unknown` |
-| `enforced` | `true` for a DENY (403); `false` for an observe-only host (not in `ARCJET_ENFORCED_HOSTS`, or in `ARCJET_UNENFORCED_HOSTS`, e.g. MBOA), so those denials are counted too, separately |
 
 ## Guarantees and limits
 
-- Never delays or fails the 403: all work is behind `after()`, the request
-  path only does a Map increment, and every path catches.
+- Never delays or fails a response:
+  - all work runs behind `after()`, or after the 429 is written;
+  - the request path only does a Map increment;
+  - every path catches its errors.
 - Counts are best effort, not exact:
-  - A failed push (`blocked_traffic_push_failed`) is added back and sent
+  - A failed push (`crawler_traffic_push_failed`) is added back and sent
     with the next flush. Buckets older than 24 h are dropped instead.
   - A push that times out after Norse-API applied it is counted twice.
-  - Up to one minute per instance is lost on a crash; on SIGTERM the
+  - Up to one minute per instance is lost on a crash. On SIGTERM the
     instance tries one last push, which may not finish before exit.
 - Hourly resolution: the widget's range is rounded out to whole UTC hours.
-- Retention: Norse-API keeps buckets for 2 years (TTL index), so seasons
-  can be compared year over year.
+- Retention: Norse-API keeps the hourly buckets indefinitely, with no TTL.
+- Older history:
+  - Counts from before the per-crawler counters stay in Norse-API's
+    `blocked_traffic_hourly`, which is no longer written.
+  - They still feed the Blocked Bots card.
+  - The Crawler traffic widget starts empty at the switch.
 - Only routes that call `protectPage` are counted (list in
-  [bot-protection.md](/docs/bot-protection.md)).
+  [bot-protection.md](/docs/bot-protection.md)). For `shed`, only the
+  routes in [load-shedding.md](/docs/load-shedding.md) are counted.

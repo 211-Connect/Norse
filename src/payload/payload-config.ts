@@ -289,6 +289,14 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: WidgetSlug.CrawlerTraffic,
+          Component:
+            '@/payload/components/analytics/widgets/CrawlerTrafficWidget#default',
+          label: 'Crawler traffic',
+          minWidth: 'large',
+          maxWidth: 'full',
+        },
+        {
           slug: WidgetSlug.PageviewsChart,
           Component:
             '@/payload/components/analytics/widgets/PageviewsChartWidget#default',

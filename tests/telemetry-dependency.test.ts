@@ -328,9 +328,9 @@ describe('operation mapping', () => {
       ['POST', '/resource/batch', 'resource_get', '/resource/batch'],
       [
         'POST',
-        '/internal/blocked-traffic',
-        'blocked_traffic',
-        '/internal/blocked-traffic',
+        '/internal/crawler-traffic',
+        'crawler_traffic',
+        '/internal/crawler-traffic',
       ],
     ];
     for (const [method, path, operation, template] of cases) {

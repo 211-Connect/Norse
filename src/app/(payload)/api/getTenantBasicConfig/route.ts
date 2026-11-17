@@ -16,11 +16,13 @@ export const GET = cmsOnly(async (request: Request) => {
   }
 
   const tenantBasicConfig = await withCache(
-    `tenant_basic_config:${host}`,
+    `tenant_basic_config:v2:${host}`,
     async () => {
       const tenant = await findTenantByHost(host);
 
       return {
+        tenantId: tenant ? String(tenant.id) : null,
+        name: tenant?.name ?? null,
         enabledLocales: tenant ? tenant.enabledLocales : [],
         defaultLocale: tenant ? tenant.defaultLocale : 'en',
         auth: {

@@ -2220,6 +2220,218 @@ export interface ServiceDetailResponseDto {
   taxonomyPath: string[];
 }
 
+export interface CrawlerTrafficCountsDto {
+  /**
+   * 403 from bot protection.
+   * @example 120
+   */
+  blocked: number;
+  /**
+   * Denied on an observe-only host; the page was served.
+   * @example 40
+   */
+  logged: number;
+  /**
+   * 403 from the per-IP rate limit.
+   * @example 5
+   */
+  rateLimited: number;
+  /**
+   * Allowed crawlers, served.
+   * @example 900
+   */
+  allowed: number;
+  /**
+   * 429 from the per-tenant load limit.
+   * @example 0
+   */
+  shed: number;
+  /**
+   * Sum of all outcomes.
+   * @example 1065
+   */
+  total: number;
+}
+
+export interface CrawlerTrafficByCrawlerDto {
+  /**
+   * 403 from bot protection.
+   * @example 120
+   */
+  blocked: number;
+  /**
+   * Denied on an observe-only host; the page was served.
+   * @example 40
+   */
+  logged: number;
+  /**
+   * 403 from the per-IP rate limit.
+   * @example 5
+   */
+  rateLimited: number;
+  /**
+   * Allowed crawlers, served.
+   * @example 900
+   */
+  allowed: number;
+  /**
+   * 429 from the per-tenant load limit.
+   * @example 0
+   */
+  shed: number;
+  /**
+   * Sum of all outcomes.
+   * @example 1065
+   */
+  total: number;
+  /**
+   * Arcjet bot name; empty for requests with no identified crawler (unidentified clients, load-limit 429s).
+   * @example "AHREFS_CRAWLER"
+   */
+  crawler: string;
+  /** @example "seo" */
+  classification: "seo" | "nefarious" | "unknown";
+}
+
+export interface CrawlerTrafficSeriesPointDto {
+  /**
+   * 403 from bot protection.
+   * @example 120
+   */
+  blocked: number;
+  /**
+   * Denied on an observe-only host; the page was served.
+   * @example 40
+   */
+  logged: number;
+  /**
+   * 403 from the per-IP rate limit.
+   * @example 5
+   */
+  rateLimited: number;
+  /**
+   * Allowed crawlers, served.
+   * @example 900
+   */
+  allowed: number;
+  /**
+   * 429 from the per-tenant load limit.
+   * @example 0
+   */
+  shed: number;
+  /**
+   * Sum of all outcomes.
+   * @example 1065
+   */
+  total: number;
+  /**
+   * Start of the UTC hour or day.
+   * @example "2026-11-17T14:00:00.000Z"
+   */
+  bucket: string;
+}
+
+export interface CrawlerTrafficResponse {
+  /** @example "day" */
+  granularity: "hour" | "day";
+  totals: CrawlerTrafficCountsDto;
+  /** Per crawler and classification, largest total first (top 100). */
+  byCrawler: CrawlerTrafficByCrawlerDto[];
+  /** Non-empty hour or day buckets in the range, oldest first. */
+  series: CrawlerTrafficSeriesPointDto[];
+}
+
+export interface CrawlerTrafficBucketDto {
+  /**
+   * Start of the UTC hour the requests fall in (minutes, seconds and milliseconds must be zero). At most 7 days old and not in the future.
+   * @example "2026-11-17T14:00:00.000Z"
+   */
+  hour: string;
+  /**
+   * Arcjet bot name, e.g. `AHREFS_CRAWLER`. Empty when no crawler was identified (unidentified client, or a load-limit 429).
+   * @maxLength 64
+   * @example "AHREFS_CRAWLER"
+   */
+  crawler: string;
+  /**
+   * blocked: 403 from bot protection. logged: denied on an observe-only host, served. rate_limited: 403 from the per-IP rate limit. allowed: an allowed crawler, served. shed: 429 from the per-tenant load limit.
+   * @example "blocked"
+   */
+  outcome: "blocked" | "logged" | "rate_limited" | "allowed" | "shed";
+  /**
+   * Classification from Norse `classifyBlockedTraffic`.
+   * @example "seo"
+   */
+  classification: "seo" | "nefarious" | "unknown";
+  /**
+   * Requests to add to the bucket.
+   * @min 1
+   * @max 10000000
+   * @example 42
+   */
+  count: number;
+}
+
+export interface RecordCrawlerTrafficDto {
+  /** Per-bucket deltas for the tenant in x-tenant-id (max 1000). */
+  buckets: CrawlerTrafficBucketDto[];
+}
+
+export interface RecordCrawlerTrafficResponseDto {
+  /**
+   * Requests added across all buckets.
+   * @example 42
+   */
+  recorded: number;
+}
+
+export interface CrawlerTrafficByTenantDto {
+  /**
+   * 403 from bot protection.
+   * @example 120
+   */
+  blocked: number;
+  /**
+   * Denied on an observe-only host; the page was served.
+   * @example 40
+   */
+  logged: number;
+  /**
+   * 403 from the per-IP rate limit.
+   * @example 5
+   */
+  rateLimited: number;
+  /**
+   * Allowed crawlers, served.
+   * @example 900
+   */
+  allowed: number;
+  /**
+   * 429 from the per-tenant load limit.
+   * @example 0
+   */
+  shed: number;
+  /**
+   * Sum of all outcomes.
+   * @example 1065
+   */
+  total: number;
+  /** @example "7f4c2a51-0c7e-4b8e-9d0a-2f8a3b1c9e10" */
+  tenantId: string;
+}
+
+export interface CrawlerTrafficAllTenantsResponse {
+  /** @example "day" */
+  granularity: "hour" | "day";
+  totals: CrawlerTrafficCountsDto;
+  /** Per crawler and classification, largest total first (top 100). */
+  byCrawler: CrawlerTrafficByCrawlerDto[];
+  /** Non-empty hour or day buckets in the range, oldest first. */
+  series: CrawlerTrafficSeriesPointDto[];
+  /** Per tenant, largest total first. */
+  byTenant: CrawlerTrafficByTenantDto[];
+}
+
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
   /**
    * Optional schema name to filter custom attributes
@@ -3605,3 +3817,47 @@ export interface ServiceControllerGetServiceByIdParams {
 }
 
 export type ServiceControllerGetServiceByIdData = ServiceDetailResponseDto;
+
+export interface AnalyticsControllerGetCrawlerTrafficParams {
+  /**
+   * ISO-8601 start. Rounded down to the UTC hour: the counts have 1-hour resolution.
+   * @example "2026-11-10T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end (inclusive: the hour containing it is included). Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2026-11-17T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Series bucket size. `hour` is allowed for ranges up to 31 days.
+   * @default "day"
+   */
+  granularity?: "hour" | "day";
+}
+
+export type AnalyticsControllerGetCrawlerTrafficData = CrawlerTrafficResponse;
+
+export type CrawlerTrafficInternalControllerRecordData =
+  RecordCrawlerTrafficResponseDto;
+
+export interface CrawlerTrafficAllTenantsInternalControllerGetAllTenantsParams {
+  /**
+   * ISO-8601 start. Rounded down to the UTC hour: the counts have 1-hour resolution.
+   * @example "2026-11-10T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end (inclusive: the hour containing it is included). Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2026-11-17T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Series bucket size. `hour` is allowed for ranges up to 31 days.
+   * @default "day"
+   */
+  granularity?: "hour" | "day";
+}
+
+export type CrawlerTrafficAllTenantsInternalControllerGetAllTenantsData =
+  CrawlerTrafficAllTenantsResponse;

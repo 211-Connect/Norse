@@ -249,6 +249,7 @@ export interface Config {
     'analytics-alert-clicks': AnalyticsAlertClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
     'analytics-blocked-bots': AnalyticsBlockedBotsWidget;
+    'analytics-crawler-traffic': AnalyticsCrawlerTrafficWidget;
     'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
@@ -2384,6 +2385,16 @@ export interface AnalyticsBlockedBotsWidget {
     [k: string]: unknown;
   };
   width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-crawler-traffic_widget".
+ */
+export interface AnalyticsCrawlerTrafficWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

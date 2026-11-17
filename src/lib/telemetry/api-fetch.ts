@@ -251,8 +251,8 @@ const API_ROUTES: readonly ApiRoute[] = [
   },
   {
     method: 'POST',
-    template: '/internal/blocked-traffic',
-    operation: 'blocked_traffic',
+    template: '/internal/crawler-traffic',
+    operation: 'crawler_traffic',
   },
 ];
 
