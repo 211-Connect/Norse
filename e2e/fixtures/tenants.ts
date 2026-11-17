@@ -202,8 +202,8 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     directResourceId: '01fc1648-60db-59d0-b5fc-ba5027767fb1',
     organizationSearchEnabled: { dev: false, prod: false },
     mapPins: {
-      dev: { resultTotal: '10,000' },
-      prod: { resultTotal: '10,000' },
+      dev: { resultTotal: '1-25 of 10,000+' },
+      prod: { resultTotal: '1-25 of 10,000+' },
     },
     areaSearch: {
       state: {
