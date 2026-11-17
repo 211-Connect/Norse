@@ -130,6 +130,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
+      // Every result on the search map (`showAllResultsOnMap`). Skips for
+      // tenants without a `mapPins` fixture.
+      name: 'map-pins',
+      testMatch: ['**/search-map-pins.spec.ts'],
+      use: { ...devices['Desktop Chrome'], baseURL },
+    },
+    {
       name: 'organization',
       testMatch: [
         '**/search-organization.spec.ts',

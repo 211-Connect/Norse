@@ -44,7 +44,7 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 
 The full suite (`search-taxonomy`, `translations`, `search-geocode`,
 `favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
-`organization`, `mboa-qa-checklist`) runs against the 7 tenants' dev hosts in CI — see
+`organization`, `mboa-qa-checklist`, `map-pins`) runs against the 7 tenants' dev hosts in CI — see
 `.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only).
 CI does not run against production: production hosts are enforced by Arcjet
 bot protection, which is expected to deny headless Chromium, while the dev hosts stay
@@ -106,6 +106,21 @@ codes/labels, broad queries, test-account emails, `aiSearchEnabled`,
   search is tenant-environment-gated by `organizationSearchEnabled` and
   currently enabled for DUPAGE and SCC (`e2e/fixtures/tenants.ts`).
 
+- `search-map-pins.spec.ts` (project `map-pins`) covers every result on the
+  search map ([docs/map-pins.md](/docs/map-pins.md)): an empty search's
+  result total and legend, all pins loaded within `MAP_PINS_LOAD_TIMEOUT_MS`,
+  no counts on the whole-directory view and counts after zooming in, then two
+  endings: a shared list address's popup lists its resources, or a
+  single-resource list location's popup shows its "Learn more" button; either
+  link leads to a working resource page. It runs only where
+  `tenant.mapPins[env]` is set (the flag is per tenant), whose `resultTotal`
+  is the exact `#result-total` text of an empty search. The canvas has no
+  DOM, so the map writes `data-zoom`, `data-shown-places` and
+  `data-shown-counts` on `search-map` each time it settles, and each list
+  circle's focus target (`map-point`) carries `data-resources`. Popups are
+  `map-site-popup` (with `map-site-popup-resource` links) and `map-popup` (with
+  its `map-popup-resource` button).
+
 ## Helper module map (`e2e/helpers/`)
 
 Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
@@ -120,6 +135,7 @@ Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
 | `favorites.ts`  | Favorites navigation, list-page waits, dialog add/remove flows                                                                                            |
 | `auth.ts`       | `loginViaKeycloak`                                                                                                                                        |
 | `i18n.ts`       | `switchLanguage`                                                                                                                                          |
+| `map.ts`        | Search map: its `data-*` readings, `waitForMapPinsLoaded`, shared list circles, wheel zoom and canvas clicks                                              |
 | `internal.ts`   | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic)                                                                                 |
 
 New helpers go in the module matching their domain, not back into a flat
@@ -271,7 +287,7 @@ failure names the same step a manual tester would report.
 - `npm run test:e2e` — full suite (all projects, Desktop Chrome only).
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
   `translations`, `search-geocode`, `search-taxonomy`, `share-link`,
-  `resource-direct-link`, `organization`, `mboa-qa-checklist`).
+  `resource-direct-link`, `organization`, `mboa-qa-checklist`, `map-pins`).
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`
   when no tenant/env is selected, otherwise it is derived from
   `e2e/fixtures/tenants.ts`. Override with `E2E_BASE_URL` at any time.

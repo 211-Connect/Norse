@@ -4,6 +4,7 @@ export * from './auth';
 export * from './favorites';
 export * from './filters';
 export * from './i18n';
+export * from './map';
 export * from './navigation';
 export * from './search';
 export * from './share';

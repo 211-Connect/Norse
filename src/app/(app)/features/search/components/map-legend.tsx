@@ -20,7 +20,12 @@ function LegendPin({ className }: { className: string }) {
   );
 }
 
-const SUBTLE_DOT = 'bg-[color-mix(in_srgb,hsl(var(--primary))_50%,white)]';
+/** As on the map: the primary halfway to white, with a primary ring. */
+const SUBTLE_DOT =
+  'bg-[color-mix(in_srgb,hsl(var(--primary))_50%,white)] ring-1 ring-primary';
+/** A count on a light circle, as on the map: the primary nearly halfway to black. */
+const COUNT_ON_SUBTLE =
+  'text-[color-mix(in_srgb,hsl(var(--primary))_55%,black)]';
 
 /** Wide enough for the numbered dot, so every label starts at the same place. */
 function LegendSymbol({ children }: { children: ReactNode }) {
@@ -72,6 +77,7 @@ export function MapLegend({
       </button>
       <ul
         id={listId}
+        data-testid="map-legend"
         aria-label={label}
         className={cn(
           'bg-card/95 text-card-foreground flex-col gap-1 rounded-md border px-2 py-1.5 text-xs shadow-sm',
@@ -81,7 +87,7 @@ export function MapLegend({
         {rows.inList && (
           <li className={ROW}>
             <LegendSymbol>
-              <span className="bg-primary size-2.5 rounded-full ring-1 ring-white" />
+              <span className="bg-primary size-2.5 rounded-full ring-[1.5px] ring-white" />
             </LegendSymbol>
             {t('map_legend_list', { defaultValue: 'In the list' })}
           </li>
@@ -89,12 +95,7 @@ export function MapLegend({
         {rows.other && (
           <li className={ROW}>
             <LegendSymbol>
-              <span
-                className={cn(
-                  'size-2.5 rounded-full ring-1 ring-white',
-                  SUBTLE_DOT,
-                )}
-              />
+              <span className={cn('size-2.5 rounded-full', SUBTLE_DOT)} />
             </LegendSymbol>
             {t('map_legend_other', { defaultValue: 'Other locations' })}
           </li>
@@ -104,8 +105,9 @@ export function MapLegend({
             <LegendSymbol>
               <span
                 className={cn(
-                  'flex size-4 items-center justify-center rounded-full text-[9px] leading-none font-medium text-white ring-1 ring-white',
+                  'flex size-4 items-center justify-center rounded-full text-[9px] leading-none font-semibold',
                   SUBTLE_DOT,
+                  COUNT_ON_SUBTLE,
                 )}
               >
                 2
@@ -127,6 +129,7 @@ export function MapLegend({
         {isLoadingPins && (
           <li
             role="status"
+            data-testid="map-legend-loading"
             className={cn(
               ROW,
               'text-muted-foreground mt-0.5 border-t pt-1 first:mt-0 first:border-t-0 first:pt-0',

@@ -99,6 +99,18 @@ export const ASYNC_UI_TIMEOUT_MS = parseEnvMs(
 );
 
 /**
+ * The search map's "Loading all locations…" row: every result's pin (up to
+ * 10,000) must arrive within this budget after the results page renders
+ * (`GET /api/search-pins`, see docs/map-pins.md).
+ *
+ * @see E2E_MAP_PINS_LOAD_TIMEOUT_MS
+ */
+export const MAP_PINS_LOAD_TIMEOUT_MS = parseEnvMs(
+  process.env.E2E_MAP_PINS_LOAD_TIMEOUT_MS,
+  10_000,
+);
+
+/**
  * Cross-page favorites propagation after add/remove mutations. The write has
  * succeeded once the toast appears, but the server-rendered `/favorites/:id`
  * page may require one or more reloads before it reflects the new state.

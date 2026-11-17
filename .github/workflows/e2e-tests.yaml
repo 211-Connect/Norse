@@ -117,6 +117,7 @@ jobs:
             --project=accessibility \
             --project=resource-direct-link \
             --project=organization \
+            --project=map-pins \
             --project=ai-classification \
             --project=mboa-qa-checklist
 

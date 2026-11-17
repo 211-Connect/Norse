@@ -34,8 +34,10 @@ import {
 } from '../map-shared';
 import {
   bindPointEvents,
+  describeShownPoints,
   removePointsLayer,
   setPointsData,
+  setSelectedPlace,
 } from './points-layer';
 
 const log = createLogger('maplibre');
@@ -211,6 +213,19 @@ export function Map({
 
       mapLibreMap.current.once('load', () => setIsMapLoaded(true));
 
+      // For e2e tests, which can't see into the canvas: the zoom, the circles
+      // in view and the counts shown, each time the map settles.
+      const map = mapLibreMap.current;
+      map.on('idle', () => {
+        const element = mapContainer.current;
+        if (!element || !map.style) return;
+
+        const { places, counts } = describeShownPoints(map);
+        element.dataset.zoom = map.getZoom().toFixed(2);
+        element.dataset.shownPlaces = String(places);
+        element.dataset.shownCounts = String(counts);
+      });
+
       mapLibreMap.current.on('error', (e: any) => {
         log.error({ err: e.error ?? e }, 'MapLibre error');
         if (e.error?.message?.includes('WebGL')) {
@@ -270,6 +285,9 @@ export function Map({
     }).setDOMContent(popupDiv);
 
     popup.on('open', () => {
+      if (mapLibreMap.current && isValidCoordinate(m.coordinates)) {
+        setSelectedPlace(mapLibreMap.current, toPlaceKey(m.coordinates!));
+      }
       setActivePopup({
         element: popupDiv,
         popup: getPopupContent(m),
@@ -317,6 +335,7 @@ export function Map({
     });
 
     popup.on('close', () => {
+      if (mapLibreMap.current) setSelectedPlace(mapLibreMap.current, null);
       setActivePopup(null);
       if (restoreFocusOnCloseRef.current) {
         requestAnimationFrame(restoreFocus);
@@ -364,6 +383,10 @@ export function Map({
           markerElement.setAttribute('aria-disabled', 'true');
         }
         markerElement.classList.add('custom-marker');
+        if (points) {
+          markerElement.dataset.testid = 'map-point';
+          markerElement.dataset.resources = String(m.count ?? 1);
+        }
         markerElement.addEventListener('click', () => {
           // Built on first use. MapLibre's click handler on the map runs after
           // this one, as the event bubbles, and opens it.
@@ -643,7 +666,11 @@ export function Map({
         <MapErrorFallback error={mapError} />
       ) : (
         <>
-          <div ref={mapContainer} className="size-full"></div>
+          <div
+            ref={mapContainer}
+            data-testid="search-map"
+            className="size-full"
+          ></div>
           {activePopup &&
             createPortal(
               <div
