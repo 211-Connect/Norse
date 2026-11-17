@@ -89,9 +89,13 @@ arcjetProtect                    src/lib/arcjet/index.ts
   There is no exemption for allowed crawlers: they spread their requests over
   many IPs. It stops single-IP crawlers, not rotating residential proxies;
   those are handled by the per-tenant load limits
-  ([load-shedding.md](/docs/load-shedding.md)). MBOA traffic with no client
-  IP at all skips Arcjet entirely (`NO_CLIENT_IP`), so it is never rate
-  limited as one shared address.
+  ([load-shedding.md](/docs/load-shedding.md)). MBOA internal traffic (State
+  of Minnesota network behind the mn.gov proxy) is never rate limited: its
+  `ipSrc` is the proxy's private hop, shared by every State visitor, so it
+  goes through a second Arcjet client with the same bot rules and no rate
+  limit (`arcjetClientFor`). With no usable hop at all it skips Arcjet
+  entirely (`NO_CLIENT_IP`). MBOA visitors on the public internet have their
+  own IP and are limited like everyone else.
 - **Advanced signals script.** Set the repository Actions variable
   `NEXT_PUBLIC_ARCJET_SCRIPT_URL` to `https://signals-cdn.arcjet.com/aj-sig.js`.
   The shared deploy workflow passes it only to the public-app image build, where

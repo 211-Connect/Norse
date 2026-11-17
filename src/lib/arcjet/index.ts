@@ -365,9 +365,9 @@ export function createArcjetProtect(
      * as `ipSrc` (see `internalIpSrc`), so these requests get a real
      * decision: browsers pass, bots are still detected by user agent. IP
      * reputation, geo and verified-bot checks cannot match a private
-     * address, and everyone behind that hop shares one IP identity: any
-     * future IP-keyed rate limit must use a session/user characteristic
-     * here. Scoped to that host AND that proxy: forwarding headers can be
+     * address, and everyone behind that hop shares one IP identity, so
+     * these requests skip the per-IP rate limit (`arcjetClientFor`).
+     * Scoped to that host AND that proxy: forwarding headers can be
      * spoofed, so on any other request a missing client IP goes to Arcjet
      * unchanged. With no usable hop at all, the request is allowed
      * (NO_CLIENT_IP) without calling Arcjet.
@@ -503,24 +503,49 @@ export const ARCJET_TIMEOUT_MS = parseTimeoutMs(process.env.ARCJET_TIMEOUT_MS);
 
 const arcjetKey = process.env.ARCJET_KEY;
 
-const aj = arcjetKey
-  ? arcjet({
-      key: arcjetKey,
-      client: createRemoteClient({ timeout: ARCJET_TIMEOUT_MS }),
-      proxies: ARCJET_PROXIES,
-      rules: buildArcjetRules(),
-    })
+function createArcjetClient(key: string, maxPerMinute?: number) {
+  return arcjet({
+    key,
+    client: createRemoteClient({ timeout: ARCJET_TIMEOUT_MS }),
+    proxies: ARCJET_PROXIES,
+    rules: buildArcjetRules(maxPerMinute),
+  });
+}
+
+/** With the per-IP rate limit (`ARCJET_RATE_LIMIT_PER_MINUTE`). */
+const aj = arcjetKey ? createArcjetClient(arcjetKey) : undefined;
+/** The same rules without the rate limit, for MBOA internal traffic. */
+const ajWithoutRateLimit = arcjetKey
+  ? createArcjetClient(arcjetKey, 0)
   : undefined;
+
+/**
+ * Picks the client for a request. A request with an explicit `ipSrc` is MBOA
+ * internal traffic (State of Minnesota network behind the mn.gov proxy):
+ * that "IP" is the proxy's private hop, shared by every State visitor
+ * (~70 req/min), so a per-IP limit would limit them all together. Those
+ * requests skip the rate limit and keep the bot check.
+ */
+export function arcjetClientFor<Client>(
+  options: { ipSrc?: string } | undefined,
+  clients: { withRateLimit: Client; withoutRateLimit: Client },
+): Client {
+  return options?.ipSrc ? clients.withoutRateLimit : clients.withRateLimit;
+}
 
 /**
  * Run Arcjet on a page request. No-op (`SKIPPED`) without `ARCJET_KEY`.
  * Never throws.
  */
 export const arcjetProtect = createArcjetProtect(
-  aj && {
-    // The page passes `request()` from @arcjet/next; the narrower type here
-    // only reflects what this module reads.
-    protect: (request, options) =>
-      aj.protect(request as ArcjetNextRequest, options),
-  },
+  aj &&
+    ajWithoutRateLimit && {
+      // The page passes `request()` from @arcjet/next; the narrower type here
+      // only reflects what this module reads.
+      protect: (request, options) =>
+        arcjetClientFor(options, {
+          withRateLimit: aj,
+          withoutRateLimit: ajWithoutRateLimit,
+        }).protect(request as ArcjetNextRequest, options),
+    },
 );

@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
 import {
+  arcjetClientFor,
   ARCJET_ALLOWED_BOTS,
   ARCJET_DEFAULT_TIMEOUT_MS,
   ARCJET_ENFORCEMENT,
@@ -369,6 +370,13 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
     );
     assert.equal((limits[0] as { max?: number }).max, 60);
     assert.equal((limits[0] as { interval?: number }).interval, 60);
+  });
+
+  test('MBOA internal traffic (explicit ipSrc) skips the per-IP rate limit', () => {
+    const clients = { withRateLimit: 'limited', withoutRateLimit: 'unlimited' };
+    assert.equal(arcjetClientFor(undefined, clients), 'limited');
+    assert.equal(arcjetClientFor({}, clients), 'limited');
+    assert.equal(arcjetClientFor({ ipSrc: '10.1.2.3' }, clients), 'unlimited');
   });
 
   test('a rate limit of 0 removes the rule', () => {

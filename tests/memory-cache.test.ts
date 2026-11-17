@@ -126,3 +126,7 @@ test('isCommonSearch: anything narrower is not common', () => {
     assert.equal(isCommonSearch(query, page), false, label);
   }
 });
+
+test('common search results stay in memory for 15 minutes', () => {
+  assert.equal(MEMORY_CACHE_LIMITS.search_results?.ttlSeconds, 15 * 60);
+});

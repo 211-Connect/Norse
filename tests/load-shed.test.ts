@@ -80,6 +80,23 @@ describe('load-shed config', () => {
     assert.equal(loadShedRouteOf('/mboa/api/search-pins', '/mboa'), 'api');
     assert.equal(loadShedRouteOf('/mboa', '/mboa'), null);
   });
+
+  test('MBOA: base path /adresources and trailing slashes', () => {
+    const basePath = normalizedBasePath('adresources');
+    // The HTTP hook sees the raw URL, with the base path.
+    for (const path of [
+      '/adresources/search/',
+      '/adresources/en/search/',
+      '/adresources/search/abc-123/',
+      '/adresources/details/original/xyz/',
+    ]) {
+      assert.equal(loadShedRouteOf(path, basePath), 'page', path);
+    }
+    // The proxy sees nextUrl.pathname, with the base path already stripped.
+    assert.equal(loadShedRouteOf('/search/', basePath), 'page');
+    assert.equal(loadShedRouteOf('/adresources/', basePath), null);
+    assert.equal(loadShedRouteOf('/adresources/topics/', basePath), null);
+  });
 });
 
 describe('concurrency limiter', () => {

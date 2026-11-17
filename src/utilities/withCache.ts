@@ -56,6 +56,8 @@ type MemoryLimit = {
   maxEntries: number;
   /** Most bytes kept, counted as the length of the serialized value. */
   maxBytes: number;
+  /** How long a value stays in memory; default `MEMORY_TTL_SECONDS`. */
+  ttlSeconds?: Seconds;
 };
 
 const MB = 1024 * 1024;
@@ -74,24 +76,30 @@ export const MEMORY_CACHE_LIMITS: Partial<Record<CacheFeature, MemoryLimit>> = {
   app_config: { maxEntries: 500, maxBytes: 24 * MB },
   search_config: { maxEntries: 500, maxBytes: 8 * MB },
   search_suggestions: { maxEntries: 2000, maxBytes: 8 * MB },
-  // Only common requests (docs/caching.md); one page of results each.
-  search_results: { maxEntries: 500, maxBytes: 24 * MB },
+  // Only common searches (docs/caching.md), one page of results each. They
+  // change only when the directory's data does, so they stay 15 minutes.
+  search_results: {
+    maxEntries: 500,
+    maxBytes: 24 * MB,
+    ttlSeconds: FIFTEEN_MINUTES,
+  },
   region_area: { maxEntries: 200, maxBytes: 16 * MB },
 };
 
 const DEFAULT_MEMORY_LIMIT: MemoryLimit = { maxEntries: 500, maxBytes: 4 * MB };
 
 /**
- * It's not possible to invalidate the memory cache on all instances, so it
- * keeps values for a short time to limit stale data.
+ * It's not possible to invalidate the memory cache on all instances, so by
+ * default it keeps values for a short time to limit stale data.
  */
-const MEMORY_TTL_MS = ONE_MINUTE * 1000;
+const MEMORY_TTL_SECONDS: Seconds = ONE_MINUTE;
 
 const memoryCaches = new Map<string, LRUCache<CacheKey, string>>();
 
 function createMemoryCache({
   maxEntries,
   maxBytes,
+  ttlSeconds = MEMORY_TTL_SECONDS,
 }: MemoryLimit): LRUCache<CacheKey, string> {
   return new LRUCache<CacheKey, string>({
     max: maxEntries,
@@ -100,7 +108,7 @@ function createMemoryCache({
     // one huge value can't flush everything else; a bigger one isn't kept.
     maxEntrySize: Math.max(1, Math.floor(maxBytes / 4)),
     sizeCalculation: (value) => Math.max(1, value.length),
-    ttl: MEMORY_TTL_MS,
+    ttl: ttlSeconds * 1000,
     // Only reset the TTL on set, not on get/has, so a long-running instance
     // never keeps stale data indefinitely.
     noUpdateTTL: true,

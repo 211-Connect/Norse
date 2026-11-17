@@ -13,17 +13,17 @@ A key's **feature** is the part before its first `:`, e.g.
 has its own LRU with an entry limit and a size limit
 (`MEMORY_CACHE_LIMITS`):
 
-| Feature | Max entries | Max size |
-| --- | --- | --- |
-| `tenant` | 1,000 | 4 MB |
-| `tenant_basic_config` | 1,000 | 2 MB |
-| `resource_directory` | 500 | 24 MB |
-| `app_config` | 500 | 24 MB |
-| `search_config` | 500 | 8 MB |
-| `search_suggestions` | 2,000 | 8 MB |
-| `search_results` (common searches only) | 500 | 24 MB |
-| `region_area` | 200 | 16 MB |
-| anything else | 500 | 4 MB |
+| Feature | Max entries | Max size | Kept for |
+| --- | --- | --- | --- |
+| `tenant` | 1,000 | 4 MB | 1 min |
+| `tenant_basic_config` | 1,000 | 2 MB | 1 min |
+| `resource_directory` | 500 | 24 MB | 1 min |
+| `app_config` | 500 | 24 MB | 1 min |
+| `search_config` | 500 | 8 MB | 1 min |
+| `search_suggestions` | 2,000 | 8 MB | 1 min |
+| `search_results` (common searches only) | 500 | 24 MB | 15 min |
+| `region_area` | 200 | 16 MB | 1 min |
+| anything else | 500 | 4 MB | 1 min |
 
 Why per feature:
 
@@ -39,9 +39,11 @@ Why per feature:
 
 Shared rules for every memory entry:
 
-- It is kept for **1 minute**, counted from when it was written (reads don't
-  extend it). Other instances' memory can't be cleared, so this bounds stale
-  data.
+- It is kept for **1 minute** (common search results: **15 minutes**),
+  counted from when it was written in memory; reads don't extend it. Other
+  instances' memory can't be cleared, so this bounds stale data. A value
+  copied into memory from Redis can be up to the Redis TTL plus the memory
+  TTL old (search results: 1 h 15 min).
 - `clearMemoryCache()` clears every feature on the instance it runs on
   (Payload save hooks, the clear-cache endpoint).
 - `memoryCacheStats()` returns the entries and bytes per feature.
@@ -51,7 +53,7 @@ Shared rules for every memory entry:
 | Value | Redis | Memory | Why |
 | --- | --- | --- | --- |
 | Tenant, app config, resource directory, search config, suggestions, area shapes | yes | yes | read on almost every request, small set of keys |
-| Search results, **common** searches | 1 h | 1 min | shared by many visitors |
+| Search results, **common** searches | 1 h | 15 min | shared by many visitors |
 | Search results, other searches | 1 h | no | too many distinct keys for memory |
 | Map pins, geocoding | yes | no | |
 | **Resources** (`/search/[id]`, `/details/original/[id]`, batch for favorites and printable directories) | **no** | **no** | almost every resource request is for a different id (bots crawl them one by one), so a cache only adds a Redis write and a round trip per request |
