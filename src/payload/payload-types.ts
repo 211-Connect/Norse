@@ -920,11 +920,11 @@ export interface ResourceDirectory {
        */
       defaultRadius?: number | null;
       /**
-       * Applies when a visitor picks a state, county, city or ZIP code (not an address). "Located" uses where a resource is; "serving" uses its service area. The default also lists virtual resources and PO boxes whose service area covers the area. "Located in the area or serving it" adds resources located elsewhere that serve the area, e.g. statewide hotlines.
+       * Used when a visitor picks a state, county, city or ZIP code; picking an address still searches a radius around it. A resource "serves" the area when its service area overlaps any part of it. Resources without an address are virtual services, hotlines and PO boxes. The last option also lists resources based elsewhere, such as a statewide hotline with an office in another county.
        */
       areaMatchMode?: ('located' | 'located_or_serving' | 'serving') | null;
       /**
-       * These resources cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.
+       * They cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.
        */
       includeUnlocatedInAreaSearch?: boolean | null;
     };
