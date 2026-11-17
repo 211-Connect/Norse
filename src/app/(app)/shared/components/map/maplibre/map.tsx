@@ -23,6 +23,8 @@ import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { MapErrorFallback } from '../map-error-fallback';
 import {
   MarkerDef,
+  SEARCH_AREA_COLOR,
+  SEARCH_AREA_FILL_OPACITY,
   ServiceAreaGeoJSON,
   getBoundsFromServiceArea,
   getCoreExtent,
@@ -122,7 +124,6 @@ type MapProps = {
 const SEARCH_AREA_SOURCE_ID = 'search-area';
 const SEARCH_AREA_FILL_ID = 'search-area-fill';
 const SEARCH_AREA_OUTLINE_ID = 'search-area-outline';
-const SEARCH_AREA_COLOR = '#2563eb';
 
 // Allows maplibre to load pmtiles from a single hosted file
 // https://docs.protomaps.com/pmtiles/maplibre
@@ -583,6 +584,7 @@ export function Map({
     if (!map || !isMapLoaded) return;
 
     const cleanup = () => {
+      mapContainer.current?.removeAttribute('data-search-area');
       try {
         if (map.getLayer(SEARCH_AREA_FILL_ID))
           map.removeLayer(SEARCH_AREA_FILL_ID);
@@ -613,7 +615,10 @@ export function Map({
           id: SEARCH_AREA_FILL_ID,
           type: 'fill',
           source: SEARCH_AREA_SOURCE_ID,
-          paint: { 'fill-color': SEARCH_AREA_COLOR, 'fill-opacity': 0.08 },
+          paint: {
+            'fill-color': SEARCH_AREA_COLOR,
+            'fill-opacity': SEARCH_AREA_FILL_OPACITY,
+          },
         },
         beforeId,
       );
@@ -636,6 +641,8 @@ export function Map({
         userInteractedRef.current = false;
         map.fitBounds(bounds, { padding: 40, animate: false });
       }
+      // The canvas has no DOM: tests read that the outline is drawn here.
+      mapContainer.current?.setAttribute('data-search-area', 'shown');
     } catch (err) {
       log.warn({ err }, 'Failed to draw the search area');
     }

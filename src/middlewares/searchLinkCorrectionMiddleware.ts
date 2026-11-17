@@ -57,7 +57,9 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
         anyChanges = true;
       }
     }
-    if (prefDistance && !alreadyHasDistance && !restoresRegion) {
+    // An area (the URL's own or a restored one) is searched without a radius.
+    const isAreaSearch = restoresRegion || searchParams.has('region');
+    if (prefDistance && !alreadyHasDistance && !isAreaSearch) {
       url.searchParams.set('distance', prefDistance);
       anyChanges = true;
     }

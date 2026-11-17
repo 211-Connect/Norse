@@ -3,6 +3,7 @@ import { type Page, expect } from '@playwright/test';
 import {
   ASYNC_UI_TIMEOUT_MS,
   AUTOCOMPLETE_TIMEOUT_MS,
+  PRESENCE_PROBE_TIMEOUT_MS,
   SEARCH_NAV_TIMEOUT_MS,
   UI_SHELL_TIMEOUT_MS,
 } from '../timeouts';
@@ -400,10 +401,15 @@ export async function chooseLocationFromSearchPage(
   page: Page,
   { typed, suggestion }: { typed: string; suggestion: string },
 ) {
-  await getLocationBelowSearch(page).click();
-  await expect(page.getByTestId('search-dialog')).toBeVisible({
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
+  // A click that lands before the button hydrates does nothing (seen on a
+  // cold dev server), so click again until the dialog opens.
+  const dialog = page.getByTestId('search-dialog');
+  await expect(async () => {
+    if (!(await dialog.isVisible())) {
+      await getLocationBelowSearch(page).click();
+    }
+    await expect(dialog).toBeVisible({ timeout: PRESENCE_PROBE_TIMEOUT_MS });
+  }).toPass({ timeout: UI_SHELL_TIMEOUT_MS });
 
   const locationInput = page.locator('#location-input');
   await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });

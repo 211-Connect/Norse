@@ -100,7 +100,8 @@ export function MapContainer() {
 
   const { t, i18n } = useTranslation('page-search');
   const { results, totalResults, pinsQuery, region } = useSearchResults();
-  const searchArea = useRegionArea(region, i18n.language)?.geometry;
+  const regionArea = useRegionArea(region, i18n.language);
+  const searchArea = regionArea?.geometry;
   // When the page holds every result, the pins could add nothing to it.
   const isWholeSearchOnPage = totalResults <= results.length;
   const { pins, isLoading: isLoadingPins } = useSearchPins(
@@ -191,11 +192,14 @@ export function MapContainer() {
             points={mapPoints ?? undefined}
             searchArea={searchArea}
           />
-          {mapPoints && mapPoints.length > 0 && (
+          {((mapPoints && mapPoints.length > 0) || regionArea) && (
             <MapLegend
               rows={legendRows}
-              showUserLocation={coords?.length === 2 && !region}
+              showUserLocation={
+                Boolean(mapPoints?.length) && coords?.length === 2 && !region
+              }
               isLoadingPins={isLoadingPins}
+              searchAreaName={regionArea?.name}
             />
           )}
         </ErrorBoundary>

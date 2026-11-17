@@ -2,6 +2,10 @@ import { Info, Loader2 } from 'lucide-react';
 import { type ReactNode, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import {
+  SEARCH_AREA_COLOR,
+  SEARCH_AREA_FILL_OPACITY,
+} from '@/app/(app)/shared/components/map/map-shared';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 function LegendPin({ className }: { className: string }) {
@@ -41,14 +45,30 @@ export type MapLegendRows = {
   site: boolean;
 };
 
+/** As on the map: the area's outline over its faint fill. */
+function LegendArea() {
+  return (
+    <span
+      className="size-3 shrink-0 rounded-[3px] border-2"
+      style={{
+        borderColor: SEARCH_AREA_COLOR,
+        backgroundColor: `color-mix(in srgb, ${SEARCH_AREA_COLOR} ${SEARCH_AREA_FILL_OPACITY * 100 * 2}%, transparent)`,
+      }}
+    />
+  );
+}
+
 const ROW = 'flex items-center gap-1.5';
 
 export function MapLegend({
   rows,
   showUserLocation,
   isLoadingPins,
+  searchAreaName,
 }: {
   rows: MapLegendRows;
+  /** The area the search is filtered to, outlined on the map; absent for a point search. */
+  searchAreaName?: string;
   showUserLocation: boolean;
   /** The rest of the search's circles are on their way: says so as the last row. */
   isLoadingPins: boolean;
@@ -84,6 +104,17 @@ export function MapLegend({
           isOpen ? 'flex' : 'hidden lg:flex',
         )}
       >
+        {searchAreaName && (
+          <li className={ROW} data-testid="map-legend-area">
+            <LegendSymbol>
+              <LegendArea />
+            </LegendSymbol>
+            {t('map_legend_area', {
+              name: searchAreaName,
+              defaultValue: 'Search area: {{name}}',
+            })}
+          </li>
+        )}
         {rows.inList && (
           <li className={ROW}>
             <LegendSymbol>

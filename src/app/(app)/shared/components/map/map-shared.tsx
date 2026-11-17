@@ -164,3 +164,7 @@ export function getBoundsFromServiceArea(
     return null;
   }
 }
+
+/** The searched area's outline and fill on the map, and its legend swatch. */
+export const SEARCH_AREA_COLOR = '#2563eb';
+export const SEARCH_AREA_FILL_OPACITY = 0.08;
