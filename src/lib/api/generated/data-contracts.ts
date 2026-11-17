@@ -145,7 +145,11 @@ export interface OrganizationDto {
 export interface TaxonomyDto {
   code: string;
   name: string;
-  description: string | null;
+  /**
+   * Deprecated: no longer returned by /search.
+   * @deprecated
+   */
+  description?: string | null;
 }
 
 export interface SearchSource {
@@ -2385,53 +2389,6 @@ export interface RecordCrawlerTrafficResponseDto {
   recorded: number;
 }
 
-export interface CrawlerTrafficByTenantDto {
-  /**
-   * 403 from bot protection.
-   * @example 120
-   */
-  blocked: number;
-  /**
-   * Denied on an observe-only host; the page was served.
-   * @example 40
-   */
-  logged: number;
-  /**
-   * 403 from the per-IP rate limit.
-   * @example 5
-   */
-  rateLimited: number;
-  /**
-   * Allowed crawlers, served.
-   * @example 900
-   */
-  allowed: number;
-  /**
-   * 429 from the per-tenant load limit.
-   * @example 0
-   */
-  shed: number;
-  /**
-   * Sum of all outcomes.
-   * @example 1065
-   */
-  total: number;
-  /** @example "7f4c2a51-0c7e-4b8e-9d0a-2f8a3b1c9e10" */
-  tenantId: string;
-}
-
-export interface CrawlerTrafficAllTenantsResponse {
-  /** @example "day" */
-  granularity: "hour" | "day";
-  totals: CrawlerTrafficCountsDto;
-  /** Per crawler and classification, largest total first (top 100). */
-  byCrawler: CrawlerTrafficByCrawlerDto[];
-  /** Non-empty hour or day buckets in the range, oldest first. */
-  series: CrawlerTrafficSeriesPointDto[];
-  /** Per tenant, largest total first. */
-  byTenant: CrawlerTrafficByTenantDto[];
-}
-
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
   /**
    * Optional schema name to filter custom attributes
@@ -3840,24 +3797,3 @@ export type AnalyticsControllerGetCrawlerTrafficData = CrawlerTrafficResponse;
 
 export type CrawlerTrafficInternalControllerRecordData =
   RecordCrawlerTrafficResponseDto;
-
-export interface CrawlerTrafficAllTenantsInternalControllerGetAllTenantsParams {
-  /**
-   * ISO-8601 start. Rounded down to the UTC hour: the counts have 1-hour resolution.
-   * @example "2026-11-10T00:00:00Z"
-   */
-  start: string;
-  /**
-   * ISO-8601 end (inclusive: the hour containing it is included). Must be ≥ start, not in the future, and within 365 days of start.
-   * @example "2026-11-17T23:59:59Z"
-   */
-  end: string;
-  /**
-   * Series bucket size. `hour` is allowed for ranges up to 31 days.
-   * @default "day"
-   */
-  granularity?: "hour" | "day";
-}
-
-export type CrawlerTrafficAllTenantsInternalControllerGetAllTenantsData =
-  CrawlerTrafficAllTenantsResponse;

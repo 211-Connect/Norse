@@ -11,8 +11,6 @@
  */
 
 import {
-  CrawlerTrafficAllTenantsInternalControllerGetAllTenantsData,
-  CrawlerTrafficAllTenantsInternalControllerGetAllTenantsParams,
   CrawlerTrafficInternalControllerRecordData,
   RecordCrawlerTrafficDto,
 } from "./data-contracts";
@@ -40,30 +38,6 @@ export class CrawlerTrafficInternal<
       body: data,
       secure: true,
       type: "application/json",
-      format: "json",
-      ...params,
-    });
-  /**
-   * @description Totals, top crawlers, an hour or day series and a per-tenant breakdown. For super admins only (Norse checks the role).
-   *
-   * @tags Crawler Traffic (Internal)
-   * @name CrawlerTrafficAllTenantsInternalControllerGetAllTenants
-   * @summary Get per-crawler request counts across all tenants
-   * @request GET:/internal/crawler-traffic-all-tenants
-   * @secure
-   */
-  crawlerTrafficAllTenantsInternalControllerGetAllTenants = (
-    query: CrawlerTrafficAllTenantsInternalControllerGetAllTenantsParams,
-    params: RequestParams = {},
-  ) =>
-    this.request<
-      CrawlerTrafficAllTenantsInternalControllerGetAllTenantsData,
-      any
-    >({
-      path: `/internal/crawler-traffic-all-tenants`,
-      method: "GET",
-      query: query,
-      secure: true,
       format: "json",
       ...params,
     });

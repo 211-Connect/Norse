@@ -9,9 +9,8 @@ Payload analytics dashboard widgets:
 
 - **Blocked Bots**: a stat card next to Page Views, "M requests were blocked
   bots". Counts blocked and rate-limited requests (both got a 403).
-- **Crawler traffic**: a chart of every counted request per hour or per day,
-  stacked by outcome, and a table of the top crawlers. Super admins can
-  switch it to **All tenants**, which adds a per-tenant table.
+- **Crawler traffic**: a chart of the selected tenant's counted requests per
+  hour or per day, stacked by outcome, and a table of the top crawlers.
 
 Counted requests are **not** in Page Views or any other Umami widget.
 
@@ -61,10 +60,8 @@ volume. Per-request detail (path, decision) is already in the
   "unknown" tenant `UNKNOWN_TENANT_ID`
   (`00000000-0000-0000-0000-000000000000`). Its pushes carry only the
   internal key: it has no Payload document and no Norse API key.
-- `INTERNAL_API_KEY` and `API_URL`:
-  - the push uses Norse-API's internal endpoint with the tenant's usual
-    headers (`getInternalHeaders`);
-  - the All tenants view uses the internal key alone.
+- `INTERNAL_API_KEY` and `API_URL`: the push uses Norse-API's internal
+  endpoint with the tenant's usual headers (`getInternalHeaders`).
 
 ## Architecture
 
@@ -87,8 +84,6 @@ Payload dashboard
   BlockedBotsWidget    → /api/analytics/blocked-traffic   → GET /analytics/blocked-traffic
                                                              (old blocked_traffic_hourly + new collection)
   CrawlerTrafficWidget → /api/analytics/crawler-traffic   → GET /analytics/crawler-traffic?granularity=hour|day
-     (super admin)     → /api/analytics/crawler-traffic-all-tenants
-                                                          → GET /internal/crawler-traffic-all-tenants
 ```
 
 Files:
@@ -101,9 +96,9 @@ Files:
 | `src/lib/crawler-traffic-counter.ts` | `createCrawlerTrafficCounter`: the in-memory buckets and the 60 s flush timer (started on the first count, `unref`'d). Requeues on failure, splits pushes at 1,000 buckets, and keeps at most 20,000 pending buckets. Pure; unit-tested in `tests/crawler-traffic-counter.test.ts`. |
 | `src/lib/arcjet-classification.ts` | `classifyBlockedTraffic` / `classifyBot`: the classification rules, as a table in [architecture.md](/docs/architecture.md#blocked-traffic-analytics-iss-2366). |
 | `src/lib/load-shed/report.ts` | Counts every load-limit 429 as `shed`. |
-| `src/payload/endpoints/analyticsProxy.ts` | Proxies `/analytics/blocked-traffic` and `/analytics/crawler-traffic` with the tenant analytics key, like every widget (website selection does not apply). Proxies `/analytics/crawler-traffic-all-tenants` for super admins only. |
+| `src/payload/endpoints/analyticsProxy.ts` | Proxies `/analytics/blocked-traffic` and `/analytics/crawler-traffic` with the tenant analytics key, like every widget (website selection does not apply). |
 | `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | Stat card: blocked plus rate-limited requests. Observe-only denials are left out, because those requests were served. No trend: the endpoint has no previous-period comparison. |
-| `src/payload/components/analytics/widgets/CrawlerTrafficWidget.tsx` | Chart by outcome, hourly or daily (hourly only for ranges up to 31 days), and the top 15 crawlers. For super admins, an All tenants switch with a per-tenant table. |
+| `src/payload/components/analytics/widgets/CrawlerTrafficWidget.tsx` | Chart by outcome, hourly or daily (hourly only for ranges up to 31 days), and the top 15 crawlers. |
 
 Norse-API side (storage, endpoints, validation): `docs/crawler-traffic.md`
 in the Norse-API repo.
@@ -122,6 +117,9 @@ in the Norse-API repo.
     instance tries one last push, which may not finish before exit.
 - Hourly resolution: the widget's range is rounded out to whole UTC hours.
 - Retention: Norse-API keeps the hourly buckets indefinitely, with no TTL.
+- Deprecated: Norse-API's `POST /internal/blocked-traffic` and its
+  `BlockedTrafficInternal` client are no longer called by Norse. They stay
+  until every deployment runs the per-crawler counters.
 - Older history:
   - Counts from before the per-crawler counters stay in Norse-API's
     `blocked_traffic_hourly`, which is no longer written.

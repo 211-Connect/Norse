@@ -1,7 +1,5 @@
 'use client';
 
-import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
-import { useAuth } from '@payloadcms/ui';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { type CSSProperties, useMemo, useState } from 'react';
@@ -16,17 +14,9 @@ import {
   YAxis,
 } from 'recharts';
 
-import type {
-  CrawlerTrafficAllTenantsResponse,
-  CrawlerTrafficCountsDto,
-} from '../../../../lib/api/generated/data-contracts';
-import { isSuperAdmin } from '../../../collections/Users/access/roles';
-import type { User } from '../../../payload-types';
+import type { CrawlerTrafficCountsDto } from '../../../../lib/api/generated/data-contracts';
 import { analyticsDateRangeAtom } from '../DateRange';
-import type {
-  CrawlerTrafficGranularity,
-  CrawlerTrafficScope,
-} from '../analyticsCache';
+import type { CrawlerTrafficGranularity } from '../analyticsCache';
 import type { DateRange } from '../types';
 import { useAnalyticsCrawlerTraffic } from '../useAnalyticsData';
 import { WidgetCard } from '../WidgetCard';
@@ -157,26 +147,19 @@ function CountsTable({
 }
 
 /**
- * Requests per crawler and outcome, from Norse's hourly counters (not
- * Umami). Super admins can switch to all tenants.
+ * The selected tenant's requests per crawler and outcome, from Norse's
+ * hourly counters (not Umami).
  */
 export default function CrawlerTrafficWidget() {
-  const { user } = useAuth<User>();
-  const superAdmin = isSuperAdmin(user ?? null);
-  const { options } = useTenantSelection();
   const range = useAtomValue(analyticsDateRangeAtom);
   const hourlyAllowed = rangeDays(range) <= MAX_HOURLY_RANGE_DAYS;
 
-  const [scope, setScope] = useState<CrawlerTrafficScope>('tenant');
   const [preferHourly, setPreferHourly] = useState(true);
   const granularity: CrawlerTrafficGranularity =
     preferHourly && hourlyAllowed ? 'hour' : 'day';
-  const effectiveScope: CrawlerTrafficScope = superAdmin ? scope : 'tenant';
 
-  const { loading, error, data, refetch } = useAnalyticsCrawlerTraffic(
-    effectiveScope,
-    granularity,
-  );
+  const { loading, error, data, refetch } =
+    useAnalyticsCrawlerTraffic(granularity);
 
   const series = useMemo(
     () =>
@@ -201,20 +184,6 @@ export default function CrawlerTrafficWidget() {
       })),
     [data],
   );
-
-  const tenantRows = useMemo(() => {
-    const byTenant = (data as CrawlerTrafficAllTenantsResponse | null)
-      ?.byTenant;
-    if (!byTenant) return [];
-    const names = new Map(
-      options.map((option) => [String(option.value), String(option.label)]),
-    );
-    return byTenant.slice(0, TOP_ROWS).map((row) => ({
-      key: row.tenantId,
-      label: names.get(row.tenantId) ?? row.tenantId,
-      counts: row,
-    }));
-  }, [data, options]);
 
   if (loading && !data) {
     return <WidgetSkeleton height="640px" count={1} shimmerHeight={560} />;
@@ -244,26 +213,6 @@ export default function CrawlerTrafficWidget() {
           alignItems: 'center',
         }}
       >
-        {superAdmin && (
-          <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button
-              type="button"
-              style={toggleStyle(scope === 'tenant')}
-              onClick={() => setScope('tenant')}
-              aria-pressed={scope === 'tenant'}
-            >
-              This tenant
-            </button>
-            <button
-              type="button"
-              style={toggleStyle(scope === 'all')}
-              onClick={() => setScope('all')}
-              aria-pressed={scope === 'all'}
-            >
-              All tenants
-            </button>
-          </div>
-        )}
         <div style={{ display: 'flex', gap: '0.25rem' }}>
           <button
             type="button"
@@ -325,15 +274,6 @@ export default function CrawlerTrafficWidget() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-
-      {effectiveScope === 'all' && (
-        <>
-          <h4 style={{ margin: '0.5rem 0 0', fontSize: '0.9375rem' }}>
-            By tenant
-          </h4>
-          <CountsTable firstHeading="Tenant" rows={tenantRows} />
-        </>
-      )}
 
       <h4 style={{ margin: '0.5rem 0 0', fontSize: '0.9375rem' }}>
         Top crawlers

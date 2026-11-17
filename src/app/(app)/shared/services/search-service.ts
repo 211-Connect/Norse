@@ -24,6 +24,7 @@ import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 import { getApiHeaders } from '@/lib/api';
+import { isCommonSearch } from '../lib/common-search';
 
 const log = createLogger('search');
 
@@ -245,7 +246,7 @@ export async function findResources(
         tenantId,
         searchEngine,
       }),
-    { redis: true, memory: false, ttl: ONE_HOUR },
+    { redis: true, memory: isCommonSearch(query, page), ttl: ONE_HOUR },
     (value) => value.results.length > 0,
     (hit) => {
       cacheHit = hit;

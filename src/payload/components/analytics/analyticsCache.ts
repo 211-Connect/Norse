@@ -8,7 +8,6 @@ import type {
   AnalyticsMetricsResponse,
   AreaSearchesResponse,
   BlockedTrafficResponse,
-  CrawlerTrafficAllTenantsResponse,
   CrawlerTrafficResponse,
   EventCatalogEntryResponse,
   EventValuesResponse,
@@ -450,23 +449,19 @@ export const fetchAnalyticsEventValues = makeCachedFetchWithArgs<
   },
 );
 
-export type CrawlerTrafficScope = 'tenant' | 'all';
 export type CrawlerTrafficGranularity = 'hour' | 'day';
-export type CrawlerTrafficData =
-  CrawlerTrafficResponse | CrawlerTrafficAllTenantsResponse;
+export type CrawlerTrafficData = CrawlerTrafficResponse;
 
 export const fetchAnalyticsCrawlerTraffic = makeCachedFetchWithArgs<
   CrawlerTrafficData,
-  { scope: CrawlerTrafficScope; granularity: CrawlerTrafficGranularity }
+  { granularity: CrawlerTrafficGranularity }
 >(
   new Map<string, CacheEntry<CrawlerTrafficData>>(),
-  ({ scope, granularity }) => `${scope}:${granularity}`,
-  async ({ startAt, endAt }, tenantId, _websiteIds, { scope, granularity }) => {
+  ({ granularity }) => granularity,
+  async ({ startAt, endAt }, tenantId, _websiteIds, { granularity }) => {
     const data = await fetchWrapper<CrawlerTrafficData>(
       buildAnalyticsQuery(
-        scope === 'all'
-          ? '/analytics/crawler-traffic-all-tenants'
-          : '/analytics/crawler-traffic',
+        '/analytics/crawler-traffic',
         startAt,
         endAt,
         tenantId,
