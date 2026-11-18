@@ -14,6 +14,7 @@ import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import {
   groupByMatchedNeeds,
   isWeakMatch,
+  locationNote,
   type NeedsGroup,
   useV2Search,
   useV2Url,
@@ -75,8 +76,19 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
     groups.length > 0 &&
     groups.every((g) => g === 'none');
 
+  const area = locationNote(data?.resolved_location);
+
   return (
     <>
+      {area && (
+        <p
+          role="status"
+          className="text-muted-foreground text-sm"
+          data-testid="resolved-location"
+        >
+          {area}
+        </p>
+      )}
       {results.length === 0 && weak && (
         <div
           role="status"
