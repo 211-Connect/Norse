@@ -5,6 +5,7 @@ import { describe, test } from 'node:test';
 import {
   ARCJET_SIGNALS_CSP,
   BURST_WARMUP_MINUTES,
+  BURST_WARMUP_MIN_FACTOR,
   BurstDetector,
   DecisionSampler,
   KeyedMinuteCap,
@@ -452,10 +453,11 @@ describe('decision sampling', () => {
     assert.equal(d.isBurst('h'), false);
   });
 
-  test('no burst during the warm-up after an instance starts', () => {
+  test('warm-up: normal traffic on a fresh instance is not a burst', () => {
     let t = 0;
     const d = new BurstDetector(config, () => t);
-    // 60 calls a minute from the very first minute: no baseline yet.
+    // 60 calls a minute from the very first minute: above the minimum (40)
+    // but under the warm-up bar (120), and no baseline yet.
     for (let m = 0; m < BURST_WARMUP_MINUTES; m++) {
       for (let i = 0; i < 60; i++) {
         t = m * 60_000 + i * 1_000;
@@ -467,6 +469,36 @@ describe('decision sampling', () => {
       t = BURST_WARMUP_MINUTES * 60_000 + i * 1_000;
       d.record('h');
     }
+    assert.equal(d.isBurst('h'), false);
+  });
+
+  test('warm-up: a large flood right after a restart is a burst', () => {
+    let t = 0;
+    const d = new BurstDetector(config, () => t);
+    const bar = config.burstMinPerInstance * BURST_WARMUP_MIN_FACTOR;
+    assert.equal(bar, 120);
+    let on = false;
+    // 200 calls in the first 50 seconds after start.
+    for (let i = 0; i < 200; i++) {
+      t = i * 250;
+      on = d.record('h');
+      if (i < bar) assert.equal(on, false, `call ${i}`);
+    }
+    assert.equal(on, true);
+  });
+
+  test('warm-up: steady high traffic on a fresh instance learns its baseline and leaves burst', () => {
+    let t = 0;
+    const d = new BurstDetector(config, () => t);
+    // 150 calls a minute for 30 minutes: above the warm-up bar, but steady.
+    for (let m = 0; m < 30; m++) {
+      for (let i = 0; i < 150; i++) {
+        t = m * 60_000 + i * 400;
+        d.record('h');
+      }
+    }
+    // Flagged during warm-up; afterwards the learned baseline (~150) puts
+    // the 5x test out of reach, and the 5-minute burst has expired.
     assert.equal(d.isBurst('h'), false);
   });
 
