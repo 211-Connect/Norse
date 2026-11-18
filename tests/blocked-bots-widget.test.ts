@@ -8,11 +8,11 @@ import {
 } from '../src/payload/components/analytics/widgetInfo';
 
 describe('Blocked Bots widget (ISS-2366)', () => {
-  test('is in the default layout right after Page Views', () => {
+  test('bot widgets are not in the default layout', () => {
     const slugs = ANALYTICS_DEFAULT_LAYOUT.map((w) => w.widgetSlug);
-    const pageViews = slugs.indexOf(WidgetSlug.PageViews);
-    assert.ok(pageViews >= 0);
-    assert.equal(slugs[pageViews + 1], WidgetSlug.BlockedBots);
+    assert.ok(slugs.includes(WidgetSlug.PageViews));
+    assert.ok(!slugs.includes(WidgetSlug.BlockedBots));
+    assert.ok(!slugs.includes(WidgetSlug.CrawlerTraffic));
     assert.equal(WidgetSlug.BlockedBots, 'analytics-blocked-bots');
   });
 

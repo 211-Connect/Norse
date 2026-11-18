@@ -265,6 +265,19 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
   });
 });
 
+describe('allowed crawlers', () => {
+  test('an allowed decision reports the allowed crawlers', async () => {
+    const protect = createProtect(clientReturning(allow()));
+    const { log } = captureLog();
+    const result = await protect(makeRequest(), PATH, log);
+    assert.equal(result.conclusion, 'ALLOW');
+    assert.deepEqual(
+      result.conclusion === 'ALLOW' ? result.allowedBots : undefined,
+      ['GOOGLE_CRAWLER'],
+    );
+  });
+});
+
 describe('no-User-Agent filter rule (ISS-1744)', () => {
   const filterReason = () =>
     new ArcjetFilterReason({
@@ -587,6 +600,7 @@ describe('MBOA internal traffic (ISS-1734, ISS-1728)', () => {
     assert.deepEqual(stripTiming(result), {
       denied: false,
       conclusion: 'ALLOW',
+      allowedBots: ['GOOGLE_CRAWLER'],
     });
     assert.equal(calls(), 1, 'Arcjet protect must be called');
     assert.deepEqual(lastOptions(), { ipSrc: '10.215.199.3' });

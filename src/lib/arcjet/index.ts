@@ -104,6 +104,11 @@ export type ArcjetProtectResult =
       /** `decision.id`; absent when no decision came back (SKIPPED/THREW). */
       decisionId?: string;
       timing?: ArcjetTiming;
+      /**
+       * Crawlers the bot rule identified and allowed (e.g. `GOOGLE_CRAWLER`),
+       * for the per-crawler counts. Only on ALLOW / CHALLENGE.
+       */
+      allowedBots?: string[];
     }
   | {
       /** Denied by Arcjet but the host is not enforced (see ARCJET_ENFORCEMENT). */
@@ -155,6 +160,19 @@ function requestContext(request: ArcjetRequestLike, pathName: string) {
     host: request.headers.get('host') ?? 'unknown',
     pathName,
   };
+}
+
+function allowedBotsOf(decision: ArcjetDecision): string[] {
+  const bots = new Set<string>();
+  if (decision.reason.isBot()) {
+    for (const bot of decision.reason.allowed) bots.add(bot);
+  }
+  for (const result of decision.results) {
+    if (result.reason.isBot()) {
+      for (const bot of result.reason.allowed) bots.add(bot);
+    }
+  }
+  return [...bots];
 }
 
 function deniedBotsOf(decision: ArcjetDecision): string[] {
@@ -452,11 +470,13 @@ export function createArcjetProtect(
     }
 
     recordDecision(timing, false);
+    const allowedBots = allowedBotsOf(decision);
     return {
       denied: false,
       conclusion: decision.conclusion === 'CHALLENGE' ? 'CHALLENGE' : 'ALLOW',
       decisionId: decision.id,
       timing,
+      ...(allowedBots.length > 0 && { allowedBots }),
     };
   }
 

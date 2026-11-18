@@ -123,8 +123,9 @@ arcjetProtect                    src/lib/arcjet/index.ts
 | `arcjet_fingerprint_failed` | SDK threw or the decision errored (includes timeouts) | host, path, error, redacted headers. Sampled, 5 per minute; `*_sampled_out` otherwise. |
 | `arcjet_no_client_ip` | MBOA traffic with no routable client IP | host, path, masked hops, redacted headers. Sampled as above. |
 
-Every denial, enforced or not, is also counted for the tenant's Blocked
-Bots widget after the response; see
+Every denial, enforced or not, and every request from an allowed crawler is
+also counted per crawler after the response (Blocked Bots and Crawler
+traffic widgets); see
 [blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
 
 Decision logs contain no IP address: find the request in the Arcjet console
