@@ -108,9 +108,11 @@ export const taxonomyScorecardsStatus: Endpoint = {
       }
 
       const resourceDirectory = await findResourceDirectoryByTenantId(tenantId);
+      // 'v2' behaves like 'ai_classification' until the v2 UX ships (ISS-2499).
+      const searchEngine =
+        resourceDirectory?.search?.searchSettings?.searchEngine;
       const aiClassificationEnabled =
-        resourceDirectory?.search?.searchSettings?.searchEngine ===
-        'ai_classification';
+        searchEngine === 'ai_classification' || searchEngine === 'v2';
 
       return Response.json({
         tenantId,

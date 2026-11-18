@@ -70,7 +70,10 @@ export function deriveQueryType({
     return QueryType.Taxonomy;
   }
 
-  return searchEngine === 'hybrid' || searchEngine === 'ai_classification'
+  // 'v2' behaves like 'ai_classification' until the v2 UX ships (ISS-2499).
+  return searchEngine === 'hybrid' ||
+    searchEngine === 'ai_classification' ||
+    searchEngine === 'v2'
     ? QueryType.Hybrid
     : QueryType.Text;
 }

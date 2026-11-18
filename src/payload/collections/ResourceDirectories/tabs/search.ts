@@ -273,6 +273,10 @@ export const search: Tab = {
               label: 'AI Classification',
               value: 'ai_classification',
             },
+            {
+              label: 'v2 search',
+              value: 'v2',
+            },
           ],
           access: {
             create: superAdminOrSupportOrTenantAccess,
