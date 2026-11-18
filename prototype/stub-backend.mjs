@@ -59,6 +59,27 @@ http.createServer((req, res) => {
         .then(async (r) => { const text = await r.text(); console.log('  geocode', r.status); res.writeHead(r.status, { 'content-type': 'application/json' }); res.end(text); })
         .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
     }
+    // PR #330: `GET /v2/search/pins`, the located matches of the same search as the list, no paging.
+    // The pin shape is the contract's: id (= hit _id), service_at_location_id, name, physical_address, coordinates [lon, lat].
+    // Needs never filter, so they do not change the set. The synthetic catalog has no regions or filters, so those are not honoured.
+    if (p === '/v2/search/pins') {
+      console.log('  pins tenant_id=%s locale=%s x-tenant-id=%s x-api-version=%s', u.searchParams.get('tenant_id'), u.searchParams.get('locale'), req.headers['x-tenant-id'] ?? '(none)', req.headers['x-api-version'] ?? '(none)');
+      if (process.env.V2_UPSTREAM) {
+        const up = new URL('/v2/search/pins', process.env.V2_UPSTREAM);
+        for (const [k, v] of u.searchParams) up.searchParams.set(k, v);
+        up.searchParams.set('tenant_id', process.env.V2_TENANT);
+        if (process.env.V2_COORDS && !up.searchParams.get('coords')) up.searchParams.set('coords', process.env.V2_COORDS);
+        up.searchParams.set('relevance_cutoff', process.env.V2_CUTOFF === 'off' ? 'off' : 'on');
+        return void fetch(up).then(async (r) => { const text = await r.text(); console.log('  upstream pins', r.status, text.length); res.writeHead(r.status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' }); res.end(text); })
+          .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
+      }
+      const wp = readParams(u.searchParams);
+      if (/zzqx/i.test(wp.other || wp.query) && wp.needs.length === 0) return send({ total: 0, truncated: false, pins: [] });
+      return void v2Search(wp).then(({ services }) => {
+        const pins = services.map((s, i) => { const h = svc(s, i); return { id: h._id, service_at_location_id: h._source.service_at_location_id, name: h._source.name, physical_address: h._source.location.physical_address, coordinates: h._source.location.point.coordinates }; });
+        send({ total: pins.length, truncated: false, pins });
+      }, (err) => { console.error(err); res.writeHead(500); res.end(); });
+    }
     if (process.env.V2_UPSTREAM && (p === '/v2/search' || p === '/search')) {
       // Send only v2 parameters. Tenant and language go in the URL (PR #331), no headers; the live tenant
       // replaces the stub tenant the page sent.
