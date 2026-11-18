@@ -13,6 +13,8 @@ import {
   otherChanges,
   nextV2Params,
   styleOf,
+  emergencyPopupMode,
+  withEmergencyAnswers,
   type V2Question,
   type V2Response,
 } from '../src/app/(app)/features/search/v2/v2-contract';
@@ -128,9 +130,40 @@ test('answerChanges: a passed_needs option and an urgency skip', () => {
   });
 });
 
-test('answerChanges: the page never writes U-0', () => {
-  const q = question([{ label: 'x', parameter: 'urgency', value: 'U-0' }]);
-  assert.equal(answerChanges(q, ['U-0'], { needs: [], passedNeeds: [] }).urgency, undefined);
+test('answerChanges: the emergency popup answers write U-0, U-1 and U-2 (Lucas 2026-11-18)', () => {
+  const q = withEmergencyAnswers({ ...question([]), id: 'emergency', type: 'emergency', importance: 'critical' });
+  for (const code of ['U-0', 'U-1', 'U-2']) {
+    assert.equal(answerChanges(q, [code], { needs: [], passedNeeds: [] }).urgency, code);
+  }
+});
+
+test('withEmergencyAnswers: exactly three options; the engine values win when all three match', () => {
+  const base = { ...question([]), id: 'emergency', type: 'emergency' as const, importance: 'critical' as const };
+  const mine = withEmergencyAnswers(base);
+  assert.deepStrictEqual(mine.options.map((o) => [o.label, o.value, o.parameter]), [
+    ['Yes, I am in danger', 'U-0', 'urgency'],
+    ['No, I am safe, I need help today', 'U-1', 'urgency'],
+    ['No, I am safe, I need help this week', 'U-2', 'urgency'],
+  ]);
+  const engine = (label: string, value: string) => ({ label, parameter: 'urgency' as const, value, results_count: null });
+  const theirs = withEmergencyAnswers({
+    ...base,
+    options: [engine('A', 'U-2'), engine('B', 'U-0'), engine('C', 'U-1'), engine('D', 'U-3')],
+  });
+  assert.deepStrictEqual(theirs.options.map((o) => o.label), ['B', 'C', 'A']);
+  // Older engine options (two answers, other codes): the page's own three.
+  const old = withEmergencyAnswers({ ...base, options: [engine('x', 'U-1'), engine('y', 'U-2')] });
+  assert.equal(old.options[0].label, 'Yes, I am in danger');
+});
+
+test('emergencyPopupMode: ask, danger, or none', () => {
+  const crit = { id: 'emergency', importance: 'critical' as const };
+  assert.equal(emergencyPopupMode(crit, null, []), 'ask');
+  assert.equal(emergencyPopupMode(crit, 'U-0', ['emergency']), 'danger');
+  for (const u of ['U-1', 'U-2', 'U-3', 'U-4']) assert.equal(emergencyPopupMode(crit, u, ['emergency']), null);
+  assert.equal(emergencyPopupMode(crit, null, ['emergency']), null);
+  assert.equal(emergencyPopupMode({ id: 'emergency', importance: 'high' }, null, []), null);
+  assert.equal(emergencyPopupMode(undefined, null, []), null);
 });
 
 test('emergencyQuestionOf reads the emergency only from the questions (Decision 54)', () => {

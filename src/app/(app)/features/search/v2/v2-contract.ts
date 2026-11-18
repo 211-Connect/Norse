@@ -114,6 +114,51 @@ export const isWeakMatch = (response?: V2Response) =>
 export const noMatchQuestionOf = (response?: V2Response) =>
   response?.clarification.questions.find((q) => q.id === NO_MATCH_ID);
 
+/** The three answers of the red emergency popup (Lucas, 2026-11-18). Each writes `urgency=`. */
+export const EMERGENCY_ANSWERS = [
+  { label: 'Yes, I am in danger', value: 'U-0' },
+  { label: 'No, I am safe, I need help today', value: 'U-1' },
+  { label: 'No, I am safe, I need help this week', value: 'U-2' },
+] as const;
+
+/**
+ * The popup's question with exactly the three answers. The rules engine's options win when they
+ * carry all three codes (its labels and order); otherwise the page's own are used.
+ */
+export function withEmergencyAnswers(q: V2Question): V2Question {
+  const mine = EMERGENCY_ANSWERS.map((a) => {
+    const engine = q.options.find(
+      (o) => o.parameter === 'urgency' && o.value === a.value,
+    );
+    return engine ? { ...engine } : undefined;
+  });
+  const options = mine.every(Boolean)
+    ? (mine as V2Question['options'])
+    : EMERGENCY_ANSWERS.map((a) => ({
+        label: a.label,
+        parameter: 'urgency' as const,
+        value: a.value,
+        results_count: null,
+      }));
+  return { ...q, options };
+}
+
+/**
+ * Which red popup to show. `danger`: the URL says U-0, so the call buttons show. `ask`: the three
+ * answers. null: soft band, or an urgency U-1 to U-4 is already in the URL (no popup, Lucas FINAL
+ * 2026-11-17), or the question was skipped before (`asked`).
+ */
+export function emergencyPopupMode(
+  q: Pick<V2Question, 'id' | 'importance'> | undefined,
+  urgency: string | null | undefined,
+  asked: readonly string[],
+): 'ask' | 'danger' | null {
+  if (!q || isSoftEmergency(q)) return null;
+  if (urgency === 'U-0') return 'danger';
+  if (urgency && urgency !== 'U-X') return null;
+  return asked.includes(q.id) ? null : 'ask';
+}
+
 export const emergencyQuestionOf = (response?: V2Response) =>
   response?.clarification.questions.find((q) => q.type === 'emergency');
 
@@ -229,8 +274,8 @@ export function answerChanges(
       passed.delete(option.value);
     }
     if (option.parameter === 'passed_needs') passed.add(option.value);
-    // The page never writes U-0 (Decision 54: no such option); a person in danger taps a number.
-    if (option.parameter === 'urgency' && option.value !== 'U-0') {
+    // The emergency popup writes U-0 ("Yes, I am in danger"), U-1 and U-2 (Lucas, 2026-11-18).
+    if (option.parameter === 'urgency') {
       changes.urgency = option.value;
     }
   }

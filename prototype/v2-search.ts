@@ -4,7 +4,7 @@
 // - real: the Norse-API v2 rules engine (`decide`, `finalize`), imported from its branch checkout;
 // - fake: the services. They come from the synthetic CATALOG in sune.mjs, not from Elasticsearch.
 // Needs never filter. A confirmed or sure need only boosts, as the contract says.
-import { CATALOG } from '../src/app/(app)/features/search/sune-demo/sune.mjs';
+import { CATALOG, dangerBand } from '../src/app/(app)/features/search/sune-demo/sune.mjs';
 
 const RULES_PATH =
   process.env.RULES_ENGINE_PATH ??
@@ -164,6 +164,32 @@ const callerEmergencyQuestion = (hotlines: { label: string; number: string }[]) 
   multi_select: false, allow_other: false, none_of_these: false, hotlines,
 });
 
+/** Lucas 2026-11-18: the red popup asks one question with exactly these three answers. */
+const EMERGENCY_OPTIONS = [
+  { label: 'Yes, I am in danger', parameter: 'urgency', value: 'U-0', results_count: null },
+  { label: 'No, I am safe, I need help today', parameter: 'urgency', value: 'U-1', results_count: null },
+  { label: 'No, I am safe, I need help this week', parameter: 'urgency', value: 'U-2', results_count: null },
+];
+const criticalEmergencyQuestion = () => ({
+  id: 'emergency', type: 'emergency', importance: 'critical', value: 0.999, priority: 3.999,
+  uncertainty: 0, reason: 'emergency_band', step: 0, stem: 'Are you in danger right now?',
+  options: EMERGENCY_OPTIONS, multi_select: false, allow_other: false, none_of_these: false, hotlines: HOTLINES,
+});
+
+/**
+ * Display rules of the red emergency question. urgency=U-1..U-4: no emergency question (no popup).
+ * urgency=U-0: the caller question, no options (call buttons). Otherwise a critical question
+ * carries the three options, and a crisis query the engine missed (ml-broker down) still gets one.
+ */
+function applyEmergencyDisplay(questions: Record<string, unknown>[], urgency: string | undefined, crisis: boolean) {
+  if (urgency === 'U-0') return questions;
+  if (urgency && urgency !== 'U-X') return questions.filter((q) => q.type !== 'emergency');
+  const has = questions.some((q) => q.type === 'emergency');
+  if (!has && crisis) return [criticalEmergencyQuestion(), ...questions].slice(0, 3);
+  return questions.map((q) =>
+    q.type === 'emergency' && q.importance === 'critical' ? { ...q, options: EMERGENCY_OPTIONS } : q);
+}
+
 export async function v2Search(params: V2Params) {
   const started = Date.now();
   const { decide, finalize } = await loadRules();
@@ -187,6 +213,7 @@ export async function v2Search(params: V2Params) {
   if (params.urgency === 'U-0') {
     questions = [callerEmergencyQuestion(HOTLINES), ...questions.filter((q) => q.type !== 'emergency')].slice(0, 3);
   }
+  questions = applyEmergencyDisplay(questions, params.urgency, dangerBand(text, []) === 'high' || band === 'strong') as typeof questions;
   return {
     services,
     body: {
