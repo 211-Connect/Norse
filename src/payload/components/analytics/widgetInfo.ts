@@ -35,11 +35,12 @@ export enum WidgetSlug {
 // Default layout for the analytics dashboard. Used both to sanitize the
 // real Payload config (so the server-side "Reset Layout" action restores
 // this layout) and by AnalyticsView when rendering the dashboard.
+// Blocked Bots is left out on purpose: it is still registered, so users can
+// add it from the dashboard's edit-layout mode.
 export const ANALYTICS_DEFAULT_LAYOUT = [
   { widgetSlug: WidgetSlug.TotalUsers, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.Searches, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.PageViews, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.BlockedBots, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.ResourceViews, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },

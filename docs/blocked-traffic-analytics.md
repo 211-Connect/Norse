@@ -5,8 +5,12 @@ Requests that Arcjet denies in `protectPage` (`src/lib/arcjet-page.ts`) get a
 never runs for them. Most of them are clients that run no JavaScript anyway
 (curl, scrapers, AI crawlers), so Umami never saw them. This feature counts
 them on the server and shows the count in a **Blocked
-Bots** widget in the Payload analytics dashboard, next to Page Views. A
-tenant sees "N page views, and M requests were blocked bots" instead of an
+Bots** widget in the Payload analytics dashboard. The widget is **not** in
+the default layout (`ANALYTICS_DEFAULT_LAYOUT` in
+`src/payload/components/analytics/widgetInfo.ts`): a user adds it by editing
+the dashboard layout, and it then stays in their saved layout. Users whose
+layout was saved while the widget was a default keep it until they remove it
+or reset the layout. A tenant sees "N page views, and M requests were blocked bots" instead of an
 unexplained change. Blocked requests are **not** in Page Views or any other
 widget.
 
