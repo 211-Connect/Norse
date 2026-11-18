@@ -84,5 +84,11 @@ export function landingStep(state: {
  */
 export function toLandingUrl(resultsUrl: string): string {
   const at = resultsUrl.indexOf('?');
-  return `${LANDING_PATH}${at === -1 ? '' : resultsUrl.slice(at)}`;
+  if (at === -1) return LANDING_PATH;
+  // A typed search asks its questions: `refine=1`. A plain /find?query= URL shows results (SEO, shared links).
+  const params = new URLSearchParams(resultsUrl.slice(at + 1));
+  if (params.get('query')?.trim() && !params.has('refine')) {
+    return `${LANDING_PATH}${resultsUrl.slice(at)}&refine=1`;
+  }
+  return `${LANDING_PATH}${resultsUrl.slice(at)}`;
 }

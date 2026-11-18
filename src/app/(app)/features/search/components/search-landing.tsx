@@ -59,11 +59,12 @@ export function SearchLanding() {
     // Same text: the answers stay, the questions come back.
     if (next === query) return closeEdit();
     // A new search starts the questions again: `asked` goes, and a new text drops the old answers.
+    // `refine=1` keeps the page on the questions: a plain /find?query= URL shows results (SEO, shared links).
     const changes = {
       query: next,
       query_label: null,
       asked: null,
-      refine: null,
+      refine: '1',
     };
     setLoading(true);
     await prefetch(changes);
