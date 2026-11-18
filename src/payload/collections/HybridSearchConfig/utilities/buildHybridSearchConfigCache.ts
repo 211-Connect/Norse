@@ -2,6 +2,7 @@ import type {
   HybridSearchConfig,
   ResourceDirectory,
 } from '@/payload/payload-types';
+import { DEFAULT_UNLOCATED } from '@/types/areaSearch';
 import type { HybridSearchConfigCache } from '@/types/hybridSearchConfig';
 
 /**
@@ -48,7 +49,7 @@ export function buildHybridSearchConfigCache(
     enable_organization_search: enableOrganizationSearch,
     // Defaults for area searches (GET /search `region`) when the caller sends none.
     area_match: searchSettings?.areaMatchMode ?? 'located_or_serving',
-    include_unlocated_in_area_search:
-      searchSettings?.includeUnlocatedInAreaSearch ?? false,
+    unlocated_in_area_search:
+      searchSettings?.unlocatedInAreaSearch ?? DEFAULT_UNLOCATED,
   };
 }

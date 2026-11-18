@@ -300,10 +300,7 @@ export const search: Tab = {
           ],
           admin: {
             description:
-              'Choose how pinned/priority resources are handled for hybrid and AI classification search engines. Ignore drops pinned status; Boost adds a score contribution; Top hard-sorts pinned resources to the top of results.',
-            condition: (_, siblingData) =>
-              siblingData?.searchEngine === 'hybrid' ||
-              siblingData?.searchEngine === 'ai_classification',
+              'How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
@@ -397,14 +394,28 @@ export const search: Tab = {
           },
         },
         {
-          name: 'includeUnlocatedInAreaSearch',
-          type: 'checkbox',
-          label:
-            'Area search: also list resources with no address and no service area',
-          defaultValue: false,
+          name: 'unlocatedInAreaSearch',
+          type: 'select',
+          dbName: 'unlocated',
+          label: 'Area search: resources with no address and no service area',
+          defaultValue: 'virtual',
+          options: [
+            {
+              label: 'Leave them out',
+              value: 'none',
+            },
+            {
+              label: 'List virtual services only',
+              value: 'virtual',
+            },
+            {
+              label: 'List all of them',
+              value: 'all',
+            },
+          ],
           admin: {
             description:
-              'They cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.',
+              'They cannot be placed in any area, so each one is listed in every area search or in none. A virtual service with no service area usually serves everyone. "All" also lists physical services that are missing their address.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,

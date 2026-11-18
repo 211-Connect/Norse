@@ -15,16 +15,27 @@ Payload → Resource Directories → **Search** tab → Search settings:
 | Field (label starts "Area search:")                  | Default              | Meaning                                                                 |
 | ----------------------------------------------------- | -------------------- | ----------------------------------------------------------------------- |
 | `areaMatchMode` — which resources to list             | `located_or_serving` | Which resources an area search returns; see the options below.          |
-| `includeUnlocatedInAreaSearch` — also list resources with no address and no service area | off | They can't be placed in any area; when on, they appear in every area search. |
+| `unlocatedInAreaSearch` — resources with no address and no service area | `virtual` | They can't be placed in any area, so each is listed in every area search or in none; see below. |
 
-Columns: `search_search_settings_area_match_mode` and
-`search_search_settings_include_unlocated_in_area_search` (migration
-`20261117_105248_area_search_settings`, additive).
+Columns: `search_search_settings_area_match_mode` (migration
+`20261117_105248_area_search_settings`) and
+`search_search_settings_unlocated_in_area_search`, enum `unlocated` (migration
+`20261118_092914_area_search_unlocated`, which replaced the earlier boolean
+`include_unlocated_in_area_search`: `true` became `all`, the rest `virtual`).
 
 Both reach the app as `appConfig.search.areaMatch` /
-`appConfig.search.includeUnlocatedInAreaSearch`, and the API as
-`search_config.area_match` / `include_unlocated_in_area_search` in Redis
+`appConfig.search.unlocatedInAreaSearch`, and the API as
+`search_config.area_match` / `unlocated_in_area_search` in Redis
 (`buildHybridSearchConfigCache`). Visitors get no control for them.
+
+| `unlocatedInAreaSearch` | Admin label                  | Resources with no address and no service area                       |
+| ----------------------- | ---------------------------- | ------------------------------------------------------------------- |
+| `none`                  | Leave them out               | left out                                                            |
+| `virtual` (default)     | List virtual services only   | only virtual services (`location.physical_address.type: virtual`)   |
+| `all`                   | List all of them             | all, including physical services that are missing their address     |
+
+A virtual service with no service area usually serves everyone, so the
+default lists it. A physical one with neither field is missing data.
 
 "Address" here means the resource has a map point (`location.point`);
 "serves" means its `service_area` overlaps any part of the area.
@@ -49,7 +60,7 @@ location field commit (location-search-bar.tsx)
     → searchRegion atom, user-pref-region-id cookie
 /search URL               location, coords, region     (no distance with region)
 search page               toFindResourcesQuery → withAreaSettings
-  GET /search             region, area_match, include_unlocated, coords
+  GET /search             region, area_match, unlocated, coords
   GET /search/pins        same params (PINS_PARAMS)
 search map                useRegionArea(region) → /api/region-area → GET /regions/:id
                           outline under the circles, view fits it, no user pin

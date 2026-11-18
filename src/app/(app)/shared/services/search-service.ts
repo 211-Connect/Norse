@@ -5,7 +5,7 @@ import qs from 'qs';
 import { createLogger } from '@/lib/logger';
 import { recordSearch } from '@/lib/telemetry/search';
 import { SearchEngine } from '@/types/appConfig';
-import type { AreaMatch } from '@/types/areaSearch';
+import type { AreaMatch, Unlocated } from '@/types/areaSearch';
 import {
   FiltersMap,
   SearchApiResponse,
@@ -39,7 +39,7 @@ export type FindResourcesQuery = {
   region?: string;
   /** Tenant settings sent with an area search; set by the page from AppConfig. */
   areaMatch?: AreaMatch;
-  includeUnlocated?: boolean;
+  unlocated?: Unlocated;
   distance?: string;
   filters?: Record<string, string[]>;
   sort?: SortOption;

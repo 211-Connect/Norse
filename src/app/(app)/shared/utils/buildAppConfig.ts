@@ -1,4 +1,4 @@
-import { DEFAULT_AREA_MATCH } from '@/types/areaSearch';
+import { DEFAULT_AREA_MATCH, DEFAULT_UNLOCATED } from '@/types/areaSearch';
 import { TypedLocale } from 'payload';
 
 import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
@@ -298,7 +298,7 @@ export async function buildAppConfig(
         showAllResultsOnMap: false,
         pinnedResourcesMode: 'boost',
         areaMatch: DEFAULT_AREA_MATCH,
-        includeUnlocatedInAreaSearch: false,
+        unlocatedInAreaSearch: DEFAULT_UNLOCATED,
       },
       badges: [],
       suggestions: [],
@@ -558,9 +558,9 @@ export async function buildAppConfig(
       areaMatch:
         resourceDirectory.search.searchSettings.areaMatchMode ??
         DEFAULT_AREA_MATCH,
-      includeUnlocatedInAreaSearch:
-        resourceDirectory.search.searchSettings.includeUnlocatedInAreaSearch ??
-        false,
+      unlocatedInAreaSearch:
+        resourceDirectory.search.searchSettings.unlocatedInAreaSearch ??
+        DEFAULT_UNLOCATED,
       texts: {
         locationInputPlaceholder:
           resourceDirectory.search.texts?.locationInputPlaceholder ?? undefined,

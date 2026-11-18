@@ -18,6 +18,22 @@ for narrower, adjacent flows.
 gets classified (see `deriveQueryType()` below) — it has no effect on
 taxonomy or organization selections, which always bypass it.
 
+### Pinned resources
+
+`pinnedResourcesMode` (Search tab → Search settings, default `boost`) sets how
+pinned resources rank, under every sort order. Norse-API reads it from
+`search_config.pinned_resources_mode` in Redis (`buildHybridSearchConfigCache`)
+for every engine, so the field shows in the CMS whatever the engine:
+
+| Mode     | Hybrid / AI classification                         | Classic (keyword, taxonomy)          |
+| -------- | -------------------------------------------------- | ------------------------------------ |
+| `ignore` | pinned status not used                             | pinned status not used               |
+| `boost`  | adds to the relevance score; pinned need not lead  | pinned first (no score to add to)    |
+| `top`    | pinned first, then the chosen sort                 | pinned first, then the chosen sort   |
+
+"Pinned first" keeps pinned resources at the top even under `sort=distance`,
+so a pinned virtual service (no map point) does not drop to the bottom.
+
 ## The four autocomplete groups
 
 The search dialog's query input (`search-bar.tsx`) shows up to four grouped

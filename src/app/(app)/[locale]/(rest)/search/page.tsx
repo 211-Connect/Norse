@@ -51,7 +51,7 @@ function withAreaSettings(
   return {
     ...query,
     areaMatch: appConfig.search.areaMatch,
-    includeUnlocated: appConfig.search.includeUnlocatedInAreaSearch,
+    unlocated: appConfig.search.unlocatedInAreaSearch,
   };
 }
 
