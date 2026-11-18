@@ -123,13 +123,19 @@ export function groupByMatchedNeeds(
 }
 
 /** Answers that belong to one query text (Decision 51). */
-const PER_QUERY = ['urgency', 'needs', 'passed_needs'] as const;
+const PER_QUERY = [
+  'urgency',
+  'needs',
+  'passed_needs',
+  'other',
+  'asked',
+] as const;
 
 export type V2Changes = Record<string, string | string[] | null>;
 
 /**
- * The next page URL for a set of changes. A new query text drops `urgency`, `needs` and
- * `passed_needs` (Decision 51), unless the same change sets them again. The page number resets.
+ * The next page URL for a set of changes. A new query text drops `urgency`, `needs`, `passed_needs`,
+ * `other` and `asked` (Decision 51), unless the same change sets them again. The page number resets.
  */
 export function nextV2Params(
   current: Pick<URLSearchParams, 'get' | 'toString'>,

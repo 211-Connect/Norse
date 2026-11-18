@@ -188,3 +188,16 @@ test('cardWording: a one-need question is one tap, not "Pick all that fit"', () 
     { text: 'Do any of these also fit?', multi: true },
   );
 });
+
+test('nextV2Params: a new query text also drops other and asked (Question 22.3)', () => {
+  const current = new URLSearchParams(
+    'query=rent&other=my+landlord+left&asked=U-1,start&location=Sampleton',
+  );
+  const next = nextV2Params(current, { query: 'food' });
+  assert.equal(next.has('other'), false);
+  assert.equal(next.has('asked'), false);
+  assert.equal(next.get('location'), 'Sampleton');
+  const same = nextV2Params(current, { query: ' rent ' });
+  assert.equal(same.get('other'), 'my landlord left');
+  assert.equal(same.get('asked'), 'U-1,start');
+});
