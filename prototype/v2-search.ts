@@ -105,6 +105,20 @@ export function applyFacetFilters<T extends Service>(services: T[], filters: Rec
   });
 }
 
+/**
+ * The facet list of a filtered search. Values of one facet are OR, so each facet counts over the services that
+ * pass every OTHER facet's filter, never its own: the count beside a value is what ticking it would show.
+ */
+export function facetsOfFiltered(all: Service[], filters: Record<string, string[]>) {
+  const lists = new Map(
+    Object.keys(FACET_NAMES).map((key) => {
+      const { [key]: _own, ...others } = filters;
+      return [key, facetsOf(applyFacetFilters(all, others)).find((f) => f.key === key)!] as const;
+    }),
+  );
+  return Object.keys(FACET_NAMES).map((key) => lists.get(key)!);
+}
+
 /** v1/v2 facet list for a result set: `[{ key, name, values: [{ en, locale, doc_count }] }]`, biggest count first. */
 export function facetsOf(services: Service[]) {
   return Object.keys(FACET_NAMES).map((key) => {
@@ -278,7 +292,7 @@ export async function v2Search(params: V2Params) {
   const urgency = params.urgency ?? (decision.urgency.state === 'use' ? decision.urgency.value : undefined);
   const resolvedLocation = resolveRegions(params);
   const { services: allServices, strongTextMatch } = search(text, params.needs, boost, signals.needs.scores ?? {}, urgency);
-  // Facet filters DO filter (needs never do). The facet counts are for the filtered set.
+  // Facet filters DO filter (needs never do). Facet counts leave out each facet's own filter (OR inside a facet).
   const services = applyFacetFilters(allServices, params.filters);
   const byCode: Record<string, number> = {};
   for (const code of decision.count_codes) byCode[code] = services.filter((s) => carries(s, code)).length;
@@ -292,7 +306,7 @@ export async function v2Search(params: V2Params) {
   return {
     services,
     body: {
-      facets: facetsOf(services),
+      facets: facetsOfFiltered(allServices, params.filters),
       ...(resolvedLocation && { resolved_location: resolvedLocation }),
       intent: {
         query: params.query || null,

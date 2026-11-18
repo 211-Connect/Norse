@@ -10,6 +10,7 @@ import {
 import { buildV2Url } from '../src/app/(app)/features/search/v2/v2-request';
 import {
   applyFacetFilters,
+  facetsOfFiltered,
   facetsOf,
   readParams,
   resolveRegions,
@@ -168,4 +169,15 @@ test('stub: resolved_location for known Regions, 400 for an unknown one', () => 
   assert.equal(r?.regions[0].name, 'Whatcom County, WA');
   assert.equal(r?.area_match, 'located_or_serving');
   assert.throws(() => resolveRegions({ region: ['county:00000'] }), { status: 400 });
+});
+
+test('stub: a ticked value does not shrink the other values of its own facet (OR), other facets still narrow it', () => {
+  const all = CATALOG;
+  const lang = (filters: Record<string, string[]>) =>
+    facetsOfFiltered(all, filters).find((f) => f.key === 'languages')!.values;
+  const untouched = lang({});
+  assert.deepEqual(lang({ languages: ['Spanish'] }), untouched);
+  const age = facetsOfFiltered(all, { languages: ['Spanish'] }).find((f) => f.key === 'age_group')!;
+  const ageAll = facetsOfFiltered(all, {}).find((f) => f.key === 'age_group')!;
+  assert.ok(age.values.reduce((n, v) => n + v.doc_count, 0) <= ageAll.values.reduce((n, v) => n + v.doc_count, 0));
 });

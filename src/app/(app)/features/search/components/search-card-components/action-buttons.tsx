@@ -35,16 +35,8 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   return (
     <div className="flex flex-col gap-2 print:hidden">
       <div className="grid w-full grid-cols-1 gap-2 lg:grid-cols-3">
-        {result.phone ? (
-          // The number is text, not a `tel:` link (Lucas, 2026-11-18): provider numbers never dial.
-          <p
-            className="flex w-full items-center justify-center gap-1 overflow-hidden rounded-md border px-3 py-1.5 text-sm font-semibold"
-            data-testid="provider-phone-text"
-          >
-            <Phone className="size-4 shrink-0" aria-hidden="true" />
-            <span className="truncate">{formatPhoneNumber(result.phone)}</span>
-          </p>
-        ) : (
+        {result.phone ? null : (
+          // The card's info block already shows a provider number as text (Lucas, 2026-11-18: it never dials).
           <ReferralButton
             className="w-full gap-1 overflow-hidden"
             size="sm"
