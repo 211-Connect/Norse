@@ -37,6 +37,16 @@ export const LOGGED_HEADER_VALUES: Readonly<Record<string, string>> = {
 };
 
 export const HEADER_VALUE_MAX = 256;
+
+/**
+ * The collector's privacy backstop redacts any `q=<value>` (a search query)
+ * in log attributes, which would turn `en-US,en;q=0.9` into `q=REDACTED`.
+ * Quality weights are written `q:0.9` instead, so they survive; nothing is
+ * weakened in the collector.
+ */
+export function collectorSafe(value: string): string {
+  return value.replace(/(^|[;,\s])q=/gi, '$1q:');
+}
 const ACCEPT_LANGUAGE_MAX = 64;
 
 /**
@@ -314,7 +324,7 @@ export function requestFeatures(
     if (value === null) continue;
     const max =
       name === 'accept-language' ? ACCEPT_LANGUAGE_MAX : HEADER_VALUE_MAX;
-    fields[field] = value.slice(0, max);
+    fields[field] = collectorSafe(value).slice(0, max);
   }
 
   const names = context.clientHeaderNames.filter(

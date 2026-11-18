@@ -107,8 +107,10 @@ let burstGaugeRegistered = false;
 
 /**
  * `norse.arcjet.burst_active{host}`: 1 while this instance has the host in
- * burst mode, 0 after. Read at collection time; registered once the meter
- * provider is ready (first call after `markTelemetryReady`). Never throws.
+ * burst mode, 0 after. Read at collection time. Registered from
+ * `register()` in `src/instrumentation.ts` right after `markTelemetryReady()`:
+ * the app routes have their own copy of the meter module, where the ready
+ * flag is never set. Never throws.
  */
 export function registerBurstGauge(
   hosts: () => { host: string; active: boolean }[],
