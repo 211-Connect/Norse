@@ -1538,7 +1538,11 @@ export function SearchRefineQuestion() {
     // The text joins the query (Decision 7). On the weak-match question it writes nothing else.
     write({
       ...(v2 ? { asked: [...new Set([...asked, v2.id])] } : {}),
-      ...otherChanges(v2, params.get('other'), text, { needs, passedNeeds }),
+      ...otherChanges(v2, params.get('query'), text, {
+        needs,
+        passedNeeds,
+        urgency: params.get('urgency'),
+      }),
     });
   };
   // Each answer is a history entry, so the browser's Back button undoes it.

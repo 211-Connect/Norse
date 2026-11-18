@@ -36,7 +36,7 @@ export function isDirectResultsLink(
 
 /**
  * The results page URL for the landing page's current query string. The answers stay in the URL
- * as they are (`needs`, `passed_needs`, `urgency`, `other`, `asked`, location). `refine` goes,
+ * as they are (`needs`, `passed_needs`, `urgency`, `asked`, location). `refine` goes,
  * because the landing page has done the asking. `sllc=1` stops the legacy link gate from
  * rewriting the URL and dropping the answers, as the guide's first step already does.
  */

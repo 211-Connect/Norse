@@ -43,6 +43,7 @@ import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-locati
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
 import {
   emergencyPopupMode,
+  otherChanges,
   withEmergencyAnswers,
 } from '@/app/(app)/features/search/v2/v2-contract';
 import {
@@ -275,7 +276,7 @@ export function SearchGuideFromUrl({
   // The count key lives in `common`; the search page's default namespace is `page-search`.
   const { t } = useTranslation('common');
   const { data, isFetching, error, query } = useV2Search();
-  const { params, asked } = useV2Url();
+  const { params, asked, needs, passedNeeds } = useV2Url();
   const {
     answer: writeAnswer,
     answerToResults,
@@ -429,7 +430,6 @@ export function SearchGuideFromUrl({
       needs: null,
       passed_needs: null,
       urgency: null,
-      other: null,
       asked: null,
     });
     setTimeout(() => document.getElementById(SEARCH_INPUT_ID)?.focus(), 0);
@@ -437,11 +437,15 @@ export function SearchGuideFromUrl({
   const submitOther = (text: string) => {
     if (!question) return;
     setFlagged((prev) => [...prev, text]);
-    const other = [params.get('other'), text].filter(Boolean).join('. ');
+    // The text joins the query (Decision 7); the picks made on this step stay.
     writeAnswer(
       question,
       picks.map((l) => valueOfLabel(question, l)),
-      { other },
+      otherChanges(question, params.get('query'), text, {
+        needs,
+        passedNeeds,
+        urgency: params.get('urgency'),
+      }),
     );
   };
 

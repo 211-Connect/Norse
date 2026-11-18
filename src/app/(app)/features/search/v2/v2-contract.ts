@@ -221,15 +221,14 @@ const PER_QUERY = [
   'urgency',
   'needs',
   'passed_needs',
-  'other',
   'asked',
 ] as const;
 
 export type V2Changes = Record<string, string | string[] | null>;
 
 /**
- * The next page URL for a set of changes. A new query text drops `urgency`, `needs`, `passed_needs`,
- * `other` and `asked` (Decision 51), unless the same change sets them again. The page number resets.
+ * The next page URL for a set of changes. A new query text drops `urgency`, `needs`, `passed_needs`
+ * and `asked` (Decision 51), unless the same change sets them again. The page number resets.
  */
 export function nextV2Params(
   current: Pick<URLSearchParams, 'get' | 'toString'>,
@@ -305,20 +304,27 @@ export function answerChanges(
 }
 
 /**
- * The URL changes for typed "Other" text. The text joins the query (Decision 7: it is sent as
- * `other`, which the call adds to the query). On the `no_match` question it writes nothing else, so
- * the question can come again if the text is still not enough; elsewhere it answers like a Skip.
+ * The URL changes for typed "Other" text. The text joins `query` (Decision 7); there is no `other`
+ * parameter. A new query text would drop the answers (Decision 51), so the current `needs`,
+ * `passed_needs` and `urgency` are written again here. On the `no_match` question nothing else is
+ * written, so the question can come again if the text is still not enough; elsewhere the text
+ * answers like a Skip.
  */
 export function otherChanges(
   question: V2Question | undefined,
-  currentOther: string | null,
+  currentQuery: string | null,
   text: string,
-  state: { needs: string[]; passedNeeds: string[] },
+  state: { needs: string[]; passedNeeds: string[]; urgency?: string | null },
 ): V2Changes {
-  const other = [currentOther, text].filter(Boolean).join('. ');
-  if (!question) return { other };
-  if (question.id === NO_MATCH_ID) return { other };
-  return { ...answerChanges(question, [], state), other };
+  const keep: V2Changes = {
+    query: [currentQuery?.trim(), text.trim()].filter(Boolean).join('. '),
+    query_label: null,
+    needs: [...state.needs],
+    passed_needs: [...state.passedNeeds],
+    urgency: state.urgency ?? null,
+  };
+  if (!question || question.id === NO_MATCH_ID) return keep;
+  return { ...keep, ...answerChanges(question, [], state) };
 }
 
 /**

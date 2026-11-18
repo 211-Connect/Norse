@@ -67,7 +67,7 @@ http.createServer((req, res) => {
       const up = new URL('/v2/search', process.env.V2_UPSTREAM);
       up.searchParams.set('tenant_id', process.env.V2_TENANT);
       up.searchParams.set('locale', u.searchParams.get('locale') || 'en');
-      up.searchParams.set('query', [v2.query, v2.other].filter(Boolean).join('. '));
+      up.searchParams.set('query', v2.query);
       if (v2.needs.length) up.searchParams.set('needs', v2.needs.join(','));
       if (v2.passedNeeds.length) up.searchParams.set('passed_needs', v2.passedNeeds.join(','));
       if (v2.urgency) up.searchParams.set('urgency', v2.urgency);
@@ -88,11 +88,11 @@ http.createServer((req, res) => {
         .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
     }
     if (p === '/v2/search' && readParams(u.searchParams).needs.includes('N-X')) { res.writeHead(400, { 'content-type': 'application/json' }); return void res.end(JSON.stringify({ error: 'needs=N-X is not allowed' })); }
-    // Weak match (Norse-API ISS-2796): a query with "zzqx" (nonsense) finds nothing good, unless Other text without it was added. With no needs the
+    // Weak match (Norse-API ISS-2796): a query with "zzqx" (nonsense) finds nothing good, unless Other text without it joined the query. With no needs the
     // results are empty and the one no_match question asks what the person needs; Other text that is not
     // nonsense joins the query and searches normally; a Tier 1 pick drops the text (needs only).
     if (p === '/v2/search' && !process.env.V2_UPSTREAM) {
-      const wp = readParams(u.searchParams); const weak = /zzqx/i.test(wp.other || wp.query);
+      const wp = readParams(u.searchParams); const weak = /zzqx/i.test(wp.query) && wp.query.split('. ').every((part) => /zzqx/i.test(part));
       if (weak && wp.needs.length === 0) {
         const opts = ['N-FOD', 'N-HOU', 'N-MON'].filter((c) => !wp.passedNeeds.includes(c)).map((c) => ({ label: labelOf(c) || c, parameter: 'needs', value: c }));
         return send({ search: { hits: { total: { value: 0, relation: 'eq' }, hits: [] } }, facets: {}, weak_match: true,
@@ -100,7 +100,7 @@ http.createServer((req, res) => {
           clarification: { rules_version: 'stub', questions: wp.clarify === 'never' ? [] : [{ id: 'no_match', type: 'find_need', importance: 'high', value: 1, priority: 1, uncertainty: 1, reason: 'weak_match', step: 2, stem: 'We could not find a good match. What do you need help with?', options: opts, multi_select: true, allow_other: true, none_of_these: true }] },
           model_version: null, rules_version: 'stub', prototype: { services: 'synthetic catalog', classifier: 'stub weak match', timing_ms: { classify: 0, total: 0 } } });
       }
-      if (weak) { u.searchParams.delete('query'); u.searchParams.delete('q'); u.searchParams.delete('other'); }
+      if (weak) { u.searchParams.delete('query'); u.searchParams.delete('q'); }
       var weakPick = weak;
     }
     if (p === '/v2/search') return void v2Search(readParams(u.searchParams)).then(({ services, body }) => { const sent = readParams(u.searchParams).needs.length > 0; const page = Math.max(1, Number(u.searchParams.get('page')) || 1); const hits = services.slice((page - 1) * 25, page * 25).map((s, i) => ({ ...svc(s, i), ...(sent ? { matched_needs: s.matchedNeeds } : {}) })); send({ search: { hits: { total: { value: services.length, relation: 'eq' }, hits } }, facets: {}, weak_match: Boolean(weakPick), ...body }); }, (err) => { console.error(err); res.writeHead(500); res.end(); });

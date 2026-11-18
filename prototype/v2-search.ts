@@ -37,8 +37,6 @@ const STOP = new Set(['the', 'and', 'for', 'with', 'need', 'help', 'have', 'want
 
 export type V2Params = {
   query: string;
-  /** "Other" text a person typed as an answer. It joins the query for classify and search. */
-  other: string;
   needs: string[];
   passedNeeds: string[];
   urgency?: string;
@@ -53,7 +51,6 @@ export function readParams(params: URLSearchParams): V2Params {
   const urgency = params.get('urgency')?.trim();
   return {
     query: (params.get('query') ?? params.get('q') ?? '').trim().slice(0, 512),
-    other: (params.get('other') ?? '').trim().slice(0, 200),
     needs: list(params.get('needs') ?? params.get('taxonomy')).filter((c) => c.startsWith('N-')),
     passedNeeds: list(params.get('passed_needs')),
     // A caller may send U-0 (Decision 50); the page never writes it. U-X counts as no answer (Decision 51).
@@ -193,7 +190,7 @@ function applyEmergencyDisplay(questions: Record<string, unknown>[], urgency: st
 export async function v2Search(params: V2Params) {
   const started = Date.now();
   const { decide, finalize } = await loadRules();
-  const text = [params.query, params.other].filter(Boolean).join('. ').slice(0, 512);
+  const text = params.query.slice(0, 512);
   const signals = await classify(text);
   // U-0 goes to the engine as no answer, so it does not plan time questions around it.
   const engineUrgency = params.urgency === 'U-0' ? undefined : params.urgency;

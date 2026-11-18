@@ -129,7 +129,7 @@ test('new search from the results page: no predicted taxonomy, no old answers', 
 
 test('a changed query text drops the old answers from the v2 call', () => {
   const current = new URLSearchParams(
-    'query=rent&needs=N-HOU-02&passed_needs=N-HOU-01&urgency=U-3&other=x&asked=emergency',
+    'query=rent&needs=N-HOU-02&passed_needs=N-HOU-01&urgency=U-3&asked=emergency',
   );
   const next = nextV2Params(current, {
     query: 'need food for my kids tonight',

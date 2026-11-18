@@ -27,13 +27,12 @@ export * from './v2-contract';
 /**
  * Prototype (round 17). The page reads its questions, the emergency question and intent from one
  * `GET /v2/search` call (ADR 0039, OpenAPI draft). The URL is the only state: an answer writes
- * `needs`, `passed_needs`, `urgency` or `other`, and the same call runs again.
+ * `needs`, `passed_needs`, or `urgency`, and the same call runs again.
  */
 
 /** The draft v2 parameters, in the order the call sends them. */
 const CALL_KEYS = [
   'query',
-  'other',
   'needs',
   'passed_needs',
   'urgency',

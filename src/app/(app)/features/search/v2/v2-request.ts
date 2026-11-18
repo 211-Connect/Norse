@@ -11,7 +11,6 @@
 /** The v2 parameters the draft contract names. Anything else on the page URL stays out of the call. */
 export const V2_FORWARD = [
   'query',
-  'other',
   'needs',
   'passed_needs',
   'urgency',

@@ -62,7 +62,6 @@ export function SearchLanding() {
     const changes = {
       query: next,
       query_label: null,
-      other: null,
       asked: null,
       refine: null,
     };

@@ -250,21 +250,35 @@ test('weak match: a Tier 1 pick writes needs and does not pass the other options
   assert.equal(url.has('passed_needs'), false);
 });
 
-test('weak match: Other text joins the query text and writes no needs', () => {
-  assert.deepStrictEqual(
-    otherChanges(noMatch, null, 'a ride to dialysis', { needs: [], passedNeeds: [] }),
-    { other: 'a ride to dialysis' },
+test('weak match: Other text joins the query and writes no needs and no `other`', () => {
+  const state = { needs: [], passedNeeds: [] };
+  const first = otherChanges(noMatch, 'zzqx', 'rent help', state);
+  assert.equal(first.query, 'zzqx. rent help');
+  assert.equal('other' in first, false);
+  assert.deepStrictEqual(first.needs, []);
+  assert.equal(otherChanges(noMatch, null, 'a ride to dialysis', state).query, 'a ride to dialysis');
+  assert.equal(otherChanges(noMatch, 'first', 'second', state).query, 'first. second');
+});
+
+test('Other text keeps the answers although the query text changes', () => {
+  const state = { needs: ['N-FOD'], passedNeeds: ['N-HOU'], urgency: 'U-2' };
+  const changes = otherChanges(noMatch, 'zzqx', 'rent help', state);
+  const next = nextV2Params(
+    new URLSearchParams('query=zzqx&needs=N-FOD&passed_needs=N-HOU&urgency=U-2&asked=no_match'),
+    { ...changes, asked: ['no_match'] },
   );
-  assert.deepStrictEqual(
-    otherChanges(noMatch, 'first', 'second', { needs: [], passedNeeds: [] }),
-    { other: 'first. second' },
-  );
+  assert.equal(next.get('query'), 'zzqx. rent help');
+  assert.equal(next.get('needs'), 'N-FOD');
+  assert.equal(next.get('passed_needs'), 'N-HOU');
+  assert.equal(next.get('urgency'), 'U-2');
+  assert.equal(next.has('other'), false);
+  assert.equal(next.has('query_label'), false);
 });
 
 test('Other text on another question still answers like a Skip', () => {
   const rent: V2Question = { ...noMatch, id: 'area_hou' };
-  const changes = otherChanges(rent, null, 'x', { needs: [], passedNeeds: [] });
-  assert.equal(changes.other, 'x');
+  const changes = otherChanges(rent, 'rent', 'x', { needs: [], passedNeeds: [] });
+  assert.equal(changes.query, 'rent. x');
   assert.deepStrictEqual(changes.passed_needs, ['N-FOD', 'N-HOU', 'N-MON']);
 });
 
@@ -275,15 +289,13 @@ test('isWeakMatch and noMatchQuestionOf read the response', () => {
   assert.equal(noMatchQuestionOf(base)?.id, 'no_match');
 });
 
-test('nextV2Params: a new query text also drops other and asked (Question 22.3)', () => {
+test('nextV2Params: a new query text also drops asked (Question 22.3)', () => {
   const current = new URLSearchParams(
-    'query=rent&other=my+landlord+left&asked=U-1,start&location=Sampleton',
+    'query=rent&asked=U-1,start&location=Sampleton',
   );
   const next = nextV2Params(current, { query: 'food' });
-  assert.equal(next.has('other'), false);
   assert.equal(next.has('asked'), false);
   assert.equal(next.get('location'), 'Sampleton');
   const same = nextV2Params(current, { query: ' rent ' });
-  assert.equal(same.get('other'), 'my landlord left');
   assert.equal(same.get('asked'), 'U-1,start');
 });
