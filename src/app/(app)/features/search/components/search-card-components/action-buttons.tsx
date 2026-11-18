@@ -16,7 +16,7 @@ import {
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { getPhoneHref } from '@/app/(app)/shared/utils/phone';
+import { formatPhoneNumber } from '@/app/(app)/shared/utils/phone';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { SearchCardComponentProps } from './types';
@@ -36,24 +36,14 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
     <div className="flex flex-col gap-2 print:hidden">
       <div className="grid w-full grid-cols-1 gap-2 lg:grid-cols-3">
         {result.phone ? (
-          <ReferralButton
-            asChild
-            className="w-full gap-1 overflow-hidden"
-            size="sm"
-            referralType="call_referral"
-            resourceId={result.id}
-            resourceData={result}
-            variant="highlight"
+          // The number is text, not a `tel:` link (Lucas, 2026-11-18): provider numbers never dial.
+          <p
+            className="flex w-full items-center justify-center gap-1 overflow-hidden rounded-md border px-3 py-1.5 text-sm font-semibold"
+            data-testid="provider-phone-text"
           >
-            <Link
-              href={getPhoneHref(result.phone)}
-              aria-label={`${t('call_to_action.call')} ${result.name}`}
-              prefetch={false}
-            >
-              <Phone className="size-4" />{' '}
-              <span className="truncate"> {t('call_to_action.call')} </span>
-            </Link>
-          </ReferralButton>
+            <Phone className="size-4 shrink-0" aria-hidden="true" />
+            <span className="truncate">{formatPhoneNumber(result.phone)}</span>
+          </p>
         ) : (
           <ReferralButton
             className="w-full gap-1 overflow-hidden"
