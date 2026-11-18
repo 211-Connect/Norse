@@ -13,6 +13,8 @@ import {
   clientIpHash,
   clientSignature,
   computeHeaderChecks,
+  decisionLogState,
+  localeOfPath,
   createArcjetSdkLogger,
   maskNet,
   parseSdkLogCall,
@@ -218,6 +220,52 @@ describe('proxy headers', () => {
     assert.equal(routeOfPath('/en/details/original/1'), 'details');
     assert.equal(routeOfPath('/api/search-pins'), 'pins');
     assert.equal(routeOfPath('/en'), 'other');
+  });
+});
+
+describe('dev findings (2026-11-18)', () => {
+  test('accept-language quality weights survive the collector q= backstop', () => {
+    const h = new Headers({
+      ...CHROME_HEADERS,
+      accept: 'text/html;q=0.9,*/*;q=0.8',
+    });
+    const { context } = buildArcjetRequest({ headers: h, path: '/en/search' });
+    const { fields } = requestFeatures(h, context);
+    assert.equal(fields.h_accept_language, 'en-US,en;q:0.9');
+    assert.equal(fields.h_accept, 'text/html;q:0.9,*/*;q:0.8');
+  });
+
+  test('an /api path has no locale', () => {
+    assert.equal(localeOfPath('/api/search-pins'), '');
+    assert.equal(localeOfPath('/en/search'), 'en');
+  });
+
+  test('without the proxy, client_returning comes from the session cookie', () => {
+    const h = new Headers(CHROME_HEADERS);
+    const yes = buildArcjetRequest({
+      headers: h,
+      path: '/api/search-pins',
+      hasSessionCookie: true,
+    });
+    const no = buildArcjetRequest({
+      headers: h,
+      path: '/api/search-pins',
+      hasSessionCookie: false,
+    });
+    assert.equal(yes.context.clientReturning, true);
+    assert.equal(no.context.clientReturning, false);
+    // The proxy's header wins when present.
+    const proxied = buildArcjetRequest({
+      headers: serverHeaders(CHROME_HEADERS),
+      path: '/en/search',
+      hasSessionCookie: false,
+    });
+    assert.equal(proxied.context.clientReturning, true);
+  });
+
+  test('one burst detector and sampler per process (shared across bundles)', () => {
+    assert.equal(decisionLogState(), decisionLogState());
+    assert.ok(decisionLogState().burst instanceof BurstDetector);
   });
 });
 

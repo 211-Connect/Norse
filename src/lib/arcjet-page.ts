@@ -12,14 +12,13 @@ import {
   type ArcjetLog,
   type ArcjetProtectResult,
   type ArcjetRoute,
-  BurstDetector,
   type BuiltArcjetRequest,
-  DecisionSampler,
   type RequestFeatures,
   VISITOR_CHARACTERISTIC,
   arcjetProtect,
   buildArcjetRequest,
   buildDecisionRecord,
+  decisionLogState,
   decisionSpanAttributes,
   dryRunKeysOf,
   isArcjetDeniedResult,
@@ -28,7 +27,6 @@ import {
   requestFeatures,
   resolveArcjetClientIp,
   routeOfPath,
-  samplingConfigFromEnv,
 } from '@/lib/arcjet';
 import { recordArcjetTraffic } from '@/lib/crawler-traffic';
 import { createLogger } from '@/lib/logger';
@@ -37,7 +35,6 @@ import {
   isArcjetErrorConclusion,
   recordArcjetDecision,
   recordPrintRequest,
-  registerBurstGauge,
 } from '@/lib/telemetry/arcjet';
 import { emitArcjetDecision } from '@/lib/telemetry/arcjet-decision-log';
 import { norseDeployment } from '@/lib/telemetry/deployment';
@@ -54,9 +51,7 @@ const log: ArcjetLog = (level, event, data) => {
 };
 
 /** Per process: burst state per host, and the decision-log policy. */
-const samplingConfig = samplingConfigFromEnv();
-const burstDetector = new BurstDetector(samplingConfig);
-const decisionSampler = new DecisionSampler(samplingConfig);
+const { burst: burstDetector, sampler: decisionSampler } = decisionLogState();
 
 /** Everything one decision needs, read eagerly so it works in `after()`. */
 interface PreparedRequest {
@@ -97,14 +92,15 @@ const prepare = cache(
     defaultMethod: string,
   ): Promise<PreparedRequest> => {
     const [headerList, cookieList] = await Promise.all([headers(), cookies()]);
+    const session = cookieList.get(SESSION_ID)?.value;
     const built = buildArcjetRequest({
       headers: headerList,
       ajSignals: cookieList.get(ARCJET_SIGNALS_COOKIE)?.value,
       path,
       defaultMethod,
+      hasSessionCookie: Boolean(session),
     });
     const tenantId = await requestTenantId(localeOfPath(built.context.path));
-    const session = cookieList.get(SESSION_ID)?.value;
     const visitor = session
       ? `s:${sha12(session)}`
       : `i:${sha12(resolveArcjetClientIp(built.request) || 'none')}`;
@@ -146,7 +142,6 @@ function tracedProtect(
       'arcjet.enforced': enforced,
     });
     try {
-      registerBurstGauge(() => burstDetector.knownHosts());
       const burst = burstDetector.record(context.host);
       const spanContext = span.spanContext();
       const traceSampled =

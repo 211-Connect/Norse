@@ -288,3 +288,30 @@ export class DecisionSampler {
     return { log: false };
   }
 }
+
+const STATE_KEY = Symbol.for('norse.arcjet.decisionLogState');
+type GlobalWithState = typeof globalThis & {
+  [STATE_KEY]?: { burst: BurstDetector; sampler: DecisionSampler };
+};
+
+/**
+ * The burst detector and decision sampler of this process. On globalThis:
+ * Next.js bundles `instrumentation.ts` and the app routes separately, each
+ * with its own copy of this module, and the `burst_active` gauge (registered
+ * from instrumentation) must read the same state the pages write. Per-instance
+ * caps also only hold with one sampler per process.
+ */
+export function decisionLogState(): {
+  burst: BurstDetector;
+  sampler: DecisionSampler;
+} {
+  const store = globalThis as GlobalWithState;
+  if (!store[STATE_KEY]) {
+    const config = samplingConfigFromEnv();
+    store[STATE_KEY] = {
+      burst: new BurstDetector(config),
+      sampler: new DecisionSampler(config),
+    };
+  }
+  return store[STATE_KEY];
+}
