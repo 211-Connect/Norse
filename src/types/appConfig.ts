@@ -1,4 +1,4 @@
-import type { AreaMatch } from './areaSearch';
+import type { AreaMatch, Unlocated } from './areaSearch';
 import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 import { ResourceDirectory } from '@/payload/payload-types';
 
@@ -163,8 +163,8 @@ export type AppConfig = {
     pinnedResourcesMode: 'ignore' | 'boost' | 'top';
     /** Sent as `area_match` with every area search (`region`). */
     areaMatch: AreaMatch;
-    /** Sent as `include_unlocated` with every area search (`region`). */
-    includeUnlocatedInAreaSearch: boolean;
+    /** Sent as `unlocated` with every area search (`region`). */
+    unlocatedInAreaSearch: Unlocated;
     texts?: {
       title?: string;
       queryInputPlaceholder?: string;

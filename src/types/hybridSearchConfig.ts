@@ -1,4 +1,4 @@
-import type { AreaMatch } from './areaSearch';
+import type { AreaMatch, Unlocated } from './areaSearch';
 
 export type HybridSearchConfigCache = {
   tenant_id: string;
@@ -17,5 +17,5 @@ export type HybridSearchConfigCache = {
   pinned_resources_mode: 'ignore' | 'boost' | 'top';
   enable_organization_search: boolean;
   area_match: AreaMatch;
-  include_unlocated_in_area_search: boolean;
+  unlocated_in_area_search: Unlocated;
 };

@@ -14,6 +14,15 @@ export const DEFAULT_AREA_MATCH: AreaMatch = 'located_or_serving';
 export const isAreaMatch = (value: unknown): value is AreaMatch =>
   (AREA_MATCH_VALUES as readonly unknown[]).includes(value);
 
+/**
+ * Which resources with neither an address nor a service area an area search
+ * also lists, in every area: none, only virtual services, or all of them.
+ */
+export const UNLOCATED_VALUES = ['none', 'virtual', 'all'] as const;
+export type Unlocated = (typeof UNLOCATED_VALUES)[number];
+
+export const DEFAULT_UNLOCATED: Unlocated = 'virtual';
+
 /** `state:WA`, `county:53033`, `place:5363000` or `zip:98101`. */
 export const REGION_ID_PATTERN =
   /^(state:[A-Z]{2}|county:\d{5}|place:\d{7}|zip:\d{5})$/;

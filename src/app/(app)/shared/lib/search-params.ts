@@ -1,7 +1,7 @@
 import qs from 'qs';
 
 import { SearchEngine } from '@/types/appConfig';
-import { DEFAULT_AREA_MATCH } from '@/types/areaSearch';
+import { DEFAULT_AREA_MATCH, DEFAULT_UNLOCATED } from '@/types/areaSearch';
 
 import { type FindResourcesQuery } from '../services/search-service';
 import { deriveQueryType } from './search-utils';
@@ -38,7 +38,7 @@ export function toSearchParams({
     ...(region && {
       region,
       area_match: query.areaMatch ?? DEFAULT_AREA_MATCH,
-      include_unlocated: String(query.includeUnlocated ?? false),
+      unlocated: query.unlocated ?? DEFAULT_UNLOCATED,
     }),
     ...(hasCoords && { coords: query.coordinates!.join(',') }),
     ...(hasCoords && !region && { distance: query.distance?.trim() || '0' }),
@@ -67,7 +67,7 @@ const PINS_PARAMS = [
   'taxonomy',
   'region',
   'area_match',
-  'include_unlocated',
+  'unlocated',
   'coords',
   'distance',
   'locale',

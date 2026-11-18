@@ -228,8 +228,8 @@ export interface ResolvedLocationDto {
   regions: RegionSummaryDto[];
   /** The `area_match` applied: as sent, else the tenant default. */
   area_match: "located" | "located_or_serving" | "serving";
-  /** The `include_unlocated` applied: as sent, else the tenant default. */
-  include_unlocated: boolean;
+  /** The `unlocated` applied: as sent, else the tenant default. */
+  unlocated: "none" | "virtual" | "all";
 }
 
 export interface SearchResponseDto {
@@ -1616,8 +1616,8 @@ export interface SearchQueryApiDto {
   region?: string;
   /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
   area_match?: "located" | "located_or_serving" | "serving";
-  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
-  include_unlocated?: boolean;
+  /** Only with `region`. Which resources with neither a location nor a service_area, which cannot be placed in any area, are also returned in every area search: `none`, `virtual` (only virtual services) or `all`. Absent: the tenant default from the CMS, else `virtual`. */
+  unlocated?: "none" | "virtual" | "all";
   /** @example {"county":"King","language":["en","es"]} */
   filters?: Record<string, any>;
   /**
@@ -2378,8 +2378,8 @@ export interface SearchControllerGetResourcesParams {
   region?: string;
   /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
   area_match?: "located" | "located_or_serving" | "serving";
-  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
-  include_unlocated?: boolean;
+  /** Only with `region`. Which resources with neither a location nor a service_area, which cannot be placed in any area, are also returned in every area search: `none`, `virtual` (only virtual services) or `all`. Absent: the tenant default from the CMS, else `virtual`. */
+  unlocated?: "none" | "virtual" | "all";
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;
@@ -2447,8 +2447,8 @@ export interface SearchControllerGetResourcesPostParams {
   region?: string;
   /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
   area_match?: "located" | "located_or_serving" | "serving";
-  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
-  include_unlocated?: boolean;
+  /** Only with `region`. Which resources with neither a location nor a service_area, which cannot be placed in any area, are also returned in every area search: `none`, `virtual` (only virtual services) or `all`. Absent: the tenant default from the CMS, else `virtual`. */
+  unlocated?: "none" | "virtual" | "all";
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;
@@ -2512,8 +2512,8 @@ export interface SearchControllerGetPinsParams {
   region?: string;
   /** Only with `region`. `located`: the resource is located inside the area; resources without a location are left out. `located_or_serving`: a resource with a location must be inside the area, one without a location matches when its service_area overlaps the area. `serving`: located inside the area OR its service_area overlaps it. Absent: the tenant default from the CMS, else `located_or_serving`. */
   area_match?: "located" | "located_or_serving" | "serving";
-  /** Only with `region`. `true` also returns resources with neither a location nor a service_area, which cannot be placed in any area. Absent: the tenant default from the CMS, else `false`. */
-  include_unlocated?: boolean;
+  /** Only with `region`. Which resources with neither a location nor a service_area, which cannot be placed in any area, are also returned in every area search: `none`, `virtual` (only virtual services) or `all`. Absent: the tenant default from the CMS, else `virtual`. */
+  unlocated?: "none" | "virtual" | "all";
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;

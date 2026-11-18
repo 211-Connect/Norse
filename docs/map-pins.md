@@ -66,7 +66,7 @@ MapContainer
   `GET /search`, so pins use the same request. Pins are skipped only when the
   clarify dialog opens over the page and hides the map.
 - **Area search.** Pins take the same `region`, `area_match` and
-  `include_unlocated` as the list, so they show the same resources; the map
+  `unlocated` as the list, so they show the same resources; the map
   draws the area's outline under them (see docs/area-search.md).
 
 ## Map behavior

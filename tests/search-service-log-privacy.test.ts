@@ -139,7 +139,7 @@ test('area search failure logs no search text and sends no radius', async () => 
       coordinates: [1, 2],
       region: 'county:53033',
       areaMatch: 'serving',
-      includeUnlocated: true,
+      unlocated: 'all',
       distance: '5',
     },
     'en',
@@ -154,7 +154,7 @@ test('area search failure logs no search text and sends no radius', async () => 
     `query=${SECRET_QUERY}`,
     'region=county%3A53033',
     'area_match=serving',
-    'include_unlocated=true',
+    'unlocated=all',
     'coords=1%2C2',
     SECRET_LOCATION,
   ]) {

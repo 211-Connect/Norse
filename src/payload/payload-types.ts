@@ -901,7 +901,7 @@ export interface ResourceDirectory {
     searchSettings: {
       searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
       /**
-       * Choose how pinned/priority resources are handled for hybrid and AI classification search engines. Ignore drops pinned status; Boost adds a score contribution; Top hard-sorts pinned resources to the top of results.
+       * How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.
        */
       pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
       resultsLimit: number;
@@ -924,9 +924,9 @@ export interface ResourceDirectory {
        */
       areaMatchMode?: ('located' | 'located_or_serving' | 'serving') | null;
       /**
-       * They cannot be placed in any area, so they are left out of area searches unless this is checked. When checked, they appear in every area search.
+       * They cannot be placed in any area, so each one is listed in every area search or in none. A virtual service with no service area usually serves everyone. "All" also lists physical services that are missing their address.
        */
-      includeUnlocatedInAreaSearch?: boolean | null;
+      unlocatedInAreaSearch?: ('none' | 'virtual' | 'all') | null;
     };
     facets?:
       | {
@@ -1885,7 +1885,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                   };
               defaultRadius?: T;
               areaMatchMode?: T;
-              includeUnlocatedInAreaSearch?: T;
+              unlocatedInAreaSearch?: T;
             };
         facets?:
           | T

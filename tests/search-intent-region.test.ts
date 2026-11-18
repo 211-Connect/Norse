@@ -68,7 +68,7 @@ test('an area search sends region and the tenant settings, coords only as the so
       coordinates: [-122.33, 47.6],
       region: 'place:5363000',
       areaMatch: 'located',
-      includeUnlocated: false,
+      unlocated: 'none',
       distance: '25',
     },
     locale: 'en',
@@ -76,7 +76,7 @@ test('an area search sends region and the tenant settings, coords only as the so
   });
   assert.equal(params.region, 'place:5363000');
   assert.equal(params.area_match, 'located');
-  assert.equal(params.include_unlocated, 'false');
+  assert.equal(params.unlocated, 'none');
   assert.equal(params.coords, '-122.33,47.6');
   assert.equal('distance' in params, false);
 });
