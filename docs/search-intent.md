@@ -124,6 +124,7 @@ stateDiagram-v2
   resolving --> settled: always [taxonomySearch]
   resolving --> settled: always [organizationScoped]
   resolving --> settled: always [noQuery]
+  resolving --> settled: always [answeredInUrl]
   resolving --> needs_prediction: always
   needs_prediction --> navigating_classic: PREDICTION_RESOLVED [fromDialog && predictionMissing]
   needs_prediction --> navigating_ai: PREDICTION_RESOLVED [fromDialog && directScenario]

@@ -164,6 +164,14 @@ export const searchResolverMachine = setup({
     organizationScoped: ({ context }) =>
       Boolean(context.searchQuery.organizationId),
     noQuery: ({ context }) => !context.searchQuery.query,
+    /**
+     * v2 answers in the URL (`needs`, `urgency`, `asked`): the person already answered the questions, so the URL
+     * is not classified again and not rewritten (a rewrite would drop `urgency` and `asked`). Lucas 2026-11-18 (2A).
+     */
+    answeredInUrl: ({ context }) =>
+      [context.intent.needs, context.intent.urgency, context.intent.asked].some(
+        (slot) => slot.stated,
+      ),
     clarifyStated: ({ context }) => context.clarify !== null,
     predictionMissing: ({ event }) =>
       event.type === 'PREDICTION_RESOLVED' && !event.prediction,
@@ -250,6 +258,7 @@ export const searchResolverMachine = setup({
         { guard: 'taxonomySearch', target: 'settled' },
         { guard: 'organizationScoped', target: 'settled' },
         { guard: 'noQuery', target: 'settled' },
+        { guard: 'answeredInUrl', target: 'settled' },
         // Gate cases B (hybrid without taxonomy) and D (text, or no query type).
         { target: 'needs_prediction' },
       ],
