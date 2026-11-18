@@ -33,6 +33,7 @@ import {
   Check,
   ChevronDown,
   GripVertical,
+  LogOut,
   Phone,
   Plus,
   X,
@@ -49,7 +50,15 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Link } from '@/app/(app)/shared/components/link';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
+import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -81,7 +90,11 @@ import {
   type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
-import { cardWording } from '../v2/v2-contract';
+import {
+  cardWording,
+  emergencyPopupMode,
+  withEmergencyAnswers,
+} from '../v2/v2-contract';
 
 type Answer = {
   label: string;
@@ -112,15 +125,6 @@ const refineCollapsedAtom = atom(false);
 /** The results help panel: the phone's list item and the desktop button both open it. */
 const resultsHelpOpenAtom = atom(false);
 const HELP_ITEM_ID = 'results-help-item';
-/**
- * "No, I am safe now" hides the emergency question for this visit only: client state, nothing in
- * the URL. This is the manager's proposal, not yet confirmed by Lucas. It lives only here.
- */
-export const emergencySafeThisVisitAtom = atom(false);
-/** "No, I am safe now": the v2 option has no value (it writes nothing); the older card used U-3. */
-export const isSafeAnswer = (answer: { add: (string | null)[] }) =>
-  answer.add.includes('U-3') ||
-  (answer.add.length > 0 && answer.add.every((v) => v == null));
 /** The height of the sticky search bar. Below it, a phone pins the refine row. */
 const PIN_TOP = 48;
 const PINNED =
@@ -962,100 +966,177 @@ export const QUESTION_STYLES = {
 };
 
 /**
- * The popup for the strong band (importance `critical`, with options). It opens once per search.
- * Not modal on purpose: a modal traps Tab, and Quick exit must stay reachable by click and by Tab.
- * The dim layer is drawn by hand; the floating Quick exit sits above it at every width.
- * The popup is the one announcement (role dialog); the card behind it is silent.
+ * Lucas 2026-11-18: Quick exit stays on screen while the emergency popup is open. One line flips
+ * it. When true, the popup carries its own Quick exit link inside the dialog (so the focus trap
+ * keeps it reachable by keyboard) and the floating one is hidden behind the full-screen popup.
+ */
+export const SHOW_QUICK_EXIT_ON_EMERGENCY = true;
+
+/** The query text the person closed the danger popup for ("Continue to results"). */
+export const emergencyPopupDismissedAtom = atom<string | null>(null);
+
+/** 911 first: the popup's big buttons put the emergency number on top. */
+export const popupHotlines = (hotlines: V2Hotline[]) =>
+  [...hotlines].sort(
+    (a, b) => Number(b.number === '911') - Number(a.number === '911'),
+  );
+
+const POPUP_BUTTON =
+  'flex min-h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-lg font-semibold no-underline focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none disabled:opacity-60';
+
+function PopupQuickExit() {
+  const safeExit = useAppConfig().header.safeExit;
+  if (!SHOW_QUICK_EXIT_ON_EMERGENCY || !safeExit?.enabled) return null;
+  return (
+    <Link
+      target={safeExit.target}
+      href={safeExit.url ?? '#'}
+      onClick={() => {
+        trackEvent(AnalyticsEvent.SafeExitClick, AnalyticsTools.Umami);
+      }}
+      aria-label={
+        safeExit.target === '_blank'
+          ? `${safeExit.text}${NEW_TAB_WARNING}`
+          : safeExit.text
+      }
+      className="fixed top-4 right-4 flex min-h-11 items-center gap-1 rounded-lg bg-white px-4 text-sm font-semibold text-red-800 no-underline shadow-lg focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none"
+      data-testid="emergency-popup-quick-exit"
+    >
+      {safeExit.text}
+      <LogOut className="size-4" aria-hidden="true" />
+    </Link>
+  );
+}
+
+/**
+ * The red emergency popup (Lucas 2026-11-18): a modal dialog that covers the whole screen in one
+ * solid colour, header included, with nothing else on it. `ask` shows the question and exactly
+ * three answers (each writes `urgency=` and searches again, so it does not return). `danger`
+ * (urgency=U-0) shows big Call buttons and a way on to the results. Focus is trapped inside,
+ * starts on the first button, and the heading labels the dialog.
  */
 export function EmergencyPopup({
+  mode,
   question,
   hotlines,
+  busy = false,
   onAnswer,
+  onContinue,
 }: {
-  question: Question;
+  mode: 'ask' | 'danger';
+  /** The question with the three urgency options (see `withEmergencyAnswers`). */
+  question: V2Question;
   hotlines: V2Hotline[];
-  onAnswer: (answer: Answer) => void;
+  busy?: boolean;
+  onAnswer: (value: string) => void;
+  onContinue: () => void;
 }) {
-  const [open, setOpen] = useState(true);
-  useLockPageScroll(open);
+  useLockPageScroll(true);
   const setPopupOpen = useSetAtom(emergencyPopupOpenAtom);
   useEffect(() => {
-    setPopupOpen(open);
+    setPopupOpen(true);
     return () => setPopupOpen(false);
-  }, [open, setPopupOpen]);
+  }, [setPopupOpen]);
+  const contentRef = useRef<HTMLDivElement>(null);
+  // A new mode (ask -> danger) is a new screen: focus goes to its first button.
+  useEffect(() => {
+    contentRef.current
+      ?.querySelector<HTMLElement>('[data-popup-first], button, a[href]')
+      ?.focus();
+  }, [mode]);
   return (
-    <DialogPrimitive.Root modal={false} open={open} onOpenChange={setOpen}>
+    <DialogPrimitive.Root open modal>
       <DialogPrimitive.Portal>
-        {open && (
-          <div
-            aria-hidden="true"
-            className="fixed inset-0 z-50 bg-black/50"
-            data-testid="emergency-popup-dim"
-          />
-        )}
         <DialogPrimitive.Content
+          ref={contentRef}
           data-testid="emergency-popup"
-          className="fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl"
-          // Tab runs from the last control on to Quick exit, and Shift+Tab from the first back to it,
-          // instead of looping inside the popup. Quick exit must stay reachable by keyboard.
-          onKeyDown={(event) => {
-            if (event.key !== 'Tab') return;
-            const items = Array.from(
-              event.currentTarget.querySelectorAll<HTMLElement>(
-                'a[href], button',
-              ),
-            );
-            const edge = items[event.shiftKey ? 0 : items.length - 1];
-            const exit = document.querySelector<HTMLElement>(
-              '[data-testid=quick-exit-floating]',
-            );
-            if (exit && document.activeElement === edge) {
-              event.preventDefault();
-              event.stopPropagation();
-              exit.focus();
-            }
-          }}
-          // Only Close (or an answer) ends it: a stray tap on the dim layer must not.
+          data-mode={mode}
+          aria-busy={busy}
+          className="fixed inset-0 z-[70] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-red-800 p-6 pt-20 text-white outline-none"
+          onEscapeKeyDown={(event) => event.preventDefault()}
           onInteractOutside={(event) => event.preventDefault()}
-          // Focus starts on the question, not on an answer: Enter must not answer by accident,
-          // and a screen reader reads the question and the numbers first.
           onOpenAutoFocus={(event) => {
             event.preventDefault();
-            document.getElementById('emergency-popup-question')?.focus();
-          }}
-          // Closed, focus goes to the same question in the page card, which stays visible.
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            document.getElementById('emergency-question')?.focus();
+            contentRef.current
+              ?.querySelector<HTMLElement>('[data-popup-first]')
+              ?.focus();
           }}
         >
-          <DialogPrimitive.Title className="sr-only">
-            Emergency help
+          <DialogPrimitive.Title className="max-w-md text-center text-3xl font-bold">
+            {mode === 'ask' ? 'Are you in danger right now?' : 'Call for help now'}
           </DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">
-            Call a number now, or answer the question.
+            {mode === 'ask'
+              ? 'Choose the answer that fits. Your answer changes the search.'
+              : 'Call 911 or 988, or continue to the results.'}
           </DialogPrimitive.Description>
-          <EmergencyBox
-            question={question}
-            hotlines={hotlines}
-            headingId="emergency-popup-question"
-            announce={false}
-            onAnswer={(option) => {
-              setOpen(false);
-              onAnswer(option);
-            }}
-          />
-          <DialogPrimitive.Close
-            className="min-h-11 cursor-pointer self-end rounded-lg border px-4 font-semibold"
-            data-testid="emergency-popup-close"
+          <div
+            className="flex w-full max-w-md flex-col gap-3"
+            data-testid="emergency-popup-actions"
           >
-            Close and see results
-          </DialogPrimitive.Close>
+            {mode === 'ask' &&
+              question.options.map((option, i) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  disabled={busy}
+                  data-popup-first={i === 0 ? '' : undefined}
+                  data-testid={`emergency-answer-${option.value}`}
+                  className={cn(
+                    POPUP_BUTTON,
+                    i === 0
+                      ? 'bg-white text-red-800'
+                      : 'border-2 border-white bg-transparent text-white',
+                  )}
+                  onClick={() => onAnswer(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            {mode === 'danger' && (
+              <>
+                {popupHotlines(hotlines).map((line, i) => (
+                  <DialButton
+                    key={line.number}
+                    number={line.number}
+                    ariaLabel={`Call ${line.number}, ${line.label}`}
+                    testId={`emergency-call-${line.number}`}
+                    className={cn(
+                      POPUP_BUTTON,
+                      'text-2xl',
+                      i === 0
+                        ? 'bg-white text-red-800'
+                        : 'border-2 border-white bg-transparent text-white',
+                    )}
+                  >
+                    <Phone className="size-6" aria-hidden="true" />
+                    Call {line.number}
+                  </DialButton>
+                ))}
+                <button
+                  type="button"
+                  className={cn(
+                    POPUP_BUTTON,
+                    'mt-4 border border-white bg-transparent text-base text-white underline',
+                  )}
+                  data-testid="emergency-popup-continue"
+                  onClick={onContinue}
+                >
+                  Continue to results
+                </button>
+              </>
+            )}
+          </div>
+          <PopupQuickExit />
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
 }
+
+/** The numbers of the emergency question, or the default 911 and 988. */
+export const hotlinesOf = (q?: Pick<V2Question, 'hotlines'>): V2Hotline[] =>
+  q?.hotlines?.length ? q.hotlines : DEFAULT_HOTLINES;
 
 /** 988 and 911 both show by default, because the danger may not be self-harm. */
 export const DEFAULT_HOTLINES: V2Hotline[] = [
@@ -1375,15 +1456,21 @@ export function SearchRefineQuestion() {
   const setFlagged = useSetAtom(flaggedAtom);
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
-  const safeThisVisit = useAtomValue(emergencySafeThisVisitAtom);
-  const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
-  // One emergency prompt at a time (Lucas 2026-11-16): while the popup is open, the card under it
-  // does not repeat the same question.
-  const popupOpen = useAtomValue(emergencyPopupOpenAtom);
-  const v2 = nextQuestionOf(
-    data,
-    safeThisVisit && emergencyQ ? [...asked, emergencyQ.id] : asked,
-  );
+  // Popup only (Lucas 2026-11-18): the red question is the full-screen popup, never a card.
+  const dismissed = useAtomValue(emergencyPopupDismissedAtom) === label;
+  const setDismissed = useSetAtom(emergencyPopupDismissedAtom);
+  const popupMode = dismissed
+    ? null
+    : emergencyPopupMode(emergencyQ, params.get('urgency'), asked);
+  // The danger popup (urgency=U-0) keeps the question although it is in `asked`; after Continue it goes.
+  const askedForNext = !emergencyQ
+    ? asked
+    : dismissed
+      ? [...asked, emergencyQ.id]
+      : popupMode === 'danger'
+        ? asked.filter((id) => id !== emergencyQ.id)
+        : asked;
+  const v2 = nextQuestionOf(data, askedForNext);
   const isPending = isFetching || isWriting;
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = v2
@@ -1420,9 +1507,7 @@ export function SearchRefineQuestion() {
   if (!label || refine || !data) return null;
   const type: keyof typeof QUESTION_STYLES = v2 ? styleOf(v2) : 'none';
   const style = QUESTION_STYLES[type];
-  const hotlines = emergencyQ?.hotlines?.length
-    ? emergencyQ.hotlines
-    : DEFAULT_HOTLINES;
+  const hotlines = hotlinesOf(emergencyQ);
   const soft = isSoftEmergency(emergencyQ);
 
   const submitOther = (text: string) => {
@@ -1450,58 +1535,60 @@ export function SearchRefineQuestion() {
     moveFocus.current = true;
     write({ asked: [...new Set([...asked, emergencyQ.id])] });
   };
-  // Strong band (critical) with answers: popup. Soft band, or a caller U-0 (no options, already answered): the card.
-  const popup = !soft && question.answers.length > 0;
-  const onEmergencyAnswer = (option: Answer) => {
-    if (isSafeAnswer(option)) {
-      setSafeThisVisit(true);
-      return;
-    }
-    answer([option.label]);
+  // Each answer of the red popup writes urgency= and searches again (Lucas 2026-11-18).
+  const onPopupAnswer = (value: string) => {
+    if (!emergencyQ) return;
+    moveFocus.current = true;
+    writeAnswer(withEmergencyAnswers(emergencyQ), [value]);
   };
+  const popup = emergencyQ && popupMode && (
+    <EmergencyPopup
+      key={label}
+      mode={popupMode}
+      question={withEmergencyAnswers(emergencyQ)}
+      hotlines={hotlines}
+      busy={isPending}
+      onAnswer={onPopupAnswer}
+      onContinue={() => setDismissed(label)}
+    />
+  );
   const cardTitle = v2?.id === 'start' ? 'Tell us a bit more' : style.title;
 
-  // The emergency question never compacts. Critical with answers also opens the popup; the card stays. Scrolled away, a row leads back.
-  if (v2 && type === 'emergency') {
+  // The emergency question never compacts. Soft: the orange card. Red: only the popup (and, once
+  // it is closed, the numbers alone). Scrolled away, a row leads back.
+  if (popup || (v2 && type === 'emergency')) {
     return (
       <div ref={pin.holderRef} className="mt-3">
-        {popup && (
-          <EmergencyPopup
-            key={label}
-            question={question}
-            hotlines={hotlines}
-            onAnswer={onEmergencyAnswer}
-          />
-        )}
-        {!(popup && popupOpen) && (
+        {popup}
+        {!popup && (
           <EmergencyBox
-            question={question}
+            question={soft ? question : undefined}
             hotlines={hotlines}
             soft={soft}
-            announce={!popup}
-            onAnswer={onEmergencyAnswer}
-            onSkip={skipEmergency}
+            onAnswer={(option) => answer([option.label])}
+            onSkip={soft ? skipEmergency : undefined}
           />
         )}
-        {pin.pinned && (
+        {pin.pinned && !popup && (
           <div className={PINNED}>
             <PinnedNumbers hotlines={hotlines} />
-            <button
-              type="button"
-              className="min-h-11 cursor-pointer text-left text-sm font-semibold text-red-700 underline"
-              data-testid="pinned-emergency-question"
-              onClick={() => window.scrollTo({ top: 0 })}
-            >
-              {question.text}
-            </button>
+            {soft && (
+              <button
+                type="button"
+                className="min-h-11 cursor-pointer text-left text-sm font-semibold text-red-700 underline"
+                data-testid="pinned-emergency-question"
+                onClick={() => window.scrollTo({ top: 0 })}
+              >
+                {question.text}
+              </button>
+            )}
           </div>
         )}
       </div>
     );
   }
-  // A skipped emergency question stays as the numbers alone. "No, I am safe now" removes the box
-  // for this visit (Lucas 2026-11-16); the always-on 911 and 988 chips above the search box stay.
-  const hotline = Boolean(emergencyQ) && !safeThisVisit;
+  // A skipped emergency question stays as the numbers alone.
+  const hotline = Boolean(emergencyQ);
 
   if (!v2) {
     return (

@@ -14,12 +14,11 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import {
-  DEFAULT_HOTLINES,
   EmergencyBox,
   EmergencyPopup,
-  emergencySafeThisVisitAtom,
+  emergencyPopupDismissedAtom,
+  hotlinesOf,
   flaggedAtom,
-  isSafeAnswer,
   OtherBox,
   PICKED,
   PickMark,
@@ -42,7 +41,10 @@ import {
 } from '@/app/(app)/features/search/v2/use-v2-search';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
-import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
+import {
+  emergencyPopupMode,
+  withEmergencyAnswers,
+} from '@/app/(app)/features/search/v2/v2-contract';
 import {
   NEED_DESC_CLASS,
   needDescription,
@@ -281,11 +283,8 @@ export function SearchGuideFromUrl({
     write,
     isPending: isWriting,
   } = useV2Navigate();
-  const safeThisVisit =
-    useAtomValue(emergencySafeThisVisitAtom);
-  const setSafeThisVisit = useSetAtom(emergencySafeThisVisitAtom);
-  // One emergency prompt at a time (Lucas 2026-11-16): the card under an open popup stays quiet.
-  const popupOpen = useAtomValue(emergencyPopupOpenAtom);
+  const dismissedFor = useAtomValue(emergencyPopupDismissedAtom);
+  const setDismissed = useSetAtom(emergencyPopupDismissedAtom);
   // Answers given since this page opened: Back undoes one of them (each is a history entry).
   const askedAtStart = useRef(asked.length);
   const searchLocation = useAtomValue(searchLocationAtom);
@@ -297,12 +296,20 @@ export function SearchGuideFromUrl({
 
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
-  // Lucas 2026-11-13: "No, I am safe now" writes nothing to the URL; the page hides the
-  // emergency question for this visit.
-  const v2 = nextQuestionOf(
-    data,
-    safeThisVisit && emergencyQ ? [...asked, emergencyQ.id] : asked,
-  );
+  // Popup only (Lucas 2026-11-18): the red question is the full-screen popup, never a card. Each
+  // answer writes urgency= and searches again; the danger popup (U-0) has Continue to results.
+  const dismissed = Boolean(query) && dismissedFor === query;
+  const popupMode = dismissed
+    ? null
+    : emergencyPopupMode(emergencyQ, params.get('urgency'), asked);
+  const askedForNext = !emergencyQ
+    ? asked
+    : dismissed
+      ? [...asked, emergencyQ.id]
+      : popupMode === 'danger'
+        ? asked.filter((id) => id !== emergencyQ.id)
+        : asked;
+  const v2 = nextQuestionOf(data, askedForNext);
   // A place already saved for this visit counts: the results page uses it, so asking for it again
   // with the same place filled in is a wasted step (Lucas UX pass, 2026-11-16).
   const hasLocation = Boolean(
@@ -325,11 +332,8 @@ export function SearchGuideFromUrl({
   const card = question ? toCardQuestion(question) : undefined;
   const style = card ? QUESTION_STYLES[card.type ?? 'narrow'] : undefined;
   const isEmergency = question?.type === 'emergency';
-  // "No, I am safe now" removes the numbers box for this visit; the 911 and 988 chips stay.
-  const hotline = Boolean(emergencyQ) && !safeThisVisit;
-  const hotlines = emergencyQ?.hotlines?.length
-    ? emergencyQ.hotlines
-    : DEFAULT_HOTLINES;
+  const hotline = Boolean(emergencyQ) && !popupMode;
+  const hotlines = hotlinesOf(emergencyQ);
   const soft = isSoftEmergency(emergencyQ);
   const isPending = isFetching || isWriting;
   const { picks, toggle, clear } = useAnswerPicks(question?.id);
@@ -512,43 +516,36 @@ export function SearchGuideFromUrl({
         <EmergencyBox hotlines={hotlines} soft={soft} />
       )}
 
-      {card && isEmergency && question && (
+      {emergencyQ && popupMode && (
+        <EmergencyPopup
+          key={query}
+          mode={popupMode}
+          question={withEmergencyAnswers(emergencyQ)}
+          hotlines={hotlines}
+          busy={isPending}
+          onAnswer={(value) => {
+            const q = withEmergencyAnswers(emergencyQ);
+            writeAnswer(q, [value]);
+          }}
+          onContinue={() => {
+            setDismissed(query);
+            if (onPage) toResults();
+          }}
+        />
+      )}
+
+      {card && isEmergency && question && !popupMode && (
         <>
-          {/* Critical with answers: the red popup, as on the results page. The card stays. */}
-          {onPage && !soft && card.answers.length > 0 && (
-            <EmergencyPopup
-              key={query}
-              question={card}
-              hotlines={hotlines}
-              onAnswer={(option) => {
-                if (isSafeAnswer(option)) {
-                  setSafeThisVisit(true);
-                  return;
-                }
-                answerQuestion([option.label]);
-              }}
-            />
-          )}
           <h2 ref={headingRef} tabIndex={-1} className="sr-only">
             {card.text}
           </h2>
-          {!(onPage && !soft && card.answers.length > 0 && popupOpen) && (
-            <EmergencyBox
-              question={card}
-              hotlines={hotlines}
-              soft={soft}
-              announce={!(onPage && !soft && card.answers.length > 0)}
-              onAnswer={(option) => {
-                // Landing too (Lucas 2026-11-16): a safe answer clears the numbers box for the visit.
-                if (isSafeAnswer(option)) {
-                  setSafeThisVisit(true);
-                  return;
-                }
-                answerQuestion([option.label]);
-              }}
-              onSkip={skipEmergency}
-            />
-          )}
+          <EmergencyBox
+            question={soft ? card : undefined}
+            hotlines={hotlines}
+            soft={soft}
+            onAnswer={(option) => answerQuestion([option.label])}
+            onSkip={soft ? skipEmergency : undefined}
+          />
         </>
       )}
 

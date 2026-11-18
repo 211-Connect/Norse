@@ -172,14 +172,17 @@ test('refine card: quiet questions start collapsed on a phone only', () => {
   assert.match(src, /if \(quiet && window\.matchMedia\(PHONE_QUERY\)\.matches\) \{\s*setCollapsed\(true\);/);
 });
 
-// Lucas 2026-11-13: "No, I am safe now" writes nothing to the URL; the page hides the question for the visit.
-test('safe answer: no URL write, both pages hide the emergency question for the visit', () => {
+// Lucas 2026-11-18: the red emergency question is a full-screen popup only, with three answers.
+test('emergency popup: popup only, three urgency answers, Quick exit inside the dialog', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   const card = read(`${APP}features/search/components/search-follow-up.tsx`);
-  assert.equal(guide.match(/setSafeThisVisit\(true\);\s*return;/g)?.length, 2);
-  assert.equal(card.match(/setSafeThisVisit\(true\);\s*return;/g)?.length, 1);
-  assert.match(guide, /safeThisVisit && emergencyQ \? \[\.\.\.asked, emergencyQ\.id\] : asked/);
-  assert.doesNotMatch(guide + card, /safeAnsweredInUrl/);
-  // The v2 option has no value; the older card used U-3.
-  assert.match(card, /answer\.add\.every\(\(v\) => v == null\)/);
+  assert.doesNotMatch(guide + card, /isSafeAnswer|emergencySafeThisVisitAtom|safeAnsweredInUrl/);
+  assert.match(card, /export const SHOW_QUICK_EXIT_ON_EMERGENCY = true;/);
+  assert.match(card, /fixed inset-0 z-\[70\][^"]*bg-red-800/);
+  assert.match(card, /<DialogPrimitive.Root open modal>/);
+  assert.match(card, /<PopupQuickExit \/>/);
+  assert.match(guide, /<EmergencyPopup/);
+  // No card under the red popup: the box keeps a question only for the soft band.
+  assert.match(guide, /question=\{soft \? card : undefined\}/);
+  assert.match(card, /question=\{soft \? question : undefined\}/);
 });
