@@ -4,6 +4,7 @@ import { API_URL } from '@/app/(app)/shared/lib/constants';
 import {
   buildV2Headers,
   buildV2Url,
+  relayV2Response,
 } from '@/app/(app)/features/search/v2/v2-request';
 import { getTenantApiKey } from '@/lib/api/getTenantApiKey';
 
@@ -26,11 +27,6 @@ export async function GET(request: NextRequest) {
     headers: buildV2Headers(await getTenantApiKey(tenantId)),
     cache: 'no-store',
   }).catch(() => null);
-  if (!upstream?.ok) {
-    return NextResponse.json(
-      { error: 'v2 search failed', status: upstream?.status ?? 0 },
-      { status: 502 },
-    );
-  }
-  return NextResponse.json(await upstream.json());
+  const { status, body } = await relayV2Response(upstream);
+  return NextResponse.json(body, { status });
 }

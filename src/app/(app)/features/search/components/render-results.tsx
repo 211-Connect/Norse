@@ -1,7 +1,11 @@
 'use client';
 
-import { Check } from 'lucide-react';
+import { Check, Phone } from 'lucide-react';
 import { useMemo } from 'react';
+
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { useSearchResults } from '../context/search-results-context';
 import { labelOf } from '../sune-demo/sune.mjs';
@@ -16,6 +20,7 @@ import {
 } from '../v2/use-v2-search';
 import { CardLayoutRenderer } from './card-layout-renderer';
 import { NoResultsCard } from './no-results-card';
+import { DialButton } from './no-dial';
 
 type RenderResultsProps = {
   cardLayout: SearchCardLayoutConfig;
@@ -39,6 +44,7 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
   const { results, currentPage } = useSearchResults();
   const { data } = useV2Search();
   const { needs, query } = useV2Url();
+  const contactNumber = useAppConfig()?.contact?.number;
 
   // `matched_needs` comes on each v2 hit (Decision 56). The list keeps the server order.
   const matchedById = useMemo(
@@ -72,14 +78,25 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
   return (
     <>
       {results.length === 0 && weak && (
-        <p
+        <div
           role="status"
-          className="bg-muted rounded-lg border p-3 text-sm"
+          className="bg-muted flex flex-col items-start gap-2 rounded-lg border p-3 text-sm"
           data-testid="weak-match-note"
         >
-          We could not find a good match for &ldquo;{query}&rdquo;. Choose what
-          you need help with, or type a new search in the box above.
-        </p>
+          <p>
+            We could not find a good match for &ldquo;{query}&rdquo;. Choose
+            what you need help with, or type a new search in the box above.
+          </p>
+          {contactNumber && (
+            <DialButton
+              number={contactNumber}
+              testId="weak-match-call"
+              className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
+            >
+              <Phone className="size-4" /> Call {contactNumber}
+            </DialButton>
+          )}
+        </div>
       )}
       {results.length === 0 && !weak && <NoResultsCard />}
       {noMatch && (

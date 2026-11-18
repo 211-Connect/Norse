@@ -44,3 +44,31 @@ export function buildV2Url(
 export function buildV2Headers(tenantApiKey?: string | null): Record<string, string> {
   return tenantApiKey ? { 'x-api-key': tenantApiKey } : {};
 }
+
+/**
+ * What the page route answers for an upstream reply (Lucas, 2026-11-18). A 4xx passes through with
+ * its status and body, so the page sees the real reason (for example 400 for `needs=N-X`). 502 stays
+ * for a network failure (`null`) and for a 5xx or any other failure.
+ */
+export async function relayV2Response(
+  upstream: Response | null,
+): Promise<{ status: number; body: unknown }> {
+  if (upstream?.ok) return { status: 200, body: await upstream.json() };
+  if (upstream && upstream.status >= 400 && upstream.status < 500) {
+    const text = await upstream.text().catch(() => '');
+    let body: unknown;
+    try {
+      body = text ? JSON.parse(text) : undefined;
+    } catch {
+      body = undefined;
+    }
+    return {
+      status: upstream.status,
+      body: body ?? { error: 'v2 search failed', status: upstream.status },
+    };
+  }
+  return {
+    body: { error: 'v2 search failed', status: upstream?.status ?? 0 },
+    status: 502,
+  };
+}
