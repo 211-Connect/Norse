@@ -20,12 +20,13 @@ export class BlockedTrafficInternal<
   SecurityDataType = unknown,
 > extends HttpClient<SecurityDataType> {
   /**
-   * @description Adds per-hour deltas aggregated by a Norse instance. Additive: two pushes for the same bucket are summed.
+   * @description Deprecated: use POST /internal/crawler-traffic. Adds per-hour deltas aggregated by a Norse instance. Additive: two pushes for the same bucket are summed.
    *
    * @tags Blocked Traffic (Internal)
    * @name BlockedTrafficInternalControllerRecord
    * @summary Add blocked-request counts for the tenant
    * @request POST:/internal/blocked-traffic
+   * @deprecated
    * @secure
    */
   blockedTrafficInternalControllerRecord = (

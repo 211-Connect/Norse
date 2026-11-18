@@ -216,8 +216,8 @@ traceSampler: new HealthCheckDroppingSampler(
   API's own root ratio; that is out of scope here.
 
 Timers do not keep a request's context. Anything long-lived leaves it when it
-starts: the blocked-traffic flush timer runs under `ROOT_CONTEXT`
-(`src/lib/blocked-traffic-counter.ts`), the Redis clients connect under
+starts: the crawler-traffic flush timer runs under `ROOT_CONTEXT`
+(`src/lib/crawler-traffic-counter.ts`), the Redis clients connect under
 `ROOT_CONTEXT` (`src/cacheService.ts`: ioredis keeps the context its socket
 was created in, so every reconnect handshake and its logs would otherwise
 join the first request that touched the cache, for the life of the process),

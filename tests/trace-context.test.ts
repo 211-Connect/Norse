@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { before, describe, test } from 'node:test';
 
-import { defaultSchedule } from '../src/lib/blocked-traffic-counter';
+import { defaultSchedule } from '../src/lib/crawler-traffic-counter';
 import {
   InboundIgnoringTraceContextPropagator,
   inNewTrace,
@@ -57,7 +57,7 @@ function inRequest<T>(fn: (requestTraceId: string) => T): T {
 }
 
 describe('background work does not join the request that armed it', () => {
-  test('the blocked-traffic flush timer runs outside any trace', async () => {
+  test('the crawler-traffic flush timer runs outside any trace', async () => {
     const activeSpan = await inRequest(
       () =>
         new Promise((resolve) => {

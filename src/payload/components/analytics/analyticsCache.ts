@@ -8,6 +8,7 @@ import type {
   AnalyticsMetricsResponse,
   AreaSearchesResponse,
   BlockedTrafficResponse,
+  CrawlerTrafficResponse,
   EventCatalogEntryResponse,
   EventValuesResponse,
   HeatmapPointResponse,
@@ -444,6 +445,30 @@ export const fetchAnalyticsEventValues = makeCachedFetchWithArgs<
       ),
     );
     if (!data) throw new Error('No event values data returned');
+    return data;
+  },
+);
+
+export type CrawlerTrafficGranularity = 'hour' | 'day';
+export type CrawlerTrafficData = CrawlerTrafficResponse;
+
+export const fetchAnalyticsCrawlerTraffic = makeCachedFetchWithArgs<
+  CrawlerTrafficData,
+  { granularity: CrawlerTrafficGranularity }
+>(
+  new Map<string, CacheEntry<CrawlerTrafficData>>(),
+  ({ granularity }) => granularity,
+  async ({ startAt, endAt }, tenantId, _websiteIds, { granularity }) => {
+    const data = await fetchWrapper<CrawlerTrafficData>(
+      buildAnalyticsQuery(
+        '/analytics/crawler-traffic',
+        startAt,
+        endAt,
+        tenantId,
+        { granularity },
+      ),
+    );
+    if (!data) throw new Error('No crawler traffic data returned');
     return data;
   },
 );

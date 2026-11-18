@@ -118,6 +118,9 @@ after a restart, the hook keys it by host and the busy page is generic.
   `norse_load_shed_in_flight{tenant}`.
 - Logs: one `load_shed` warn per tenant per limit per minute, with
   `shedSinceLastLog` (not one line per request).
+- Analytics: every 429 is counted as outcome `shed` in the per-crawler
+  stats ([blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md)),
+  with no crawler name (it happens before bot protection runs).
 
 ## Limits and known gaps
 
