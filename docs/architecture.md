@@ -169,6 +169,9 @@ commands fail fast meanwhile (`enableOfflineQueue: false`) rather than
 waiting out `commandTimeout`. A failed first connect is retried after a 10 s
 cooldown. Neither case disables the cache until a restart.
 
+What is cached in Redis and in each instance's per-feature memory caches:
+[caching.md](/docs/caching.md).
+
 Point `CACHE_REDIS_URI` at a local Redis/Valkey for development
 (`compose.yaml`'s `valkey` service) — same "don't touch shared state"
 reasoning as the database.

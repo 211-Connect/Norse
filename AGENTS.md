@@ -20,6 +20,7 @@ Other docs, load only when the task touches that area:
 - [docs/printable-directories.md](/docs/printable-directories.md) — curated branded PDF directory feature.
 - [docs/translation-usage.md](/docs/translation-usage.md) — metering, monthly limits, alert email and admin usage table for printable directory auto-translation.
 - [docs/search.md](/docs/search.md) — how the search dialog's autocomplete, `queryType`/`query` model, and the `/search` request pipeline work, including organization search.
+- [docs/caching.md](/docs/caching.md) — `withCache`: Redis vs per-feature in-memory LRUs (entry and size limits per feature), what is cached where (resources are not cached; common searches also in memory).
 - [docs/area-search.md](/docs/area-search.md) — searching a state, county, city or ZIP as its shape: `region` URL slot and cookie, CMS area-match settings, the map outline (`/api/region-area`), printable directory `regionId`.
 - [docs/map-pins.md](/docs/map-pins.md) — every search result on the map: per-tenant flag, `GET /search/pins`, canvas circles plus list pins, the 10,000 cap and its caching.
 - [docs/search-intent.md](/docs/search-intent.md) — how a `/search` URL is read into a typed search intent and envelope (slots, lift, generations, serializer), how the resolver machine decides what the page and dialog do (including the AI-classification deep-link gate), and how to add a slot.
