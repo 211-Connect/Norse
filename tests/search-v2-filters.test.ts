@@ -134,12 +134,19 @@ test('locationNote: names the Regions, nothing without them', () => {
   );
 });
 
-test('stub: filters filter (values AND), facet counts are for the filtered set', () => {
+test('stub: filters filter (OR inside a facet, AND across facets), facet counts are for the filtered set', () => {
   const all = CATALOG;
   const spanish = applyFacetFilters(all, { languages: ['Spanish'] });
   assert.ok(spanish.length > 0 && spanish.length < all.length);
-  const both = applyFacetFilters(all, { languages: ['Spanish', 'Vietnamese'] });
-  assert.ok(both.length <= spanish.length);
+  const vietnamese = applyFacetFilters(all, { languages: ['Vietnamese'] });
+  const either = applyFacetFilters(all, { languages: ['Spanish', 'Vietnamese'] });
+  // Two ticked values in one facet widen the list (OR), never narrow it.
+  assert.ok(either.length >= spanish.length && either.length >= vietnamese.length);
+  const union = new Set([...spanish, ...vietnamese].map((x) => x.id));
+  assert.equal(either.length, union.size);
+  // A second facet narrows (AND across facets).
+  const seniors = applyFacetFilters(all, { languages: ['Spanish', 'Vietnamese'], age_group: ['Seniors'] });
+  assert.ok(seniors.length <= either.length);
   const facets = facetsOf(spanish);
   const lang = facets.find((f) => f.key === 'languages')!;
   assert.equal(lang.values.find((v) => v.en === 'Spanish')?.doc_count, spanish.length);

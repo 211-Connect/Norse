@@ -42,7 +42,7 @@ export type V2Params = {
   passedNeeds: string[];
   urgency?: string;
   clarify: 'auto' | 'never';
-  /** Facet filters (`filters[k]=v`, `filters[k][0]=v`). Every value is its own clause: values AND (Norse-API PR #326). */
+  /** Facet filters (`filters[k]=v`, `filters[k][0]=v`). Lucas 2026-11-18 (1A): values of one facet are OR, different facets are AND. Norse-API PR #326 tests AND today; the API must change. */
   filters: Record<string, string[]>;
   /** Area search (Norse-API PR #327). */
   region: string[];
@@ -97,11 +97,11 @@ export function facetValuesOf(service: Service): Record<string, string[]> {
 
 const FACET_NAMES: Record<string, string> = { languages: 'Languages', age_group: 'Age group' };
 
-/** The services that carry every ticked value (each value its own clause, so values AND). */
+/** The services that carry at least one ticked value of every ticked facet (OR inside a facet, AND across facets). */
 export function applyFacetFilters<T extends Service>(services: T[], filters: Record<string, string[]>): T[] {
   return services.filter((s) => {
     const have = facetValuesOf(s);
-    return Object.entries(filters).every(([key, wanted]) => wanted.every((v) => have[key]?.includes(v)));
+    return Object.entries(filters).every(([key, wanted]) => wanted.some((v) => have[key]?.includes(v)));
   });
 }
 
