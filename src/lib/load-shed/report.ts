@@ -1,9 +1,10 @@
 import { lazy } from '@/lib/telemetry/meter';
 
 /**
- * What happens when a load limit answers 429: a metric sample and one warn
- * log per tenant per limit per minute (not one per request). Never throws,
- * never awaits on the request path.
+ * What happens when a load limit answers 429: a metric sample, one warn
+ * log per tenant per limit per minute (not one per request), and a `shed`
+ * count in the per-crawler stats. Never throws, never awaits on the
+ * request path.
  */
 
 export type LoadShedLimit = 'concurrency' | 'minute';
@@ -17,16 +18,16 @@ const instruments = lazy((meter) => ({
 const lastLogged = new Map<string, number>();
 let shedSinceLog = new Map<string, number>();
 
-type LoggerModule = typeof import('@/lib/logger');
-let logger: Promise<LoggerModule> | undefined;
+type CrawlerTrafficModule = typeof import('@/lib/crawler-traffic');
+let crawlerTraffic: Promise<CrawlerTrafficModule> | undefined;
 
 /**
  * Loaded on first use: the HTTP hook is installed from `register()`, before
  * telemetry patches pino, so the logger must not be imported at module scope.
  */
-function loadLogger(): Promise<LoggerModule> {
-  logger ??= import('@/lib/logger');
-  return logger;
+function loadCrawlerTraffic(): Promise<CrawlerTrafficModule> {
+  crawlerTraffic ??= import('@/lib/crawler-traffic');
+  return crawlerTraffic;
 }
 
 export function reportLoadShed(
@@ -44,21 +45,29 @@ export function reportLoadShed(
     const logNow = lastLogged.get(key) !== minute;
     if (logNow) lastLogged.set(key, minute);
 
-    if (logNow) {
-      const count = shedSinceLog.get(key) ?? 1;
-      shedSinceLog.delete(key);
-      void loadLogger()
-        .then(({ createLogger }) => {
-          createLogger('load-shed').warn({
-            event: 'load_shed',
-            limit,
-            tenantId: tenant,
-            host,
-            shedSinceLastLog: count,
+    void loadCrawlerTraffic()
+      .then(({ recordCrawlerTraffic, UNKNOWN_TENANT_ID }) => {
+        recordCrawlerTraffic({
+          tenantId: tenantId ?? UNKNOWN_TENANT_ID,
+          crawler: '',
+          outcome: 'shed',
+          classification: 'unknown',
+        });
+        if (logNow) {
+          const count = shedSinceLog.get(key) ?? 1;
+          shedSinceLog.delete(key);
+          return import('@/lib/logger').then(({ createLogger }) => {
+            createLogger('load-shed').warn({
+              event: 'load_shed',
+              limit,
+              tenantId: tenant,
+              host,
+              shedSinceLastLog: count,
+            });
           });
-        })
-        .catch(() => {});
-    }
+        }
+      })
+      .catch(() => {});
 
     if (shedSinceLog.size > 1000) shedSinceLog = new Map();
   } catch {

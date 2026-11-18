@@ -11,7 +11,7 @@ import {
   isArcjetDeniedResult,
   isEnforcedHost,
 } from '@/lib/arcjet';
-import { recordBlockedTraffic } from '@/lib/blocked-traffic';
+import { recordArcjetTraffic } from '@/lib/crawler-traffic';
 import { createLogger } from '@/lib/logger';
 import {
   arcjetSpanAttributes,
@@ -85,10 +85,11 @@ function tracedProtect(
 }
 
 /**
- * One Arcjet decision; a denial, enforced or not, is also counted for the
- * Blocked Bots widget (ISS-2366). While the response is still pending the
- * count is deferred to `after()` so it never delays it; `afterResponse`
- * means we already run there and count directly.
+ * One Arcjet decision, also counted per crawler for the analytics widgets:
+ * denials (blocked, rate-limited, or logged on an observe-only host) and
+ * allowed crawlers (`recordArcjetTraffic` ignores the rest). While the
+ * response is still pending the count is deferred to `after()` so it never
+ * delays it; `afterResponse` means we already run there and count directly.
  */
 async function decideAndCount(
   req: ArcjetRequestLike,
@@ -96,9 +97,9 @@ async function decideAndCount(
   afterResponse: boolean,
 ) {
   const result = await tracedProtect(req, pathName, afterResponse);
-  if (isArcjetDeniedResult(result)) {
+  if (isArcjetDeniedResult(result) || result.allowedBots?.length) {
     const host = req.headers.get('host') ?? '';
-    const count = () => recordBlockedTraffic(host, result, log);
+    const count = () => recordArcjetTraffic(host, result, log);
     if (afterResponse) await count();
     else after(count);
   }
