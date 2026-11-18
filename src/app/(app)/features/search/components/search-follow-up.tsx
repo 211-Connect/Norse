@@ -83,6 +83,7 @@ import {
   type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
+import { helpControlHidden } from '../v2/help-visibility';
 import { cardWording, NO_MATCH_ID, otherChanges } from '../v2/v2-contract';
 
 type Answer = {
@@ -153,7 +154,7 @@ function useSuneSearch() {
       (stated.length ? stated : (classifySune(label).codes as string[])).filter(
         (code) => code !== 'U-X' && lookup(code),
       ),
-     
+
     [stated.join(), label],
   );
   // Decision 54: no "I'm in an emergency" answer, so nothing is kept in memory for it.
@@ -488,6 +489,8 @@ export function SearchResultsHelp() {
   const setFlagged = useSetAtom(flaggedAtom);
   const setSuggestions = useSetAtom(suggestionsAtom);
   const [shown, setShown] = useState(false);
+  // D1: hidden while the refine card is on screen or the list has fewer than 4 results.
+  const [suppressed, setSuppressed] = useState(true);
   const [open, setOpen] = useAtom(resultsHelpOpenAtom);
   const dragging = useRef(false);
   const onDragging = (value: boolean) => {
@@ -513,11 +516,31 @@ export function SearchResultsHelp() {
         setShown(true);
       }
     };
+    const checkSuppressed = () => {
+      const card = document.querySelector(
+        '[data-testid="search-refine-question"]',
+      );
+      setSuppressed(
+        helpControlHidden({
+          resultCount: document.querySelectorAll('[data-search-result]').length,
+          refineRect: card ? card.getBoundingClientRect() : null,
+          viewportHeight: window.innerHeight,
+        }),
+      );
+    };
+    checkSuppressed();
     const settled = setTimeout(check, 1500);
+    // The card and the list load after the first render, so a slow poll keeps the state current.
+    const poll = setInterval(checkSuppressed, 500);
     window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('scroll', checkSuppressed, { passive: true });
+    window.addEventListener('resize', checkSuppressed);
     return () => {
       clearTimeout(settled);
+      clearInterval(poll);
       window.removeEventListener('scroll', check);
+      window.removeEventListener('scroll', checkSuppressed);
+      window.removeEventListener('resize', checkSuppressed);
     };
   }, [label]);
 
@@ -625,6 +648,8 @@ export function SearchResultsHelp() {
           // Before it appears it stays in the tab order, so a keyboard user can still reach it.
           !shown &&
             'pointer-events-none opacity-0 focus:pointer-events-auto focus:opacity-100',
+          // D1: out of the way while the refine card shows or the list is short.
+          suppressed && !open && 'hidden',
         )}
         data-testid="search-results-help"
       >
