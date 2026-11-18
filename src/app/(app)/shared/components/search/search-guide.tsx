@@ -14,7 +14,6 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import {
-  DEFAULT_HOTLINES,
   EmergencyBox,
   EmergencyPopup,
   emergencySafeThisVisitAtom,
@@ -32,6 +31,7 @@ import {
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
 import {
   emergencyQuestionOf,
+  hotlinesOf,
   isSoftEmergency,
   MAX_GUIDED,
   nextQuestionOf,
@@ -327,9 +327,7 @@ export function SearchGuideFromUrl({
   const isEmergency = question?.type === 'emergency';
   // "No, I am safe now" removes the numbers box for this visit; the 911 and 988 chips stay.
   const hotline = Boolean(emergencyQ) && !safeThisVisit;
-  const hotlines = emergencyQ?.hotlines?.length
-    ? emergencyQ.hotlines
-    : DEFAULT_HOTLINES;
+  const hotlines = hotlinesOf(emergencyQ);
   const soft = isSoftEmergency(emergencyQ);
   const isPending = isFetching || isWriting;
   const { picks, toggle, clear } = useAnswerPicks(question?.id);

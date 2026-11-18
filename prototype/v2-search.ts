@@ -19,10 +19,20 @@ let rules: Rules | undefined;
 const loadRules = async () => (rules ??= (await import(RULES_PATH)) as Rules);
 
 const URGENCY = new Set(['U-0', 'U-1', 'U-2', 'U-3', 'U-4', 'U-X']);
-const HOTLINES = [
-  { label: 'Suicide and Crisis Lifeline', number: '988' },
+// Tenant context (Norse-API PR #332). The API reads `hotlines` from the tenant's search config and
+// `top_areas` from the index, and the rules engine falls back to 988 and 911 and to Housing, Food,
+// Money when they are absent (Lucas, 2026-11-12). The stub sends the same defaults, 988 first.
+// STUB_TENANT_CONTEXT='{"hotlines":[...],"top_areas":[...]}' overrides them, `{}` tests the fallback.
+const DEFAULT_HOTLINES = [
+  { label: 'Crisis line', number: '988' },
   { label: 'Emergency', number: '911' },
 ];
+const DEFAULT_TOP_AREAS = ['N-HOU', 'N-FOD', 'N-MON'];
+const TENANT_CONTEXT: { hotlines?: { label: string; number: string }[]; top_areas?: string[] } =
+  process.env.STUB_TENANT_CONTEXT
+    ? JSON.parse(process.env.STUB_TENANT_CONTEXT)
+    : { hotlines: DEFAULT_HOTLINES, top_areas: DEFAULT_TOP_AREAS };
+const HOTLINES = TENANT_CONTEXT.hotlines?.length ? TENANT_CONTEXT.hotlines : DEFAULT_HOTLINES;
 const STOP = new Set(['the', 'and', 'for', 'with', 'need', 'help', 'have', 'want', 'get', 'can', 'not', 'dont', "don't", 'my', 'me', 'i', 'a', 'to', 'of', 'in', 'some', 'any']);
 
 export type V2Params = {
@@ -164,7 +174,7 @@ export async function v2Search(params: V2Params) {
   const decision = decide(
     { has_text: Boolean(text), needs: params.needs, passed_needs: params.passedNeeds, urgency: engineUrgency as never, clarify: params.clarify },
     { needs: signals.needs, urgency: signals.urgency, emergency: signals.emergency },
-    { top_areas: ['N-FOD', 'N-HOU', 'N-MON', 'N-HLT', 'N-SAF'], hotlines: HOTLINES },
+    TENANT_CONTEXT,
   );
   const boost = [...new Set([...params.needs, ...decision.boost_needs])];
   const urgency = params.urgency ?? (decision.urgency.state === 'use' ? decision.urgency.value : undefined);

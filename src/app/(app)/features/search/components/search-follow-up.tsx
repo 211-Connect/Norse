@@ -71,7 +71,9 @@ import {
   removedToken,
 } from '../sune-demo/sune.mjs';
 import {
+  DEFAULT_HOTLINES,
   emergencyQuestionOf,
+  hotlinesOf,
   isSoftEmergency,
   nextQuestionOf,
   styleOf,
@@ -1057,11 +1059,7 @@ export function EmergencyPopup({
   );
 }
 
-/** 988 and 911 both show by default, because the danger may not be self-harm. */
-export const DEFAULT_HOTLINES: V2Hotline[] = [
-  { label: 'Suicide and Crisis Lifeline', number: '988' },
-  { label: 'Emergency', number: '911' },
-];
+export { DEFAULT_HOTLINES };
 
 /** The numbers a person can call. They come with the emergency question (`hotlines[]`). */
 export function HotlineNumbers({
@@ -1420,9 +1418,7 @@ export function SearchRefineQuestion() {
   if (!label || refine || !data) return null;
   const type: keyof typeof QUESTION_STYLES = v2 ? styleOf(v2) : 'none';
   const style = QUESTION_STYLES[type];
-  const hotlines = emergencyQ?.hotlines?.length
-    ? emergencyQ.hotlines
-    : DEFAULT_HOTLINES;
+  const hotlines = hotlinesOf(emergencyQ);
   const soft = isSoftEmergency(emergencyQ);
 
   const submitOther = (text: string) => {

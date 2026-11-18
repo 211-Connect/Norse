@@ -1,26 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { API_URL } from '@/app/(app)/shared/lib/constants';
-import { getApiHeaders } from '@/lib/api';
-
-/** The v2 parameters the draft contract names. Anything else on the page URL stays out of the call. */
-const FORWARD = [
-  'query',
-  'other',
-  'needs',
-  'passed_needs',
-  'urgency',
-  'clarify',
-  'location',
-  'coords',
-  'distance',
-  'taxonomy',
-  'page',
-] as const;
+import {
+  buildV2Headers,
+  buildV2Url,
+} from '@/app/(app)/features/search/v2/v2-request';
+import { getTenantApiKey } from '@/lib/api/getTenantApiKey';
 
 /**
  * Prototype (round 17): the browser's way to Norse-API `GET /v2/search`. The tenant key stays on the
- * server, as for every other Norse-API call. Fails fast without a tenant (AGENTS.md).
+ * server, as for every other Norse-API call. Tenant and language go in the URL only, with no
+ * `x-tenant-id` or `accept-language` header (PR #331). Fails fast without a tenant (AGENTS.md).
  */
 export async function GET(request: NextRequest) {
   const incoming = request.nextUrl.searchParams;
@@ -32,15 +22,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'API_URL is not configured' }, { status: 500 });
   }
 
-  const outgoing = new URLSearchParams();
-  for (const key of FORWARD) {
-    const value = incoming.get(key);
-    if (value) outgoing.set(key, value);
-  }
-  const locale = incoming.get('locale') ?? 'en';
-
-  const upstream = await fetch(`${API_URL}/v2/search?${outgoing}`, {
-    headers: await getApiHeaders(tenantId, locale),
+  const upstream = await fetch(buildV2Url(API_URL, incoming, tenantId), {
+    headers: buildV2Headers(await getTenantApiKey(tenantId)),
     cache: 'no-store',
   }).catch(() => null);
   if (!upstream?.ok) {

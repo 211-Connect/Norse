@@ -101,6 +101,39 @@ export const isSoftEmergency = (q?: Pick<V2Question, 'importance'>) =>
 export const emergencyQuestionOf = (response?: V2Response) =>
   response?.clarification.questions.find((q) => q.type === 'emergency');
 
+/**
+ * Hotline fallback (Lucas, 2026-11-12): 988 and 911 both show, because the danger may not be
+ * self-harm. Used when the emergency question carries no usable `hotlines[]`. Same two numbers as
+ * the server's default (Norse-API `DEFAULT_HOTLINES`); labels are one language per tenant.
+ */
+export const DEFAULT_HOTLINES: V2Hotline[] = [
+  { label: 'Suicide and Crisis Lifeline', number: '988' },
+  { label: 'Emergency', number: '911' },
+];
+
+const MAX_HOTLINES = 4;
+
+/**
+ * The numbers to show with the emergency question: the tenant's `hotlines[]` from the response
+ * (Norse-API PR #332 puts them on the emergency question only), trimmed, entries without a label
+ * and number dropped, at most 4. Nothing usable gives the default 988 and 911.
+ */
+export function hotlinesOf(q?: Pick<V2Question, 'hotlines'>): V2Hotline[] {
+  const raw: unknown = q?.hotlines;
+  const kept: V2Hotline[] = [];
+  if (Array.isArray(raw)) {
+    for (const item of raw) {
+      const { label, number } = (item ?? {}) as Record<string, unknown>;
+      if (typeof label !== 'string' || typeof number !== 'string') continue;
+      if (label.trim() && number.trim()) {
+        kept.push({ label: label.trim(), number: number.trim() });
+      }
+      if (kept.length === MAX_HOTLINES) break;
+    }
+  }
+  return kept.length ? kept : DEFAULT_HOTLINES;
+}
+
 /** How a result relates to the needs the person picked. */
 export type NeedsGroup = 'all' | 'some' | 'none';
 
