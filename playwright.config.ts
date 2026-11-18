@@ -1,6 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-import { getBaseUrlForCurrentTenant } from './e2e/fixtures/tenants';
+import {
+  getBaseUrlForCurrentTenant,
+  getCmsBaseUrlForCurrentTenant,
+} from './e2e/fixtures/tenants';
 import { DEFAULT_ACTION_TIMEOUT_MS, TEST_TIMEOUT_MS } from './e2e/timeouts';
 
 function resolveBaseURL(): string {
@@ -142,18 +145,22 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
-      // Payload CMS admin, per role. Local only: run against a dev server
-      // with the users from `npm run test:e2e:cms:seed`. Not in the CI
-      // tenant matrix (those hosts have no seeded CMS users). One worker:
+      // Payload CMS admin, per role. Dev CMS only, never production: the
+      // tenant's `cmsBaseUrl` (e2e/fixtures/tenants.ts) has no prod key, and
+      // the spec skips without it or without TEST_CMS_PASSWORD.
+      // E2E_CMS_BASE_URL points it at a local dev server instead. One worker:
       // tests log the same users in, and parallel logins of one user wait on
-      // its row lock while holding connections from the dev server's small
-      // Postgres pool (DATABASE_POOL_MAX, default 4) until it deadlocks.
+      // its row lock while holding connections from the CMS's small Postgres
+      // pool (DATABASE_POOL_MAX, default 4) until it deadlocks.
       name: 'cms',
       testMatch: ['**/cms/*.spec.ts'],
       workers: 1,
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: process.env.E2E_CMS_BASE_URL ?? 'http://localhost:3000',
+        baseURL:
+          process.env.E2E_CMS_BASE_URL ||
+          getCmsBaseUrlForCurrentTenant() ||
+          'http://localhost:3000',
       },
     },
     {

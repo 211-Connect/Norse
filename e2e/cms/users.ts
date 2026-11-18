@@ -1,50 +1,47 @@
 /**
- * Local-only Payload CMS e2e users. `e2e/cms/seed-cms-users.ts` creates them
- * in a local database; they never exist in a shared environment, so the
- * default password is not a secret. Override any of them with
- * `E2E_CMS_<KEY>_EMAIL` / `E2E_CMS_<KEY>_PASSWORD` (e.g.
- * `E2E_CMS_TENANT_ADMIN_EMAIL`).
+ * The Payload CMS test accounts for the `cms` project. They exist on the dev
+ * CMS only (see `cmsBaseUrl` in `e2e/fixtures/tenants.ts`); emails are
+ * derived from the current tenant and environment, and both share the
+ * `TEST_CMS_PASSWORD` secret.
  */
-export type CmsUserKey = 'super-admin' | 'tenant-admin' | 'tenant-editor';
+import {
+  getCmsBaseUrlForCurrentTenant,
+  getCmsTestEmailsForCurrentTenant,
+  getCurrentTenantKey,
+} from '../fixtures/tenants';
 
 export type CmsE2EUser = {
-  key: CmsUserKey;
+  /** Shown in test titles. */
+  label: string;
   email: string;
   password: string;
-  /** Global role on the user (`users.roles`). */
-  role: 'super-admin' | 'tenant';
-  /** Role on the user's one tenant (`users.tenants[].roles`), if any. */
-  tenantRole?: 'tenant-admin' | 'tenant-editor';
 };
 
-const DEFAULT_PASSWORD = 'e2e-cms-local-only';
+const password = process.env.TEST_CMS_PASSWORD ?? '';
 
-function envName(key: CmsUserKey, field: 'EMAIL' | 'PASSWORD'): string {
-  return `E2E_CMS_${key.toUpperCase().replace(/-/g, '_')}_${field}`;
-}
+/**
+ * Why the CMS tests cannot run here, or `undefined` when they can. They need
+ * the current tenant's dev CMS (never production) and the shared password.
+ */
+export const cmsSkipReason: string | undefined =
+  !getCmsBaseUrlForCurrentTenant()
+    ? `No dev CMS for ${getCurrentTenantKey()} here (cmsBaseUrl); CMS tests run on dev only.`
+    : !password
+      ? 'TEST_CMS_PASSWORD is not set.'
+      : undefined;
 
-function cmsUser(
-  key: CmsUserKey,
-  role: CmsE2EUser['role'],
-  tenantRole?: CmsE2EUser['tenantRole'],
-): CmsE2EUser {
-  return {
-    key,
-    email: process.env[envName(key, 'EMAIL')] ?? `e2e-${key}@norse.test`,
-    password: process.env[envName(key, 'PASSWORD')] ?? DEFAULT_PASSWORD,
-    role,
-    tenantRole,
-  };
-}
+const emails = getCmsTestEmailsForCurrentTenant();
 
-export const CMS_E2E_USERS: Record<CmsUserKey, CmsE2EUser> = {
-  'super-admin': cmsUser('super-admin', 'super-admin'),
-  'tenant-admin': cmsUser('tenant-admin', 'tenant', 'tenant-admin'),
-  'tenant-editor': cmsUser('tenant-editor', 'tenant', 'tenant-editor'),
+/** A super-admin: sees every tenant. */
+export const CMS_SUPER_ADMIN: CmsE2EUser = {
+  label: 'super-admin',
+  email: emails.superAdmin,
+  password,
 };
 
-/** The users who only see their own tenant (the bug-prone path). */
-export const CMS_TENANT_USERS = [
-  CMS_E2E_USERS['tenant-admin'],
-  CMS_E2E_USERS['tenant-editor'],
-];
+/** A tenant-admin on the current tenant only (the bug-prone path). */
+export const CMS_TENANT_ADMIN: CmsE2EUser = {
+  label: 'tenant-admin',
+  email: emails.tenantAdmin,
+  password,
+};

@@ -30,7 +30,7 @@ export async function loginToCms(page: Page, user: CmsE2EUser): Promise<void> {
   expect(
     response.ok(),
     `CMS login failed for ${user.email} (HTTP ${response.status()}). ` +
-      'Seed the local CMS users first: npm run test:e2e:cms:seed',
+      'Check the account exists on this CMS and TEST_CMS_PASSWORD is right.',
   ).toBe(true);
 }
 

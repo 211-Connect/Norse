@@ -44,7 +44,7 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 
 The full suite (`search-taxonomy`, `translations`, `search-geocode`, `area-search`,
 `favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
-`organization`, `mboa-qa-checklist`, `map-pins`) runs against the 7 tenants' dev hosts in CI — see
+`organization`, `mboa-qa-checklist`, `map-pins`, `cms`) runs against the 7 tenants' dev hosts in CI — see
 `.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only).
 CI does not run against production: production hosts are enforced by Arcjet
 bot protection, which is expected to deny headless Chromium, while the dev hosts stay
@@ -270,28 +270,35 @@ failure names the same step a manual tester would report.
 
 ## Payload CMS admin (`e2e/cms/`, project `cms`)
 
-Covers the Payload admin per role, not a tenant's public site. Local only, not
-in the CI matrix: the users exist only in a local database.
+Covers the Payload admin per role, not a tenant's public site. **Dev CMS
+only, never production**, so customers never see test-account activity.
 
-- `npm run test:e2e:cms:seed` creates (or resets) a super-admin, a
-  tenant-admin and a tenant-editor (`e2e/cms/users.ts`, `@norse.test`
-  emails, local-only password). It refuses a non-local `DATABASE_URI`. The
-  tenant is `E2E_CMS_TENANT_ID`, else the first one with a Settings document.
-- `npm run test:e2e:cms` runs against `E2E_CMS_BASE_URL` (default
-  `http://localhost:3000`), with one worker: parallel logins of the same user
-  deadlock a dev server's 4-connection Postgres pool.
-- Tests log in per test through `POST /api/users/login` (no IdP chain, so it
-  is cheap), on the page's own request context so the cookies reach the page.
-- `admin-navigation.spec.ts`: for each tenant role, Settings opens the
-  user's own tenant Settings (from the sidebar, the list URL and a direct
-  link), and every sidebar link opens its own page instead of bouncing to the
-  Analytics dashboard; the super-admin gets the same checks. Below Payload's
-  wide breakpoint the sidebar starts closed, so `clickCmsNavLink` opens it
-  first, and `gotoCms` waits for `nav--nav-hydrated` because the toggle is
-  not rendered before hydration.
-- A dev server stuck on Drizzle's interactive schema-push prompt (local DB
+- Which tenants run it: those with `cmsBaseUrl` in `e2e/fixtures/tenants.ts`
+  (WA today, on `https://dev-cms.c211.io`). Set it on one tenant per CMS
+  deployment: the super-admin tests run in that tenant's cell. The field has
+  only a `dev` key, and `getCmsBaseUrlForCurrentTenant()` returns nothing
+  outside `dev`, so every other cell skips.
+- Accounts (Payload users on the dev CMS, not Keycloak):
+  `test-cms-admin-dev@c211.io` (super-admin, no tenants) and
+  `test-cms-<tenant>-dev@c211.io` (tenant-admin on that one tenant, e.g.
+  `test-cms-wa-dev@c211.io`). Both share the `TEST_CMS_PASSWORD` secret;
+  without it the spec skips.
+- Read-only: tests log in through `POST /api/users/login` (no IdP chain, so
+  per test is cheap) and navigate; they never save.
+- `admin-navigation.spec.ts`: the tenant-admin's Settings opens its own tenant
+  Settings (from the sidebar, the list URL and a direct link), and every
+  sidebar link opens its own page instead of bouncing to the Analytics
+  dashboard; the super-admin gets the same checks. Below Payload's wide
+  breakpoint the sidebar starts closed, so `clickCmsNavLink` opens it first,
+  and `gotoCms` waits for `nav--nav-hydrated` because the toggle is not
+  rendered before hydration.
+- One worker: parallel logins of the same user deadlock the CMS's
+  4-connection Postgres pool.
+- Local run against a dev server holding the same accounts:
+  `E2E_TENANT_KEY=WA E2E_CMS_BASE_URL=http://localhost:3000 TEST_CMS_PASSWORD=… npm run test:e2e:cms`.
+  A dev server stuck on Drizzle's interactive schema-push prompt (local DB
   schema behind the checked-out branch) hangs every Payload request, logins
-  included; run `npm run migrate` or answer the prompt before blaming a test.
+  included.
 
 ## Known risks (documented, not fixed here)
 

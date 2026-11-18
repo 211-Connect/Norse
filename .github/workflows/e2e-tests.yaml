@@ -89,6 +89,8 @@ jobs:
       E2E_TENANT_KEY: ${{ matrix.tenant }}
       E2E_TENANT_ENV: ${{ matrix.env == 'production' && 'prod' || 'dev' }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      # Payload CMS test accounts (dev CMS only; see e2e/AGENTS.md).
+      TEST_CMS_PASSWORD: ${{ secrets.TEST_CMS_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -120,7 +122,8 @@ jobs:
             --project=organization \
             --project=map-pins \
             --project=ai-classification \
-            --project=mboa-qa-checklist
+            --project=mboa-qa-checklist \
+            --project=cms
 
       - name: Upload Playwright report
         if: always()
