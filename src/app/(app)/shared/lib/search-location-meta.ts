@@ -62,12 +62,6 @@ export async function buildSearchLocationPayload(
     getLocationMeta(userCoordinates, tenantId),
   ]);
 
-  console.log({
-    searchCoordinates,
-    userCoordinates,
-    searchMeta,
-    userMeta,
-  });
   return {
     searchCoordinates: searchCoordinates.join(',') ?? '',
     userCoordinates: userCoordinates.join(',') ?? '',
