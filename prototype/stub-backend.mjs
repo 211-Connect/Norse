@@ -69,7 +69,7 @@ http.createServer((req, res) => {
         for (const [k, v] of u.searchParams) up.searchParams.set(k, v);
         up.searchParams.set('tenant_id', process.env.V2_TENANT);
         if (process.env.V2_COORDS && !up.searchParams.get('coords')) up.searchParams.set('coords', process.env.V2_COORDS);
-        up.searchParams.set('relevance_cutoff', process.env.V2_CUTOFF === 'off' ? 'off' : 'on');
+        up.searchParams.set('relevance_cutoff', process.env.V2_CUTOFF === 'on' ? 'on' : 'off');
         return void fetch(up).then(async (r) => { const text = await r.text(); console.log('  upstream pins', r.status, text.length); res.writeHead(r.status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' }); res.end(text); })
           .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
       }
@@ -95,9 +95,9 @@ http.createServer((req, res) => {
       if (v2.clarify === 'never') up.searchParams.set('clarify', 'never');
       for (const k of ['page', 'limit', 'coords']) if (u.searchParams.get(k)) up.searchParams.set(k, u.searchParams.get(k));
       if (process.env.V2_COORDS && !up.searchParams.get('coords')) up.searchParams.set('coords', process.env.V2_COORDS);
-      // v2 is meant to run with the relevance cut (ADR 0039: cut after the need boost). Without it every
-      // search returns the whole area and the result count means nothing. V2_CUTOFF=off turns it off.
-      up.searchParams.set('relevance_cutoff', process.env.V2_CUTOFF === 'off' ? 'off' : 'on');
+      // Lucas 2026-11-18 (4A): the relevance cut is OFF in the demo for now (it costs 3-9 extra ES calls, about
+      // +1 s a search). Without it a search returns the whole area. V2_CUTOFF=on turns it on.
+      up.searchParams.set('relevance_cutoff', process.env.V2_CUTOFF === 'on' ? 'on' : 'off');
       return void fetch(up)
         .then(async (r) => {
           let text = await r.text(); console.log('  upstream', r.status, text.length);
