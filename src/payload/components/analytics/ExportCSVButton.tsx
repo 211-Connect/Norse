@@ -21,35 +21,31 @@ export default function ExportCSVButton() {
 
   if (!selectedTenantID) return null;
 
-  const tenantId = String(selectedTenantID);
+  const handleExport = () => {
+    let startAt: number;
+    let endAt: number;
 
-  let startAt: number;
-  let endAt: number;
+    if (typeof range === 'number') {
+      const now = dayjs.utc();
+      endAt = now.valueOf();
+      startAt = now.subtract(range, 'day').valueOf();
+    } else {
+      startAt = getUtcDayStart(range.start);
+      endAt = getUtcDayEnd(range.end);
+    }
 
-  if (typeof range === 'number') {
-    const now = dayjs.utc();
-    endAt = getUtcDayEnd(now.format('YYYY-MM-DD'));
-    startAt = getUtcDayStart(now.subtract(range, 'day').format('YYYY-MM-DD'));
-  } else {
-    startAt = getUtcDayStart(range.start);
-    endAt = getUtcDayEnd(range.end);
-  }
-
-  const href = buildExportUrl({
-    startAt,
-    endAt,
-    tenantId,
-    websiteIds,
-  });
+    window.location.assign(
+      buildExportUrl({
+        startAt,
+        endAt,
+        tenantId: String(selectedTenantID),
+        websiteIds,
+      }),
+    );
+  };
 
   return (
-    <Button
-      el="anchor"
-      url={href}
-      buttonStyle="secondary"
-      size="small"
-      newTab={false}
-    >
+    <Button onClick={handleExport} buttonStyle="secondary" size="small">
       Export CSV
     </Button>
   );
