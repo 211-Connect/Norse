@@ -98,6 +98,14 @@ export function toPublicAppConfig(
         zoom: config.search.map.zoom,
       },
       defaultRadius: config.search.defaultRadius,
+      facets: (config.search.facets ?? []).map((facet) => ({
+        facet: facet.facet,
+        sortBy: facet.sortBy,
+        valueOrder: facet.valueOrder ? [...facet.valueOrder] : undefined,
+        excludeValues: facet.excludeValues
+          ? [...facet.excludeValues]
+          : undefined,
+      })),
     },
   };
 }

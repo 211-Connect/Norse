@@ -28,6 +28,14 @@ export type PublicAppConfigAlert = {
   variant?: 'destructive' | 'default';
 };
 
+/** How a search filter's values are shown (Payload: search → facets). */
+export type PublicAppConfigFacet = {
+  facet: string;
+  sortBy?: 'count' | 'name' | 'valueOrder' | 'dayOfWeek';
+  valueOrder?: string[];
+  excludeValues?: string[];
+};
+
 export type PublicAppConfig = {
   tenantId: string;
   locale: string;
@@ -71,5 +79,7 @@ export type PublicAppConfig = {
     /** `[longitude, latitude]`. */
     map: { center: [number, number]; zoom: number };
     defaultRadius?: number;
+    /** Display settings for the filters Norse-API returns with each search. */
+    facets: PublicAppConfigFacet[];
   };
 };

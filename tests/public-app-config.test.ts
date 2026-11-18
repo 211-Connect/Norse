@@ -69,6 +69,15 @@ const config = {
     map: { center: [-107.290283, 43.07597], zoom: 7 },
     defaultRadius: 25,
     resultsLimit: 25,
+    facets: [
+      {
+        name: 'Days',
+        facet: 'days',
+        showInDetails: true,
+        sortBy: 'dayOfWeek',
+        excludeValues: ['Unknown'],
+      },
+    ],
   },
 } as unknown as CachedAppConfig;
 
@@ -84,6 +93,14 @@ describe('toPublicAppConfig', () => {
     assert.deepEqual(result.search, {
       map: { center: [-107.290283, 43.07597], zoom: 7 },
       defaultRadius: 25,
+      facets: [
+        {
+          facet: 'days',
+          sortBy: 'dayOfWeek',
+          valueOrder: undefined,
+          excludeValues: ['Unknown'],
+        },
+      ],
     });
     assert.deepEqual(result.alerts, [
       {
