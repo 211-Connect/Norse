@@ -81,7 +81,7 @@ import {
   type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
-import { cardWording } from '../v2/v2-contract';
+import { cardWording, NO_MATCH_ID, otherChanges } from '../v2/v2-contract';
 
 type Answer = {
   label: string;
@@ -1369,7 +1369,7 @@ export function SearchRefineQuestion() {
   // The count key lives in `common`; the search page's default namespace is `page-search`.
   const { t } = useTranslation('common');
   const { data, isFetching, query: label } = useV2Search();
-  const { refine, params, asked } = useV2Url();
+  const { refine, params, asked, needs, passedNeeds } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
   const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
   const setFlagged = useSetAtom(flaggedAtom);
@@ -1426,12 +1426,14 @@ export function SearchRefineQuestion() {
   const soft = isSoftEmergency(emergencyQ);
 
   const submitOther = (text: string) => {
-    const other = [params.get('other'), text].filter(Boolean).join('. ');
     setNoted('Thank you. We added that to your search.');
     setFlagged((prev) => [...prev, text]);
     moveFocus.current = true;
-    if (v2) writeAnswer(v2, [], { other });
-    else write({ other });
+    // The text joins the query (Decision 7). On the weak-match question it writes nothing else.
+    write({
+      ...(v2 ? { asked: [...new Set([...asked, v2.id])] } : {}),
+      ...otherChanges(v2, params.get('other'), text, { needs, passedNeeds }),
+    });
   };
   // Each answer is a history entry, so the browser's Back button undoes it.
   const answer = (labels: string[] = []) => {
@@ -1459,7 +1461,12 @@ export function SearchRefineQuestion() {
     }
     answer([option.label]);
   };
-  const cardTitle = v2?.id === 'start' ? 'Tell us a bit more' : style.title;
+  const cardTitle =
+    v2?.id === 'start'
+      ? 'Tell us a bit more'
+      : v2?.id === NO_MATCH_ID
+        ? 'We need a little more'
+        : style.title;
 
   // The emergency question never compacts. Critical with answers also opens the popup; the card stays. Scrolled away, a row leads back.
   if (v2 && type === 'emergency') {

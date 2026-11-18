@@ -8,6 +8,9 @@ import {
   emergencyQuestionOf,
   groupByMatchedNeeds,
   isSoftEmergency,
+  isWeakMatch,
+  noMatchQuestionOf,
+  otherChanges,
   nextV2Params,
   styleOf,
   type V2Question,
@@ -187,4 +190,54 @@ test('cardWording: a one-need question is one tap, not "Pick all that fit"', () 
     cardWording({ stem: 'Do any of these also fit?', multi_select: true, options: [opt('a'), opt('b')] } as never),
     { text: 'Do any of these also fit?', multi: true },
   );
+});
+
+const noMatch: V2Question = {
+  id: 'no_match',
+  type: 'find_need',
+  importance: 'high',
+  reason: 'weak_match',
+  stem: 'We could not find a good match. What do you need help with?',
+  options: [
+    { label: 'Food', parameter: 'needs', value: 'N-FOD' },
+    { label: 'Housing', parameter: 'needs', value: 'N-HOU' },
+    { label: 'Money', parameter: 'needs', value: 'N-MON' },
+  ],
+  multi_select: true,
+  allow_other: true,
+  none_of_these: true,
+};
+
+test('weak match: a Tier 1 pick writes needs and does not pass the other options', () => {
+  const changes = answerChanges(noMatch, ['N-FOD'], { needs: [], passedNeeds: [] });
+  assert.deepStrictEqual(changes, { needs: ['N-FOD'] });
+  const url = nextV2Params(new URLSearchParams('query=zzqx'), changes);
+  assert.equal(url.get('needs'), 'N-FOD');
+  assert.equal(url.get('query'), 'zzqx');
+  assert.equal(url.has('passed_needs'), false);
+});
+
+test('weak match: Other text joins the query text and writes no needs', () => {
+  assert.deepStrictEqual(
+    otherChanges(noMatch, null, 'a ride to dialysis', { needs: [], passedNeeds: [] }),
+    { other: 'a ride to dialysis' },
+  );
+  assert.deepStrictEqual(
+    otherChanges(noMatch, 'first', 'second', { needs: [], passedNeeds: [] }),
+    { other: 'first. second' },
+  );
+});
+
+test('Other text on another question still answers like a Skip', () => {
+  const rent: V2Question = { ...noMatch, id: 'area_hou' };
+  const changes = otherChanges(rent, null, 'x', { needs: [], passedNeeds: [] });
+  assert.equal(changes.other, 'x');
+  assert.deepStrictEqual(changes.passed_needs, ['N-FOD', 'N-HOU', 'N-MON']);
+});
+
+test('isWeakMatch and noMatchQuestionOf read the response', () => {
+  const base = { clarification: { rules_version: 'r', questions: [noMatch] } } as unknown as V2Response;
+  assert.equal(isWeakMatch(base), false);
+  assert.equal(isWeakMatch({ ...base, weak_match: true }), true);
+  assert.equal(noMatchQuestionOf(base)?.id, 'no_match');
 });

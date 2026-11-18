@@ -9,6 +9,7 @@ import { FAMILIES } from '../sune-demo/vocabulary.mjs';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import {
   groupByMatchedNeeds,
+  isWeakMatch,
   type NeedsGroup,
   useV2Search,
   useV2Url,
@@ -37,7 +38,7 @@ const DIVIDER: Record<NeedsGroup, string | null> = {
 export function RenderResults({ cardLayout }: RenderResultsProps) {
   const { results, currentPage } = useSearchResults();
   const { data } = useV2Search();
-  const { needs } = useV2Url();
+  const { needs, query } = useV2Url();
 
   // `matched_needs` comes on each v2 hit (Decision 56). The list keeps the server order.
   const matchedById = useMemo(
@@ -60,6 +61,8 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
   const needsChecked = (data?.search?.hits.hits ?? []).some((hit) =>
     Array.isArray(hit.matched_needs),
   );
+  // A weak match with no need picked has no results; the question beside them is the way on.
+  const weak = isWeakMatch(data) && needs.length === 0;
   const noMatch =
     needsChecked &&
     currentPage === 1 &&
@@ -68,7 +71,17 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
 
   return (
     <>
-      {results.length === 0 && <NoResultsCard />}
+      {results.length === 0 && weak && (
+        <p
+          role="status"
+          className="bg-muted rounded-lg border p-3 text-sm"
+          data-testid="weak-match-note"
+        >
+          We could not find a good match for &ldquo;{query}&rdquo;. Choose what
+          you need help with, or type a new search in the box above.
+        </p>
+      )}
+      {results.length === 0 && !weak && <NoResultsCard />}
       {noMatch && (
         <p
           role="status"

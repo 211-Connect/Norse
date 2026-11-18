@@ -48,6 +48,12 @@ export type V2Response = {
   search: {
     hits: { total?: { value: number } | number; hits: V2Hit[] };
   };
+  /**
+   * True when the text found no good match (Norse-API ISS-2796). Without `needs` the results are
+   * empty and the one `no_match` question asks what the person needs. With `needs` the results
+   * are the services that carry them, ranked without the text. Absent from older servers.
+   */
+  weak_match?: boolean;
   intent: {
     query: string | null;
     needs: {
@@ -97,6 +103,16 @@ export const styleOf = (
 /** A critical emergency question is the full red card; a lower importance is the calmer orange card. */
 export const isSoftEmergency = (q?: Pick<V2Question, 'importance'>) =>
   Boolean(q) && q!.importance !== 'critical';
+
+/** The id of the one question a weak match asks (Norse-API ISS-2796). */
+export const NO_MATCH_ID = 'no_match';
+
+/** A weak match with no need picked yet: no results, and the `no_match` question is the way on. */
+export const isWeakMatch = (response?: V2Response) =>
+  response?.weak_match === true;
+
+export const noMatchQuestionOf = (response?: V2Response) =>
+  response?.clarification.questions.find((q) => q.id === NO_MATCH_ID);
 
 export const emergencyQuestionOf = (response?: V2Response) =>
   response?.clarification.questions.find((q) => q.type === 'emergency');
@@ -180,8 +196,13 @@ export function answerChanges(
     }
   }
   const needOptions = question.options.filter((o) => o.parameter === 'needs');
-  for (const option of needOptions) {
-    if (!picked.includes(option.value)) passed.add(option.value);
+  // The no_match options are guesses, not areas the person turned down: leaving one unpicked
+  // must not hide it from the next question.
+  const isNoMatch = question.id === NO_MATCH_ID;
+  if (!isNoMatch) {
+    for (const option of needOptions) {
+      if (!picked.includes(option.value)) passed.add(option.value);
+    }
   }
   const hasUrgency = question.options.some((o) => o.parameter === 'urgency');
   if (hasUrgency && !('urgency' in changes) && chosen.length === 0) {
@@ -191,12 +212,29 @@ export function answerChanges(
     changes.needs = [...needs];
   }
   if (
-    needOptions.length ||
+    (!isNoMatch && needOptions.length) ||
     chosen.some((o) => o.parameter === 'passed_needs')
   ) {
     changes.passed_needs = [...passed];
   }
   return changes;
+}
+
+/**
+ * The URL changes for typed "Other" text. The text joins the query (Decision 7: it is sent as
+ * `other`, which the call adds to the query). On the `no_match` question it writes nothing else, so
+ * the question can come again if the text is still not enough; elsewhere it answers like a Skip.
+ */
+export function otherChanges(
+  question: V2Question | undefined,
+  currentOther: string | null,
+  text: string,
+  state: { needs: string[]; passedNeeds: string[] },
+): V2Changes {
+  const other = [currentOther, text].filter(Boolean).join('. ');
+  if (!question) return { other };
+  if (question.id === NO_MATCH_ID) return { other };
+  return { ...answerChanges(question, [], state), other };
 }
 
 /**
