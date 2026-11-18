@@ -4,6 +4,7 @@
 // - real: the Norse-API v2 rules engine (`decide`, `finalize`), imported from its branch checkout;
 // - fake: the services. They come from the synthetic CATALOG in sune.mjs, not from Elasticsearch.
 // Needs never filter. A confirmed or sure need only boosts, as the contract says.
+import qs from 'qs';
 import { CATALOG } from '../src/app/(app)/features/search/sune-demo/sune.mjs';
 
 const RULES_PATH =
@@ -43,6 +44,12 @@ export type V2Params = {
   passedNeeds: string[];
   urgency?: string;
   clarify: 'auto' | 'never';
+  /** Facet filters (`filters[k]=v`, `filters[k][0]=v`). Every value is its own clause: values AND (Norse-API PR #326). */
+  filters: Record<string, string[]>;
+  /** Area search (Norse-API PR #327). */
+  region: string[];
+  areaMatch?: string;
+  unlocated?: string;
 };
 
 const list = (value: string | null) =>
@@ -59,6 +66,74 @@ export function readParams(params: URLSearchParams): V2Params {
     // A caller may send U-0 (Decision 50); the page never writes it. U-X counts as no answer (Decision 51).
     urgency: urgency && URGENCY.has(urgency) && urgency !== 'U-X' ? urgency : undefined,
     clarify: params.get('clarify') === 'never' ? 'never' : 'auto',
+    filters: readFilters(params),
+    region: list(params.getAll('region').join(',')),
+    areaMatch: params.get('area_match') || undefined,
+    unlocated: params.get('unlocated') || undefined,
+  };
+}
+
+/** `filters[languages]=Spanish`, `filters[age_group][0]=a` and `filters[age_group][]=a` all read as lists. */
+function readFilters(params: URLSearchParams): Record<string, string[]> {
+  const pairs = [...params.entries()].filter(([k]) => k.startsWith('filters['));
+  const parsed = qs.parse(pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&'));
+  const out: Record<string, string[]> = {};
+  for (const [key, value] of Object.entries((parsed.filters ?? {}) as Record<string, unknown>)) {
+    const values = (Array.isArray(value) ? value : [value]).filter((v): v is string => typeof v === 'string' && v !== '');
+    if (values.length) out[key] = values;
+  }
+  return out;
+}
+
+/**
+ * Facet fixtures for the synthetic catalog, in the real keys: `languages` and `age_group`. Spanish
+ * on every third service, Vietnamese on every fifth; the age group from the service's `only` codes.
+ */
+export function facetValuesOf(service: Service): Record<string, string[]> {
+  const n = Number(service.id);
+  const only: string[] = service.only ?? [];
+  return {
+    languages: ['English', ...(n % 3 === 0 ? ['Spanish'] : []), ...(n % 5 === 0 ? ['Vietnamese'] : [])],
+    age_group: only.includes('E-AGE-06') ? ['Seniors'] : only.includes('E-HH-01') ? ['Families with children'] : ['All ages'],
+  };
+}
+
+const FACET_NAMES: Record<string, string> = { languages: 'Languages', age_group: 'Age group' };
+
+/** The services that carry every ticked value (each value its own clause, so values AND). */
+export function applyFacetFilters<T extends Service>(services: T[], filters: Record<string, string[]>): T[] {
+  return services.filter((s) => {
+    const have = facetValuesOf(s);
+    return Object.entries(filters).every(([key, wanted]) => wanted.every((v) => have[key]?.includes(v)));
+  });
+}
+
+/** v1/v2 facet list for a result set: `[{ key, name, values: [{ en, locale, doc_count }] }]`, biggest count first. */
+export function facetsOf(services: Service[]) {
+  return Object.keys(FACET_NAMES).map((key) => {
+    const counts = new Map<string, number>();
+    for (const s of services) for (const v of facetValuesOf(s)[key] ?? []) counts.set(v, (counts.get(v) ?? 0) + 1);
+    const values = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([v, doc_count]) => ({ en: v, locale: v, doc_count }));
+    return { key, name: { en: FACET_NAMES[key], locale: FACET_NAMES[key] }, values };
+  });
+}
+
+// Known Regions of the stub. Any other id is a 400, as in Norse-API (PR #327).
+const REGIONS: Record<string, { type: string; name: string; state: string }> = {
+  'county:53073': { type: 'county', name: 'Whatcom County, WA', state: 'WA' },
+  'county:53077': { type: 'county', name: 'Yakima County, WA', state: 'WA' },
+  'zip:98225': { type: 'zip', name: '98225 (Bellingham, WA)', state: 'WA' },
+};
+
+/** The `resolved_location` of an area search, or `undefined` with no `region`. An unknown Region throws a 400. */
+export function resolveRegions(params: Pick<V2Params, 'region' | 'areaMatch' | 'unlocated'>) {
+  if (!params.region.length) return undefined;
+  const unknown = params.region.filter((id) => !REGIONS[id]);
+  if (unknown.length) throw Object.assign(new Error(`unknown region: ${unknown.join(', ')}`), { status: 400 });
+  return {
+    regions: params.region.map((id) => ({ id, ...REGIONS[id] })),
+    area_match: ['located', 'located_or_serving', 'serving'].includes(params.areaMatch ?? '') ? params.areaMatch : 'located_or_serving',
+    unlocated: ['none', 'virtual', 'all'].includes(params.unlocated ?? '') ? params.unlocated : 'virtual',
   };
 }
 
@@ -178,7 +253,10 @@ export async function v2Search(params: V2Params) {
   );
   const boost = [...new Set([...params.needs, ...decision.boost_needs])];
   const urgency = params.urgency ?? (decision.urgency.state === 'use' ? decision.urgency.value : undefined);
-  const { services, strongTextMatch } = search(text, params.needs, boost, signals.needs.scores ?? {}, urgency);
+  const resolvedLocation = resolveRegions(params);
+  const { services: allServices, strongTextMatch } = search(text, params.needs, boost, signals.needs.scores ?? {}, urgency);
+  // Facet filters DO filter (needs never do). The facet counts are for the filtered set.
+  const services = applyFacetFilters(allServices, params.filters);
   const byCode: Record<string, number> = {};
   for (const code of decision.count_codes) byCode[code] = services.filter((s) => carries(s, code)).length;
   const engine = finalize(decision, { counts: { total: services.length, by_code: byCode }, strong_text_match: strongTextMatch });
@@ -190,6 +268,8 @@ export async function v2Search(params: V2Params) {
   return {
     services,
     body: {
+      facets: facetsOf(services),
+      ...(resolvedLocation && { resolved_location: resolvedLocation }),
       intent: {
         query: params.query || null,
         needs: decision.needs.map((n) => ({ value: n.code, state: n.state, source: n.source, confidence: n.confidence })),

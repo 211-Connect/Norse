@@ -14,7 +14,10 @@ import { resultsUrlFor } from './landing';
 
 import {
   answerChanges,
+  activeFiltersOf,
+  facetsToFilters,
   nextV2Params,
+  v2FilterPairs,
   withoutNX,
   type V2Changes,
   type V2Question,
@@ -74,6 +77,8 @@ function v2CallString(params: URLSearchParams): string {
     const value = key === 'needs' ? withoutNX(raw) : raw;
     if (value) call.set(key, value);
   }
+  // Facet filters and area params are result-changing, so they are in the cache key too.
+  for (const [key, value] of v2FilterPairs(params)) call.append(key, value);
   return call.toString();
 }
 
@@ -103,6 +108,19 @@ export function useV2Search() {
     queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
   });
   return { ...result, query };
+}
+
+/**
+ * The facets of the v2 response, in the filter panel's shape; `undefined` until the response has a
+ * facet list, so the panel can keep showing the v1 facets meanwhile.
+ */
+export function useV2Facets() {
+  const { data } = useV2Search();
+  const params = useSearchParams()!;
+  return useMemo(
+    () => facetsToFilters(data?.facets, activeFiltersOf(params)),
+    [data, params],
+  );
 }
 
 /**

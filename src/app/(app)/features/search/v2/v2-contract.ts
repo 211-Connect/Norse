@@ -44,7 +44,28 @@ export type V2Hit = {
   matched_needs?: string[];
 };
 
+/** One facet of the v2 response: the same shape as v1 (Norse-API ISS-2499, PR #326). */
+export type V2Facet = {
+  key: string;
+  name: { en: string; locale: string };
+  values: { en: string; locale: string; doc_count: number }[];
+};
+
+/** A Region of an area search (Norse-API PR #327). */
+export type V2Region = { id: string; type?: string; name: string; state?: string };
+
+/** Where an area search (`region`) was scoped. Absent for `coords` searches. */
+export type V2ResolvedLocation = {
+  regions: V2Region[];
+  area_match: 'located' | 'located_or_serving' | 'serving';
+  unlocated: 'none' | 'virtual' | 'all';
+};
+
 export type V2Response = {
+  /** Facet counts for the current filters. v1 shape; absent or `{}` from older servers and stubs. */
+  facets?: V2Facet[] | Record<string, never>;
+  /** Area searches only (`region`). */
+  resolved_location?: V2ResolvedLocation;
   search: {
     hits: { total?: { value: number } | number; hits: V2Hit[] };
   };
@@ -317,4 +338,101 @@ export function cardWording(q: Pick<V2Question, 'stem' | 'multi_select' | 'optio
     text: q.stem === 'Do any of these also fit?' ? 'Does this also fit?' : q.stem,
     multi: false,
   };
+}
+
+/**
+ * The facets of a v2 response as the filter panel reads them (`FiltersMap`): the bucket key is the
+ * English value (the one `filters[...]` sends), the display text is the tenant language. A facet with
+ * no values is left out. `undefined` when the response carries no facet list, so the page can keep
+ * the v1 facets it already has.
+ */
+export function facetsToFilters(
+  facets: V2Response['facets'],
+  active: Record<string, string[]> = {},
+): Record<string, { name: string; buckets: { key: string; display: string; doc_count: number }[] }> | undefined {
+  if (!Array.isArray(facets)) return undefined;
+  const out: Record<string, { name: string; buckets: { key: string; display: string; doc_count: number }[] }> = {};
+  for (const facet of facets) {
+    if (!facet?.key || !Array.isArray(facet.values) || facet.values.length === 0) continue;
+    out[facet.key] = {
+      name: facet.name?.locale || facet.name?.en || facet.key,
+      buckets: facet.values.map((v) => ({
+        key: v.en,
+        display: v.locale || v.en,
+        doc_count: v.doc_count,
+      })),
+    };
+  }
+  // A ticked value the filtered counts no longer list stays in the panel with 0, so it can be unticked.
+  for (const [key, values] of Object.entries(active)) {
+    const group = out[key];
+    if (!group) continue;
+    for (const value of values) {
+      if (!group.buckets.some((b) => b.key === value)) {
+        group.buckets.push({ key: value, display: value, doc_count: 0 });
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * The ticked filter values of a page URL: `filters[k]=v`, `filters[k][0]=v`, `filters[k][]=v`
+ * (what `filters[...]` in the v2 query reads), as `{ k: [v, ...] }`.
+ */
+export function activeFiltersOf(
+  params: Pick<URLSearchParams, 'entries'>,
+): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const [key, value] of v2FilterPairs(params)) {
+    const m = /^filters\[([^\]]+)\]/.exec(key);
+    if (!m) continue;
+    const list = (out[m[1]] ??= []);
+    if (!list.includes(value)) list.push(value);
+  }
+  return out;
+}
+
+/** "Showing results near Jackson County, MO": the Regions an area search was scoped to. */
+export function locationNote(resolved?: V2ResolvedLocation): string | null {
+  const names = (resolved?.regions ?? [])
+    .map((r) => r?.name?.trim())
+    .filter((n): n is string => Boolean(n));
+  if (names.length === 0) return null;
+  const list =
+    names.length <= 2 ? names.join(' and ') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+  return `Showing results near ${list}`;
+}
+
+/** Page URL keys that go to `/v2/search` as they are: the filter params and the area params. */
+export const V2_PASSTHROUGH_KEYS = [
+  'age',
+  'organization_id',
+  'geo_type',
+  'region',
+  'area_match',
+  'unlocated',
+] as const;
+
+/** `filters[languages]`, `filters[age_group][0]`, `filters[age_group][]`. Nothing else is a filter key. */
+export const FILTER_KEY = /^filters\[[A-Za-z0-9_.-]{1,64}\](\[\d{0,3}\])?$/;
+const MAX_FILTER_PAIRS = 60;
+
+/**
+ * Every result-changing parameter of a page URL that `/v2/search` reads and the call has no named
+ * key for: the `filters[...]` pairs (sorted, so the same filters are one cache key) and the
+ * pass-through keys, repeated values kept. Facet filters DO filter; `needs=` never does (ADR 0039).
+ */
+export function v2FilterPairs(
+  params: Pick<URLSearchParams, 'entries'>,
+): [string, string][] {
+  const filters: [string, string][] = [];
+  const other: [string, string][] = [];
+  for (const [key, value] of params.entries()) {
+    if (!value) continue;
+    if (FILTER_KEY.test(key)) filters.push([key, value]);
+    else if ((V2_PASSTHROUGH_KEYS as readonly string[]).includes(key)) other.push([key, value]);
+  }
+  filters.sort(([a, av], [b, bv]) => (a === b ? av.localeCompare(bv) : a.localeCompare(b)));
+  return [...other, ...filters.slice(0, MAX_FILTER_PAIRS)];
 }

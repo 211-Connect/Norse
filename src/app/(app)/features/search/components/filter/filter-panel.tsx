@@ -24,6 +24,7 @@ import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { useSearchResults } from '../../context/search-results-context';
+import { useV2Facets } from '../../v2/use-v2-search';
 import {
   SearchClassifierPeek,
   SearchRefineQuestion,
@@ -50,7 +51,11 @@ export function FilterPanel({
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const showAgeFilter = appConfig.featureFlags.showAgeFilter;
-  const { filters } = useSearchResults();
+  const { filters: serverFilters } = useSearchResults();
+  // The v2 response carries the facet counts for the current filters; until it has them (or on an
+  // older server) the facets of the server-rendered page stay.
+  const v2Filters = useV2Facets();
+  const filters = v2Filters ?? serverFilters;
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
 

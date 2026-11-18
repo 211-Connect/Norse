@@ -8,6 +8,8 @@
  * exact search.
  */
 
+import { v2FilterPairs } from './v2-contract';
+
 /** The v2 parameters the draft contract names. Anything else on the page URL stays out of the call. */
 export const V2_FORWARD = [
   'query',
@@ -28,13 +30,20 @@ export const DEFAULT_LOCALE = 'en';
 /** The upstream URL: the forwarded parameters, then `tenant_id` and `locale` (always both). */
 export function buildV2Url(
   apiUrl: string,
-  incoming: Pick<URLSearchParams, 'get'>,
+  incoming: Pick<URLSearchParams, 'get'> & Partial<Pick<URLSearchParams, 'entries'>>,
   tenantId: string,
 ): string {
   const outgoing = new URLSearchParams();
   for (const key of V2_FORWARD) {
     const value = incoming.get(key);
     if (value) outgoing.set(key, value);
+  }
+  // Facet filters (`filters[...]`), `age`, `organization_id`, `geo_type` and the area params
+  // (`region`, `area_match`, `unlocated`) go through as the page URL has them.
+  if (incoming.entries) {
+    for (const [key, value] of v2FilterPairs({ entries: incoming.entries.bind(incoming) })) {
+      outgoing.append(key, value);
+    }
   }
   outgoing.set('tenant_id', tenantId);
   outgoing.set('locale', incoming.get('locale') || DEFAULT_LOCALE);
