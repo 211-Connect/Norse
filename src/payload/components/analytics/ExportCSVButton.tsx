@@ -28,8 +28,8 @@ export default function ExportCSVButton() {
 
   if (typeof range === 'number') {
     const now = dayjs.utc();
-    endAt = getUtcDayEnd(now.format('YYYY-MM-DD'));
-    startAt = getUtcDayStart(now.subtract(range, 'day').format('YYYY-MM-DD'));
+    endAt = now.valueOf();
+    startAt = now.subtract(range, 'day').valueOf();
   } else {
     startAt = getUtcDayStart(range.start);
     endAt = getUtcDayEnd(range.end);
