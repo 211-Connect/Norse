@@ -135,6 +135,14 @@ export type TenantFixture = {
   mapPins?: Partial<Record<TenantEnv, { resultTotal: string }>>;
   /** Area search picks; see `AreaSearchFixture`. */
   areaSearch: AreaSearchFixture;
+  /**
+   * The Payload CMS that serves this tenant, for the `cms` project
+   * (`e2e/cms/`). Set on one tenant per CMS deployment: the super-admin tests
+   * run in that tenant's cell. Dev only, on purpose: the CMS tests never run
+   * on production, where customers would see the test users' activity, so
+   * there is no `prod` key.
+   */
+  cmsBaseUrl?: { dev: string };
 };
 
 export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
@@ -192,6 +200,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       dev: 'https://dev-wa211.c211.io',
       prod: 'https://search.wa211.org',
     },
+    cmsBaseUrl: { dev: 'https://dev-cms.c211.io' },
     aiSearchEnabled: { dev: true, prod: false },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -487,6 +496,31 @@ export function getTestEmailForCurrentTenant(): string {
   const tenant = getCurrentTenant();
   const env = getCurrentTenantEnv();
   return `test-${tenant.key.toLowerCase()}-${env}@c211.io`;
+}
+
+/**
+ * The dev CMS base URL for the current tenant, or `undefined` when the
+ * tenant has none or the environment is not `dev` (CMS tests never run on
+ * production).
+ */
+export function getCmsBaseUrlForCurrentTenant(): string | undefined {
+  if (getCurrentTenantEnv() !== 'dev') return undefined;
+  return getCurrentTenant().cmsBaseUrl?.dev;
+}
+
+/**
+ * The CMS test accounts on the current tenant's CMS (dev only): a
+ * super-admin, and a tenant-admin on the current tenant.
+ */
+export function getCmsTestEmailsForCurrentTenant(): {
+  superAdmin: string;
+  tenantAdmin: string;
+} {
+  const env = getCurrentTenantEnv();
+  return {
+    superAdmin: `test-cms-admin-${env}@c211.io`,
+    tenantAdmin: `test-cms-${getCurrentTenant().key.toLowerCase()}-${env}@c211.io`,
+  };
 }
 
 export function isAiSearchEnabledForCurrentTenant(): boolean {
