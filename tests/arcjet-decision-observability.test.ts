@@ -4,6 +4,7 @@ import { describe, test } from 'node:test';
 
 import {
   ARCJET_SIGNALS_CSP,
+  BURST_WARMUP_MINUTES,
   BurstDetector,
   DecisionSampler,
   KeyedMinuteCap,
@@ -448,6 +449,24 @@ describe('decision sampling', () => {
     assert.deepEqual(d.activeHosts(), ['h']);
     // It lasts 5 minutes after the last minute that met it.
     t += config.burstDurationMs + 1;
+    assert.equal(d.isBurst('h'), false);
+  });
+
+  test('no burst during the warm-up after an instance starts', () => {
+    let t = 0;
+    const d = new BurstDetector(config, () => t);
+    // 60 calls a minute from the very first minute: no baseline yet.
+    for (let m = 0; m < BURST_WARMUP_MINUTES; m++) {
+      for (let i = 0; i < 60; i++) {
+        t = m * 60_000 + i * 1_000;
+        assert.equal(d.record('h'), false, `minute ${m}`);
+      }
+    }
+    // Same steady rate after the warm-up: the baseline has caught up.
+    for (let i = 0; i < 60; i++) {
+      t = BURST_WARMUP_MINUTES * 60_000 + i * 1_000;
+      d.record('h');
+    }
     assert.equal(d.isBurst('h'), false);
   });
 

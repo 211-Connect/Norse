@@ -530,7 +530,7 @@ volume: about 5–7k records an hour on multi-tenant.
 seconds and keeps a slow moving average per host (≈30-minute memory, frozen
 during a burst). When the count exceeds `ARCJET_BURST_MIN_PER_INSTANCE`
 (default 40) **and** 5 × the baseline, the host is in burst mode for 5
-minutes (extended while it holds): every ALLOW is logged with `burst=true`,
+minutes (extended while it holds). No burst starts during the first 10 minutes an instance sees a host (`BURST_WARMUP_MINUTES`): a freshly started instance has no baseline yet. In burst mode every ALLOW is logged with `burst=true`,
 so floods Arcjet misses come with full decision IDs rather than the 25% trace
 sample. The same state sets `arcjet.burst` on the span and
 `norse_arcjet_burst_active{host}`.

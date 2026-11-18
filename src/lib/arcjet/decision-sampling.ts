@@ -96,18 +96,29 @@ interface HostBurstState {
   /** Slow moving average of protect calls per minute; undefined at start. */
   baseline?: number;
   burstUntil: number;
+  /** Minute this instance first saw the host (warm-up start). */
+  firstMinute: number;
 }
 
 const BUCKET_MS = 10_000;
 const BUCKETS = 6;
 /** EWMA weight of one minute: about a 30-minute memory. */
 const BASELINE_ALPHA = 1 / 30;
+/**
+ * Minutes a host must be observed before burst mode can start. Without it a
+ * freshly started instance (deploy, scale-out) has no baseline, so any host
+ * above the minimum was a "burst" for its first minutes (seen on dev,
+ * 2026-11-18). A flood that starts within this window after a restart is
+ * still counted exactly by the metrics, just not logged in full.
+ */
+export const BURST_WARMUP_MINUTES = 10;
 
 /**
  * Burst mode per host: protect calls in the last 60 s above
  * `burstMinPerInstance` AND above `burstFactor` × the host's baseline. Lasts
  * `burstDurationMs` after the last minute that met it. The baseline does not
- * move while a burst is on, so a long flood stays a burst.
+ * move while a burst is on, so a long flood stays a burst. No burst starts
+ * during the first `BURST_WARMUP_MINUTES` a host is seen (no baseline yet).
  */
 export class BurstDetector {
   private readonly hosts = new Map<string, HostBurstState>();
@@ -133,6 +144,7 @@ export class BurstDetector {
         minuteCount: 0,
         minute: Math.floor(t / 60_000),
         burstUntil: 0,
+        firstMinute: Math.floor(t / 60_000),
       };
       this.hosts.set(host, s);
     }
@@ -175,7 +187,9 @@ export class BurstDetector {
 
     const last60 = s.buckets.reduce((a, b) => a + b, 0);
     const baseline = s.baseline ?? 0;
+    const warmedUp = s.minute - s.firstMinute >= BURST_WARMUP_MINUTES;
     if (
+      warmedUp &&
       last60 > this.config.burstMinPerInstance &&
       last60 > this.config.burstFactor * baseline
     ) {
