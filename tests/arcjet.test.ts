@@ -365,6 +365,12 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
       filters.map((f) => [...f.deny]),
       [[NO_USER_AGENT_FILTER], [HOSTING_IP_FILTER]],
     );
+    // Arcjet's recommended rule (2026-11-18): browsers on hosting IPs,
+    // crawlers and relays excluded.
+    assert.equal(
+      HOSTING_IP_FILTER,
+      'ip.src.hosting and not ip.src.crawler and not ip.src.relay and len(http.request.headers["sec-fetch-mode"]) gt 0',
+    );
     assert.equal(
       NO_USER_AGENT_FILTER,
       'len(http.request.headers["user-agent"]) eq 0',

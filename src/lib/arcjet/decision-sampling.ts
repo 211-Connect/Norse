@@ -96,18 +96,34 @@ interface HostBurstState {
   /** Slow moving average of protect calls per minute; undefined at start. */
   baseline?: number;
   burstUntil: number;
+  /** Minute this instance first saw the host (warm-up start). */
+  firstMinute: number;
 }
 
 const BUCKET_MS = 10_000;
 const BUCKETS = 6;
 /** EWMA weight of one minute: about a 30-minute memory. */
 const BASELINE_ALPHA = 1 / 30;
+/**
+ * Minutes a host is "new" on this instance, while its baseline is still
+ * being learned. A freshly started instance (deploy, scale-out) has no
+ * baseline, so any host above the minimum used to be a "burst" for its first
+ * minutes (seen on dev, 2026-11-18). During warm-up only a host above
+ * `BURST_WARMUP_MIN_FACTOR` x `burstMinPerInstance` starts burst mode, with
+ * no baseline test: normal traffic on a fresh instance stays quiet, and a
+ * large flood right after a deploy is still logged in full.
+ */
+export const BURST_WARMUP_MINUTES = 10;
+/** The higher bar during warm-up: 3 x 40 = 120 calls a minute per instance. */
+export const BURST_WARMUP_MIN_FACTOR = 3;
 
 /**
  * Burst mode per host: protect calls in the last 60 s above
  * `burstMinPerInstance` AND above `burstFactor` × the host's baseline. Lasts
  * `burstDurationMs` after the last minute that met it. The baseline does not
- * move while a burst is on, so a long flood stays a burst.
+ * move while a burst is on, so a long flood stays a burst. During the first
+ * `BURST_WARMUP_MINUTES` a host is seen (no baseline yet) the bar is
+ * `BURST_WARMUP_MIN_FACTOR` x the minimum instead.
  */
 export class BurstDetector {
   private readonly hosts = new Map<string, HostBurstState>();
@@ -133,6 +149,7 @@ export class BurstDetector {
         minuteCount: 0,
         minute: Math.floor(t / 60_000),
         burstUntil: 0,
+        firstMinute: Math.floor(t / 60_000),
       };
       this.hosts.set(host, s);
     }
@@ -149,7 +166,11 @@ export class BurstDetector {
 
     const minute = Math.floor(t / 60_000);
     if (minute !== s.minute) {
-      const inBurst = t < s.burstUntil;
+      // The baseline is frozen during a burst, so a long flood stays a burst.
+      // Not during warm-up: a host with steady high traffic on a fresh
+      // instance must still learn its baseline, or it would never leave.
+      const warmedUp = s.minute - s.firstMinute >= BURST_WARMUP_MINUTES;
+      const inBurst = t < s.burstUntil && warmedUp;
       if (!inBurst) {
         // Minutes with no calls at all also count as zero.
         const idle = Math.max(0, minute - s.minute - 1);
@@ -175,10 +196,12 @@ export class BurstDetector {
 
     const last60 = s.buckets.reduce((a, b) => a + b, 0);
     const baseline = s.baseline ?? 0;
-    if (
-      last60 > this.config.burstMinPerInstance &&
-      last60 > this.config.burstFactor * baseline
-    ) {
+    const warmedUp = s.minute - s.firstMinute >= BURST_WARMUP_MINUTES;
+    const starts = warmedUp
+      ? last60 > this.config.burstMinPerInstance &&
+        last60 > this.config.burstFactor * baseline
+      : last60 > this.config.burstMinPerInstance * BURST_WARMUP_MIN_FACTOR;
+    if (starts) {
       s.burstUntil = t + this.config.burstDurationMs;
     }
     return t < s.burstUntil;

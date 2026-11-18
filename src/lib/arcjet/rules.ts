@@ -48,13 +48,24 @@ export const NO_USER_AGENT_FILTER =
   'len(http.request.headers["user-agent"]) eq 0' as const;
 
 /**
- * Traffic from hosting providers (cloud/datacenter IPs). Arcjet saw a lot of
- * AWS traffic with a Chrome user agent. DRY_RUN on every route: read the
- * `dry_run_matches` in `arcjet_decision` records before promoting to LIVE.
- * Field per Arcjet's filter reference (`ip.src.hosting`, a boolean); confirm
- * with Arcjet (open question 4 in docs/bot-protection.md).
+ * A "browser" on a hosting network: a hosting/cloud IP that is not a known
+ * crawler and not a relay (iCloud Private Relay), sending `sec-fetch-mode`,
+ * which only real browsers (and tools imitating them) send. Rule recommended
+ * by Arcjet support (2026-11-18): about a third of our traffic came from
+ * hosting networks (AWS, Tencent, Google Cloud, Zillion AS54801, Huawei,
+ * BytePlus, Zenlayer), ~123k requests a day claiming to be a browser; the
+ * Zillion traffic carries complete, consistent browser headers, so only the
+ * network gives it away.
+ *
+ * Would also block real people on VPNs or cloud desktops (a small share per
+ * Arcjet) and any allowed bot that runs a real browser from a cloud IP
+ * without being flagged a crawler (check `allowed_bots` on the dry-run
+ * matches, e.g. GOOGLE_LIGHTHOUSE, OPENAI_CRAWLER_USER). DRY_RUN on every
+ * route: read the `dry_run_matches` in `arcjet_decision` records before
+ * promoting to LIVE.
  */
-export const HOSTING_IP_FILTER = 'ip.src.hosting' as const;
+export const HOSTING_IP_FILTER =
+  'ip.src.hosting and not ip.src.crawler and not ip.src.relay and len(http.request.headers["sec-fetch-mode"]) gt 0' as const;
 
 /** Requests one client IP may make per minute (`ARCJET_RATE_LIMIT_PER_MINUTE`). */
 export const ARCJET_DEFAULT_RATE_LIMIT_PER_MINUTE = 60;
