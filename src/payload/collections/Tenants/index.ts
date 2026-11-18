@@ -10,6 +10,7 @@ import {
 import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { createUmamiWebsite } from './hooks/createUmamiWebsite';
 import { pushEnabledLocalesToCacheAfterChangeHook } from './hooks/pushEnabledLocalesToCache';
+import { pushPublicAppConfigFromTenant } from '../ResourceDirectories/hooks/pushPublicAppConfigToCache';
 import { pushRealmIdToCacheAfterChangeHook } from './hooks/pushRealmIdToCache';
 import { pushAnalyticsConfigToCacheAfterChangeHook } from './hooks/pushAnalyticsConfig';
 import { removeRelatedResources } from './hooks/removeRelatedResources';
@@ -38,6 +39,7 @@ export const Tenants: CollectionConfig = {
       pushRealmIdToCacheAfterChangeHook,
       pushEnabledLocalesToCacheAfterChangeHook,
       pushAnalyticsConfigToCacheAfterChangeHook,
+      pushPublicAppConfigFromTenant,
       invalidateApiCache,
       createUmamiWebsite,
     ],
