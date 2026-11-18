@@ -5,6 +5,22 @@ import type {
 import { DEFAULT_UNLOCATED } from '@/types/areaSearch';
 import type { HybridSearchConfigCache } from '@/types/hybridSearchConfig';
 
+type SearchSettingsHotlines = NonNullable<
+  NonNullable<ResourceDirectory['search']>['searchSettings']
+>['hotlines'];
+
+/** Keeps order, trims, and drops rows with a blank label or number. */
+export function toCacheHotlines(
+  hotlines: SearchSettingsHotlines | null | undefined,
+): HybridSearchConfigCache['hotlines'] {
+  return (hotlines ?? [])
+    .map((h) => ({
+      label: (h.label ?? '').trim(),
+      number: (h.number ?? '').trim(),
+    }))
+    .filter((h) => h.label !== '' && h.number !== '');
+}
+
 /**
  * Merges the tenant's HybridSearchConfig weight overrides with the
  * pinnedResourcesMode value from the tenant's ResourceDirectory search
@@ -54,5 +70,6 @@ export function buildHybridSearchConfigCache(
     area_match: searchSettings?.areaMatchMode ?? 'located_or_serving',
     unlocated_in_area_search:
       searchSettings?.unlocatedInAreaSearch ?? DEFAULT_UNLOCATED,
+    hotlines: toCacheHotlines(searchSettings?.hotlines),
   };
 }
