@@ -24,6 +24,8 @@ import { keepLocaleCookieForDocumentNavigations } from './middlewares/localeCook
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_MINUTE } from './utilities/withCache';
 import { trackDependency } from './lib/telemetry/dependency';
+import { minuteLimitResponse } from './lib/load-shed/minute-limit';
+import { rememberTenant } from './lib/load-shed/tenant-registry';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
@@ -524,6 +526,27 @@ export async function proxy(request: NextRequest) {
   if (!locales.includes(defaultLocale)) {
     locales.push(defaultLocale);
   }
+
+  // Per-tenant load limit (docs/load-shedding.md): before anything renders.
+  const tenantId = tenantConfig?.tenantId ?? undefined;
+  if (tenantId) {
+    rememberTenant(host, {
+      tenantId,
+      name: tenantConfig?.name ?? undefined,
+    });
+  }
+  const shed = await minuteLimitResponse(
+    {
+      method: request.method,
+      pathname: request.nextUrl.pathname,
+      host,
+      rsc:
+        request.headers.get('rsc') === '1' ||
+        request.nextUrl.searchParams.has('_rsc'),
+    },
+    tenantId,
+  );
+  if (shed) return shed;
 
   const rdwrIp = request.headers.get('x-rdwr-ip');
   if (rdwrIp) {

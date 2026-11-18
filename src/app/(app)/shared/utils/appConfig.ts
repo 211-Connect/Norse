@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
 import { cmsRequest } from '@/lib/cms/client';
+import { rememberTenant } from '@/lib/load-shed/tenant-registry';
 import { isCmsRemote } from '@/lib/cms/config';
 import { isValidLocale } from '@/payload/i18n/locales';
 import { AppConfig } from '@/types/appConfig';
@@ -74,6 +75,14 @@ const getCachedAppConfig = cache(async function (
       `Failed to resolve cached app config for ${host}:${locale}`,
     );
   }
+
+  // Branding for the load-limit "busy" page (docs/load-shedding.md).
+  rememberTenant(domain, {
+    tenantId: cached.tenantId,
+    name: cached.brand?.name,
+    logoUrl: cached.brand?.logoUrl,
+    primaryColor: cached.brand?.theme?.primaryColor,
+  });
 
   return cached;
 });
