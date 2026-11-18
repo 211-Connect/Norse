@@ -73,7 +73,7 @@ arcjet.protect span               src/lib/arcjet-page.ts
   waits for the decision (up to `ARCJET_TIMEOUT_MS`) so it can answer `403`.
   On every other host a denial cannot change the response, so the decision
   runs in `after()`, once the response is sent: it still writes its
-  `arcjet_decision` record and counts for the Blocked Bots widget, but adds no
+  `arcjet_decision` record and the per-crawler counts, but adds no
   latency. Awaiting it everywhere, as v2.30.0 did, put up to 500 ms on every
   observe-only page view and held renders open under load.
 - **Covered routes:** `/[locale]/search`, `/[locale]/search/[id]`,
@@ -206,8 +206,9 @@ The SDK's own logging goes through `arcjet({ log })` (`sdk-log.ts`): `debug`
 and `info` to OTel Logs only (scope `arcjet-sdk`), `warn` and `error` to pino.
 Set `ARCJET_LOG_LEVEL=warn` in both DO apps.
 
-Every denial, enforced or not, is also counted for the tenant's Blocked
-Bots widget after the response; see
+Every denial, enforced or not, and every request from an allowed crawler is
+also counted per crawler after the response (Blocked Bots and Crawler
+traffic widgets); see
 [blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
 
 Records contain no full IP (only `client_net`, the /16 or /48), no referer or

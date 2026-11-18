@@ -86,7 +86,10 @@ export interface ArcjetDecisionDetails {
   timing?: ArcjetTiming;
   /** `decision.reason.type` ('BOT', 'FILTER', 'ERROR', ...), or a local cause. */
   reasonType?: string;
-  /** Bots the bot rules allowed (e.g. `ARCJET_SIGNALS`, a search engine). */
+  /**
+   * Bots the bot rules identified and allowed (e.g. `GOOGLE_CRAWLER`,
+   * `ARCJET_SIGNALS`); absent when none. Also feeds the per-crawler counts.
+   */
   allowedBots?: string[];
   botVerified?: boolean;
   botSpoofed?: boolean;
@@ -186,6 +189,9 @@ function requestContext(request: ArcjetRequestLike, pathName: string) {
 
 function allowedBotsOf(decision: ArcjetDecision): string[] {
   const bots = new Set<string>();
+  if (decision.reason.isBot()) {
+    for (const bot of decision.reason.allowed) bots.add(bot);
+  }
   for (const result of decision.results) {
     if (result.reason.isBot()) {
       for (const bot of result.reason.allowed) bots.add(bot);
@@ -208,10 +214,13 @@ function botFlagsOf(decision: ArcjetDecision) {
 
 /** Details common to every conclusion with a decision. */
 function detailsOf(decision: ArcjetDecision): ArcjetDecisionDetails {
+  const allowedBots = allowedBotsOf(decision);
   return {
     decisionId: decision.id,
     reasonType: decision.reason.type ?? 'unknown',
-    allowedBots: allowedBotsOf(decision),
+    // Only when non-empty: `recordArcjetTraffic` counts identified allowed
+    // crawlers from it (crawler-traffic.ts).
+    ...(allowedBots.length > 0 && { allowedBots }),
     ...botFlagsOf(decision),
     ttl: decision.ttl,
     dryRunMatches: dryRunMatchesOf(decision),

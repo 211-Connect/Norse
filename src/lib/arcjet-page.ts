@@ -30,7 +30,7 @@ import {
   routeOfPath,
   samplingConfigFromEnv,
 } from '@/lib/arcjet';
-import { recordBlockedTraffic } from '@/lib/blocked-traffic';
+import { recordArcjetTraffic } from '@/lib/crawler-traffic';
 import { createLogger } from '@/lib/logger';
 import {
   arcjetSpanAttributes,
@@ -46,7 +46,7 @@ const logger = createLogger('arcjet');
 
 /**
  * Pino, for the few events that still go there (MBOA `arcjet_no_client_ip`
- * at debug, blocked-traffic push failures at warn). Decisions never do: they
+ * at debug, crawler-traffic push failures at warn). Decisions never do: they
  * are `arcjet_decision` OTel records.
  */
 const log: ArcjetLog = (level, event, data) => {
@@ -258,10 +258,11 @@ function logDecision(
 }
 
 /**
- * One Arcjet decision; a denial, enforced or not, is also counted for the
- * Blocked Bots widget (ISS-2366). While the response is still pending the
- * count is deferred to `after()` so it never delays it; `afterResponse`
- * means we already run there and count directly.
+ * One Arcjet decision, also counted per crawler for the analytics widgets:
+ * denials (blocked, rate-limited, or logged on an observe-only host) and
+ * allowed crawlers (`recordArcjetTraffic` ignores the rest). While the
+ * response is still pending the count is deferred to `after()` so it never
+ * delays it; `afterResponse` means we already run there and count directly.
  */
 async function decideAndCount(
   prepared: PreparedRequest,
@@ -269,9 +270,9 @@ async function decideAndCount(
   extras?: DecisionExtras,
 ) {
   const result = await tracedProtect(prepared, afterResponse, extras);
-  if (isArcjetDeniedResult(result)) {
+  if (isArcjetDeniedResult(result) || result.allowedBots?.length) {
     const host = prepared.built.context.host;
-    const count = () => recordBlockedTraffic(host, result, log);
+    const count = () => recordArcjetTraffic(host, result, log);
     if (afterResponse) await count();
     else after(count);
   }
@@ -282,7 +283,7 @@ async function decideAndCount(
  * Enforced hosts: one Arcjet decision per request and path, awaited before
  * the page renders. React `cache` is scoped to the request, so the page and
  * its `generateMetadata` share the decision: one Decide call, one record,
- * one blocked-traffic count.
+ * one crawler-traffic count.
  */
 const decide = cache(async (pathName: string) =>
   decideAndCount(await prepare(pathName, routeOfPath(pathName), 'GET'), false),

@@ -1,26 +1,35 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
-import type { BlockedTrafficBucketDto } from '../src/lib/api/generated/data-contracts';
-import type { ArcjetLog } from '../src/lib/arcjet';
+import type { CrawlerTrafficBucketDto } from '../src/lib/api/generated/data-contracts';
+import type { ArcjetLog } from '../src/lib/arcjet/types';
 import {
-  BLOCKED_TRAFFIC_MAX_RETAINED_MS,
-  createBlockedTrafficCounter,
-} from '../src/lib/blocked-traffic-counter';
+  CRAWLER_TRAFFIC_MAX_BUCKETS_PER_PUSH,
+  CRAWLER_TRAFFIC_MAX_RETAINED_MS,
+  type CrawlerTrafficEvent,
+  createCrawlerTrafficCounter,
+} from '../src/lib/crawler-traffic-counter';
 
 const TENANT_A = 'tenant-a';
 const TENANT_B = 'tenant-b';
 const HOUR = Date.parse('2026-10-22T14:00:00.000Z');
 
+const blockedAhrefs = (tenantId = TENANT_A): CrawlerTrafficEvent => ({
+  tenantId,
+  crawler: 'AHREFS_CRAWLER',
+  outcome: 'blocked',
+  classification: 'seo',
+});
+
 function setup(options: { fail?: (tenantId: string) => boolean } = {}) {
   let clock = HOUR + 25 * 60_000;
-  const pushes: { tenantId: string; buckets: BlockedTrafficBucketDto[] }[] = [];
+  const pushes: { tenantId: string; buckets: CrawlerTrafficBucketDto[] }[] = [];
   const logs: { event: string; data: Record<string, unknown> }[] = [];
   let scheduledFlush: (() => void) | undefined;
   let scheduleCalls = 0;
   const log: ArcjetLog = (_level, event, data) => logs.push({ event, data });
 
-  const counter = createBlockedTrafficCounter({
+  const counter = createCrawlerTrafficCounter({
     log,
     now: () => clock,
     schedule: (flush) => {
@@ -44,21 +53,31 @@ function setup(options: { fail?: (tenantId: string) => boolean } = {}) {
   };
 }
 
-const sortBuckets = (buckets: BlockedTrafficBucketDto[]) =>
+const sortBuckets = (buckets: CrawlerTrafficBucketDto[]) =>
   [...buckets].sort((a, b) =>
-    `${a.hour}${a.classification}${a.enforced}`.localeCompare(
-      `${b.hour}${b.classification}${b.enforced}`,
+    `${a.hour}${a.crawler}${a.outcome}`.localeCompare(
+      `${b.hour}${b.crawler}${b.outcome}`,
     ),
   );
 
-describe('blocked traffic counter (ISS-2366)', () => {
-  test('aggregates denials per tenant, hour, classification and enforcement', async () => {
+describe('crawler traffic counter', () => {
+  test('aggregates requests per tenant, hour, crawler, outcome and classification', async () => {
     const { counter, pushes } = setup();
-    counter.record(TENANT_A, 'nefarious', true);
-    counter.record(TENANT_A, 'nefarious', true);
-    counter.record(TENANT_A, 'seo', true);
-    counter.record(TENANT_A, 'nefarious', false);
-    counter.record(TENANT_B, 'unknown', true);
+    counter.record(blockedAhrefs());
+    counter.record(blockedAhrefs());
+    counter.record({
+      tenantId: TENANT_A,
+      crawler: 'GOOGLE_CRAWLER',
+      outcome: 'allowed',
+      classification: 'unknown',
+    });
+    counter.record({
+      tenantId: TENANT_A,
+      crawler: '',
+      outcome: 'shed',
+      classification: 'unknown',
+    });
+    counter.record(blockedAhrefs(TENANT_B));
     assert.equal(counter.pendingCount(), 5);
 
     await counter.flush();
@@ -69,39 +88,38 @@ describe('blocked traffic counter (ISS-2366)', () => {
     assert.deepEqual(sortBuckets(a?.buckets ?? []), [
       {
         hour: '2026-10-22T14:00:00.000Z',
-        classification: 'nefarious',
-        enforced: false,
-        count: 1,
-      },
-      {
-        hour: '2026-10-22T14:00:00.000Z',
-        classification: 'nefarious',
-        enforced: true,
+        crawler: 'AHREFS_CRAWLER',
+        outcome: 'blocked',
+        classification: 'seo',
         count: 2,
       },
       {
         hour: '2026-10-22T14:00:00.000Z',
-        classification: 'seo',
-        enforced: true,
+        crawler: 'GOOGLE_CRAWLER',
+        outcome: 'allowed',
+        classification: 'unknown',
         count: 1,
       },
-    ]);
-    assert.deepEqual(pushes.find((p) => p.tenantId === TENANT_B)?.buckets, [
       {
         hour: '2026-10-22T14:00:00.000Z',
+        crawler: '',
+        outcome: 'shed',
         classification: 'unknown',
-        enforced: true,
         count: 1,
       },
     ]);
+    assert.equal(
+      pushes.find((p) => p.tenantId === TENANT_B)?.buckets[0].count,
+      1,
+    );
   });
 
   test('splits a flush window that crosses the hour into two buckets', async () => {
     const { counter, pushes, setClock } = setup();
     setClock(HOUR + 59 * 60_000);
-    counter.record(TENANT_A, 'seo', true);
+    counter.record(blockedAhrefs());
     setClock(HOUR + 61 * 60_000);
-    counter.record(TENANT_A, 'seo', true);
+    counter.record(blockedAhrefs());
 
     await counter.flush();
 
@@ -125,8 +143,8 @@ describe('blocked traffic counter (ISS-2366)', () => {
     const { counter, pushes, logs } = setup({
       fail: (tenantId) => down && tenantId === TENANT_A,
     });
-    counter.record(TENANT_A, 'nefarious', true);
-    counter.record(TENANT_B, 'seo', true);
+    counter.record(blockedAhrefs());
+    counter.record(blockedAhrefs(TENANT_B));
 
     await counter.flush();
 
@@ -135,11 +153,11 @@ describe('blocked traffic counter (ISS-2366)', () => {
       [TENANT_B],
     );
     assert.equal(counter.pendingCount(), 1);
-    const failed = logs.find((l) => l.event === 'blocked_traffic_push_failed');
+    const failed = logs.find((l) => l.event === 'crawler_traffic_push_failed');
     assert.equal(failed?.data.tenantId, TENANT_A);
     assert.equal(failed?.data.requeued, 1);
 
-    counter.record(TENANT_A, 'nefarious', true);
+    counter.record(blockedAhrefs());
     down = false;
     await counter.flush();
 
@@ -151,22 +169,39 @@ describe('blocked traffic counter (ISS-2366)', () => {
 
   test('a failed push drops buckets older than the retention window', async () => {
     const { counter, logs, setClock } = setup({ fail: () => true });
-    counter.record(TENANT_A, 'unknown', true);
-    setClock(HOUR + BLOCKED_TRAFFIC_MAX_RETAINED_MS + 2 * 60 * 60_000);
-    counter.record(TENANT_A, 'unknown', true);
+    counter.record(blockedAhrefs());
+    setClock(HOUR + CRAWLER_TRAFFIC_MAX_RETAINED_MS + 2 * 60 * 60_000);
+    counter.record(blockedAhrefs());
 
     await counter.flush();
 
     assert.equal(counter.pendingCount(), 1);
-    const failed = logs.find((l) => l.event === 'blocked_traffic_push_failed');
+    const failed = logs.find((l) => l.event === 'crawler_traffic_push_failed');
     assert.equal(failed?.data.requeued, 1);
     assert.equal(failed?.data.dropped, 1);
   });
 
-  test('denials recorded during an in-flight flush go to the next one', async () => {
+  test('splits a tenant with more buckets than one push allows', async () => {
+    const { counter, pushes } = setup();
+    for (let i = 0; i < CRAWLER_TRAFFIC_MAX_BUCKETS_PER_PUSH + 1; i += 1) {
+      counter.record({
+        tenantId: TENANT_A,
+        crawler: `BOT_${i}`,
+        outcome: 'blocked',
+        classification: 'unknown',
+      });
+    }
+    await counter.flush();
+    assert.deepEqual(
+      pushes.map((p) => p.buckets.length),
+      [CRAWLER_TRAFFIC_MAX_BUCKETS_PER_PUSH, 1],
+    );
+  });
+
+  test('requests recorded during an in-flight flush go to the next one', async () => {
     let release: () => void = () => {};
     const pushes: number[] = [];
-    const counter = createBlockedTrafficCounter({
+    const counter = createCrawlerTrafficCounter({
       log: () => {},
       now: () => HOUR,
       schedule: () => {},
@@ -180,9 +215,9 @@ describe('blocked traffic counter (ISS-2366)', () => {
       },
     });
 
-    counter.record(TENANT_A, 'seo', true);
+    counter.record(blockedAhrefs());
     const first = counter.flush();
-    counter.record(TENANT_A, 'seo', true);
+    counter.record(blockedAhrefs());
     assert.equal(counter.flush(), first, 'concurrent flushes share one');
     release();
     await first;
@@ -192,11 +227,11 @@ describe('blocked traffic counter (ISS-2366)', () => {
     assert.deepEqual(pushes, [1, 1]);
   });
 
-  test('schedules the periodic flush once, on the first denial', async () => {
+  test('schedules the periodic flush once, on the first request', async () => {
     const { counter, pushes, scheduled } = setup();
     assert.equal(scheduled().calls, 0);
-    counter.record(TENANT_A, 'seo', true);
-    counter.record(TENANT_A, 'seo', true);
+    counter.record(blockedAhrefs());
+    counter.record(blockedAhrefs());
     assert.equal(scheduled().calls, 1);
 
     scheduled().flush?.();

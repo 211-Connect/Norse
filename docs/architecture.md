@@ -270,10 +270,12 @@ link-scanning from Microsoft's `2a01:111:f400::/48` range.
 
 #### Blocked traffic analytics (ISS-2366)
 
-Every denial (enforced `DENY` and observe-only `DENIED_NOT_ENFORCED`) is
-counted in memory per server instance, by tenant, UTC hour and
-classification, and pushed to Norse-API once a minute; the **Blocked Bots**
-dashboard widget reads the hourly totals back. Pipeline and limits:
+Every denial (enforced `DENY`, rate-limited, and observe-only
+`DENIED_NOT_ENFORCED`), every request from an allowed crawler and every
+load-limit 429 is counted in memory per server instance, by tenant, UTC
+hour, crawler, outcome and classification, and pushed to Norse-API once a
+minute; the **Blocked Bots** and **Crawler traffic** dashboard widgets read
+the hourly totals back. Pipeline and limits:
 [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
 
 The `classification` is decided by `classifyBlockedTraffic` in

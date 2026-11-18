@@ -15,6 +15,7 @@ export enum WidgetSlug {
   AlertClicks = 'analytics-alert-clicks',
   PageViews = 'analytics-page-views',
   BlockedBots = 'analytics-blocked-bots',
+  CrawlerTraffic = 'analytics-crawler-traffic',
   PageviewsChart = 'analytics-pageviews-chart',
   Map = 'analytics-map',
   ResourceTitles = 'analytics-resource-titles',
@@ -35,11 +36,12 @@ export enum WidgetSlug {
 // Default layout for the analytics dashboard. Used both to sanitize the
 // real Payload config (so the server-side "Reset Layout" action restores
 // this layout) and by AnalyticsView when rendering the dashboard.
+// Blocked Bots and Crawler traffic are left out on purpose: they are still
+// registered, so users can add them from the dashboard's edit-layout mode.
 export const ANALYTICS_DEFAULT_LAYOUT = [
   { widgetSlug: WidgetSlug.TotalUsers, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.Searches, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.PageViews, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.BlockedBots, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.ResourceViews, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },
@@ -81,7 +83,9 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
   [WidgetSlug.PageViews]:
     'The number of pages viewed by people. Automated requests that were blocked before the page loaded are not counted here; see the Blocked Bots widget.',
   [WidgetSlug.BlockedBots]:
-    'The number of requests to search and resource pages that were identified as automated traffic and blocked before the page loaded, in the selected period. Other pages are not counted. This includes scrapers, scripts, headless browsers, AI crawlers, botnets and SEO crawlers. These requests are not included in Page Views or any other widget. Automated traffic on a site where blocking is not yet switched on is not blocked, so it is not counted here. Counts are approximate and kept for 2 years.',
+    'The number of requests to search and resource pages that were identified as automated traffic and blocked before the page loaded, in the selected period. Other pages are not counted. This includes scrapers, scripts, headless browsers, AI crawlers, botnets and SEO crawlers. These requests are not included in Page Views or any other widget. Automated traffic on a site where blocking is not yet switched on is not blocked, so it is not counted here. Rate-limited requests are included. Counts are approximate.',
+  [WidgetSlug.CrawlerTraffic]:
+    'Requests to search and resource pages from crawlers and other automated clients, by crawler and by what happened to them: blocked (refused by bot protection), rate limited (too many requests from one address), logged (detected but served, on a site where blocking is not switched on), allowed (search engines and other crawlers we let in) and busy (refused with a "busy" page because the site was overloaded). People are not counted, except in busy. Counts are approximate, hourly, and kept indefinitely.',
   [WidgetSlug.PageviewsChart]: 'The number of page views each day.',
   [WidgetSlug.Map]: 'The geographic origin of user traffic.',
   [WidgetSlug.ResourceTitles]:
