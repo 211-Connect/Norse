@@ -207,6 +207,27 @@ export class CacheService {
     }
   }
 
+  /**
+   * `INCR` and `EXPIRE` in one round trip (a MULTI), for fixed-window
+   * counters. Null when Redis is unavailable or errors; callers fail open.
+   */
+  async incrementInWindow(key: string, ttl: number): Promise<number | null> {
+    try {
+      await this.ensureConnection();
+      if (!this.client) return null;
+      const client = this.client;
+      return await trackDependency('redis', 'incr', async () => {
+        const results = await client.multi().incr(key).expire(key, ttl).exec();
+        const [error, count] = results?.[0] ?? [null, null];
+        if (error) throw error;
+        return typeof count === 'number' ? count : null;
+      });
+    } catch (error) {
+      log.error({ err: error, db: this.db }, 'Redis incr error');
+      return null;
+    }
+  }
+
   async del(key: string): Promise<void> {
     try {
       await this.ensureConnection();

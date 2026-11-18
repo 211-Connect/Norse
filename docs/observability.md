@@ -321,6 +321,8 @@ name** is what you query.
 | `norse.downstream.duration` | `norse_downstream_duration_seconds` (`_bucket`/`_sum`/`_count`) | histogram (s) | `dependency`, `operation`, `outcome` | `src/lib/telemetry/dependency.ts` |
 | `norse.response.parse.size` | `norse_response_parse_size_bytes` | histogram (By) | `dependency`, `operation` | `src/lib/telemetry/dependency.ts` |
 | `norse.arcjet.decisions` | `norse_arcjet_decisions_total` | counter | `conclusion`, `enforced` | `src/lib/telemetry/arcjet.ts` |
+| `norse.load_shed` | `norse_load_shed_total` | counter | `limit` (`concurrency`\|`minute`), `tenant` (id or `unknown`) | `src/lib/load-shed/report.ts` |
+| `norse.load_shed.in_flight` | `norse_load_shed_in_flight` | observable gauge | `tenant` (id or `unknown`) | `src/lib/load-shed/http-hook.ts` |
 | `norse.search.requests` | `norse_search_requests_total` | counter | `api`, `cache_hit`, `limit` | `src/lib/telemetry/search.ts` |
 | `norse.jobs.runs` | `norse_jobs_runs_total` | counter | `task`, `result` | `src/lib/telemetry/jobs.ts` |
 | `norse.jobs.duration` | `norse_jobs_duration_seconds` | histogram (s) | `task`, `result` | `src/lib/telemetry/jobs.ts` |
@@ -341,7 +343,13 @@ text, hosts) is a label:
 - `conclusion`: `ALLOW`, `CHALLENGE`, `DENY`, `DENIED_NOT_ENFORCED`, `ERROR`,
   `THREW`, `SKIPPED`, `NO_CLIENT_IP`
 - `enforced`, `cache_hit`: `"true"` \| `"false"`
-- `limit`: `le25` \| `le50` \| `gt50` (page size; 25 is the default)
+- `limit`: `le25` \| `le50` \| `gt50` (page size; 25 is the default) on
+  `norse_search_requests_total`; `concurrency` \| `minute` on
+  `norse_load_shed_total`
+- `tenant` (load-shed metrics only): the tenant id the proxy resolved, or
+  `unknown`. The one exception to the rule above: it is bounded by the number
+  of tenants (an unresolved host is never a label), and per-tenant shedding is
+  the point of the metric.
 - `result` (jobs): `success` \| `failed` \| `noop`
 
 Notes on semantics:
