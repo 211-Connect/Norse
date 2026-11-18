@@ -18,4 +18,6 @@ export type HybridSearchConfigCache = {
   enable_organization_search: boolean;
   area_match: AreaMatch;
   unlocated_in_area_search: Unlocated;
+  // Emergency hotlines for the v2 emergency question, in display order. [] means Norse-API uses 988 and 911.
+  hotlines: { label: string; number: string }[];
 };
