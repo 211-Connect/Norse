@@ -10,10 +10,12 @@ import {
   Coords,
   cn,
   distanceBetweenCoordsInMiles,
+  formatAddressForDisplay,
 } from '@/app/(app)/shared/lib/utils';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { useSearchResults } from '../context/search-results-context';
+import { useV2Pins } from '../v2/use-v2-pins';
 import { MapPopup } from './map-popup';
 
 /** The height of the pinned search bar and refine row on a phone. */
@@ -26,6 +28,8 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
 
   const { results } = useSearchResults();
   const coords = useAtomValue(userCoordinatesAtom);
+  // The map shows every located match of the search (`/v2/search/pins`), not only the list's page.
+  const { pins } = useV2Pins();
 
   useEffect(() => {
     const header = document.getElementById(HEADER_ID);
@@ -43,6 +47,31 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
 
   // Memoize to prevent unecessary map re-renders
   const mapMarkers = useMemo(() => {
+    if (pins?.length) {
+      const byId = new Map(results.map((r) => [r._id, r]));
+      return pins.map((pin) => {
+        const hit = byId.get(pin.id);
+        const distance =
+          (coords?.length ?? 0) === 2
+            ? distanceBetweenCoordsInMiles(coords as Coords, pin.coordinates)
+            : undefined;
+        const name = pin.name ?? hit?.name ?? '';
+        const linkId = pin.service_at_location_id ?? hit?.id ?? pin.id;
+        return {
+          id: pin.id,
+          coordinates: pin.coordinates,
+          label: name,
+          popup: (
+            <MapPopup
+              distance={distance}
+              id={linkId}
+              name={name}
+              address={formatAddressForDisplay(pin.physical_address) || hit?.address}
+            />
+          ),
+        };
+      });
+    }
     return results.map((result) => {
       const coordinates = result?.location?.coordinates as Coords | undefined;
       const distance = (() => {
@@ -70,7 +99,7 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
         ),
       };
     });
-  }, [coords, results]);
+  }, [coords, pins, results]);
 
   if (headerHeight === 0) return null;
 
