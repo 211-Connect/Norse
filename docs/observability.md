@@ -320,7 +320,11 @@ name** is what you query.
 | `norse.downstream.requests` | `norse_downstream_requests_total` | counter | `dependency`, `operation`, `outcome` | `src/lib/telemetry/dependency.ts` |
 | `norse.downstream.duration` | `norse_downstream_duration_seconds` (`_bucket`/`_sum`/`_count`) | histogram (s) | `dependency`, `operation`, `outcome` | `src/lib/telemetry/dependency.ts` |
 | `norse.response.parse.size` | `norse_response_parse_size_bytes` | histogram (By) | `dependency`, `operation` | `src/lib/telemetry/dependency.ts` |
-| `norse.arcjet.decisions` | `norse_arcjet_decisions_total` | counter | `conclusion`, `enforced` | `src/lib/telemetry/arcjet.ts` |
+| `norse.arcjet.decisions` | `norse_arcjet_decisions_total` | counter | `conclusion`, `enforced`, `reason_type`, `route`, `host`, `aj_signals_present` | `src/lib/telemetry/arcjet.ts` |
+| `norse.arcjet.served_denied` | `norse_arcjet_served_denied_total` | counter | `host`, `route` | `src/lib/telemetry/arcjet.ts` (DENIED_NOT_ENFORCED that was still served) |
+| `norse.arcjet.burst_active` | `norse_arcjet_burst_active` | observable gauge | `host` | `src/lib/telemetry/arcjet.ts` (1 while this instance has the host in burst mode) |
+| `norse.print.requests` | `norse_print_requests_total` | counter | `host`, `conclusion`, `enforced` | `src/lib/telemetry/arcjet.ts` |
+| `norse.page.requests` | `norse_page_requests_total` | counter | `host`, `route_group`, `returning` | `src/proxy.ts` |
 | `norse.load_shed` | `norse_load_shed_total` | counter | `limit` (`concurrency`\|`minute`), `tenant` (id or `unknown`) | `src/lib/load-shed/report.ts` |
 | `norse.load_shed.in_flight` | `norse_load_shed_in_flight` | observable gauge | `tenant` (id or `unknown`) | `src/lib/load-shed/http-hook.ts` |
 | `norse.search.requests` | `norse_search_requests_total` | counter | `api`, `cache_hit`, `limit` | `src/lib/telemetry/search.ts` |
@@ -330,7 +334,9 @@ name** is what you query.
 | `norse.process.active_resources` | `norse_process_active_resources` | observable gauge | `type` | `src/instrumentation.node.ts` |
 
 Label values are fixed enums; nothing derived from a request (IDs, search
-text, hosts) is a label:
+text, user agent, IP, client signature, tenant ID) is a label. The one
+exception is `host` on the Arcjet, print and page metrics: about 60 tenant
+hosts, which is fine:
 
 - `dependency`: `norse_api`, `arcjet`, `redis`, `payload_api`, `keycloak`,
   `umami`, `ems`, `webhook`, `translation`, `other`
@@ -342,12 +348,16 @@ text, hosts) is a label:
 - `outcome`: `ok` \| `timeout` \| `error`
 - `conclusion`: `ALLOW`, `CHALLENGE`, `DENY`, `DENIED_NOT_ENFORCED`, `ERROR`,
   `THREW`, `SKIPPED`, `NO_CLIENT_IP`
-- `enforced`, `cache_hit`: `"true"` \| `"false"`
+- `enforced`, `cache_hit`, `returning`, `aj_signals_present`: `"true"` \| `"false"`
+- `route` / `route_group`: `search`, `resource`, `details`, `print`, `pins`,
+  `other`
+- `reason_type`: Arcjet's reason (`BOT`, `FILTER`, `RATE_LIMIT`, `ERROR`, ...)
+  or `THREW`, `NO_CLIENT_IP`, `none`
 - `limit`: `le25` \| `le50` \| `gt50` (page size; 25 is the default) on
   `norse_search_requests_total`; `concurrency` \| `minute` on
   `norse_load_shed_total`
 - `tenant` (load-shed metrics only): the tenant id the proxy resolved, or
-  `unknown`. The one exception to the rule above: it is bounded by the number
+  `unknown`. Another exception to the rule above: it is bounded by the number
   of tenants (an unresolved host is never a label), and per-tenant shedding is
   the point of the metric.
 - `result` (jobs): `success` \| `failed` \| `noop`
@@ -442,10 +452,8 @@ Events worth knowing:
 
 | `event` | Level | Fields |
 | --- | --- | --- |
-| `arcjet_fingerprint_failed` | warn | `host`, `pathName`, `conclusion`, `errorType`, `message`, `decisionId?`, `durationMs`, `eventLoopUtilization`, `instance`, `traceId?`, `traceSampled?`, `headers` (redacted; sampled to ≤5/min) |
-| `arcjet_fingerprint_failed_sampled_out` | warn | the same minus `headers` (the header line was over the per-minute sample budget) |
-| `arcjet_no_client_ip` / `arcjet_no_client_ip_sampled_out` | warn | `host`, `pathName`, `ipSrc`, `doConnectingIp`, `forwardedFor` (masked), `headers?` (redacted) |
-| `arcjet_denied` | warn | `host`, `pathName`, `reason`, `reasonType`, `deniedBots`, `decisionId`, `enforced`, `sampledOutSinceLast` (≤30/min) |
+| `arcjet_no_client_ip` / `arcjet_no_client_ip_sampled_out` | debug | `host`, `pathName`, `ipSrc`, `doConnectingIp`, `forwardedFor` (masked), `headers?` (redacted) |
+| `arcjet_sdk` | warn/error | Arcjet SDK warnings and errors (its debug/info go to OTel only, scope `arcjet-sdk`) |
 | `request_error` | error | `routePath`, `routeType`, `method`, `digest`, `errName`, `errMessage` — never `request.path`, which can contain a query string |
 | — | info/error | `Initialized telemetry` (`endpoint`, `traceSamplerArg` = the ratio in effect, `basicAuth`, `metrics`, `logs`) and `telemetry setup failed; continuing without that signal` (`signal`, `err`) |
 | — | warn | `OTEL_TRACES_SAMPLER_ARG is unset or invalid: sampling at the default ratio` (`reason`: `unset` \| `invalid`, `ratio`) |
@@ -459,8 +467,8 @@ metadata. Typical queries:
 
 ```logql
 {service_name="norse-app"} | json | trace_id != ""
-{service_name="norse-app"} | json | event=~"arcjet_fingerprint_failed.*"
-  | line_format "{{.durationMs}} {{.eventLoopUtilization}} {{.instance}}"
+{service_name="norse-app"} | event="arcjet_decision" | conclusion=~"ERROR|THREW"
+  | line_format "{{.duration_ms}} {{.event_loop_utilization}} {{.service_instance_id}}"
 {service_name="norse-app"} | json | event="request_error"
 ```
 
@@ -470,32 +478,111 @@ The `!=` is required because the collector's redaction (layer 2) rewrites a
 leaked `query=…` to `query=REDACTED`, so without it a caught leak would look
 like a clean result.
 
+## arcjet_decision
+
+One OTel log record per logged Arcjet decision (`body` and `event` =
+`arcjet_decision`, logger `norse-app.arcjet`), emitted through the OTel Logs
+API inside the `arcjet.protect` span: **OTLP → Loki only, never pino or
+stdout**. The Logs SDK attaches that span's `trace_id`, `span_id` and `flags`
+(`"1"` = the trace is stored in Tempo; absent for the ~75% not sampled, where
+`decision_id` still finds the request in Arcjet). No-op when
+`OTEL_LOGS_EXPORTER=none`; never throws. Code:
+`src/lib/arcjet/decision-record.ts`, `src/lib/telemetry/arcjet-decision-log.ts`.
+
+`arcjet.protect` is a child of the request's render span on both paths
+(awaited on enforced hosts, inside `after()` on observe-only hosts) and in
+the print action; don't change how its context is propagated.
+
+### Fields (flat, snake_case; all structured metadata)
+
+| Group | Fields |
+| --- | --- |
+| Decision | `decision_id`, `conclusion`, `enforced`, `reason_type`, `denied_bots`, `allowed_bots`, `bot_verified`, `bot_spoofed`, `ttl`, `dry_run_matches` (JSON), `error_type`, `error_message`, `duration_ms`, `event_loop_utilization`, `burst`, `sampled_out_since_last` |
+| Request | `host`, `tenant_id`, `route` (`search`, `resource`, `details`, `print`, `pins`), `method`, `url_path` (never the query), `locale`, `query_keys` (sorted key names only), `is_rsc`, `is_prefetch`, `is_server_action` |
+| Print only | `ids_requested`, `ids_unique` |
+| Client headers (values, ≤256 chars; `accept-language` ≤64) | `h_user_agent`, `h_accept`, `h_accept_language`, `h_accept_encoding`, `h_sec_ch_ua`, `h_sec_ch_ua_mobile`, `h_sec_ch_ua_platform`, `h_sec_fetch_site`, `h_sec_fetch_mode`, `h_sec_fetch_dest`, `h_sec_fetch_user`, `h_upgrade_insecure_requests`, `h_priority`, `h_dnt`, `h_sec_gpc`, `h_cache_control`, `h_pragma`, `h_via`, `h_x_requested_with`. The `h_` prefix keeps them clear of the collector's deleted keys |
+| Client headers (shape) | `h_names` (sorted names of every client header), `h_count`, `h_unknown` (names not in the value list and not known/transport headers) |
+| Referer shape (from the **raw** string) | `ref_present`, `ref_host`, `ref_same_host`, `ref_scheme`, `ref_path_empty` (`^https?://[^/?#]+$`: Arcjet's tell for the rotating-IP bot), `ref_path_root`, `ref_has_query`, `origin_present`, `origin_same_host` |
+| Client state | `client_returning` (from the proxy), `aj_signals_present` |
+| Network | `client_net` (/16 IPv4, /48 IPv6). Optional `client_ip_hash`: HMAC-SHA256 with `ARCJET_LOG_IP_HASH_KEY` + UTC date (rotates daily), 12 hex chars, only when that key is set (needs privacy sign-off) |
+| Fingerprint | `client_signature`: 12 hex chars of SHA-256 over UA family + major, `sec-ch-ua` brands, platform, `accept-language`, `accept`, `accept-encoding`, the `sec-fetch-*` tuple, the referer-shape flags and `h_names`. Stable across IPs and minor versions |
+| Helper checks | `checks` (comma-joined, `computeHeaderChecks`): `ua_ch_version_mismatch`, `ua_ch_platform_mismatch`, `chromium_brand_with_chrome_ua`, `headless`, `browser_ua_without_sec_fetch`, `browser_ua_without_accept_language`, `referer_path_empty`, `referer_with_fetch_site_none`. Helpers only; the bot report finds patterns from the raw features |
+
+**Never logged:** the full IP, the referer or origin path or query, any query
+value, cookie values, `authorization`, `x-api-key`, the request body. Header
+order and TLS fingerprints (JA3/JA4) are not available in Next.
+
+### Sampling (`src/lib/arcjet/decision-sampling.ts`, per instance)
+
+| Case | Logged |
+| --- | --- |
+| `route=print` | every call |
+| ALLOW / CHALLENGE | when its trace is sampled, plus every ALLOW for a host in burst mode (≤ `ARCJET_BURST_LOG_PER_MIN`, default 300/min) |
+| DENY / DENIED_NOT_ENFORCED | ≤ `ARCJET_LOG_DENY_PER_MIN` (default 5) per minute per (`reason_type`, `denied_bots`), with `sampled_out_since_last` |
+| ERROR / THREW / NO_CLIENT_IP | ≤ 20 per minute |
+| a DRY_RUN rule matched (on an otherwise unlogged ALLOW) | ≤ 20 per minute per (route, rule) |
+| overall | hard cap `ARCJET_LOG_MAX_PER_MIN` (default 600) |
+
+Exact counts always come from `norse_arcjet_decisions_total`. Expected
+volume: about 5–7k records an hour on multi-tenant.
+
+**Burst mode.** Each instance counts protect calls per host over the last 60
+seconds and keeps a slow moving average per host (≈30-minute memory, frozen
+during a burst). When the count exceeds `ARCJET_BURST_MIN_PER_INSTANCE`
+(default 40) **and** 5 × the baseline, the host is in burst mode for 5
+minutes (extended while it holds): every ALLOW is logged with `burst=true`,
+so floods Arcjet misses come with full decision IDs rather than the 25% trace
+sample. The same state sets `arcjet.burst` on the span and
+`norse_arcjet_burst_active{host}`.
+
+### Span attributes on `arcjet.protect`
+
+Unchanged: `url.path`, `arcjet.enforced`, `arcjet.conclusion`,
+`arcjet.decision_id`, `arcjet.duration_ms`, `event_loop.utilization`.
+`arcjet.reason_type` is now set on every conclusion. Added (low-cardinality,
+not personal): `arcjet.host`, `arcjet.tenant_id`, `arcjet.route`,
+`arcjet.method`, `arcjet.denied_bots`, `arcjet.ttl`,
+`arcjet.client.signature`, `arcjet.client.returning`,
+`arcjet.aj_signals_present`, `arcjet.burst`, `arcjet.ref_path_empty`,
+`arcjet.checks`. No user agent or raw headers on spans: they are in the
+record, joined by `trace_id` / `decision_id`.
+
+```traceql
+{ name="arcjet.protect" && span.arcjet.host="search.211md.org" && span.arcjet.conclusion="ALLOW" && span.arcjet.burst=true }
+```
+
+```logql
+{service_name="norse-app"} | event="arcjet_decision" | host="search.211md.org" | burst="true"
+sum by (client_signature) (count_over_time({service_name="norse-app"} | event="arcjet_decision" | ref_path_empty="true" [1h]))
+```
+
 ## Reading Arcjet failures
 
-`arcjet_fingerprint_failed` is logged whenever the Arcjet Decide call throws or
-returns an errored decision, with the timing of **only** the `client.protect()`
-call:
+A failed decision (`conclusion` `THREW`: the call threw, or `ERROR`: the
+Decide API answered with an errored decision, including a timeout) is an
+`arcjet_decision` record (≤20/min per instance), with the timing of **only**
+the `client.protect()` call:
 
 | Field | Meaning |
 | --- | --- |
-| `durationMs` | Wall time of the protect call, measured in this process |
-| `eventLoopUtilization` | Share of that window (0–1) the event loop was busy, as a delta over the same window |
-| `instance` | Container hostname: which replica |
-| `traceId`, `traceSampled` | Current trace, and whether it was sampled (only a sampled ID opens Tempo) |
-| `conclusion` | `THREW` (call threw) or `ERROR` (Decide API answered with an errored decision) |
+| `duration_ms` | Wall time of the protect call, measured in this process |
+| `event_loop_utilization` | Share of that window (0–1) the event loop was busy, as a delta over the same window |
+| `service_instance_id` | Container hostname: which replica (resource attribute) |
+| `trace_id`, `flags` | Current trace, and whether it was sampled (`flags="1"`; only a sampled ID opens Tempo) |
+| `error_type`, `error_message` | The error (message truncated to 256 characters) |
 
 `ARCJET_TIMEOUT_MS` (default `500`, positive integer) is the Decide API timeout.
 The page fails open in every failure case.
 
 | Observation | Reading |
 | --- | --- |
-| `durationMs ≈ 500` **and** low `eventLoopUtilization` | Our timer fired on time; Arcjet (or the network path to it) did not answer within the timeout. Their side. |
-| `durationMs ≫ 500` (e.g. > 600) | Our timer fired late. The delay above 500 ms (`durationMs − 500`) is roughly how long our event loop was blocked. Our side. |
-| `durationMs` well under 500 with `conclusion="THREW"` | Transport/DNS/TLS failure or a thrown client error, not a Decide timeout. Check egress and the Arcjet service status. |
+| `duration_ms ≈ 500` **and** low `event_loop_utilization` | Our timer fired on time; Arcjet (or the network path to it) did not answer within the timeout. Their side. |
+| `duration_ms ≫ 500` (e.g. > 600) | Our timer fired late. The delay above 500 ms is roughly how long our event loop was blocked. Our side. |
+| `duration_ms` well under 500 with `conclusion="THREW"` | Transport/DNS/TLS failure or a thrown client error, not a Decide timeout. Check egress and the Arcjet service status. |
 | `conclusion="ERROR"` at ≈ 500 ms | The Decide API timeout (`ARCJET_TIMEOUT_MS`), i.e. the same case as the first row. |
-| `traceSampled=false` | The failure happened in an unsampled request; only the log line exists. Raise `OTEL_TRACES_SAMPLER_ARG` temporarily on dev to reproduce. |
-| The same `instance` recurs while other replicas are healthy | Congestion on that container, not a fleet-wide Arcjet problem. Check that instance's event-loop metrics. |
-| Timeouts spread evenly across all `instance` values | Arcjet latency or the network path, not our process. |
+| no `flags` | The failure happened in an unsampled request; only the record exists. Raise `OTEL_TRACES_SAMPLER_ARG` temporarily on dev to reproduce. |
+| The same instance recurs while other replicas are healthy | Congestion on that container, not a fleet-wide Arcjet problem. Check that instance's event-loop metrics. |
+| Timeouts spread evenly across all instances | Arcjet latency or the network path, not our process. |
 
 Timeout ratio (all instances):
 

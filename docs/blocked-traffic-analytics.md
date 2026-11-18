@@ -48,6 +48,15 @@ Code: `crawlerTrafficOf` in `src/lib/crawler-traffic.ts`.
 
 ## Why counters, not one event per request
 
+<<<<<<< HEAD
+About 30 requests/s reach Norse and more than half are bots. One analytics
+event per denial would be ~15 writes/s (about 10 Umami rows each, with event
+data) into the database that serves the tenants' real analytics. Instead,
+each server instance increments an in-memory counter and pushes the deltas
+once a minute: about `instances × active tenants` small requests per
+minute, whatever the bot volume. Per-request detail (bot name, path) is
+already in the `arcjet_decision` records and the Arcjet console (`decision_id`).
+=======
 About 30 requests/s reach Norse, and more than half are bots. One analytics
 event per request would be about 15 writes/s into the database that serves
 the tenants' real analytics. Instead, each server instance increments an
@@ -55,6 +64,7 @@ in-memory counter and pushes the deltas once a minute. That is about
 `instances × active tenants` small requests per minute, whatever the bot
 volume. Per-request detail (path, decision) is already in the
 `arcjet_denied` logs and the Arcjet console (`decisionId`).
+>>>>>>> origin/development
 
 ## Where it is configured
 
