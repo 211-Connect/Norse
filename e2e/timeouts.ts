@@ -111,6 +111,18 @@ export const MAP_PINS_LOAD_TIMEOUT_MS = parseEnvMs(
 );
 
 /**
+ * Wheel-zooming the search map from a whole state (around zoom 5) to city
+ * level (zoom 10), where shared addresses show their counts: several wheel
+ * steps, each waiting for the map to settle, tiles included.
+ *
+ * @see E2E_MAP_ZOOM_TO_CITY_TIMEOUT_MS
+ */
+export const MAP_ZOOM_TO_CITY_TIMEOUT_MS = parseEnvMs(
+  process.env.E2E_MAP_ZOOM_TO_CITY_TIMEOUT_MS,
+  30_000,
+);
+
+/**
  * Cross-page favorites propagation after add/remove mutations. The write has
  * succeeded once the toast appears, but the server-rendered `/favorites/:id`
  * page may require one or more reloads before it reflects the new state.

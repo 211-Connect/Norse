@@ -3,6 +3,7 @@ import { type Locator, type Page, expect } from '@playwright/test';
 import {
   ASYNC_UI_TIMEOUT_MS,
   MAP_PINS_LOAD_TIMEOUT_MS,
+  MAP_ZOOM_TO_CITY_TIMEOUT_MS,
   PRESENCE_PROBE_TIMEOUT_MS,
   UI_SHELL_TIMEOUT_MS,
 } from '../timeouts';
@@ -64,21 +65,51 @@ async function getCenter(point: Locator) {
 }
 
 /**
+ * City level, from where a shared address shows its count (`COUNTS_MIN_ZOOM`
+ * in the map's points layer).
+ */
+const COUNTS_MIN_ZOOM = 10;
+
+/**
+ * One wheel step. MapLibre zooms at most one level per wheel event; a delta
+ * this large gets close to that (300px is only about 0.4 of a level).
+ */
+const WHEEL_STEP_PX = 2000;
+
+/**
  * Zooms the map in with the mouse wheel over `point`, which stays under the
- * cursor, until some circle in view shows its count.
+ * cursor, until it reaches city level, then waits for some circle in view to
+ * show its count.
+ *
+ * A wheel step zooms in by at most one level and a whole state starts
+ * around zoom 5, so it takes several steps. Each step waits only for the map
+ * to settle at a higher zoom (a step the map drops is simply repeated), not
+ * for counts that can't show below city level.
  */
 export async function zoomInUntilCountsShow(page: Page, point: Locator) {
   const { x, y } = await getCenter(point);
   await page.mouse.move(x, y);
 
   await expect(async () => {
-    await page.mouse.wheel(0, -300);
+    const zoom = await getSearchMapNumber(page, 'data-zoom');
+    if (zoom >= COUNTS_MIN_ZOOM) return;
+
+    await page.mouse.wheel(0, -WHEEL_STEP_PX);
     await expect
-      .poll(() => getSearchMapNumber(page, 'data-shown-counts'), {
+      .poll(() => getSearchMapNumber(page, 'data-zoom'), {
         timeout: PRESENCE_PROBE_TIMEOUT_MS,
       })
-      .toBeGreaterThan(0);
-  }).toPass({ timeout: ASYNC_UI_TIMEOUT_MS });
+      .toBeGreaterThan(zoom);
+    expect(await getSearchMapNumber(page, 'data-zoom')).toBeGreaterThanOrEqual(
+      COUNTS_MIN_ZOOM,
+    );
+  }).toPass({ timeout: MAP_ZOOM_TO_CITY_TIMEOUT_MS });
+
+  await expect
+    .poll(() => getSearchMapNumber(page, 'data-shown-counts'), {
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    })
+    .toBeGreaterThan(0);
 }
 
 /**
