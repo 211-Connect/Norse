@@ -24,8 +24,51 @@ import { keepLocaleCookieForDocumentNavigations } from './middlewares/localeCook
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_MINUTE } from './utilities/withCache';
 import { trackDependency } from './lib/telemetry/dependency';
+import { recordPageRequest } from './lib/telemetry/arcjet';
+import {
+  NORSE_CLIENT_HEADERS_HEADER,
+  NORSE_CLIENT_RETURNING_HEADER,
+  NORSE_QUERY_KEYS_HEADER,
+  NORSE_REQ_METHOD_HEADER,
+  clientHeaderNamesOf,
+  queryKeyNames,
+  routeOfPath,
+} from './lib/arcjet/request';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
+
+/**
+ * Arcjet Advanced Signals (docs: Next.js "advanced signals"): the script and
+ * its WASM load from the CDN, results post to `signals.arcjet.com`, and the
+ * CDN serves an iframe.
+ */
+const ARCJET_SIGNALS_CSP = {
+  scriptSrc: ['https://signals-cdn.arcjet.com', "'wasm-unsafe-eval'"],
+  connectSrc: ['https://signals-cdn.arcjet.com', 'https://signals.arcjet.com'],
+  frameSrc: ['https://signals-cdn.arcjet.com'],
+} as const;
+
+/**
+ * Records what the client sent, for the request Arcjet receives
+ * (`src/lib/arcjet/request.ts`): its method, the names of its headers (read
+ * before any proxy change), whether it is returning (had `session-id`) and
+ * the query key names. Always overwritten, so a client can't forge them.
+ * Returns whether the client is returning.
+ */
+function setClientRequestHeaders(
+  request: Pick<NextRequest, 'headers' | 'method' | 'cookies' | 'nextUrl'>,
+  clientHeaderNames: string[],
+): boolean {
+  const returning = request.cookies.has(SESSION_ID);
+  request.headers.set(NORSE_REQ_METHOD_HEADER, request.method);
+  request.headers.set(NORSE_CLIENT_HEADERS_HEADER, clientHeaderNames.join(','));
+  request.headers.set(NORSE_CLIENT_RETURNING_HEADER, returning ? '1' : '0');
+  request.headers.set(
+    NORSE_QUERY_KEYS_HEADER,
+    queryKeyNames(request.nextUrl.search).join(','),
+  );
+  return returning;
+}
 
 /**
  * Minimal structured-JSON logger for Edge Runtime where pino cannot be used.
@@ -381,6 +424,9 @@ export async function proxy(request: NextRequest) {
 
   addRootSpanExtras(request);
 
+  // The client's own header names, before this proxy changes anything.
+  const clientHeaderNames = clientHeaderNamesOf(request.headers);
+
   const trapped = crawlTrapMiddleware(request);
   if (trapped) return trapped;
 
@@ -541,6 +587,9 @@ export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const { pathname } = url;
 
+  const returning = setClientRequestHeaders(request, clientHeaderNames);
+  recordPageRequest(host, routeOfPath(pathname), returning);
+
   if (
     tenantConfig?.auth?.requiresLogin &&
     !isAuthPath(pathname) &&
@@ -619,20 +668,17 @@ export async function proxy(request: NextRequest) {
   const arcjetScriptOrigin = getOriginFromUrl(
     process.env.NEXT_PUBLIC_ARCJET_SCRIPT_URL,
   );
-  const arcjetSignalsOrigin = getOriginFromUrl(
-    'https://signals.arcjet.com/v1/t',
-  );
 
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com ${arcjetScriptOrigin ?? ''} ${umamiScriptOrigin ?? ''} ${isProduction ? "'strict-dynamic'" : "'unsafe-eval' 'unsafe-inline'"};
+    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com ${arcjetScriptOrigin ?? ''} ${ARCJET_SIGNALS_CSP.scriptSrc.join(' ')} ${umamiScriptOrigin ?? ''} ${isProduction ? "'strict-dynamic'" : "'unsafe-eval' 'unsafe-inline'"};
     style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com;
     img-src 'self' blob: data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cdn.c211.io *.digitaloceanspaces.com *.feathr.co www.googletagmanager.com;
     font-src 'self' data: https://fonts.gstatic.com;
-    connect-src 'self' data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${arcjetScriptOrigin ?? ''} ${arcjetSignalsOrigin ?? ''} ${umamiScriptOrigin ?? ''} ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
+    connect-src 'self' data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${arcjetScriptOrigin ?? ''} ${ARCJET_SIGNALS_CSP.connectSrc.join(' ')} ${umamiScriptOrigin ?? ''} ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
     worker-src 'self' blob:;
     child-src 'self' blob:;
-    frame-src 'self' blob: ${arcjetScriptOrigin ?? ''};
+    frame-src 'self' blob: ${arcjetScriptOrigin ?? ''} ${ARCJET_SIGNALS_CSP.frameSrc.join(' ')};
     object-src 'none';
     base-uri 'self';
     form-action 'self';

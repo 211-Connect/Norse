@@ -1,4 +1,4 @@
-import { detectBot, filter } from '@arcjet/next';
+import { detectBot, filter, slidingWindow } from '@arcjet/next';
 
 /**
  * Bots allowed through `detectBot`. Evidence measured 2026-10-16 from prod
@@ -32,6 +32,10 @@ export const ARCJET_ALLOWED_BOTS = [
   'OPENAI_CRAWLER_SEARCH',
   'PERPLEXITY_USER',
   'ANTHROPIC_CRAWLER_USER',
+  // Advanced Signals (the browser script's `aj_signals` cookie). Allowed at
+  // first so signal-based denials show up as `allowed_bots` in our records
+  // without blocking anyone; remove once the data shows few false positives.
+  'ARCJET_SIGNALS',
 ] as const;
 
 /**
@@ -43,6 +47,15 @@ export const ARCJET_ALLOWED_BOTS = [
 export const NO_USER_AGENT_FILTER =
   'len(http.request.headers["user-agent"]) eq 0' as const;
 
+/**
+ * Traffic from hosting providers (cloud/datacenter IPs). Arcjet saw a lot of
+ * AWS traffic with a Chrome user agent. DRY_RUN on every route: read the
+ * `dry_run_matches` in `arcjet_decision` records before promoting to LIVE.
+ * Field per Arcjet's filter reference (`ip.src.hosting`, a boolean); confirm
+ * with Arcjet (open question 4 in docs/bot-protection.md).
+ */
+export const HOSTING_IP_FILTER = 'ip.src.hosting' as const;
+
 /** The rule set passed to `arcjet()`; exported so tests can inspect it. */
 export function buildArcjetRules() {
   return [
@@ -53,6 +66,48 @@ export function buildArcjetRules() {
     filter({
       mode: 'DRY_RUN',
       deny: [NO_USER_AGENT_FILTER],
+    }),
+    filter({
+      mode: 'DRY_RUN',
+      deny: [HOSTING_IP_FILTER],
+    }),
+  ];
+}
+
+/**
+ * Bots allowed on the print action: search engines and link previews only.
+ * AI assistants and unknown bots are denied (a printable directory is a bulk
+ * export). `ARCJET_SIGNALS` stays allowed while Advanced Signals is observed.
+ */
+export const PRINT_ALLOWED_BOTS = [
+  'CATEGORY:SEARCH_ENGINE',
+  'CATEGORY:PREVIEW',
+  'ARCJET_SIGNALS',
+] as const;
+
+/** Custom characteristic for per-visitor limits: a hashed session id. */
+export const VISITOR_CHARACTERISTIC = 'norse_visitor' as const;
+
+/**
+ * Print calls per visitor. IPs rotate, so the key is the hashed session
+ * cookie (`norse_visitor`), not the IP. DRY_RUN until the dry-run matches
+ * show where real use ends.
+ */
+export const PRINT_RATE_LIMIT = { interval: '10m', max: 20 } as const;
+
+/** Rules added on top of the base rules for one route (`aj.withRule`). */
+export function routeRules(route: string) {
+  if (route !== 'print') return [];
+  return [
+    ...detectBot({
+      mode: 'LIVE',
+      allow: [...PRINT_ALLOWED_BOTS],
+    }),
+    ...slidingWindow({
+      mode: 'DRY_RUN',
+      interval: PRINT_RATE_LIMIT.interval,
+      max: PRINT_RATE_LIMIT.max,
+      characteristics: [VISITOR_CHARACTERISTIC],
     }),
   ];
 }

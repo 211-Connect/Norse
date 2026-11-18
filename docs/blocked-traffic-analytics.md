@@ -18,7 +18,7 @@ data) into the database that serves the tenants' real analytics. Instead,
 each server instance increments an in-memory counter and pushes the deltas
 once a minute: about `instances × active tenants` small requests per
 minute, whatever the bot volume. Per-request detail (bot name, path) is
-already in the `arcjet_denied` logs and the Arcjet console (`decisionId`).
+already in the `arcjet_decision` records and the Arcjet console (`decision_id`).
 
 ## Where it is configured
 

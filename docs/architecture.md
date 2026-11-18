@@ -244,7 +244,7 @@ allow-listed as a bot; bots behind it are still detected (the allow list in
 `SITEIMPROVE_CRAWLER`). `mboa.c211.io` stays in `ARCJET_UNENFORCED_HOSTS`
 (and out of `ARCJET_ENFORCED_HOSTS` on the MBOA app) until MNIT confirms
 which automated traffic is theirs
-(ISS-1737): Arcjet still runs and logs `arcjet_denied` with `enforced: false`,
+(ISS-1737): Arcjet still runs and writes `arcjet_decision` records with `enforced=false`,
 but the request is not blocked. On that host only, a request that arrives
 via the mn.gov proxy with only private hops in front of it (State network
 visitors) is sent to Arcjet with `ipSrc` set to the hop that proxy appended
@@ -258,8 +258,9 @@ The rule set (`buildArcjetRules` in `src/lib/arcjet/rules.ts`) also carries a
 `filter` rule denying requests with no `User-Agent`
 (`NO_USER_AGENT_FILTER`, ISS-1744): such requests cannot be evaluated by the
 bot rule and otherwise end as `CONCLUSION_ERROR` (fail-open). It runs in
-`DRY_RUN`, so the decision stays ALLOW and each match is logged as
-`arcjet_dry_run_match`. The promotion step is to read the dry-run impact
+`DRY_RUN`, so the decision stays ALLOW and matches appear in the
+`dry_run_matches` field of `arcjet_decision` records (capped per route and
+rule). The promotion step is to read the dry-run impact
 after deploy (Arcjet dashboard and those log lines) and then flip the mode to
 `LIVE`. On 2026-10-16 the only traffic observed in this class was Outlook
 link-scanning from Microsoft's `2a01:111:f400::/48` range.
