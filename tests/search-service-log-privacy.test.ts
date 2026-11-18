@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import type { DestinationStream } from 'pino';
 
 import { setLogDestination } from '../src/lib/logger';
-import { memoryCache } from '../src/utilities/withCache';
+import { withCache } from '../src/utilities/withCache';
 
 // `constants.ts` reads API_URL at module load; the service is imported below.
 process.env.API_URL = 'https://services.test.invalid/norse-api/v1';
@@ -33,8 +33,12 @@ const TENANT_V2 = 'tenant-2';
 // initialising Payload, so the request reaches fetch() and throws a real
 // FetchError.
 const cachedTenant = JSON.stringify({ api: { apiKey: 'test-key' } });
-memoryCache.set(`tenant:${TENANT_V1}`, cachedTenant);
-memoryCache.set(`tenant:${TENANT_V2}`, cachedTenant);
+for (const tenantId of [TENANT_V1, TENANT_V2]) {
+  await withCache(`tenant:${tenantId}`, async () => JSON.parse(cachedTenant), {
+    memory: true,
+    redis: false,
+  });
+}
 
 const requestedUrls: string[] = [];
 const originalFetch = globalThis.fetch;

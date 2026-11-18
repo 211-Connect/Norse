@@ -325,6 +325,8 @@ name** is what you query.
 | `norse.arcjet.burst_active` | `norse_arcjet_burst_active` | observable gauge | `host` | `src/lib/telemetry/arcjet.ts` (1 while this instance has the host in burst mode) |
 | `norse.print.requests` | `norse_print_requests_total` | counter | `host`, `conclusion`, `enforced` | `src/lib/telemetry/arcjet.ts` |
 | `norse.page.requests` | `norse_page_requests_total` | counter | `host`, `route_group`, `returning` | `src/proxy.ts` |
+| `norse.load_shed` | `norse_load_shed_total` | counter | `limit` (`concurrency`\|`minute`), `tenant` (id or `unknown`) | `src/lib/load-shed/report.ts` |
+| `norse.load_shed.in_flight` | `norse_load_shed_in_flight` | observable gauge | `tenant` (id or `unknown`) | `src/lib/load-shed/http-hook.ts` |
 | `norse.search.requests` | `norse_search_requests_total` | counter | `api`, `cache_hit`, `limit` | `src/lib/telemetry/search.ts` |
 | `norse.jobs.runs` | `norse_jobs_runs_total` | counter | `task`, `result` | `src/lib/telemetry/jobs.ts` |
 | `norse.jobs.duration` | `norse_jobs_duration_seconds` | histogram (s) | `task`, `result` | `src/lib/telemetry/jobs.ts` |
@@ -351,7 +353,13 @@ hosts, which is fine:
   `other`
 - `reason_type`: Arcjet's reason (`BOT`, `FILTER`, `RATE_LIMIT`, `ERROR`, ...)
   or `THREW`, `NO_CLIENT_IP`, `none`
-- `limit`: `le25` \| `le50` \| `gt50` (page size; 25 is the default)
+- `limit`: `le25` \| `le50` \| `gt50` (page size; 25 is the default) on
+  `norse_search_requests_total`; `concurrency` \| `minute` on
+  `norse_load_shed_total`
+- `tenant` (load-shed metrics only): the tenant id the proxy resolved, or
+  `unknown`. Another exception to the rule above: it is bounded by the number
+  of tenants (an unresolved host is never a label), and per-tenant shedding is
+  the point of the metric.
 - `result` (jobs): `success` \| `failed` \| `noop`
 
 Notes on semantics:
