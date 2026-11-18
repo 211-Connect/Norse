@@ -6,18 +6,26 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useTransition } from 'react';
+import {
+  createContext,
+  createElement,
+  useCallback,
+  useContext,
+  useMemo,
+  useTransition,
+  type ReactNode,
+} from 'react';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import { resultsUrlFor } from './landing';
+import { seedMatches, v2CallString, type V2Seed } from './v2-seed';
 
 import {
   answerChanges,
   activeFiltersOf,
   facetsToFilters,
   nextV2Params,
-  v2FilterPairs,
   withoutNX,
   type V2Changes,
   type V2Question,
@@ -32,19 +40,6 @@ export * from './v2-contract';
  * `GET /v2/search` call (ADR 0039, OpenAPI draft). The URL is the only state: an answer writes
  * `needs`, `passed_needs`, or `urgency`, and the same call runs again.
  */
-
-/** The draft v2 parameters, in the order the call sends them. */
-const CALL_KEYS = [
-  'query',
-  'needs',
-  'passed_needs',
-  'urgency',
-  'taxonomy',
-  'location',
-  'coords',
-  'distance',
-  'page',
-] as const;
 
 export { MAX_GUIDED };
 
@@ -68,19 +63,6 @@ export function useV2Url() {
   };
 }
 
-/** The `/v2/search` parameters of a page URL, in one stable string (the query cache key). */
-function v2CallString(params: URLSearchParams): string {
-  const call = new URLSearchParams();
-  for (const key of CALL_KEYS) {
-    const raw = params.get(key);
-    const value = key === 'needs' ? withoutNX(raw) : raw;
-    if (value) call.set(key, value);
-  }
-  // Facet filters and area params are result-changing, so they are in the cache key too.
-  for (const [key, value] of v2FilterPairs(params)) call.append(key, value);
-  return call.toString();
-}
-
 async function fetchV2(
   tenantId: string | undefined,
   callString: string,
@@ -94,19 +76,43 @@ async function fetchV2(
   return (await res.json()) as V2Response;
 }
 
+/**
+ * The first answer, fetched by the server for the results URL and put in the HTML. The hook starts
+ * from it, so the page does not call `/api/v2-search` again for the same URL.
+ */
+const V2SeedContext = createContext<V2Seed | null>(null);
+
+export function V2SeedProvider({
+  seed,
+  children,
+}: {
+  seed: V2Seed;
+  children: ReactNode;
+}) {
+  return createElement(V2SeedContext.Provider, { value: seed }, children);
+}
+
 export function useV2Search() {
   const { params, query } = useV2Url();
   const { tenantId } = useAppConfig();
   const callString = useMemo(() => v2CallString(params), [params]);
+  const seed = useContext(V2SeedContext);
+  const seeded = seedMatches(seed, tenantId, callString) ? seed : null;
 
   const result = useQuery({
+    initialData: seeded?.data,
+    initialDataUpdatedAt: seeded?.fetchedAt,
     queryKey: ['v2-search', tenantId, callString],
     enabled: Boolean(query && tenantId),
     placeholderData: keepPreviousData,
     staleTime: 60_000,
     queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
   });
-  return { ...result, query };
+  // The query client outlives requests on the server, so a server render uses the seed, never an
+  // older cache entry. On the client the two are the same until the first refetch.
+  const data =
+    typeof window === 'undefined' && seeded ? seeded.data : result.data;
+  return { ...result, data, query };
 }
 
 /**
