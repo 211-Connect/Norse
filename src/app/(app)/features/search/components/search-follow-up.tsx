@@ -1726,21 +1726,21 @@ export function SearchRefineQuestion() {
                     }
                   >
                     {question.multi && <PickMark on={on} />}
-                    <span className="flex flex-col">
+                    <span className="flex min-w-0 flex-1 flex-col">
                       {option.label}
                       {needDescription(option.add[0]) && (
                         <span className={NEED_DESC_CLASS}>
                           {needDescription(option.add[0])}
                         </span>
                       )}
+                      {typeof option.keeps === 'number' && (
+                        <span className="text-muted-foreground text-xs font-normal">
+                          {t('search.v2_option_services_count', {
+                            count: option.keeps,
+                          })}
+                        </span>
+                      )}
                     </span>
-                    {typeof option.keeps === 'number' && (
-                      <span className="text-muted-foreground text-xs font-normal">
-                        {t('search.v2_option_services_count', {
-                          count: option.keeps,
-                        })}
-                      </span>
-                    )}
                   </button>
                 );
               })}

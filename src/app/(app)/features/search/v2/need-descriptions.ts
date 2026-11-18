@@ -73,9 +73,9 @@ export const needDescription = (code: string | undefined): string | undefined =>
   code ? NEED_DESCRIPTIONS[code] : undefined;
 
 /**
- * Lucas 2026-11-16: on a phone, one short line (about 5 words, cut with an ellipsis); on desktop,
- * hidden until the pointer is on the option (the full text is also the option's title).
- * The option button needs the `group` class.
+ * Lucas 2026-11-16 said what kind of need an option is (the SUNE spoken description). Lucas 2026-11-18: a hover that
+ * grows the card looks bad, so the description is always shown, at most two lines (the full text is also the
+ * option's title). No size change on hover or focus.
  */
 export const NEED_DESC_CLASS =
-  'text-muted-foreground block max-w-[16rem] truncate text-xs font-normal md:hidden md:max-w-none md:whitespace-normal md:group-hover:block md:group-focus-visible:block';
+  'text-muted-foreground line-clamp-2 text-xs font-normal';
