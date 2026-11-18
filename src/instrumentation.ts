@@ -328,6 +328,11 @@ export async function register(
         const { registerActiveResourcesGauge } =
           await import('./instrumentation.node');
         registerActiveResourcesGauge();
+        // Reads the per-process burst state the pages write (globalThis).
+        const { registerBurstGauge } = await import('@/lib/telemetry/arcjet');
+        const { decisionLogState } =
+          await import('@/lib/arcjet/decision-sampling');
+        registerBurstGauge(() => decisionLogState().burst.knownHosts());
       } catch (error) {
         setupErrors.push({ signal: 'metrics', error });
       }

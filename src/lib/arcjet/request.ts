@@ -166,6 +166,12 @@ export interface BuildArcjetRequestInput {
   path: string;
   /** Used when the proxy recorded no method (page renders are GETs). */
   defaultMethod?: string;
+  /**
+   * Whether the request carries our `session-id` cookie. Used for
+   * `clientReturning` only when the proxy did not run (`/api/*` routes):
+   * there the request's own cookies are what the client sent.
+   */
+  hasSessionCookie?: boolean;
 }
 
 /**
@@ -179,6 +185,7 @@ export function buildArcjetRequest({
   ajSignals,
   path,
   defaultMethod = 'GET',
+  hasSessionCookie,
 }: BuildArcjetRequestInput): BuiltArcjetRequest {
   const pathOnly = stripQuery(path);
   const method = (
@@ -197,7 +204,11 @@ export function buildArcjetRequest({
 
   const returningRaw = headers.get(NORSE_CLIENT_RETURNING_HEADER);
   const clientReturning =
-    returningRaw === '1' ? true : returningRaw === '0' ? false : undefined;
+    returningRaw === '1'
+      ? true
+      : returningRaw === '0'
+        ? false
+        : hasSessionCookie;
   const queryKeys = parseNameList(headers.get(NORSE_QUERY_KEYS_HEADER)) ?? [];
 
   const cookies: Partial<Record<string, string>> = {};
@@ -242,5 +253,6 @@ export function routeOfPath(path: string): ArcjetRoute {
 /** The locale segment of a page path, or ''. */
 export function localeOfPath(path: string): string {
   const first = path.split('/')[1] ?? '';
+  if (first === 'api') return '';
   return /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/.test(first) ? first : '';
 }
