@@ -142,6 +142,21 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
+      // Payload CMS admin, per role. Local only: run against a dev server
+      // with the users from `npm run test:e2e:cms:seed`. Not in the CI
+      // tenant matrix (those hosts have no seeded CMS users). One worker:
+      // tests log the same users in, and parallel logins of one user wait on
+      // its row lock while holding connections from the dev server's small
+      // Postgres pool (DATABASE_POOL_MAX, default 4) until it deadlocks.
+      name: 'cms',
+      testMatch: ['**/cms/*.spec.ts'],
+      workers: 1,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.E2E_CMS_BASE_URL ?? 'http://localhost:3000',
+      },
+    },
+    {
       name: 'organization',
       testMatch: [
         '**/search-organization.spec.ts',

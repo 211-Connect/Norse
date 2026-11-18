@@ -145,6 +145,7 @@ Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
 | `auth.ts`       | `loginViaKeycloak`                                                                                                                                        |
 | `i18n.ts`       | `switchLanguage`                                                                                                                                          |
 | `map.ts`        | Search map: its `data-*` readings, `waitForMapPinsLoaded`, shared list circles, wheel zoom and canvas clicks                                              |
+| `cms.ts`        | Payload CMS admin: `loginToCms` (REST login), `gotoCms` (waits for the hydrated sidebar), `clickCmsNavLink`, `getCmsNavLinks`, Settings-view assertions   |
 | `internal.ts`   | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic)                                                                                 |
 
 New helpers go in the module matching their domain, not back into a flat
@@ -267,6 +268,31 @@ failure names the same step a manual tester would report.
   CI runs it in every tenant cell of the e2e workflow; it skips everywhere
   but MBOA.
 
+## Payload CMS admin (`e2e/cms/`, project `cms`)
+
+Covers the Payload admin per role, not a tenant's public site. Local only, not
+in the CI matrix: the users exist only in a local database.
+
+- `npm run test:e2e:cms:seed` creates (or resets) a super-admin, a
+  tenant-admin and a tenant-editor (`e2e/cms/users.ts`, `@norse.test`
+  emails, local-only password). It refuses a non-local `DATABASE_URI`. The
+  tenant is `E2E_CMS_TENANT_ID`, else the first one with a Settings document.
+- `npm run test:e2e:cms` runs against `E2E_CMS_BASE_URL` (default
+  `http://localhost:3000`), with one worker: parallel logins of the same user
+  deadlock a dev server's 4-connection Postgres pool.
+- Tests log in per test through `POST /api/users/login` (no IdP chain, so it
+  is cheap), on the page's own request context so the cookies reach the page.
+- `admin-navigation.spec.ts`: for each tenant role, Settings opens the
+  user's own tenant Settings (from the sidebar, the list URL and a direct
+  link), and every sidebar link opens its own page instead of bouncing to the
+  Analytics dashboard; the super-admin gets the same checks. Below Payload's
+  wide breakpoint the sidebar starts closed, so `clickCmsNavLink` opens it
+  first, and `gotoCms` waits for `nav--nav-hydrated` because the toggle is
+  not rendered before hydration.
+- A dev server stuck on Drizzle's interactive schema-push prompt (local DB
+  schema behind the checked-out branch) hangs every Payload request, logins
+  included; run `npm run migrate` or answer the prompt before blaming a test.
+
 ## Known risks (documented, not fixed here)
 
 - **Data-dependent tests silently skip**: several tests call
@@ -296,7 +322,8 @@ failure names the same step a manual tester would report.
 - `npm run test:e2e` — full suite (all projects, Desktop Chrome only).
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
   `translations`, `search-geocode`, `area-search`, `search-taxonomy`, `share-link`,
-  `resource-direct-link`, `organization`, `mboa-qa-checklist`, `map-pins`).
+  `resource-direct-link`, `organization`, `mboa-qa-checklist`, `map-pins`,
+  `cms`).
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`
   when no tenant/env is selected, otherwise it is derived from
   `e2e/fixtures/tenants.ts`. Override with `E2E_BASE_URL` at any time.
