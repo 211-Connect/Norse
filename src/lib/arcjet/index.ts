@@ -380,7 +380,12 @@ export function createArcjetProtect(
     const stopTimer = startTimer();
     let decision: ArcjetDecision;
     try {
-      decision = await client.protect(request, protectOptions, call.route);
+      decision = await client.protect(
+        request,
+        // No options at all when there is nothing to pass.
+        Object.keys(protectOptions).length ? protectOptions : undefined,
+        call.route,
+      );
     } catch (error) {
       const timing = stopTimer();
       // Fail open: a protection outage must never take the site down.

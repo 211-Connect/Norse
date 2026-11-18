@@ -300,6 +300,12 @@ label caused it.
 ## Tests
 
 - Unit: `tests/arcjet.test.ts` (rules, enforcement, client IP);
+  `tests/arcjet-decision-observability.test.ts` (request sent to Arcjet,
+  including an SDK-level check of path/method/`query === ""`, proxy
+  `x-norse-*` overwrite, CSP sources, referer shape, client signature,
+  sampling and burst mode, the `arcjet_decision` record, the SDK log adapter);
+  `tests/arcjet-timing.test.ts`; `tests/telemetry-arcjet-search.test.ts`
+  (metric labels);
   `tests/crawl-trap.test.ts` (edge 410, writers, robots patterns).
 - E2E runs in CI against the dev hosts only, which stay unenforced. It does
   not run against production, where headless Chromium is expected to be

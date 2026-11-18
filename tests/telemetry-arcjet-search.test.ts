@@ -140,11 +140,61 @@ describe('arcjet decision counter', () => {
       attributes: point.attributes,
       value: point.value,
     }));
+    // Without labels the spec v2 dimensions fall back to fixed values.
+    const unlabelled = {
+      reason_type: 'none',
+      route: 'unknown',
+      host: 'unknown',
+      aj_signals_present: 'false',
+    };
     assert.deepEqual(points, [
-      { attributes: { conclusion: 'ALLOW', enforced: 'true' }, value: 1 },
-      { attributes: { conclusion: 'THREW', enforced: 'false' }, value: 1 },
-      { attributes: { conclusion: 'ERROR', enforced: 'false' }, value: 1 },
+      {
+        attributes: { conclusion: 'ALLOW', enforced: 'true', ...unlabelled },
+        value: 1,
+      },
+      {
+        attributes: { conclusion: 'THREW', enforced: 'false', ...unlabelled },
+        value: 1,
+      },
+      {
+        attributes: { conclusion: 'ERROR', enforced: 'false', ...unlabelled },
+        value: 1,
+      },
     ]);
+  });
+
+  it('labels decisions by reason, route, host and signals; counts served denials', async () => {
+    recordArcjetDecision('DENIED_NOT_ENFORCED', false, {
+      reasonType: 'BOT',
+      route: 'search',
+      host: 'search.example.org',
+      ajSignalsPresent: true,
+    });
+
+    await meterProvider.forceFlush();
+
+    // The exporter keeps every flush: read the points across all of them.
+    const pointsOf = (name: string) =>
+      exportedMetrics()
+        .filter((m) => m.descriptor.name === name)
+        .flatMap((m) => m.dataPoints);
+    const decision = pointsOf('norse.arcjet.decisions').find(
+      (p) => p.attributes.conclusion === 'DENIED_NOT_ENFORCED',
+    );
+    assert.deepEqual(decision?.attributes, {
+      conclusion: 'DENIED_NOT_ENFORCED',
+      enforced: 'false',
+      reason_type: 'BOT',
+      route: 'search',
+      host: 'search.example.org',
+      aj_signals_present: 'true',
+    });
+    const served = pointsOf('norse.arcjet.served_denied');
+    assert.deepEqual(served.at(-1)?.attributes, {
+      host: 'search.example.org',
+      route: 'search',
+    });
+    assert.equal(served.at(-1)?.value, 1);
   });
 
   it('marks only ERROR and THREW as failed decisions', () => {

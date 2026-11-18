@@ -13,7 +13,10 @@ import { NextRequest } from 'next/server';
 import {
   type ArcjetLog,
   type ArcjetTiming,
+  buildArcjetRequest,
+  buildDecisionRecord,
   createArcjetProtect,
+  requestFeatures,
 } from '../src/lib/arcjet';
 
 type LogEntry = { level: string; event: string; data: Record<string, unknown> };
@@ -35,14 +38,8 @@ function makeRequest() {
 }
 
 const TIMING: ArcjetTiming = { durationMs: 42, eventLoopUtilization: 0.123 };
-const INSTANCE = 'test-instance-1';
-const TRACE = { traceId: 'abc123', traceSampled: true };
 
-const seams = {
-  startTimer: () => () => TIMING,
-  instance: INSTANCE,
-  traceContext: () => TRACE,
-};
+const seams = { startTimer: () => () => TIMING };
 
 const failingClient = {
   protect: async () => {
@@ -57,30 +54,43 @@ const erroredDecision = () =>
     reason: new ArcjetErrorReason('DECIDE_TIMEOUT'),
   }) as unknown as ArcjetDecision;
 
+/** The `arcjet_decision` record for a result (spec v2: timing lives there). */
+function recordOf(
+  result: Awaited<ReturnType<ReturnType<typeof createArcjetProtect>>>,
+) {
+  const { request, context } = buildArcjetRequest({
+    headers: makeRequest().headers,
+    path: PATH,
+  });
+  return buildDecisionRecord({
+    result,
+    enforced: false,
+    route: 'search',
+    tenantId: '',
+    context,
+    features: requestFeatures(request.headers, context),
+    request,
+    burst: false,
+  });
+}
+
 describe('arcjet timing fields (N1)', () => {
-  it('THREW path logs all five fields', () => {
+  it('THREW path: timing and error on the result and the record, nothing to pino', async () => {
     const { log, entries } = captureLog();
     const protect = createArcjetProtect(failingClient, seams);
-    const result = protect(makeRequest(), PATH, log);
-    return Promise.resolve(result).then((res) => {
-      assert.equal(res.conclusion, 'THREW');
-      assert.deepEqual(res.timing, TIMING);
-      const entry = entries.find(
-        (e) => e.event === 'arcjet_fingerprint_failed',
-      );
-      assert.ok(entry);
-      assert.equal(entry.data.durationMs, TIMING.durationMs);
-      assert.equal(
-        entry.data.eventLoopUtilization,
-        TIMING.eventLoopUtilization,
-      );
-      assert.equal(entry.data.instance, INSTANCE);
-      assert.equal(entry.data.traceId, TRACE.traceId);
-      assert.equal(entry.data.traceSampled, TRACE.traceSampled);
-    });
+    const res = await protect(makeRequest(), PATH, log);
+    assert.equal(res.conclusion, 'THREW');
+    assert.deepEqual(res.timing, TIMING);
+    assert.equal(res.errorType, 'Error');
+    assert.equal(res.errorMessage, 'arcjet is down');
+    assert.deepEqual(entries, []);
+    const record = recordOf(res);
+    assert.equal(record.duration_ms, TIMING.durationMs);
+    assert.equal(record.event_loop_utilization, TIMING.eventLoopUtilization);
+    assert.equal(record.conclusion, 'THREW');
   });
 
-  it('ERROR path logs all five fields', async () => {
+  it('ERROR path: timing and error type on the result and the record', async () => {
     const { log, entries } = captureLog();
     const protect = createArcjetProtect(
       { protect: async () => erroredDecision() },
@@ -89,32 +99,12 @@ describe('arcjet timing fields (N1)', () => {
     const res = await protect(makeRequest(), PATH, log);
     assert.equal(res.conclusion, 'ERROR');
     assert.deepEqual(res.timing, TIMING);
-    const entry = entries.find((e) => e.event === 'arcjet_fingerprint_failed');
-    assert.ok(entry);
-    assert.equal(entry.data.durationMs, TIMING.durationMs);
-    assert.equal(entry.data.eventLoopUtilization, TIMING.eventLoopUtilization);
-    assert.equal(entry.data.instance, INSTANCE);
-    assert.equal(entry.data.traceId, TRACE.traceId);
-    assert.equal(entry.data.traceSampled, TRACE.traceSampled);
-  });
-
-  it('sampled-out path carries the same fields', async () => {
-    const { log, entries } = captureLog();
-    const protect = createArcjetProtect(failingClient, {
-      ...seams,
-      sampleHeaderLog: () => false,
-    });
-    const res = await protect(makeRequest(), PATH, log);
-    assert.equal(res.conclusion, 'THREW');
-    const entry = entries.find(
-      (e) => e.event === 'arcjet_fingerprint_failed_sampled_out',
-    );
-    assert.ok(entry);
-    assert.equal(entry.data.durationMs, TIMING.durationMs);
-    assert.equal(entry.data.eventLoopUtilization, TIMING.eventLoopUtilization);
-    assert.equal(entry.data.instance, INSTANCE);
-    assert.equal(entry.data.traceId, TRACE.traceId);
-    assert.equal(entry.data.traceSampled, TRACE.traceSampled);
+    assert.equal(res.errorType, 'ERROR');
+    assert.deepEqual(entries, []);
+    const record = recordOf(res);
+    assert.equal(record.duration_ms, TIMING.durationMs);
+    assert.equal(record.event_loop_utilization, TIMING.eventLoopUtilization);
+    assert.equal(record.error_type, 'ERROR');
   });
 
   it('ALLOW path logs nothing and carries timing', async () => {
@@ -138,6 +128,7 @@ describe('arcjet timing fields (N1)', () => {
     const res = await protect(makeRequest(), PATH, log);
     assert.equal(res.conclusion, 'ALLOW');
     assert.deepEqual(res.timing, TIMING);
+    assert.equal(res.reasonType, 'BOT');
     assert.deepEqual(entries, []);
   });
 });

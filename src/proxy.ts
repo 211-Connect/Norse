@@ -28,49 +28,13 @@ import { minuteLimitResponse } from './lib/load-shed/minute-limit';
 import { rememberTenant } from './lib/load-shed/tenant-registry';
 import { recordPageRequest } from './lib/telemetry/arcjet';
 import {
-  NORSE_CLIENT_HEADERS_HEADER,
-  NORSE_CLIENT_RETURNING_HEADER,
-  NORSE_QUERY_KEYS_HEADER,
-  NORSE_REQ_METHOD_HEADER,
+  ARCJET_SIGNALS_CSP,
   clientHeaderNamesOf,
-  queryKeyNames,
   routeOfPath,
+  setClientRequestHeaders,
 } from './lib/arcjet/request';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
-
-/**
- * Arcjet Advanced Signals (docs: Next.js "advanced signals"): the script and
- * its WASM load from the CDN, results post to `signals.arcjet.com`, and the
- * CDN serves an iframe.
- */
-const ARCJET_SIGNALS_CSP = {
-  scriptSrc: ['https://signals-cdn.arcjet.com', "'wasm-unsafe-eval'"],
-  connectSrc: ['https://signals-cdn.arcjet.com', 'https://signals.arcjet.com'],
-  frameSrc: ['https://signals-cdn.arcjet.com'],
-} as const;
-
-/**
- * Records what the client sent, for the request Arcjet receives
- * (`src/lib/arcjet/request.ts`): its method, the names of its headers (read
- * before any proxy change), whether it is returning (had `session-id`) and
- * the query key names. Always overwritten, so a client can't forge them.
- * Returns whether the client is returning.
- */
-function setClientRequestHeaders(
-  request: Pick<NextRequest, 'headers' | 'method' | 'cookies' | 'nextUrl'>,
-  clientHeaderNames: string[],
-): boolean {
-  const returning = request.cookies.has(SESSION_ID);
-  request.headers.set(NORSE_REQ_METHOD_HEADER, request.method);
-  request.headers.set(NORSE_CLIENT_HEADERS_HEADER, clientHeaderNames.join(','));
-  request.headers.set(NORSE_CLIENT_RETURNING_HEADER, returning ? '1' : '0');
-  request.headers.set(
-    NORSE_QUERY_KEYS_HEADER,
-    queryKeyNames(request.nextUrl.search).join(','),
-  );
-  return returning;
-}
 
 /**
  * Minimal structured-JSON logger for Edge Runtime where pino cannot be used.
@@ -610,7 +574,14 @@ export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const { pathname } = url;
 
-  const returning = setClientRequestHeaders(request, clientHeaderNames);
+  // Always overwritten, so a client can't forge them (lib/arcjet/request.ts).
+  const returning = request.cookies.has(SESSION_ID);
+  setClientRequestHeaders(request.headers, {
+    method: request.method,
+    clientHeaderNames,
+    returning,
+    search: request.nextUrl.search,
+  });
   recordPageRequest(host, routeOfPath(pathname), returning);
 
   if (

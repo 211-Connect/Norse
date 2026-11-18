@@ -27,6 +27,10 @@ const ALLOWED: Record<string, { count: number; why: string }> = {
     count: 1,
     why: 'the request URL for bot protection, not a link',
   },
+  'app/(app)/shared/serverActions/search/getPrintableDirectoryData.ts': {
+    count: 1,
+    why: 'the request path for bot protection of the print action, not a link',
+  },
   'app/(app)/shared/services/search-service.ts': {
     count: 1,
     why: 'the Norse-API request, not a page URL',

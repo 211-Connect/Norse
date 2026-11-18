@@ -32,6 +32,37 @@ export const NORSE_REQUEST_HEADERS = [
   NORSE_QUERY_KEYS_HEADER,
 ] as const;
 
+/**
+ * Arcjet Advanced Signals CSP sources (docs: Next.js "advanced signals"): the
+ * script and its WASM load from the CDN, results post to
+ * `signals.arcjet.com`, and the CDN serves an iframe. Used by `src/proxy.ts`.
+ */
+export const ARCJET_SIGNALS_CSP = {
+  scriptSrc: ['https://signals-cdn.arcjet.com', "'wasm-unsafe-eval'"],
+  connectSrc: ['https://signals-cdn.arcjet.com', 'https://signals.arcjet.com'],
+  frameSrc: ['https://signals-cdn.arcjet.com'],
+} as const;
+
+/**
+ * Called by the proxy before `i18nRouter`: records what the client sent in
+ * the `x-norse-*` request headers. Always overwrites them, so a client can't
+ * forge them. `clientHeaderNames` must be read before any proxy change.
+ */
+export function setClientRequestHeaders(
+  headers: Pick<Headers, 'set'>,
+  input: {
+    method: string;
+    clientHeaderNames: string[];
+    returning: boolean;
+    search: string;
+  },
+): void {
+  headers.set(NORSE_REQ_METHOD_HEADER, input.method);
+  headers.set(NORSE_CLIENT_HEADERS_HEADER, input.clientHeaderNames.join(','));
+  headers.set(NORSE_CLIENT_RETURNING_HEADER, input.returning ? '1' : '0');
+  headers.set(NORSE_QUERY_KEYS_HEADER, queryKeyNames(input.search).join(','));
+}
+
 /** The only cookie Arcjet receives: the Advanced Signals result. */
 export const ARCJET_SIGNALS_COOKIE = 'aj_signals';
 
