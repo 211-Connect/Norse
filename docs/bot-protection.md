@@ -20,6 +20,7 @@ per-tenant setting, so the rollout does not depend on CMS changes.
 | `ARCJET_ENFORCED_HOSTS` | unset | Comma list of hosts, or `*` for all. Unset or empty: nothing is enforced (log-only everywhere). This is the kill switch. |
 | `ARCJET_UNENFORCED_HOSTS` | unset | Hosts never enforced, also under `*`. Wins over `ARCJET_ENFORCED_HOSTS`. |
 | `ARCJET_TIMEOUT_MS` | `500` | Decide API timeout. On timeout the request is served (fail open). |
+| `ARCJET_RATE_LIMIT_PER_MINUTE` | `60` | Requests one client IP may make to covered pages per sliding minute. `0` removes the rate-limit rule. |
 | `ARCJET_LOG_LEVEL` | `info` | SDK log level. `debug` only for a short diagnostic window. |
 
 Host matching uses the `host` header only, case-insensitive, without port or
@@ -46,7 +47,7 @@ page.tsx / generateMetadata
 
 arcjetProtect                    src/lib/arcjet/index.ts
   ├ isMboaWithoutClientIp → ipSrc   client-ip.ts
-  ├ aj.protect(request)             rules.ts (detectBot LIVE, no-UA filter DRY_RUN)
+  ├ aj.protect(request)             rules.ts (slidingWindow LIVE, detectBot LIVE, no-UA filter DRY_RUN)
   └ logs                            redact.ts
 ```
 
@@ -77,6 +78,23 @@ arcjetProtect                    src/lib/arcjet/index.ts
   list `ARCJET_ALLOWED_BOTS`, and a `filter` in `DRY_RUN` that denies
   requests with no `User-Agent` (ISS-1744). AI training crawlers are denied
   and also disallowed in `src/app/robotsRules.ts`; keep the two lists in agreement.
+- **Per-IP rate limit** (`slidingWindow`, `LIVE`): at most
+  `ARCJET_RATE_LIMIT_PER_MINUTE` (60) requests per client IP in any 60
+  seconds, keyed by Arcjet's default fingerprint (`ip.src`, resolved through
+  the proxies below). Counted by Arcjet's Decide API in the same call as the
+  bot check, so it adds no request. On an enforced host a client over the
+  limit gets the 403 (`reasonType` `RATE_LIMIT`), and the SDK caches the
+  denial locally for the TTL Arcjet returns, so its next requests are denied
+  without a call. On an observe-only host it is only logged.
+  There is no exemption for allowed crawlers: they spread their requests over
+  many IPs. It stops single-IP crawlers, not rotating residential proxies,
+  which change IP every few seconds. MBOA internal traffic (State
+  of Minnesota network behind the mn.gov proxy) is never rate limited: its
+  `ipSrc` is the proxy's private hop, shared by every State visitor, so it
+  goes through a second Arcjet client with the same bot rules and no rate
+  limit (`arcjetClientFor`). With no usable hop at all it skips Arcjet
+  entirely (`NO_CLIENT_IP`). MBOA visitors on the public internet have their
+  own IP and are limited like everyone else.
 - **Advanced signals script.** Set the repository Actions variable
   `NEXT_PUBLIC_ARCJET_SCRIPT_URL` to `https://signals-cdn.arcjet.com/aj-sig.js`.
   The shared deploy workflow passes it only to the public-app image build, where
