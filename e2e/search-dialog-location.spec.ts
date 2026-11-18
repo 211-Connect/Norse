@@ -5,6 +5,7 @@ import esCommon from '../public/locales/es/common.json' with { type: 'json' };
 import { getCurrentTenant } from './fixtures/tenants';
 import {
   applyTestLocationOnSearchPage,
+  clickUntilSearchDialogOpens,
   expect,
   expectSearchDialogDismissed,
   getResultTotalNumber,
@@ -265,11 +266,7 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
     const changeLocation = page
       .getByRole('button', { name: /change location/i })
       .first();
-    await expect(changeLocation).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await changeLocation.click();
-
-    const dialog = page.getByTestId('search-dialog');
-    await expect(dialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await clickUntilSearchDialogOpens(page, changeLocation);
     const locationInput = page.locator('#location-input');
     await expect(locationInput).toHaveValue(staleLocation);
 
@@ -320,11 +317,7 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
     const changeLocation = page
       .getByRole('button', { name: /change location/i })
       .first();
-    await expect(changeLocation).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await changeLocation.click();
-
-    const dialog = page.getByTestId('search-dialog');
-    await expect(dialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await clickUntilSearchDialogOpens(page, changeLocation);
 
     const locationInput = page.locator('#location-input');
     await expect(locationInput).toHaveValue(staleLocation);

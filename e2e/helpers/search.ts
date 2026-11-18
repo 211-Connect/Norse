@@ -1,4 +1,4 @@
-import { type Page, expect } from '@playwright/test';
+import { type Locator, type Page, expect } from '@playwright/test';
 
 import {
   ASYNC_UI_TIMEOUT_MS,
@@ -264,10 +264,7 @@ export async function applyTestLocationOnSearchPage(
   const addOrChange = page.getByRole('button', {
     name: /add my location|change location|cambiar ubicación|agregar mi ubicación/i,
   });
-  await expect(addOrChange.first()).toBeVisible({
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
-  await addOrChange.first().click();
+  await clickUntilSearchDialogOpens(page, addOrChange.first());
   const locationInput = page.locator('#location-input');
   await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await locationInput.fill(location);
@@ -312,6 +309,25 @@ export function getLocationBelowSearch(page: Page) {
     .locator('#filter-panel')
     .getByRole('button', { name: /^(add my location|change location:)/i })
     .first();
+}
+
+/**
+ * Clicks `button` until the search dialog opens, and returns the dialog. The
+ * results page is server-rendered, so its buttons show before React hydrates
+ * them, and a click that lands in between does nothing. The search page's
+ * settle wait only covers hydration where the filter panel has facets, so
+ * without them (seen on DUPAGE and SCC) the first click can be lost.
+ */
+export async function clickUntilSearchDialogOpens(page: Page, button: Locator) {
+  const dialog = page.getByTestId('search-dialog');
+  await expect(button).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await expect(async () => {
+    if (!(await dialog.isVisible())) {
+      await button.click();
+    }
+    await expect(dialog).toBeVisible({ timeout: PRESENCE_PROBE_TIMEOUT_MS });
+  }).toPass({ timeout: UI_SHELL_TIMEOUT_MS });
+  return dialog;
 }
 
 /** Asserts no location is applied: the button below the search bar offers "Add my location". */
@@ -401,15 +417,7 @@ export async function chooseLocationFromSearchPage(
   page: Page,
   { typed, suggestion }: { typed: string; suggestion: string },
 ) {
-  // A click that lands before the button hydrates does nothing (seen on a
-  // cold dev server), so click again until the dialog opens.
-  const dialog = page.getByTestId('search-dialog');
-  await expect(async () => {
-    if (!(await dialog.isVisible())) {
-      await getLocationBelowSearch(page).click();
-    }
-    await expect(dialog).toBeVisible({ timeout: PRESENCE_PROBE_TIMEOUT_MS });
-  }).toPass({ timeout: UI_SHELL_TIMEOUT_MS });
+  await clickUntilSearchDialogOpens(page, getLocationBelowSearch(page));
 
   const locationInput = page.locator('#location-input');
   await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
