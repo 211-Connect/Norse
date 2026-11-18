@@ -913,7 +913,7 @@ export interface ResourceDirectory {
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
-      searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
+      searchEngine?: ('classic' | 'hybrid' | 'ai_classification' | 'v2') | null;
       /**
        * How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.
        */
@@ -1069,6 +1069,7 @@ export interface ResourceDirectory {
     showSearchAndResourceServiceName?: boolean | null;
     showSuggestionListTaxonomyBadge?: boolean | null;
     enableOrganizationSearch?: boolean | null;
+    enableV2Api?: boolean | null;
     showOrganizationLocationBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
@@ -2013,6 +2014,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showSearchAndResourceServiceName?: T;
         showSuggestionListTaxonomyBadge?: T;
         enableOrganizationSearch?: T;
+        enableV2Api?: T;
         showOrganizationLocationBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;

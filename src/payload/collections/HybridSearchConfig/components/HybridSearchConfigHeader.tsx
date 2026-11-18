@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions/findResourceDirectoryByTenantId';
 import { findTenantNameById } from '@/payload/collections/Tenants/actions/findTenantNameById';
 
-const HYBRID_SEARCH_ENGINES = ['hybrid', 'ai_classification'];
+const HYBRID_SEARCH_ENGINES = ['hybrid', 'ai_classification', 'v2'];
 
 const HybridSearchConfigHeader = () => {
   const { id } = useDocumentInfo();

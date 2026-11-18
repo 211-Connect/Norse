@@ -4,7 +4,8 @@ import { ResourceDirectory } from '@/payload/payload-types';
 
 import { Nullable } from './common';
 
-export type SearchEngine = 'classic' | 'hybrid' | 'ai_classification';
+// 'v2' behaves like 'ai_classification' in the frontend until the v2 UX ships (ISS-2499).
+export type SearchEngine = 'classic' | 'hybrid' | 'ai_classification' | 'v2';
 
 type PayloadPrintableDirectoryUserGroup = NonNullable<
   NonNullable<

@@ -27,7 +27,11 @@ export function searchPolicy({
   requireUserLocation: boolean;
 }): SearchPolicy {
   return {
-    needs: searchEngine === 'ai_classification' ? 'gate' : 'refine',
+    // 'v2' behaves like 'ai_classification' until the v2 UX ships (ISS-2499).
+    needs:
+      searchEngine === 'ai_classification' || searchEngine === 'v2'
+        ? 'gate'
+        : 'refine',
     location: requireUserLocation ? 'gate' : 'refine',
   };
 }
