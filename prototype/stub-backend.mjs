@@ -40,6 +40,8 @@ http.createServer((req, res) => {
     const u = new URL(req.url, 'http://x'); const p = u.pathname.replace(/\/$/, ''); const q = u.searchParams.get('query') || u.searchParams.get('q') || '';
     const send = (o) => { res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*' }); res.end(JSON.stringify(o)); };
     console.log(req.method, p, q.slice(0, 40));
+    // PR #331: on v2, tenant and language are in the URL only. Log what arrived so a run can check it.
+    if (p === '/v2/search') console.log('  v2 tenant_id=%s locale=%s x-tenant-id=%s accept-language=%s', u.searchParams.get('tenant_id'), u.searchParams.get('locale'), req.headers['x-tenant-id'] ?? '(none)', req.headers['accept-language'] ?? '(none)');
     if (p === '/style.json') return send(style);
     if (p === '/api/internal/app-config') return send(appConfig);
     if (p === '/api/getTenantBasicConfig') return send(basic);
@@ -58,10 +60,13 @@ http.createServer((req, res) => {
         .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
     }
     if (process.env.V2_UPSTREAM && (p === '/v2/search' || p === '/search')) {
-      // Send only v2 parameters. The page's tenant_id is the stub tenant and would not match the header;
+      // Send only v2 parameters. Tenant and language go in the URL (PR #331), no headers; the live tenant
+      // replaces the stub tenant the page sent.
       // `taxonomy` from the page holds N- need codes, which v2 reads as `needs` (it filters on `taxonomy`).
       const v2 = readParams(u.searchParams);
       const up = new URL('/v2/search', process.env.V2_UPSTREAM);
+      up.searchParams.set('tenant_id', process.env.V2_TENANT);
+      up.searchParams.set('locale', u.searchParams.get('locale') || 'en');
       up.searchParams.set('query', [v2.query, v2.other].filter(Boolean).join('. '));
       if (v2.needs.length) up.searchParams.set('needs', v2.needs.join(','));
       if (v2.passedNeeds.length) up.searchParams.set('passed_needs', v2.passedNeeds.join(','));
@@ -72,7 +77,7 @@ http.createServer((req, res) => {
       // v2 is meant to run with the relevance cut (ADR 0039: cut after the need boost). Without it every
       // search returns the whole area and the result count means nothing. V2_CUTOFF=off turns it off.
       up.searchParams.set('relevance_cutoff', process.env.V2_CUTOFF === 'off' ? 'off' : 'on');
-      return void fetch(up, { headers: { 'x-tenant-id': process.env.V2_TENANT, 'accept-language': 'en' } })
+      return void fetch(up)
         .then(async (r) => {
           let text = await r.text(); console.log('  upstream', r.status, text.length);
           // No hit carries any need: the live index has no need tags yet (dagster PR #780), so
