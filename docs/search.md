@@ -18,6 +18,13 @@ for narrower, adjacent flows.
 gets classified (see `deriveQueryType()` below) — it has no effect on
 taxonomy or organization selections, which always bypass it.
 
+### Emergency hotlines
+
+`searchSettings.hotlines` (Search tab, up to 4 rows of `label` and `number`) is
+written to `search_config.hotlines` in Redis as `[{label, number}]`, in order.
+Norse-API v2 shows them only in the emergency question; when empty it uses 988
+(Crisis line) and 911 (Emergency). Labels are not localized.
+
 ### Pinned resources
 
 `pinnedResourcesMode` (Search tab → Search settings, default `boost`) sets how
