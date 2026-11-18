@@ -32,6 +32,13 @@ type ReRankRequestBody = {
 
 const DEFAULT_TOP_K = 150;
 
+/**
+ * How long a search waits for its classification. The dialog's Search button
+ * spins and the results page holds until it answers; past this the search
+ * goes ahead as typed, as when classifying fails.
+ */
+const PREDICT_TIMEOUT_MS = 8_000;
+
 async function createAiRequestParams(
   locale: string,
   tenantId: string,
@@ -66,7 +73,10 @@ export async function predictSearchNeeds(
           locale,
           tenant_id: tenantId,
         },
-        await createAiRequestParams(locale, tenantId),
+        {
+          ...(await createAiRequestParams(locale, tenantId)),
+          signal: AbortSignal.timeout(PREDICT_TIMEOUT_MS),
+        },
       );
 
     if (!response.data) {
@@ -76,7 +86,12 @@ export async function predictSearchNeeds(
     return response.data;
   } catch (error) {
     log.error(
-      { err: error, tenantId, locale },
+      {
+        err: error,
+        tenantId,
+        locale,
+        timedOut: (error as Error)?.name === 'TimeoutError',
+      },
       'Predict classification request failed',
     );
     return null;

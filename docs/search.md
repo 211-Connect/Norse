@@ -110,7 +110,9 @@ For `ai_classification` tenants, a free-text query triggers a second API
 call (`predictSearchNeeds`) *before* navigation, which can either resolve
 directly to a `hybrid` search or open a clarification UI
 (`AiClassificationOptions`) that ultimately calls `reRankSearchNeeds` and
-then navigates. This is the precedent for "a second API call feeding a
+then navigates. The prediction gets 8 seconds (`PREDICT_TIMEOUT_MS`); past
+that, or if it fails, it is `null` and the search goes ahead as typed rather
+than leaving the dialog's Search button spinning. This is the precedent for "a second API call feeding a
 `queryType` before the user reaches results" — organization search doesn't
 need this (it resolves synchronously from the already-fetched suggestion
 list), but it's useful context if a future queryType needs the same shape.

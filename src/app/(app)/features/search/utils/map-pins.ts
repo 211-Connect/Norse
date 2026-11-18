@@ -23,8 +23,18 @@ export const omitPagePins = (
   pagePins: SearchPin[],
 ): SearchPin[] => {
   const onPage = new Set(pagePins.map((pin) => pin.id));
+  // Pins stay cached longer than the list (docs/map-pins.md), and a data
+  // import can give the same resource a new `_id`: matching on the resource
+  // id too keeps a listed result from being counted twice at its address.
+  const resourcesOnPage = new Set(
+    pagePins.flatMap((pin) => (pin.resourceId ? [pin.resourceId] : [])),
+  );
 
-  return pins.filter((pin) => !onPage.has(pin.id));
+  return pins.filter(
+    (pin) =>
+      !onPage.has(pin.id) &&
+      !(pin.resourceId && resourcesOnPage.has(pin.resourceId)),
+  );
 };
 
 export const groupPinsBySite = (pins: SearchPin[]): PinSite[] => {
