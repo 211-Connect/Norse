@@ -1,4 +1,4 @@
-export type DateRange = 7 | 30 | 90 | { start: string; end: string };
+export type DateRange = 1 | 7 | 30 | 90 | { start: string; end: string };
 
 export type SearchQueryType = 'text' | 'taxonomy' | 'hybrid';
 

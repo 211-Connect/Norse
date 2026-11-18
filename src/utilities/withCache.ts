@@ -70,20 +70,20 @@ const MB = 1024 * 1024;
  * instance. A feature not listed gets `DEFAULT_MEMORY_LIMIT`.
  */
 export const MEMORY_CACHE_LIMITS: Partial<Record<CacheFeature, MemoryLimit>> = {
-  tenant: { maxEntries: 1000, maxBytes: 4 * MB },
-  tenant_basic_config: { maxEntries: 1000, maxBytes: 2 * MB },
-  resource_directory: { maxEntries: 500, maxBytes: 24 * MB },
-  app_config: { maxEntries: 500, maxBytes: 24 * MB },
-  search_config: { maxEntries: 500, maxBytes: 8 * MB },
-  search_suggestions: { maxEntries: 2000, maxBytes: 8 * MB },
+  tenant: { maxEntries: 256, maxBytes: 16 * MB },
+  tenant_basic_config: { maxEntries: 256, maxBytes: 4 * MB },
+  resource_directory: { maxEntries: 256, maxBytes: 16 * MB },
+  app_config: { maxEntries: 256, maxBytes: 16 * MB },
+  search_config: { maxEntries: 256, maxBytes: 16 * MB },
+  search_suggestions: { maxEntries: 1024, maxBytes: 64 * MB },
   // Only common searches (docs/caching.md), one page of results each. They
   // change only when the directory's data does, so they stay 15 minutes.
   search_results: {
-    maxEntries: 500,
-    maxBytes: 24 * MB,
+    maxEntries: 4096,
+    maxBytes: 128 * MB,
     ttlSeconds: FIFTEEN_MINUTES,
   },
-  region_area: { maxEntries: 200, maxBytes: 16 * MB },
+  region_area: { maxEntries: 2048, maxBytes: 64 * MB },
 };
 
 const DEFAULT_MEMORY_LIMIT: MemoryLimit = { maxEntries: 500, maxBytes: 4 * MB };

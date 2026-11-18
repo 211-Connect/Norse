@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
 import {
+  arcjetClientFor,
   ARCJET_ALLOWED_BOTS,
   ARCJET_DEFAULT_TIMEOUT_MS,
   ARCJET_ENFORCEMENT,
@@ -37,6 +38,7 @@ import {
   maskIp,
   normalizeHost,
   parseHostList,
+  parseRateLimitPerMinute,
   parseTimeoutMs,
   redactHeaders,
   resolveArcjetClientIp,
@@ -352,9 +354,43 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
       NO_USER_AGENT_FILTER,
       'len(http.request.headers["user-agent"]) eq 0',
     );
-    // detectBot stays first and LIVE.
-    assert.equal(rules[0].type, 'BOT');
-    assert.equal(rules[0].mode, 'LIVE');
+    const bots = rules.filter((r) => r.type === 'BOT');
+    assert.equal(bots.length, 1);
+    assert.equal(bots[0].mode, 'LIVE');
+  });
+
+  test('rules contain the per-IP rate limit: LIVE sliding window, 60 a minute', () => {
+    const rules = buildArcjetRules(60).flat();
+    const limits = rules.filter((r) => r.type === 'RATE_LIMIT');
+    assert.equal(limits.length, 1);
+    assert.equal(limits[0].mode, 'LIVE');
+    assert.equal(
+      (limits[0] as { algorithm?: string }).algorithm,
+      'SLIDING_WINDOW',
+    );
+    assert.equal((limits[0] as { max?: number }).max, 60);
+    assert.equal((limits[0] as { interval?: number }).interval, 60);
+  });
+
+  test('MBOA internal traffic (explicit ipSrc) skips the per-IP rate limit', () => {
+    const clients = { withRateLimit: 'limited', withoutRateLimit: 'unlimited' };
+    assert.equal(arcjetClientFor(undefined, clients), 'limited');
+    assert.equal(arcjetClientFor({}, clients), 'limited');
+    assert.equal(arcjetClientFor({ ipSrc: '10.1.2.3' }, clients), 'unlimited');
+  });
+
+  test('a rate limit of 0 removes the rule', () => {
+    const rules = buildArcjetRules(0).flat();
+    assert.equal(rules.filter((r) => r.type === 'RATE_LIMIT').length, 0);
+  });
+
+  test('parseRateLimitPerMinute: default 60, 0 allowed, invalid falls back', () => {
+    assert.equal(parseRateLimitPerMinute(undefined), 60);
+    assert.equal(parseRateLimitPerMinute(''), 60);
+    assert.equal(parseRateLimitPerMinute('0'), 0);
+    assert.equal(parseRateLimitPerMinute('120'), 120);
+    assert.equal(parseRateLimitPerMinute('-1'), 60);
+    assert.equal(parseRateLimitPerMinute('abc'), 60);
   });
 
   test('route rules: only print adds rules (bots LIVE, rate limit DRY_RUN)', () => {

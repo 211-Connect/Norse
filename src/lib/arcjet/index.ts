@@ -349,9 +349,9 @@ export function createArcjetProtect(
      * as `ipSrc` (see `internalIpSrc`), so these requests get a real
      * decision: browsers pass, bots are still detected by user agent. IP
      * reputation, geo and verified-bot checks cannot match a private
-     * address, and everyone behind that hop shares one IP identity: any
-     * future IP-keyed rate limit must use a session/user characteristic
-     * here. Scoped to that host AND that proxy: forwarding headers can be
+     * address, and everyone behind that hop shares one IP identity, so
+     * these requests skip the per-IP rate limit (`arcjetClientFor`).
+     * Scoped to that host AND that proxy: forwarding headers can be
      * spoofed, so on any other request a missing client IP goes to Arcjet
      * unchanged. With no usable hop at all, the request is allowed
      * (NO_CLIENT_IP) without calling Arcjet.
@@ -481,27 +481,58 @@ const arcjetSdkLog = createArcjetSdkLogger({
   pino: (level, data, message) => sdkLogger[level](data, message),
 });
 
-const aj = arcjetKey
-  ? arcjet({
-      key: arcjetKey,
-      client: createRemoteClient({ timeout: ARCJET_TIMEOUT_MS }),
-      proxies: ARCJET_PROXIES,
-      rules: buildArcjetRules(),
-      log: arcjetSdkLog,
-    })
+function createArcjetClient(key: string, maxPerMinute?: number) {
+  return arcjet({
+    key,
+    client: createRemoteClient({ timeout: ARCJET_TIMEOUT_MS }),
+    proxies: ARCJET_PROXIES,
+    rules: buildArcjetRules(maxPerMinute),
+    log: arcjetSdkLog,
+  });
+}
+
+/** With the per-IP rate limit (`ARCJET_RATE_LIMIT_PER_MINUTE`). */
+const aj = arcjetKey ? createArcjetClient(arcjetKey) : undefined;
+/** The same rules without the rate limit, for MBOA internal traffic. */
+const ajWithoutRateLimit = arcjetKey
+  ? createArcjetClient(arcjetKey, 0)
   : undefined;
 
-/** The client for one route: base rules plus `routeRules(route)`, built once. */
-const routeClients = new Map<string, typeof aj>();
-function clientForRoute(route: string | undefined) {
-  if (!aj || !route) return aj;
-  let client = routeClients.get(route);
+type BaseClient = NonNullable<typeof aj>;
+
+/** Per base client: route → base rules plus `routeRules(route)`, built once. */
+const routeClients = new WeakMap<BaseClient, Map<string, BaseClient>>();
+
+function withRouteRules(base: BaseClient, route: string | undefined) {
+  if (!route) return base;
+  let byRoute = routeClients.get(base);
+  if (!byRoute) {
+    byRoute = new Map();
+    routeClients.set(base, byRoute);
+  }
+  let client = byRoute.get(route);
   if (!client) {
     const extra = routeRules(route);
-    client = extra.length ? (aj.withRule(extra) as unknown as typeof aj) : aj;
-    routeClients.set(route, client);
+    client = extra.length
+      ? (base.withRule(extra) as unknown as BaseClient)
+      : base;
+    byRoute.set(route, client);
   }
   return client;
+}
+
+/**
+ * Picks the client for a request. A request with an explicit `ipSrc` is MBOA
+ * internal traffic (State of Minnesota network behind the mn.gov proxy):
+ * that "IP" is the proxy's private hop, shared by every State visitor
+ * (~70 req/min), so a per-IP limit would limit them all together. Those
+ * requests skip the rate limit and keep the bot check.
+ */
+export function arcjetClientFor<Client>(
+  options: { ipSrc?: string } | undefined,
+  clients: { withRateLimit: Client; withoutRateLimit: Client },
+): Client {
+  return options?.ipSrc ? clients.withoutRateLimit : clients.withRateLimit;
 }
 
 /**
@@ -509,15 +540,22 @@ function clientForRoute(route: string | undefined) {
  * Never throws.
  */
 export const arcjetProtect = createArcjetProtect(
-  aj && {
-    // The page passes the request from `buildArcjetRequest`; the narrower
-    // type here only reflects what this module reads.
-    protect: (request, options, route) =>
-      clientForRoute(route)!.protect(
-        request as ArcjetNextRequest,
-        // Custom characteristics are per route; the SDK's typed props are
-        // the intersection of every rule's props.
-        options as never,
-      ),
-  },
+  aj &&
+    ajWithoutRateLimit && {
+      // The page passes the request from `buildArcjetRequest`; the narrower
+      // type here only reflects what this module reads.
+      protect: (request, options, route) =>
+        withRouteRules(
+          arcjetClientFor(options, {
+            withRateLimit: aj,
+            withoutRateLimit: ajWithoutRateLimit,
+          }),
+          route,
+        ).protect(
+          request as ArcjetNextRequest,
+          // Custom characteristics are per route; the SDK's typed props are
+          // the intersection of every rule's props.
+          options as never,
+        ),
+    },
 );

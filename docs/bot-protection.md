@@ -20,6 +20,7 @@ per-tenant setting, so the rollout does not depend on CMS changes.
 | `ARCJET_ENFORCED_HOSTS` | unset | Comma list of hosts, or `*` for all. Unset or empty: nothing is enforced (log-only everywhere). This is the kill switch. |
 | `ARCJET_UNENFORCED_HOSTS` | unset | Hosts never enforced, also under `*`. Wins over `ARCJET_ENFORCED_HOSTS`. |
 | `ARCJET_TIMEOUT_MS` | `500` | Decide API timeout. On timeout the request is served (fail open). |
+| `ARCJET_RATE_LIMIT_PER_MINUTE` | `60` | Requests one client IP may make to covered pages per sliding minute. `0` removes the rate-limit rule. |
 | `ARCJET_LOG_LEVEL` | `info` | SDK log level. `debug` only for a short diagnostic window. |
 
 Host matching uses the `host` header only, case-insensitive, without port or
@@ -55,7 +56,8 @@ arcjet.protect span               src/lib/arcjet-page.ts
   ├ BurstDetector.record(host)      decision-sampling.ts
   ├ arcjetProtect                   src/lib/arcjet/index.ts
   │   ├ isMboaWithoutClientIp → ipSrc   client-ip.ts
-  │   └ aj[.withRule(routeRules)].protect(request, { correlationId, metadata })
+  │   ├ arcjetClientFor: per-IP rate limit client, or none for MBOA ipSrc
+  │   └ client[.withRule(routeRules)].protect(request, { correlationId, metadata })
   ├ span attributes, metrics        telemetry/arcjet.ts
   └ arcjet_decision record          decision-record.ts → telemetry/arcjet-decision-log.ts (OTel Logs only)
 ```
@@ -84,15 +86,32 @@ arcjet.protect span               src/lib/arcjet-page.ts
   `<Suspense>` boundary or into a segment with `loading.tsx`: the status
   becomes `200`. `forbidden()` needs `experimental.authInterrupts` in
   `next.config.js`.
-- **Rules** (`src/lib/arcjet/rules.ts`). Base rules, on every route:
-  `detectBot` in `LIVE` with the allow list `ARCJET_ALLOWED_BOTS`; a `filter`
+- **Rules** (`src/lib/arcjet/rules.ts`). Base rules, on every route: the
+  per-IP `slidingWindow` in `LIVE` (below); `detectBot` in `LIVE` with the allow list `ARCJET_ALLOWED_BOTS`; a `filter`
   in `DRY_RUN` that denies requests with no `User-Agent` (ISS-1744); a
   `filter` in `DRY_RUN` on hosting-provider IPs (`ip.src.hosting`, Arcjet saw
   much AWS traffic with a Chrome user agent). AI training crawlers are denied
   and also disallowed in `src/app/robotsRules.ts`; keep the two lists in
   agreement.
-- **Rules per route** (`routeRules(route)`, added with `aj.withRule`, one
-  client per route built once):
+- **Per-IP rate limit** (`slidingWindow`, `LIVE`): at most
+  `ARCJET_RATE_LIMIT_PER_MINUTE` (60) requests per client IP in any 60
+  seconds, keyed by Arcjet's default fingerprint (`ip.src`, resolved through
+  the proxies below). Counted by Arcjet's Decide API in the same call as the
+  bot check, so it adds no request. On an enforced host a client over the
+  limit gets the 403 (`reasonType` `RATE_LIMIT`), and the SDK caches the
+  denial locally for the TTL Arcjet returns, so its next requests are denied
+  without a call. On an observe-only host it is only logged.
+  There is no exemption for allowed crawlers: they spread their requests over
+  many IPs. It stops single-IP crawlers, not rotating residential proxies,
+  which change IP every few seconds. MBOA internal traffic (State
+  of Minnesota network behind the mn.gov proxy) is never rate limited: its
+  `ipSrc` is the proxy's private hop, shared by every State visitor, so it
+  goes through a second Arcjet client with the same bot rules and no rate
+  limit (`arcjetClientFor`). With no usable hop at all it skips Arcjet
+  entirely (`NO_CLIENT_IP`). MBOA visitors on the public internet have their
+  own IP and are limited like everyone else.
+- **Rules per route** (`routeRules(route)`, added with `withRule` on top of
+  either base client, one client per route built once):
 
   | Route | Extra rules |
   | --- | --- |
@@ -109,7 +128,8 @@ arcjet.protect span               src/lib/arcjet-page.ts
   shared deploy workflow passes it only to the public-app image build, where
   the Dockerfile bakes it into the Next.js bundle. Changing the variable alone
   does not trigger a build; dispatch the development workflow or wait for the
-  next deployment. The CSP (`ARCJET_SIGNALS_CSP` in `src/proxy.ts`) allows
+  next deployment. The CSP (`ARCJET_SIGNALS_CSP` in `src/lib/arcjet/request.ts`, used by
+  `src/proxy.ts`) allows
   `https://signals-cdn.arcjet.com` and `'wasm-unsafe-eval'` in `script-src`,
   `https://signals-cdn.arcjet.com` and `https://signals.arcjet.com` in
   `connect-src`, and `https://signals-cdn.arcjet.com` in `frame-src`.

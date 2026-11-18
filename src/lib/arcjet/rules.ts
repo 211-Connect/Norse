@@ -56,9 +56,45 @@ export const NO_USER_AGENT_FILTER =
  */
 export const HOSTING_IP_FILTER = 'ip.src.hosting' as const;
 
+/** Requests one client IP may make per minute (`ARCJET_RATE_LIMIT_PER_MINUTE`). */
+export const ARCJET_DEFAULT_RATE_LIMIT_PER_MINUTE = 60;
+
+/**
+ * `ARCJET_RATE_LIMIT_PER_MINUTE` as a non-negative integer; `0` turns the
+ * rate limit off. Anything else falls back to the default.
+ */
+export function parseRateLimitPerMinute(value: string | undefined): number {
+  if (value === undefined || value.trim() === '') {
+    return ARCJET_DEFAULT_RATE_LIMIT_PER_MINUTE;
+  }
+  const max = Number(value);
+  return Number.isInteger(max) && max >= 0
+    ? max
+    : ARCJET_DEFAULT_RATE_LIMIT_PER_MINUTE;
+}
+
+/**
+ * Per-IP rate limit: a sliding 60-second window per client IP (Arcjet's
+ * default fingerprint, `ip.src`), counted by Arcjet's Decide API in the
+ * same call as the bot check. LIVE: on an enforced host a client over the
+ * limit gets the 403; on an observe-only host the denial is only logged and
+ * counted. Once a client is limited, the SDK caches the denial locally for
+ * the TTL Arcjet sets, so its next requests are denied without a call.
+ * No exemption for allowed crawlers: they spread requests over many IPs.
+ */
+function rateLimitRules(maxPerMinute: number) {
+  if (maxPerMinute <= 0) return [];
+  return [slidingWindow({ mode: 'LIVE', interval: 60, max: maxPerMinute })];
+}
+
 /** The rule set passed to `arcjet()`; exported so tests can inspect it. */
-export function buildArcjetRules() {
+export function buildArcjetRules(
+  maxPerMinute: number = parseRateLimitPerMinute(
+    process.env.ARCJET_RATE_LIMIT_PER_MINUTE,
+  ),
+) {
   return [
+    ...rateLimitRules(maxPerMinute),
     detectBot({
       mode: 'LIVE',
       allow: [...ARCJET_ALLOWED_BOTS],
