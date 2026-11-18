@@ -89,8 +89,16 @@ arcjet.protect span               src/lib/arcjet-page.ts
 - **Rules** (`src/lib/arcjet/rules.ts`). Base rules, on every route: the
   per-IP `slidingWindow` in `LIVE` (below); `detectBot` in `LIVE` with the allow list `ARCJET_ALLOWED_BOTS`; a `filter`
   in `DRY_RUN` that denies requests with no `User-Agent` (ISS-1744); a
-  `filter` in `DRY_RUN` on hosting-provider IPs (`ip.src.hosting`, Arcjet saw
-  much AWS traffic with a Chrome user agent). AI training crawlers are denied
+  `filter` in `DRY_RUN` on browsers from hosting networks
+  (`HOSTING_IP_FILTER`: `ip.src.hosting and not ip.src.crawler and not
+  ip.src.relay and len(http.request.headers["sec-fetch-mode"]) gt 0`,
+  recommended by Arcjet on 2026-11-18: about a third of production traffic
+  came from cloud and hosting networks, ~123k requests a day claiming to be a
+  browser, e.g. Zillion AS54801 with fully consistent browser headers). Before
+  promoting it to `LIVE`, read its dry-run matches: it would also block real
+  people on VPNs or cloud desktops, and any allowed bot that runs a real
+  browser from a cloud IP without being flagged a crawler (look for
+  `allowed_bots` on the matches). AI training crawlers are denied
   and also disallowed in `src/app/robotsRules.ts`; keep the two lists in
   agreement.
 - **Per-IP rate limit** (`slidingWindow`, `LIVE`): at most
@@ -239,8 +247,9 @@ its README) or open the Grafana dashboard "Bot traffic / Arcjet":
    limits on our plan?
 3. How do custom rate-limit characteristics work from `protect()` props (the
    per-visitor print limit)?
-4. Exact field names for hosting / VPN in filter expressions (`ip.src.hosting`
-   is assumed).
+4. ~~Exact field names for hosting / VPN in filter expressions.~~ Answered
+   2026-11-18: `ip.src.hosting`, `ip.src.crawler`, `ip.src.relay` (see
+   `HOSTING_IP_FILTER`).
 5. Data-retention and data-sent options for Advanced Signals.
 6. Do `lreq_` decisions (timeouts or local cache) reach Arcjet at all?
 
