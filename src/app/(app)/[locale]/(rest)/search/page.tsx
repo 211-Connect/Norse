@@ -5,6 +5,7 @@ import { cache } from 'react';
 
 import { SearchPageShell } from '@/app/(app)/features/search/components/search-page-shell';
 import { SearchResultsProvider } from '@/app/(app)/features/search/context/search-results-context';
+import { V2ResultsBridge } from '@/app/(app)/features/search/components/v2-results-bridge';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -270,12 +271,14 @@ export default async function SearchPage({
           coordinates: searchQuery.coordinates ?? null,
         }}
       >
-        <SearchPageShell
-          legacyAiClarifyState={legacyAiClarifyState ?? undefined}
-          searchIntent={intent}
-          cardLayout={cardLayout}
-          aiSearchAlert={aiSearchAlert}
-        />
+        <V2ResultsBridge>
+          <SearchPageShell
+            legacyAiClarifyState={legacyAiClarifyState ?? undefined}
+            searchIntent={intent}
+            cardLayout={cardLayout}
+            aiSearchAlert={aiSearchAlert}
+          />
+        </V2ResultsBridge>
       </SearchResultsProvider>
     </PageWrapper>
   );
