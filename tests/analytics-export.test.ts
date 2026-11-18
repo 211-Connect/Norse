@@ -39,9 +39,8 @@ registerHooks({
 
 test('export renders consistently and downloads the current 24-hour range', async () => {
   // Load after installing module hooks for the Payload UI and tenant context.
-  const { default: ExportCSVButton } = await import(
-    '../src/payload/components/analytics/ExportCSVButton'
-  );
+  const { default: ExportCSVButton } =
+    await import('../src/payload/components/analytics/ExportCSVButton');
   const originalDate = globalThis.Date;
   const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window');
   let clock = Date.parse('2026-11-18T15:00:00Z');

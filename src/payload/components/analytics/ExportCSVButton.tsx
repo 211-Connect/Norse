@@ -45,11 +45,7 @@ export default function ExportCSVButton() {
   };
 
   return (
-    <Button
-      onClick={handleExport}
-      buttonStyle="secondary"
-      size="small"
-    >
+    <Button onClick={handleExport} buttonStyle="secondary" size="small">
       Export CSV
     </Button>
   );
