@@ -15,6 +15,7 @@ import { pushTopicsToCacheAfterChangeHook } from './hooks/pushTopicsToCache';
 import { revalidateCache } from './hooks/revalidateCache';
 import { setTenantIdAsId } from './hooks/setTenantIdAsId';
 import { syncKeycloakRealmBrandingAfterChange } from './hooks/syncKeycloakBrandingAfterChange';
+import { validateV2EngineSettings } from './hooks/validateV2EngineSettings';
 import { validateV2SearchPairing } from './hooks/validateV2SearchPairing';
 import { accessibility } from './tabs/accessibility';
 import { accessibilityPage } from './tabs/accessibilityPage';
@@ -64,7 +65,7 @@ export const ResourceDirectories: CollectionConfig = {
     },
   },
   hooks: {
-    beforeValidate: [validateV2SearchPairing],
+    beforeValidate: [validateV2SearchPairing, validateV2EngineSettings],
     beforeChange: [setTenantIdAsId, preventUpdateInDisabledLocale],
     afterChange: [
       revalidateCache,

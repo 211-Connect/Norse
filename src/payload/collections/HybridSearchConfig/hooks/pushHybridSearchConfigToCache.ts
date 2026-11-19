@@ -10,7 +10,6 @@ import { getHybridSearchConfigKey } from '../utilities/getHybridSearchConfigKey'
 const log = createLogger('pushHybridSearchConfigToCache');
 
 type Overrides = {
-  hybridSearchConfig?: HybridSearchConfig | null;
   resourceDirectory?: ResourceDirectory | null;
 };
 
@@ -21,17 +20,6 @@ export const pushHybridSearchConfigToCache = async (
 ): Promise<void> => {
   try {
     const { payload } = req;
-
-    const hybridSearchConfig =
-      overrides.hybridSearchConfig !== undefined
-        ? overrides.hybridSearchConfig
-        : await payload
-            .find({
-              collection: 'hybrid-search-config',
-              where: { tenant: { equals: tenantId } },
-              limit: 1,
-            })
-            .then((result) => result.docs[0] || null);
 
     const resourceDirectory =
       overrides.resourceDirectory !== undefined
@@ -44,11 +32,7 @@ export const pushHybridSearchConfigToCache = async (
             })
             .then((result) => result.docs[0] || null);
 
-    const cache = buildHybridSearchConfigCache(
-      tenantId,
-      hybridSearchConfig,
-      resourceDirectory,
-    );
+    const cache = buildHybridSearchConfigCache(tenantId, resourceDirectory);
 
     if (!cache) {
       log.info(
@@ -83,9 +67,7 @@ export const pushHybridSearchConfigToCacheAfterChangeHook: CollectionAfterChange
     return doc;
   }
 
-  await pushHybridSearchConfigToCache(tenantId, req, {
-    hybridSearchConfig: doc,
-  });
+  await pushHybridSearchConfigToCache(tenantId, req);
 
   return doc;
 };

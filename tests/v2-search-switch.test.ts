@@ -52,7 +52,7 @@ test('other engines are unaffected by the flag', () => {
 
 test('buildHybridSearchConfigCache carries enable_v2_api', () => {
   const build = (featureFlags: unknown) =>
-    buildHybridSearchConfigCache('t1', null, {
+    buildHybridSearchConfigCache('t1', {
       featureFlags,
     } as never);
   assert.equal(build({ enableV2Api: true })?.enable_v2_api, true);

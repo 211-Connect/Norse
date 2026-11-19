@@ -3,17 +3,11 @@
 import { useDocumentInfo } from '@payloadcms/ui';
 import { useEffect, useState } from 'react';
 
-import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions/findResourceDirectoryByTenantId';
 import { findTenantNameById } from '@/payload/collections/Tenants/actions/findTenantNameById';
-
-const HYBRID_SEARCH_ENGINES = ['hybrid', 'ai_classification', 'v2'];
 
 const HybridSearchConfigHeader = () => {
   const { id } = useDocumentInfo();
   const [tenantName, setTenantName] = useState<string>('');
-  const [searchEngine, setSearchEngine] = useState<string | null | undefined>(
-    undefined,
-  );
 
   useEffect(() => {
     if (!id) return;
@@ -25,21 +19,7 @@ const HybridSearchConfigHeader = () => {
       .catch(() => {
         setTenantName(String(id));
       });
-
-    findResourceDirectoryByTenantId(String(id))
-      .then((resourceDirectory) => {
-        setSearchEngine(
-          resourceDirectory?.search?.searchSettings?.searchEngine ?? null,
-        );
-      })
-      .catch(() => {
-        setSearchEngine(null);
-      });
   }, [id]);
-
-  const showEngineWarning =
-    searchEngine !== undefined &&
-    !HYBRID_SEARCH_ENGINES.includes(searchEngine || '');
 
   return (
     <div
@@ -69,23 +49,16 @@ const HybridSearchConfigHeader = () => {
       >
         {tenantName || '\u00A0'}
       </div>
-      {showEngineWarning && (
-        <div
-          style={{
-            marginTop: '12px',
-            padding: '10px 14px',
-            borderRadius: '4px',
-            backgroundColor: 'var(--theme-warning-100)',
-            border: '1px solid var(--theme-warning-300)',
-            color: 'var(--theme-warning-900)',
-            fontSize: '13px',
-          }}
-        >
-          These settings only take effect when this tenant&apos;s Search Engine
-          (Settings → Search) is set to Hybrid or AI Classification. It is
-          currently set to Classic, so these values are ignored.
-        </div>
-      )}
+      <div
+        style={{
+          marginTop: '12px',
+          fontSize: '13px',
+          color: 'var(--theme-elevation-600)',
+        }}
+      >
+        Ranking weights were removed: Norse-API never read them. Search settings
+        are in Resource Directories → Search.
+      </div>
     </div>
   );
 };
