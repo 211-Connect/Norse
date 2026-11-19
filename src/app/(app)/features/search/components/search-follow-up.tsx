@@ -1,7 +1,6 @@
 'use client';
 
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
-import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
 import {
   type Announcements,
   DndContext,
@@ -98,6 +97,7 @@ import {
   emergencyPopupMode,
   isUrgencyAnswered,
   NO_MATCH_ID,
+  optionDescription,
   otherChanges,
   visibleOptions,
   withEmergencyAnswers,
@@ -109,6 +109,7 @@ type Answer = {
   remove?: string[];
   keeps?: number;
   value?: string;
+  description?: string;
 };
 type Question = {
   id: string;
@@ -1571,6 +1572,7 @@ export function toCardQuestion(q: V2Question): Question & { values: string[] } {
       add: [o.value],
       keeps: o.results_count ?? undefined,
       value: o.value,
+      description: optionDescription(o),
     })),
   };
 }
@@ -1837,7 +1839,7 @@ export function SearchRefineQuestion() {
                 return (
                   <OptionCard
                     key={option.label}
-                    description={needDescription(option.add[0])}
+                    description={option.description}
                     className={cn(style.button, on && PICKED)}
                   >
                     <button

@@ -11,6 +11,8 @@ export type V2Option = {
   label: string;
   parameter: V2Parameter;
   value: string;
+  /** Plain one-line meaning of the option, from the server. Absent: the card shows no info icon. */
+  description?: string | null;
   /** Services that carry this need; null or absent when not counted (Decision 46). */
   results_count?: number | null;
 };
@@ -517,3 +519,8 @@ export function visibleOptions<T extends Pick<V2Option, 'label' | 'value'>>(
 /** `none`: no number is drawn (null or absent). `zero`: drawn in red. `some`: drawn as usual. */
 export const countTone = (count: number | null | undefined): 'none' | 'zero' | 'some' =>
   typeof count !== 'number' || !Number.isFinite(count) ? 'none' : count === 0 ? 'zero' : 'some';
+
+/** The option's description for the info icon: the trimmed text, or undefined when there is none. */
+export const optionDescription = (
+  option: Pick<V2Option, 'description'>,
+): string | undefined => option.description?.trim() || undefined;

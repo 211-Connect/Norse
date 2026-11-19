@@ -52,7 +52,6 @@ import {
   visibleOptions,
   withEmergencyAnswers,
 } from '@/app/(app)/features/search/v2/v2-contract';
-import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useFlag } from '../../hooks/use-flag';
@@ -655,7 +654,7 @@ export function SearchGuideFromUrl({
                     return (
                       <OptionCard
                         key={option.label}
-                        description={needDescription(option.add[0])}
+                        description={option.description}
                         className={cn(style.button, on && PICKED)}
                       >
                         <button

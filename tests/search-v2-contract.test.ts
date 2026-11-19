@@ -15,6 +15,7 @@ import {
   OPTION_LIMIT,
   visibleOptions,
   otherChanges,
+  optionDescription,
   nextV2Params,
   styleOf,
   emergencyPopupMode,
@@ -323,4 +324,14 @@ test('visibleOptions hides None of these and truncates every question type', () 
   assert.equal(OPTION_LIMIT, 4);
   assert.equal(visibleOptions({ type: 'find_need' }, many.slice(0, 3), false).hidden, 0);
   assert.ok(!isNoneOption({ label: 'Housing', value: 'N-HOU' }));
+});
+
+test('optionDescription gives the server text, and nothing for a missing or blank one', () => {
+  assert.equal(
+    optionDescription({ description: " You don't have clean water to drink. " }),
+    "You don't have clean water to drink.",
+  );
+  assert.equal(optionDescription({}), undefined);
+  assert.equal(optionDescription({ description: null }), undefined);
+  assert.equal(optionDescription({ description: '   ' }), undefined);
 });
