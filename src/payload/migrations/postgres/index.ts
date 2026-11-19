@@ -93,7 +93,7 @@ import * as migration_20261109_103137 from './20261109_103137';
 import * as migration_20261117_105248_area_search_settings from './20261117_105248_area_search_settings';
 import * as migration_20261118_092914_area_search_unlocated from './20261118_092914_area_search_unlocated';
 import * as migration_20261119_111137_brand_email from './20261119_111137_brand_email';
-import * as migration_20261119_130000_v2_search_flag from './20261119_130000_v2_search_flag';
+import * as migration_20261119_180448_v2_search_flag from './20261119_180448_v2_search_flag';
 
 export const migrations = [
   {
@@ -572,8 +572,8 @@ export const migrations = [
     name: '20261119_111137_brand_email',
   },
   {
-    up: migration_20261119_130000_v2_search_flag.up,
-    down: migration_20261119_130000_v2_search_flag.down,
-    name: '20261119_130000_v2_search_flag',
+    up: migration_20261119_180448_v2_search_flag.up,
+    down: migration_20261119_180448_v2_search_flag.down,
+    name: '20261119_180448_v2_search_flag',
   },
 ];
