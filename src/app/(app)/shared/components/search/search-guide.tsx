@@ -5,6 +5,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowLeft, Loader2, X } from 'lucide-react';
 import {
   FormEvent,
+  CSSProperties,
   ReactNode,
   useEffect,
   useRef,
@@ -42,6 +43,7 @@ import {
   useV2Url,
 } from '@/app/(app)/features/search/v2/use-v2-search';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
+import { searchGuideOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
 import {
   emergencyPopupMode,
@@ -90,7 +92,12 @@ export function GuideShell({
 }) {
   const [top, setTop] = useState(0);
   useLockPageScroll();
-  // The dim layer starts under the header, so the logo and nav stay clear.
+  const setGuideOpen = useSetAtom(searchGuideOpenAtom);
+  useEffect(() => {
+    setGuideOpen(true);
+    return () => setGuideOpen(false);
+  }, [setGuideOpen]);
+  // The dim layer starts under the header, so the logo and nav stay clear (wider than sm).
   useEffect(() => {
     const header = document.querySelector('header');
     setTop(Math.max(0, header?.getBoundingClientRect().bottom ?? 0));
@@ -105,19 +112,21 @@ export function GuideShell({
       <DialogPrimitive.Portal>
         <div
           aria-hidden="true"
-          className="fixed inset-x-0 bottom-0 z-40 bg-black/40"
+          className="fixed inset-x-0 bottom-0 z-40 bg-black/40 max-sm:hidden"
           style={{ top }}
         />
         <DialogPrimitive.Content
           id={SEARCH_DIALOG_ID}
           data-testid={SEARCH_DIALOG_ID}
           data-step={dataStep}
-          className="fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain scroll-pb-24 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem]"
-          style={{
-            top: top + 24,
-            // Below xl the floating Quick exit holds the bottom edge.
-            maxHeight: `calc(100dvh - ${top + 48}px - var(--exit-room, 0px))`,
-          }}
+          className="fixed top-[calc(var(--guide-top)+24px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-48px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain scroll-pb-24 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-14 max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none"
+          style={
+            {
+              // Below xl the floating Quick exit holds the bottom edge.
+              // Below sm the card fills the screen: no header, no page behind.
+              '--guide-top': `${top}px`,
+            } as CSSProperties
+          }
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             if (focusId) document.getElementById(focusId)?.focus();
@@ -722,7 +731,7 @@ export function SearchGuideFromUrl({
             // Both placements sit in the scrolling guide dialog (p-5). The actions stay in view: on a
             // 390x700 phone "Show results now" sat 211 px below the fold (UX pass 2026-11-16).
             // -bottom-5 covers the dialog's own bottom padding, so no content shows under the row.
-            'sticky -bottom-5 z-10 -mx-5 -mb-5 border-t bg-white px-5 py-3 max-sm:flex-nowrap max-sm:gap-2',
+            'sticky -bottom-5 z-10 -mx-5 -mb-5 border-t bg-white px-5 py-3 max-sm:flex-nowrap max-sm:gap-2 max-sm:-bottom-[calc(1.25rem+var(--exit-room))] max-sm:-mb-[calc(1.25rem+var(--exit-room))] max-sm:pb-[calc(0.75rem+var(--exit-room))]',
           )}
         >
           {canSkipQuestion && (
