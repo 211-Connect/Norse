@@ -129,20 +129,7 @@ export const populateApiConfigCache: Endpoint = {
         }
 
         if (resourceDirectory) {
-          const [hybridSearchConfig] = await payload
-            .find({
-              collection: 'hybrid-search-config',
-              where: {
-                tenant: {
-                  equals: tenantId,
-                },
-              },
-              limit: 1,
-            })
-            .then((result) => result.docs);
-
           await pushHybridSearchConfigToCache(tenantId, req, {
-            hybridSearchConfig: hybridSearchConfig || null,
             resourceDirectory,
           });
           hybridSearchConfigTriggered++;

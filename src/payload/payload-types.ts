@@ -918,11 +918,18 @@ export interface ResourceDirectory {
        * How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.
        */
       pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
+      /**
+       * v2 search only. On: pinned resources rank higher inside their group. Off: pinned status is not used.
+       */
+      v2UsePinnedResources?: boolean | null;
       resultsLimit: number;
       /**
        * Plots up to 10,000 results of a search on the map as small circles, with the current page in the brand colour, instead of only the current page. The results list is capped at the same 10,000.
        */
       showAllResultsOnMap?: boolean | null;
+      /**
+       * Used only when a visitor searches near an address. Picking a state, county, city or ZIP code shows no radius.
+       */
       radiusSelectValues?:
         | {
             value: number;
@@ -930,7 +937,7 @@ export interface ResourceDirectory {
           }[]
         | null;
       /**
-       * Must match one of the radius values above
+       * Used only when a visitor searches near an address. Picking a state, county, city or ZIP code shows no radius. Must match one of the radius values above.
        */
       defaultRadius?: number | null;
       /**
@@ -1181,54 +1188,6 @@ export interface OrchestrationConfig {
 export interface HybridSearchConfig {
   tenant?: (string | null) | Tenant;
   id: string;
-  /**
-   * Weight applied to the vector/semantic similarity score. Leave empty to use the API default (100).
-   */
-  vectorScoreWeight?: number | null;
-  /**
-   * Base boost for a matched predicted taxonomy code, multiplied by the code's prediction score and a rank-decay factor. Leave empty to use the API default (50).
-   */
-  baseTaxonomyBoost?: number | null;
-  /**
-   * Weight of the Gaussian distance-decay boost applied to geo-located results. Leave empty to use the API default (1.5).
-   */
-  geoGaussWeight?: number | null;
-  /**
-   * Default distance (miles) at which the Gaussian geo boost decays. Leave empty to use the API default (5).
-   */
-  geoDefaultScaleMi?: number | null;
-  /**
-   * Score contribution added for pinned resources. Leave empty to use the API default (5).
-   */
-  pinnedScoreBoost?: number | null;
-  /**
-   * Score contribution added for priority resources. Leave empty to use the API default (1).
-   */
-  priorityScoreWeight?: number | null;
-  /**
-   * BM25 boost for resource/location name matches. Leave empty to use the API default (15).
-   */
-  bm25NameBoost?: number | null;
-  /**
-   * BM25 boost for service name matches. Leave empty to use the API default (10).
-   */
-  bm25ServiceNameBoost?: number | null;
-  /**
-   * BM25 boost for organization name matches. Leave empty to use the API default (6).
-   */
-  bm25OrgNameBoost?: number | null;
-  /**
-   * BM25 boost for matches against curated taxonomy use-references (aliases such as "Girl Scouts" for Scouting Programs) — a stronger intent signal than a generic text match. Leave empty to use the API default (12).
-   */
-  bm25TaxonomyUseRefBoost?: number | null;
-  /**
-   * Number of nearest-neighbor taxonomy codes to retrieve (k). Leave empty to use the API default (10).
-   */
-  taxonomyK?: number | null;
-  /**
-   * Number of candidates considered during taxonomy kNN search. Leave empty to use the API default (500).
-   */
-  taxonomyNumCandidates?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1900,6 +1859,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               searchEngine?: T;
               pinnedResourcesMode?: T;
+              v2UsePinnedResources?: T;
               resultsLimit?: T;
               showAllResultsOnMap?: T;
               radiusSelectValues?:
@@ -2107,18 +2067,6 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
 export interface HybridSearchConfigSelect<T extends boolean = true> {
   tenant?: T;
   id?: T;
-  vectorScoreWeight?: T;
-  baseTaxonomyBoost?: T;
-  geoGaussWeight?: T;
-  geoDefaultScaleMi?: T;
-  pinnedScoreBoost?: T;
-  priorityScoreWeight?: T;
-  bm25NameBoost?: T;
-  bm25ServiceNameBoost?: T;
-  bm25OrgNameBoost?: T;
-  bm25TaxonomyUseRefBoost?: T;
-  taxonomyK?: T;
-  taxonomyNumCandidates?: T;
   updatedAt?: T;
   createdAt?: T;
 }

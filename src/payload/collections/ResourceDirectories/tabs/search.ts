@@ -6,6 +6,7 @@ import {
   superAdminAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
+import { isV2Engine, V2_ONLY_FIELD } from '../v2EngineFields';
 import { customAttributeFields } from '../fields/customAttributeFields';
 import { getCustomLayoutComponentLabel } from './resource';
 
@@ -305,6 +306,22 @@ export const search: Tab = {
           admin: {
             description:
               'How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.',
+            condition: (_, siblingData) => !isV2Engine(siblingData),
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
+          name: V2_ONLY_FIELD.name,
+          type: 'checkbox',
+          label: V2_ONLY_FIELD.label,
+          defaultValue: V2_ONLY_FIELD.defaultValue,
+          admin: {
+            description:
+              'v2 search only. On: pinned resources rank higher inside their group. Off: pinned status is not used.',
+            condition: (_, siblingData) => isV2Engine(siblingData),
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
@@ -339,6 +356,11 @@ export const search: Tab = {
         {
           name: 'radiusSelectValues',
           type: 'array',
+          label: 'Address search: radius options',
+          admin: {
+            description:
+              'Used only when a visitor searches near an address. Picking a state, county, city or ZIP code shows no radius.',
+          },
           labels: {
             singular: 'Radius Option',
             plural: 'Radius Options',
@@ -356,8 +378,10 @@ export const search: Tab = {
           ],
         },
         {
+          label: 'Address search: default radius',
           admin: {
-            description: 'Must match one of the radius values above',
+            description:
+              'Used only when a visitor searches near an address. Picking a state, county, city or ZIP code shows no radius. Must match one of the radius values above.',
           },
           name: 'defaultRadius',
           type: 'number',
@@ -420,6 +444,7 @@ export const search: Tab = {
           admin: {
             description:
               'They cannot be placed in any area, so each one is listed in every area search or in none. A virtual service with no service area usually serves everyone. "All" also lists physical services that are missing their address.',
+            condition: (_, siblingData) => !isV2Engine(siblingData),
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
