@@ -180,6 +180,10 @@ export function emergencyPopupMode(
   return asked.includes(q.id) ? null : 'ask';
 }
 
+/** A safe answer is in the URL (U-1 to U-4): the person answered the emergency question. */
+export const isUrgencyAnswered = (urgency?: string | null) =>
+  Boolean(urgency) && urgency !== 'U-0' && urgency !== 'U-X';
+
 export const emergencyQuestionOf = (response?: V2Response) =>
   response?.clarification.questions.find((q) => q.type === 'emergency');
 

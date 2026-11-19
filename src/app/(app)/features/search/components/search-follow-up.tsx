@@ -96,6 +96,7 @@ import { helpControlHidden } from '../v2/help-visibility';
 import {
   cardWording,
   emergencyPopupMode,
+  isUrgencyAnswered,
   NO_MATCH_ID,
   otherChanges,
   withEmergencyAnswers,
@@ -1092,7 +1093,9 @@ export function EmergencyPopup({
           }}
         >
           <DialogPrimitive.Title className="max-w-md text-center text-3xl font-bold">
-            {mode === 'ask' ? 'Are you in danger right now?' : 'Call for help now'}
+            {mode === 'ask'
+              ? 'Are you in danger right now?'
+              : 'Call for help now'}
           </DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">
             {mode === 'ask'
@@ -1620,7 +1623,8 @@ export function SearchRefineQuestion() {
     );
   }
   // A skipped emergency question stays as the numbers alone.
-  const hotline = Boolean(emergencyQ);
+  const hotline =
+    Boolean(emergencyQ) && !isUrgencyAnswered(params.get('urgency'));
 
   if (!v2) {
     return (

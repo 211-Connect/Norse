@@ -43,6 +43,7 @@ import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-locati
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
 import {
   emergencyPopupMode,
+  isUrgencyAnswered,
   otherChanges,
   withEmergencyAnswers,
 } from '@/app/(app)/features/search/v2/v2-contract';
@@ -214,7 +215,7 @@ export function SearchGuide({
 
   useEffect(
     () => () => restoreFocusElement?.focus({ preventScroll: true }),
-     
+
     [],
   );
 
@@ -333,7 +334,12 @@ export function SearchGuideFromUrl({
   const card = question ? toCardQuestion(question) : undefined;
   const style = card ? QUESTION_STYLES[card.type ?? 'narrow'] : undefined;
   const isEmergency = question?.type === 'emergency';
-  const hotline = Boolean(emergencyQ) && !popupMode;
+  // After a safe answer (urgency U-1 to U-4) the numbers stay in the always-on chips: the red
+  // 911/988 box would flash in this card until the next answer arrives (Lucas UX walk 2026-11-19).
+  const hotline =
+    Boolean(emergencyQ) &&
+    !popupMode &&
+    !isUrgencyAnswered(params.get('urgency'));
   const hotlines = hotlinesOf(emergencyQ);
   const soft = isSoftEmergency(emergencyQ);
   const isPending = isFetching || isWriting;
@@ -354,7 +360,6 @@ export function SearchGuideFromUrl({
     if (!finished) return;
     if (onPage) toResults({}, 'replace');
     else write({ refine: null }, 'replace');
-     
   }, [finished]);
 
   // A new step is an action the person took, so moving focus to it is expected.
@@ -378,14 +383,19 @@ export function SearchGuideFromUrl({
       coords: coords || null,
       asked: [...asked, LOCATION_STEP],
     });
-     
   }, [searchLocation]);
 
   if (!query || finished) return null;
 
   const closeGuide = () => write({ refine: null });
-  const canGoBack = onPage && asked.length > askedAtStart.current;
-  const goBack = () => window.history.back();
+  // Back goes to the previous question that is not the emergency one: it steps over the emergency
+  // answer's history entry, and the first question has no way back (never to the red popup).
+  const emergencyId = emergencyQ?.id ?? 'emergency';
+  const lastBackIdx = asked.findLastIndex(
+    (id, i) => id !== emergencyId && i >= askedAtStart.current,
+  );
+  const canGoBack = onPage && lastBackIdx >= 0;
+  const goBack = () => window.history.go(-(asked.length - lastBackIdx));
   // Skip this question: no pick. Needs offered and not picked are passed; an urgency question
   // reads as not known. The next question comes.
   const skipQuestion = () => answerQuestion([]);
@@ -458,19 +468,7 @@ export function SearchGuideFromUrl({
       <div
         className={cn('flex flex-col items-start gap-1', !onPage && 'pr-10')}
       >
-        {onPage ? (
-          canGoBack && (
-            <button
-              type="button"
-              className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
-              data-testid="guide-back"
-              onClick={goBack}
-            >
-              <ArrowLeft className="size-4" aria-hidden="true" />
-              Back
-            </button>
-          )
-        ) : (
+        {!onPage && (
           <>
             <button
               type="button"
@@ -600,21 +598,34 @@ export function SearchGuideFromUrl({
 
             {card && !isEmergency && style && question && (
               <div className="flex flex-col gap-3" aria-busy={isPending}>
-                <div>
-                  <h2
-                    ref={headingRef}
-                    id="guide-question"
-                    aria-describedby={card.multi ? 'guide-hint' : undefined}
-                    tabIndex={-1}
-                    className="text-2xl font-semibold outline-none"
-                  >
-                    {card.text}
-                  </h2>
-                  {card.multi && (
-                    <p id="guide-hint" className="text-muted-foreground">
-                      Pick all that fit.
-                    </p>
+                <div className="flex items-start gap-2">
+                  {canGoBack && (
+                    <button
+                      type="button"
+                      aria-label="Previous question"
+                      className="text-primary hover:bg-primary/10 -ml-2 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full"
+                      data-testid="guide-back"
+                      onClick={goBack}
+                    >
+                      <ArrowLeft className="size-5" aria-hidden="true" />
+                    </button>
                   )}
+                  <div>
+                    <h2
+                      ref={headingRef}
+                      id="guide-question"
+                      aria-describedby={card.multi ? 'guide-hint' : undefined}
+                      tabIndex={-1}
+                      className="text-2xl font-semibold outline-none"
+                    >
+                      {card.text}
+                    </h2>
+                    {card.multi && (
+                      <p id="guide-hint" className="text-muted-foreground">
+                        Pick all that fit.
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div
                   role="group"
@@ -726,11 +737,7 @@ export function SearchGuideFromUrl({
               data-testid="guide-skip-question"
               onClick={skipQuestion}
             >
-              {/* One row on a phone: the short label there, the full one for screen readers. */}
-              <span className="sm:hidden" aria-hidden="true">
-                Skip
-              </span>
-              <span className="max-sm:sr-only">Skip this question</span>
+              Skip question
             </button>
           )}
           {canDeferLocation && (
@@ -757,9 +764,7 @@ export function SearchGuideFromUrl({
               onClick={seeResults}
             >
               {onPage
-                ? data
-                  ? `Show results now (${totalOf(data)})`
-                  : 'Show results now'
+                ? 'Show results now'
                 : data
                   ? `Skip to results (${totalOf(data)})`
                   : 'Skip to results'}

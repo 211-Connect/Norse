@@ -77,7 +77,7 @@ test('progress label: removed from the guide and the landing helpers', () => {
   );
 });
 
-test('skip: Skip this question sits in the same row as Show results now', () => {
+test('skip: Skip question sits in the same row as Show results now', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   const row = guide.slice(guide.indexOf('canSkipQuestion && ('));
   assert.ok(
@@ -155,7 +155,9 @@ test('guide actions: the row sticks to the bottom of the dialog and stays one ro
   const row = guide.slice(guide.indexOf('(canSkip || canDeferLocation || onPage) && ('));
   assert.match(row.slice(0, 600), /sticky -bottom-5/);
   assert.match(row.slice(0, 600), /max-sm:flex-nowrap/);
-  assert.match(row, /max-sm:sr-only">Skip this question/);
+  assert.match(row, /Skip question/);
+  assert.match(row, /'Show results now'/);
+  assert.doesNotMatch(row, /Skip this question|Show results now \(/);
 });
 
 // UX pass 2026-11-16: Escape or Close on the landing left focus on <body> after going home.
@@ -185,4 +187,28 @@ test('emergency popup: popup only, three urgency answers, Quick exit inside the 
   // No card under the red popup: the box keeps a question only for the soft band.
   assert.match(guide, /question=\{soft \? card : undefined\}/);
   assert.match(card, /question=\{soft \? question : undefined\}/);
+});
+
+// Lucas UX walk 2026-11-19: a small arrow left of the title goes to the previous non-emergency question.
+test('guide back: small arrow beside the title, never back to the emergency question', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  assert.match(guide, /aria-label="Previous question"/);
+  assert.doesNotMatch(guide, />\s*Back\s*<\/button>/);
+  assert.match(guide, /id !== emergencyId && i >= askedAtStart\.current/);
+  assert.match(guide, /window\.history\.go\(-\(asked\.length - lastBackIdx\)\)/);
+  const arrow = guide.indexOf('data-testid="guide-back"');
+  assert.ok(arrow > guide.indexOf('card && !isEmergency && style && question'));
+  assert.ok(arrow < guide.indexOf('id="guide-question"'));
+});
+
+// Lucas UX walk 2026-11-19: after a safe answer the red 911/988 box must not flash in the guide card.
+test('safe answer: no hotline box while the old emergency question is still in the data', async () => {
+  const { isUrgencyAnswered } = await import('../src/app/(app)/features/search/v2/v2-contract');
+  assert.equal(isUrgencyAnswered('U-1'), true);
+  assert.equal(isUrgencyAnswered('U-2'), true);
+  assert.equal(isUrgencyAnswered('U-0'), false);
+  assert.equal(isUrgencyAnswered('U-X'), false);
+  assert.equal(isUrgencyAnswered(null), false);
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  assert.match(guide, /!isUrgencyAnswered\(params\.get\('urgency'\)\)/);
 });
