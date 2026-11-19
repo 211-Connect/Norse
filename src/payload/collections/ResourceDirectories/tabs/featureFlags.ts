@@ -60,8 +60,8 @@ export const featureFlags: Tab = {
       label: 'Enable v2 search API',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportOrTenantAccess,
-        update: superAdminOrSupportOrTenantAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
