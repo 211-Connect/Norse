@@ -18,8 +18,6 @@ import {
   EmergencyPopup,
   emergencyPopupDismissedAtom,
   flaggedAtom,
-  CARD_INFO_TEXT,
-  InfoToggle,
   OptionCard,
   OptionCount,
   OtherBox,
@@ -636,14 +634,6 @@ export function SearchGuideFromUrl({
                         </p>
                       )}
                     </div>
-                    <InfoToggle
-                      key={question.id}
-                      label="More about this question"
-                      testId="question-info"
-                      className="-mt-1"
-                    >
-                      {CARD_INFO_TEXT}
-                    </InfoToggle>
                   </div>
                 </div>
                 <div
@@ -657,15 +647,14 @@ export function SearchGuideFromUrl({
                       <OptionCard
                         key={option.label}
                         description={needDescription(option.add[0])}
+                        className={cn(style.button, on && PICKED)}
                       >
                         <button
                           type="button"
                           disabled={isPending}
                           aria-pressed={card.multi ? on : undefined}
                           className={cn(
-                            'group flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg border py-2 pr-12 pl-4 text-left font-medium disabled:opacity-60',
-                            style.button,
-                            on && PICKED,
+                            'group flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg bg-transparent py-2 pr-12 pl-4 text-left font-medium disabled:opacity-60',
                           )}
                           onClick={() =>
                             card.multi

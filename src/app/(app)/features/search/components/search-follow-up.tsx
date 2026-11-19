@@ -1011,23 +1011,21 @@ export function OptionCount({
   );
 }
 
-/** The question card's info text: one fixed sentence; the API sends no description (Lucas 2026-11-19). */
-export const CARD_INFO_TEXT =
-  'Your answer narrows the list to services that fit. You can skip any question.';
-
 /**
- * The one info control (Lucas 2026-11-19): a 44x44 px button with a 20 px icon on the right side.
+ * The one info control (Lucas 2026-11-19): a 44x44 px button with a 24 px icon on the right side.
  * It toggles `children` open under the row (`aria-expanded`). Nothing shows until it is tapped.
  */
 export function InfoToggle({
   label,
   className,
   testId,
+  textClassName,
   children,
 }: {
   label: string;
   className?: string;
   testId: string;
+  textClassName?: string;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -1044,11 +1042,14 @@ export function InfoToggle({
         )}
         onClick={() => setOpen((v) => !v)}
       >
-        <Info className="size-5" aria-hidden="true" />
+        <Info className="size-6" aria-hidden="true" />
       </button>
       {open && (
         <p
-          className="text-muted-foreground bg-muted/50 order-last w-full basis-full rounded-lg px-3 py-2 text-sm"
+          className={cn(
+            'text-muted-foreground bg-muted/50 order-last w-full basis-full rounded-lg px-3 py-2 text-sm',
+            textClassName,
+          )}
           data-testid={`${testId}-text`}
         >
           {children}
@@ -1071,9 +1072,10 @@ export function OptionCard({
   className?: string;
   children: ReactNode;
 }) {
+  // `className` carries the card border and colours: the description opens INSIDE this box.
   return (
     <div
-      className={cn('relative flex flex-col', className)}
+      className={cn('relative flex flex-col rounded-lg border', className)}
       data-testid="option-card"
     >
       {children}
@@ -1082,6 +1084,7 @@ export function OptionCard({
           label="More about this option"
           testId="option-info"
           className="absolute top-0 right-0"
+          textClassName="bg-transparent pt-0 pr-12 pl-4"
         >
           {description}
         </InfoToggle>
@@ -1823,14 +1826,6 @@ export function SearchRefineQuestion() {
                   </p>
                 )}
               </div>
-              <InfoToggle
-                key={question.id}
-                label="More about this question"
-                testId="question-info"
-                className="-mt-2"
-              >
-                {CARD_INFO_TEXT}
-              </InfoToggle>
             </div>
             <div
               role="group"
@@ -1843,18 +1838,17 @@ export function SearchRefineQuestion() {
                   <OptionCard
                     key={option.label}
                     description={needDescription(option.add[0])}
+                    className={cn(style.button, on && PICKED)}
                   >
                     <button
                       type="button"
                       disabled={isPending}
                       aria-pressed={question.multi ? on : undefined}
                       className={cn(
-                        'group flex min-h-11 w-full cursor-pointer rounded-lg border py-2 pr-12 pl-3 text-left text-sm font-medium',
+                        'group flex min-h-11 w-full cursor-pointer rounded-lg bg-transparent py-2 pr-12 pl-3 text-left text-sm font-medium',
                         question.multi
                           ? 'items-center gap-2'
                           : 'flex-col items-start justify-center',
-                        style.button,
-                        on && PICKED,
                       )}
                       onClick={() =>
                         question.multi
