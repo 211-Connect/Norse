@@ -52,7 +52,10 @@ MapContainer
   (`Cache-Control: private, max-age=3600`) and Redis for 6 hours under
   `search_pins:<tenant>:<locale>:<hash>`, an empty result included (a failure
   is never cached). Search results stay in Redis for an hour, so after a data
-  import the map can lag the list by up to 5 hours. Turning the list's page sends no pins
+  import the map can lag the list by up to 5 hours. An import can also give a
+  resource a new `_id`, so the list's own results are dropped from the pins by
+  `_id` or resource id (`omitPagePins`); otherwise each would count twice at
+  its address. Turning the list's page sends no pins
   request at all, and neither does a search whose results all fit on its first
   page: the map then draws its circles from the page alone. `coords` are rounded to two decimals (about 1 km) so neighbours share
   one too. They cannot be dropped: they filter by service area even at
