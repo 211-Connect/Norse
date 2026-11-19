@@ -81,3 +81,20 @@ test("searchPolicy treats 'v2' like 'ai_classification'", () => {
     'gate',
   );
 });
+
+test('enableV2Api can be set by super-admin only', async () => {
+  const { featureFlags } =
+    await import('../src/payload/collections/ResourceDirectories/tabs/featureFlags');
+  const field = (
+    featureFlags as { fields: Array<Record<string, any>> }
+  ).fields.find((f) => f.name === 'enableV2Api');
+  assert.ok(field, 'enableV2Api field exists');
+  const as = (roles: string[]) => ({ req: { user: { roles } } }) as never;
+  for (const op of ['create', 'update'] as const) {
+    const access = field.access[op];
+    assert.equal(access(as(['super-admin'])), true);
+    assert.equal(access(as(['tenant'])), false, `tenant ${op}`);
+    assert.equal(access(as(['support'])), false, `support ${op}`);
+    assert.equal(access({ req: { user: null } } as never), false);
+  }
+});
