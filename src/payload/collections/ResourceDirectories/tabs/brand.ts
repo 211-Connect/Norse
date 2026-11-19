@@ -74,6 +74,21 @@ export const brand: Tab = {
             create: superAdminOrSupportOrTenantAccess,
             update: superAdminOrSupportOrTenantAccess,
           },
+          admin: {
+            description:
+              'Optional. Shown on the no-results card and inserted wherever content uses {phone}.',
+          },
+        },
+        {
+          name: 'email',
+          type: 'email',
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+          admin: {
+            description: 'Optional. Inserted wherever content uses {email}.',
+          },
         },
       ],
     },
