@@ -3,7 +3,10 @@
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 
-import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
+import {
+  favoriteListWithFavoritesAtom,
+  getFavoriteResourceId,
+} from '@/app/(app)/shared/store/favorites';
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
 import { FavoriteMapContainerBase } from './favorite-map-container-base';
@@ -20,14 +23,16 @@ export function FavoriteMapContainer() {
       favoriteList?.favorites?.map((favorite) => {
         const coords = favorite.location?.coordinates;
 
-        if (!favorite._id) {
+        const id = getFavoriteResourceId(favorite);
+
+        if (!id) {
           logger.warn(
-            `Missing id for favorite: ${favorite._id ?? 'unknown'} (${favorite.displayName ?? 'unknown'})`,
+            `Missing id for favorite: ${favorite.displayName ?? 'unknown'}`,
           );
         }
 
         return {
-          id: favorite._id ?? randomUUID(),
+          id: id || randomUUID(),
           coordinates: isValidCoordinate(coords) ? coords : undefined,
         };
       }) ?? []
