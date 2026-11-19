@@ -118,7 +118,7 @@ export function GuideShell({
           id={SEARCH_DIALOG_ID}
           data-testid={SEARCH_DIALOG_ID}
           data-step={dataStep}
-          className="fixed top-[calc(var(--guide-top)+24px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-48px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain scroll-pb-24 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-14 max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none"
+          className="fixed top-[calc(var(--guide-top)+24px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-48px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain scroll-pb-24 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.75rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none"
           style={
             {
               // Below xl the floating Quick exit holds the bottom edge.
@@ -141,11 +141,21 @@ export function GuideShell({
           <DialogPrimitive.Description className="sr-only">
             One question at a time. You can see your results at any step.
           </DialogPrimitive.Description>
+          {/* Phone top bar: Back (top left, closes the layer) and the floating Quick exit (top
+              right, quick-exit-button.tsx), a divider under both so the 911/988 chips stay apart. */}
+          <div
+            aria-hidden="true"
+            data-testid="guide-top-bar"
+            className="fixed inset-x-0 top-0 z-[55] h-[3.75rem] border-b bg-white sm:hidden"
+          />
           <DialogPrimitive.Close
-            aria-label="Close"
-            className="absolute top-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-['']"
+            data-testid="guide-close"
+            className="absolute top-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] max-sm:fixed max-sm:top-2 max-sm:right-auto max-sm:left-2 max-sm:z-[56] max-sm:h-11 max-sm:w-auto max-sm:min-w-11 max-sm:gap-1 max-sm:px-3 max-sm:text-sm max-sm:font-semibold"
           >
-            <X className="size-5" aria-hidden="true" />
+            <X className="size-5 max-sm:hidden" aria-hidden="true" />
+            <ArrowLeft className="size-5 sm:hidden" aria-hidden="true" />
+            <span className="sr-only max-sm:hidden">Close</span>
+            <span className="sm:hidden">Back</span>
           </DialogPrimitive.Close>
           {children}
         </DialogPrimitive.Content>

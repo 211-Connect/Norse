@@ -259,7 +259,7 @@ test('phone: the landing header block (chips and search box) is sticky', () => {
     landing,
     /max-sm:sticky[^"]*data-testid|data-testid="landing-header"/,
   );
-  assert.match(landing, /max-sm:sticky max-sm:-top-14/);
+  assert.match(landing, /max-sm:sticky max-sm:-top-\[4\.75rem\]/);
 });
 
 // Regression (Lucas 2026-11-19, bugs A and B): the phone card has pt-14 (room for Quick exit) and
@@ -270,11 +270,44 @@ test('phone: the landing header block (chips and search box) is sticky', () => {
 test('phone: the pinned landing header offset cancels the card top padding (spinner and list stay visible)', () => {
   const landing = read(`${APP}features/search/components/search-landing.tsx`);
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
-  const pad = guide.match(/max-sm:rounded-none max-sm:pt-(\d+)/)?.[1];
+  const esc = (v: string) => v.replace(/[[\].]/g, '\\$&');
+  const pad = guide.match(/max-sm:rounded-none max-sm:pt-(\[[\d.]+rem\]|\d+)/)?.[1];
   assert.ok(pad, 'GuideShell keeps a phone top padding class');
   const header = landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ?? '';
-  assert.match(header, new RegExp(`max-sm:-top-${pad}(\\s|$)`));
-  assert.match(header, new RegExp(`max-sm:-mt-${pad}(\\s|$)`));
-  assert.match(header, new RegExp(`max-sm:pt-${pad}(\\s|$)`));
+  assert.match(header, new RegExp(`max-sm:-top-${esc(pad)}(\\s|$)`));
+  assert.match(header, new RegExp(`max-sm:-mt-${esc(pad)}(\\s|$)`));
+  assert.match(header, new RegExp(`max-sm:pt-${esc(pad)}(\\s|$)`));
   assert.doesNotMatch(header, /max-sm:top-0/);
+});
+
+// Lucas 2026-11-19: phone search layer has a top bar (Back top left, Quick exit top right, 44 px each,
+// divider under both) and the full-screen change stays phone-only so the 1280 px header still shows.
+test('phone layer top bar: Back closes top left, Quick exit top right, divider, 44 px hit areas', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  const exit = read(`${APP}shared/components/quick-exit-button.tsx`);
+  const close = guide.slice(guide.indexOf('<DialogPrimitive.Close'));
+  assert.match(close.slice(0, 700), /max-sm:left-2/);
+  assert.match(close.slice(0, 700), /max-sm:h-11/);
+  assert.match(close.slice(0, 900), /Back/);
+  assert.match(guide, /data-testid="guide-top-bar"[^>]*|border-b bg-white sm:hidden/);
+  assert.match(guide, /max-sm:pt-\[4\.75rem\]/);
+  assert.match(exit, /max-sm:top-2 max-sm:right-2/);
+  assert.doesNotMatch(exit, /max-sm:left-2/);
+  assert.match(exit, /min-h-11/);
+});
+
+test('desktop guard: every full-screen / no-header rule in the layer is max-sm only', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  const cls = guide.match(/className="fixed top-\[calc\(var\(--guide-top\)[^"]*"/)?.[0] ?? '';
+  assert.ok(cls, 'dialog class found');
+  for (const token of ['top-0', 'left-0', 'h-dvh', 'w-full', 'rounded-none', 'translate-x-0', 'pt-[4.75rem]']) {
+    assert.ok(
+      cls.split(/\s+/).filter((t) => t.includes(token)).every((t) => t.startsWith('max-sm:')),
+      `${token} must be max-sm only`,
+    );
+  }
+  assert.match(guide, /bg-black\/40 max-sm:hidden/); // dim layer starts under the header on desktop
+  assert.match(guide, /document\.querySelector\('header'\)/);
+  const bar = guide.slice(guide.indexOf('data-testid="guide-top-bar"'), guide.indexOf('data-testid="guide-top-bar"') + 200);
+  assert.match(bar, /sm:hidden/);
 });

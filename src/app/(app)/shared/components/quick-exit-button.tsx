@@ -21,7 +21,7 @@ export function QuickExitButton() {
   // The full-screen emergency popup carries its own Quick exit inside the dialog (so the focus
   // trap reaches it); this floating one would sit outside the trap, so it steps aside.
   const popupOpen = useAtomValue(emergencyPopupOpenAtom);
-  // Phone, search box layer open: the layer fills the screen, so Quick exit sits at its top left.
+  // Phone, search box layer open: the layer fills the screen, so Quick exit sits at its top right, Back at the top left.
   const guideOpen = useAtomValue(searchGuideOpenAtom);
 
   if (!safeExit?.enabled || popupOpen) return null;
@@ -40,7 +40,7 @@ export function QuickExitButton() {
         'pointer-events-auto fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-[60] flex min-h-11 items-center gap-1 rounded-lg bg-red-700 px-4 text-sm font-semibold text-white shadow-lg print:hidden',
         'xl:hidden',
         guideOpen &&
-          'max-sm:top-[max(0.5rem,env(safe-area-inset-top))] max-sm:bottom-auto max-sm:left-2 max-sm:min-w-11 max-sm:justify-center',
+          'max-sm:top-2 max-sm:right-2 max-sm:bottom-auto max-sm:left-auto max-sm:min-w-11 max-sm:justify-center',
       )}
       data-testid="quick-exit-floating"
     >
