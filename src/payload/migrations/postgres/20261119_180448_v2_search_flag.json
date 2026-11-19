@@ -5099,6 +5099,13 @@
           "notNull": false,
           "default": false
         },
+        "feature_flags_enable_v2_api": {
+          "name": "feature_flags_enable_v2_api",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "feature_flags_show_organization_location_badge": {
           "name": "feature_flags_show_organization_location_badge",
           "type": "boolean",
@@ -5201,13 +5208,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "feature_flags_enable_v2_api": {
-          "name": "feature_flags_enable_v2_api",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         }
       },
       "indexes": {
@@ -9599,6 +9599,13 @@
           "notNull": false,
           "default": false
         },
+        "version_feature_flags_enable_v2_api": {
+          "name": "version_feature_flags_enable_v2_api",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "version_feature_flags_show_organization_location_badge": {
           "name": "version_feature_flags_show_organization_location_badge",
           "type": "boolean",
@@ -9713,13 +9720,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "version_feature_flags_enable_v2_api": {
-          "name": "version_feature_flags_enable_v2_api",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         }
       },
       "indexes": {
@@ -13511,6 +13511,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "7333eee9-6aae-471f-8664-584049617968",
+  "id": "583e932a-618d-4998-9811-91643d971c5f",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
