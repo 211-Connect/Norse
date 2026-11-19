@@ -15,6 +15,8 @@ import {
   AnalyticsControllerGetAreaSearchesParams,
   AnalyticsControllerGetBlockedTrafficData,
   AnalyticsControllerGetBlockedTrafficParams,
+  AnalyticsControllerGetCrawlerTrafficData,
+  AnalyticsControllerGetCrawlerTrafficParams,
   AnalyticsControllerGetEventCatalogData,
   AnalyticsControllerGetEventValuesData,
   AnalyticsControllerGetEventValuesParams,
@@ -136,7 +138,7 @@ export class Analytics<
    *
    * @tags Analytics
    * @name AnalyticsControllerGetResourceMetrics
-   * @summary Get pageview metrics per resource
+   * @summary Get number of views per resource
    * @request GET:/analytics/resource-metrics
    * @secure
    */
@@ -258,7 +260,7 @@ export class Analytics<
       ...params,
     });
   /**
-   * @description Returns search events with timestamps, coordinates, ZIP codes, and anonymized unique user/session identifiers. Includes search_text, search_taxonomy, and search_hybrid events.
+   * @description Returns search events as JSON by default, or synchronously generated CSV when Accept is text/csv. Includes search_text, search_taxonomy, and search_hybrid events.
    *
    * @tags Analytics
    * @name AnalyticsControllerGetExportSearchData
@@ -279,11 +281,11 @@ export class Analytics<
       ...params,
     });
   /**
-   * No description
+   * @description Weights use Umami visits from pageview events. Each website contributes at most 500 location groups.
    *
    * @tags Analytics
    * @name AnalyticsControllerGetHeatmap
-   * @summary Get search heatmap points
+   * @summary Get visitor traffic heatmap points
    * @request GET:/analytics/heatmap
    * @secure
    */
@@ -420,6 +422,27 @@ export class Analytics<
       body: data,
       secure: true,
       type: "application/json",
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Requests from identified crawlers (blocked, logged on observe-only hosts, rate-limited, allowed) and load-limit 429s, counted by Norse with 1-hour resolution. Totals, top crawlers, and an hour or day series. Not from Umami.
+   *
+   * @tags Analytics
+   * @name AnalyticsControllerGetCrawlerTraffic
+   * @summary Get per-crawler request counts for the tenant
+   * @request GET:/analytics/crawler-traffic
+   * @secure
+   */
+  analyticsControllerGetCrawlerTraffic = (
+    query: AnalyticsControllerGetCrawlerTrafficParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AnalyticsControllerGetCrawlerTrafficData, any>({
+      path: `/analytics/crawler-traffic`,
+      method: "GET",
+      query: query,
+      secure: true,
       format: "json",
       ...params,
     });

@@ -111,7 +111,7 @@ export function SearchDialog({
   effects.current = {
     clarifyActed: () => onLegacyAiClarifyAction?.(),
     navigateSkipped: async () =>
-      navigateAiSearch({ locationPayload: await locationPayload() }),
+      navigateAiSearch({ locationPayload: locationPayload() }),
     rerank: async (options, codes) => {
       const reRankResponse = await reRankSearchNeeds(
         { need_weights: buildAiNeedWeights(options, codes) },
@@ -123,7 +123,7 @@ export function SearchDialog({
     navigateConfirmed: async (taxonomies) => {
       navigateAiSearch({
         taxonomies,
-        locationPayload: await locationPayload(),
+        locationPayload: locationPayload(),
       });
     },
     notifyRerankFailed: () => {

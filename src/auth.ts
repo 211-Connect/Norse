@@ -7,6 +7,7 @@ import { createLogger } from './lib/logger';
 import { Tenant } from './payload/payload-types';
 import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
 import { isJwtExpired } from './utils/isJwtExpired';
+import { revokeKeycloakRefreshToken } from './utilities/keycloakLogout';
 import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
 import { getJwtSub } from './utils/getJwtSub';
 
@@ -174,6 +175,7 @@ const createAuthOptions = ({
               'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: params,
+            telemetry: { dependency: 'keycloak', operation: 'token' },
           },
         );
 
@@ -222,23 +224,12 @@ const createAuthOptions = ({
       }
 
       try {
-        const params = new URLSearchParams({
-          client_id: process.env.KEYCLOAK_CLIENT_ID || '',
-          client_secret: keycloak?.clientSecret || '',
-          refresh_token: String(message.token.refreshToken),
+        await revokeKeycloakRefreshToken({
+          issuer: keycloak.issuer,
+          clientId: process.env.KEYCLOAK_CLIENT_ID || '',
+          clientSecret: keycloak.clientSecret || '',
+          refreshToken: String(message.token.refreshToken),
         });
-
-        await fetchWrapper(
-          `${keycloak?.issuer}/protocol/openid-connect/logout`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: params,
-            parseResponse: false,
-          },
-        );
       } catch (err) {
         log.error({ err }, 'Error during Keycloak logout');
         // Don't throw - allow NextAuth signOut to complete

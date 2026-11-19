@@ -2,38 +2,43 @@
 
 import { reverseGeocode } from '../serverActions/geocoding/reverseGeocode';
 
-export interface SearchLocationMeta {
-  searchCity: string;
-  searchZipCode: string;
-  searchCounty: string;
+interface LocationMeta {
+  city: string;
+  zipCode: string;
+  county: string;
 }
 
-const EMPTY_META: SearchLocationMeta = {
-  searchCity: '',
-  searchZipCode: '',
-  searchCounty: '',
+const EMPTY_LOCATION_META: LocationMeta = {
+  city: '',
+  zipCode: '',
+  county: '',
 };
 
-export async function getSearchLocationMeta(
-  searchCoordinates: number[],
+async function getLocationMeta(
+  coordinates: number[],
   tenantId: string,
-): Promise<SearchLocationMeta> {
-  if (searchCoordinates.length !== 2) {
-    return EMPTY_META;
-  }
+): Promise<LocationMeta> {
+  if (coordinates.length !== 2) return EMPTY_LOCATION_META;
 
-  const results = await reverseGeocode(searchCoordinates.join(','), {
+  const results = await reverseGeocode(coordinates.join(','), {
     locale: 'en',
     tenantId,
     provider: 'opencage',
   });
-
   const hit = results.find((result) => result.type === 'coordinates');
+
   return {
-    searchCity: hit?.place ?? '',
-    searchZipCode: hit?.postcode ?? '',
-    searchCounty: hit?.district ?? '',
+    city: hit?.place ?? '',
+    zipCode: hit?.postcode ?? '',
+    county: hit?.district ?? '',
   };
+}
+
+export function getSearchLocationMeta(
+  searchCoordinates: number[],
+  tenantId: string,
+): Promise<LocationMeta> {
+  return getLocationMeta(searchCoordinates, tenantId);
 }
 
 export type SearchLocationPayload = {
@@ -42,6 +47,9 @@ export type SearchLocationPayload = {
   searchCity: string;
   searchZipCode: string;
   searchCounty: string;
+  userCity: string;
+  userZipCode: string;
+  userCounty: string;
 };
 
 export async function buildSearchLocationPayload(
@@ -49,14 +57,19 @@ export async function buildSearchLocationPayload(
   userCoordinates: number[],
   tenantId: string,
 ): Promise<SearchLocationPayload> {
-  const { searchCity, searchZipCode, searchCounty } =
-    await getSearchLocationMeta(searchCoordinates, tenantId);
+  const [searchMeta, userMeta] = await Promise.all([
+    getSearchLocationMeta(searchCoordinates, tenantId),
+    getLocationMeta(userCoordinates, tenantId),
+  ]);
 
   return {
-    userCoordinates: userCoordinates.join(',') ?? '',
     searchCoordinates: searchCoordinates.join(',') ?? '',
-    searchCity,
-    searchZipCode,
-    searchCounty,
+    userCoordinates: userCoordinates.join(',') ?? '',
+    searchCity: searchMeta.city,
+    searchZipCode: searchMeta.zipCode,
+    searchCounty: searchMeta.county,
+    userCity: userMeta.city,
+    userZipCode: userMeta.zipCode,
+    userCounty: userMeta.county,
   };
 }

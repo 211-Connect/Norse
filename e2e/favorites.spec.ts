@@ -18,11 +18,13 @@ import {
   loginViaKeycloak,
   openFavoritesDialogForList,
   openFavoriteListByName,
+  openFavoriteResourceFromListPage,
   openShareDialogAndGetShortUrl,
   openShortUrlInNewPage,
   removeAllResourcesFromListPage,
   removeFirstResourceFromListPage,
   removeFromListViaDialog,
+  resourceIdFromHref,
   resetLocalFavoritesStorage,
   searchAndGetFirstResult,
   test,
@@ -92,8 +94,9 @@ test.describe('Favorites Feature (Authenticated)', () => {
   const updatedListName = `${listName} (Updated)`;
   const updatedDescription = 'Updated by Playwright E2E test';
 
-  // Store resource name for validation
+  // Store resource name and id (serviceAtLocationId) for validation
   let firstResourceName = '';
+  let firstResourceId: string | null = null;
 
   test('should create a new favorite list', async ({ page }) => {
     await goToFavorites(page);
@@ -141,12 +144,13 @@ test.describe('Favorites Feature (Authenticated)', () => {
   test('should add a resource to the favorite list from search results', async ({
     page,
   }) => {
-    const { name } = await searchAndGetFirstResult(page, {
+    const { link, name } = await searchAndGetFirstResult(page, {
       query: 'food',
       query_label: 'food',
       query_type: 'text',
     });
     firstResourceName = name;
+    firstResourceId = resourceIdFromHref(await link.getAttribute('href'));
 
     await addFirstResultToList(page, listName);
     await closeFavoritesDialog(page);
@@ -159,6 +163,24 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await expect(page.getByText(listName).first()).toBeVisible();
     await expect(page.getByText(listDescription).first()).toBeVisible();
     // await waitForFavoriteOnListPage(page, firstResourceName);
+  });
+
+  test('should open a favorited resource from the list page', async ({
+    page,
+  }) => {
+    await goToFavorites(page);
+
+    await openFavoriteListByName(page, listName);
+    await waitForFavoriteListPage(page);
+    await waitForFavoriteOnListPage(page, firstResourceName);
+
+    // Must link to the same id as the search result (serviceAtLocationId),
+    // not the Mongo `_id` — they differ on SCC, where `_id` 404s.
+    const linkedId = await openFavoriteResourceFromListPage(
+      page,
+      firstResourceName,
+    );
+    expect(linkedId).toBe(firstResourceId);
   });
 
   test('should update the favorite list name and description', async ({
@@ -195,6 +217,12 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await waitForFavoriteOnListPage(page, firstResourceName);
 
     await removeFirstResourceFromListPage(page);
+
+    // Reload first: the card is hidden optimistically, so only a fresh render
+    // shows whether the API actually removed it (it is removed by the card's
+    // id, which must be the serviceAtLocationId the favorite was stored by).
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitForFavoriteListPage(page);
 
     // Verify the specific resource is no longer visible (more resilient than checking count)
     await waitForFavoriteToBeAbsentOnListPage(page, firstResourceName);

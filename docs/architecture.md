@@ -62,16 +62,24 @@ enforcement is set by env vars, not in Payload. See
 config, the rollout and the recovery runbook.
 
 `src/proxy.ts` resolves each host's locales, login wall and `noindex` from
-`/api/getTenantBasicConfig`, cached in memory for 10 minutes (10 seconds after
-a failure). It calls the route on `PAYLOAD_CMS_URL` when set, otherwise on the
+`/api/getTenantBasicConfig`, cached in memory per instance for 15 minutes and
+not invalidated on save, so a change to these settings takes up to 15 minutes
+to reach every app instance. It calls the route on `PAYLOAD_CMS_URL` when set, otherwise on the
 tenant's own public host, which goes out through Cloudflare, whose WAF can
 answer `403`. The tenant is passed as `?host=`, and `PAYLOAD_API_ROUTE_SECRET`
 travels in the `x-internal-api-key` header, never in the URL. A failed
 lookup logs `tenant_basic_config_fetch_failed` with the status, `fetchUrl`,
 `server`, `cf-ray`, `cf-mitigated` and the start of the body: a Cloudflare
 block shows a `cf-ray` and an HTML body.
-While a lookup is failing that host gets default locales and **no login
-wall**.
+While a lookup is failing the proxy keeps serving the host's last good
+config and retries every 10 seconds. Only a host it never fetched
+successfully (since that instance started) gets default locales and **no
+login wall**.
+
+Every page is served with `Cache-Control: private, no-cache`, except resource
+detail pages (`private, max-age=1800`): all pages render per request (CSP
+nonce, cookies), so none may sit in a shared cache. Cacheable HTML is
+ISS-2681 ([seo.md](/docs/seo.md)).
 
 `shared/` holds code used by more than one feature:
 
@@ -161,6 +169,9 @@ commands fail fast meanwhile (`enableOfflineQueue: false`) rather than
 waiting out `commandTimeout`. A failed first connect is retried after a 10 s
 cooldown. Neither case disables the cache until a restart.
 
+What is cached in Redis and in each instance's per-feature memory caches:
+[caching.md](/docs/caching.md).
+
 Point `CACHE_REDIS_URI` at a local Redis/Valkey for development
 (`compose.yaml`'s `valkey` service) — same "don't touch shared state"
 reasoning as the database.
@@ -236,7 +247,7 @@ allow-listed as a bot; bots behind it are still detected (the allow list in
 `SITEIMPROVE_CRAWLER`). `mboa.c211.io` stays in `ARCJET_UNENFORCED_HOSTS`
 (and out of `ARCJET_ENFORCED_HOSTS` on the MBOA app) until MNIT confirms
 which automated traffic is theirs
-(ISS-1737): Arcjet still runs and logs `arcjet_denied` with `enforced: false`,
+(ISS-1737): Arcjet still runs and writes `arcjet_decision` records with `enforced=false`,
 but the request is not blocked. On that host only, a request that arrives
 via the mn.gov proxy with only private hops in front of it (State network
 visitors) is sent to Arcjet with `ipSrc` set to the hop that proxy appended
@@ -250,18 +261,21 @@ The rule set (`buildArcjetRules` in `src/lib/arcjet/rules.ts`) also carries a
 `filter` rule denying requests with no `User-Agent`
 (`NO_USER_AGENT_FILTER`, ISS-1744): such requests cannot be evaluated by the
 bot rule and otherwise end as `CONCLUSION_ERROR` (fail-open). It runs in
-`DRY_RUN`, so the decision stays ALLOW and each match is logged as
-`arcjet_dry_run_match`. The promotion step is to read the dry-run impact
+`DRY_RUN`, so the decision stays ALLOW and matches appear in the
+`dry_run_matches` field of `arcjet_decision` records (capped per route and
+rule). The promotion step is to read the dry-run impact
 after deploy (Arcjet dashboard and those log lines) and then flip the mode to
 `LIVE`. On 2026-10-16 the only traffic observed in this class was Outlook
 link-scanning from Microsoft's `2a01:111:f400::/48` range.
 
 #### Blocked traffic analytics (ISS-2366)
 
-Every denial (enforced `DENY` and observe-only `DENIED_NOT_ENFORCED`) is
-counted in memory per server instance, by tenant, UTC hour and
-classification, and pushed to Norse-API once a minute; the **Blocked Bots**
-dashboard widget reads the hourly totals back. Pipeline and limits:
+Every denial (enforced `DENY`, rate-limited, and observe-only
+`DENIED_NOT_ENFORCED`), every request from an allowed crawler and every
+load-limit 429 is counted in memory per server instance, by tenant, UTC
+hour, crawler, outcome and classification, and pushed to Norse-API once a
+minute; the **Blocked Bots** and **Crawler traffic** dashboard widgets read
+the hourly totals back. Pipeline and limits:
 [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
 
 The `classification` is decided by `classifyBlockedTraffic` in

@@ -5,7 +5,6 @@ import utc from 'dayjs/plugin/utc';
 
 import { analyticsApiClient } from '@/lib/api/clients';
 import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
-import { SearchEventExportRow } from '../../lib/api/generated/data-contracts';
 import { getApiHeaders } from '@/lib/api';
 
 dayjs.extend(utc);
@@ -14,61 +13,6 @@ function toISO(ms: string | undefined): string {
   if (!ms) return '';
   const clamped = Math.min(Number(ms), Date.now());
   return new Date(clamped).toISOString();
-}
-
-function escapeCSVField(value: string | number | null | undefined): string {
-  const str = value == null ? '' : String(value);
-  if (
-    str.includes('"') ||
-    str.includes(',') ||
-    str.includes('\n') ||
-    str.includes('\r')
-  ) {
-    return `"${str.replace(/"/g, '""')}"`;
-  }
-  return str;
-}
-
-function buildCSV(rows: SearchEventExportRow[]): string {
-  const headers = [
-    'Timestamp',
-    'Session ID',
-    'Query Label',
-    'Query Type',
-    'Search Latitude',
-    'Search Longitude',
-    'Search City',
-    'Search ZIP Code',
-    'User Latitude',
-    'User Longitude',
-    'User City',
-    'User ZIP Code',
-    'Referral Source',
-  ];
-
-  const lines: string[] = [headers.map(escapeCSVField).join(',')];
-
-  for (const row of rows) {
-    lines.push(
-      [
-        escapeCSVField(row.timestamp),
-        escapeCSVField(row.sessionId ?? ''),
-        escapeCSVField(row.queryLabel),
-        escapeCSVField(row.queryType),
-        escapeCSVField(row.searchLatitude ?? ''),
-        escapeCSVField(row.searchLongitude ?? ''),
-        escapeCSVField(row.searchCity ?? ''),
-        escapeCSVField(row.searchZipCode ?? ''),
-        escapeCSVField(row.userLatitude ?? ''),
-        escapeCSVField(row.userLongitude ?? ''),
-        escapeCSVField(row.userCity ?? ''),
-        escapeCSVField(row.userZipCode ?? ''),
-        escapeCSVField(row.referralSource ?? ''),
-      ].join(','),
-    );
-  }
-
-  return lines.join('\r\n');
 }
 
 export const exportSearchAnalytics: Endpoint = {
@@ -103,23 +47,22 @@ export const exportSearchAnalytics: Endpoint = {
             websiteIds: websiteIdsParam,
           },
           {
+            format: 'text',
             headers: {
+              Accept: 'text/csv',
               'x-analytics-api-key': ctx.apiKey,
               ...(await getApiHeaders(tenantId || '')),
             },
           },
         );
 
-      if (!response.data) {
+      const csv: unknown = response.data;
+      if (typeof csv !== 'string') {
         return Response.json(
           { error: 'Failed to export search analytics from Norse API.' },
           { status: 502 },
         );
       }
-
-      const rows = response.data.data ?? [];
-
-      const csv = buildCSV(rows);
 
       const startLabel = dayjs.utc(Number(startAt)).format('YYYY-MM-DD');
       const endLabel = dayjs.utc(Number(endAt)).format('YYYY-MM-DD');

@@ -26,11 +26,6 @@ on:
       allow_search_engines:
         type: string
         required: true
-      images_only:
-        description: Push images without waiting for deployments
-        type: boolean
-        required: false
-        default: false
     # Listed one by one, and read by name below, so each job only receives
     # these secrets. Don't use `secrets: inherit` or `secrets[...]` here: both
     # hand the runner every organization and repository secret.
@@ -40,9 +35,9 @@ on:
       DIGITALOCEAN_ACCESS_TOKEN:
         required: true
       MULTITENANT_APP_ID:
-        required: false
+        required: true
       MBOA_APP_ID:
-        required: false
+        required: true
 
 permissions:
   contents: read
@@ -60,7 +55,6 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
-            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -76,16 +70,14 @@ jobs:
           # a clear error) instead of falling through to the other app's id.
           app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
           do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-          images-only: ${{ inputs.images_only }}
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
-          # MBOA has no Umami.
-          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
+          # MBOA only tracks Umami in production.
+          umami-script-url: ${{ (matrix.deployment == 'multitenant' || inputs.environment == 'production') && inputs.umami_script_url || '' }}
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
-          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}
 
   deploy-app:
     needs: deploy-cms
@@ -100,7 +92,6 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
-            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -116,13 +107,12 @@ jobs:
           # a clear error) instead of falling through to the other app's id.
           app-id: ${{ matrix.deployment == 'multitenant' && secrets.MULTITENANT_APP_ID || matrix.deployment == 'mboa' && secrets.MBOA_APP_ID || '' }}
           do-token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-          images-only: ${{ inputs.images_only }}
           mapbox-api-key: ${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
           mapbox-style-url: ${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
-          # MBOA has no Umami.
-          umami-script-url: ${{ matrix.deployment == 'multitenant' && inputs.umami_script_url || '' }}
+          # MBOA only tracks Umami in production.
+          umami-script-url: ${{ (matrix.deployment == 'multitenant' || inputs.environment == 'production') && inputs.umami_script_url || '' }}
+          arcjet-script-url: ${{ vars.NEXT_PUBLIC_ARCJET_SCRIPT_URL }}
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
-          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}

@@ -249,6 +249,7 @@ export interface Config {
     'analytics-alert-clicks': AnalyticsAlertClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
     'analytics-blocked-bots': AnalyticsBlockedBotsWidget;
+    'analytics-crawler-traffic': AnalyticsCrawlerTrafficWidget;
     'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
@@ -320,6 +321,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -511,6 +513,7 @@ export interface TenantMedia {
   id: number;
   tenant?: (string | null) | Tenant;
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -580,7 +583,14 @@ export interface ResourceDirectory {
     favicon: number | TenantMedia;
     hero?: (number | null) | TenantMedia;
     openGraph?: (number | null) | TenantMedia;
+    /**
+     * Optional. Shown on the no-results card and inserted wherever content uses {phone}.
+     */
     phoneNumber?: string | null;
+    /**
+     * Optional. Inserted wherever content uses {email}.
+     */
+    email?: string | null;
     theme: {
       primaryColor: string;
       secondaryColor: string;
@@ -629,6 +639,9 @@ export interface ResourceDirectory {
     };
   };
   footer?: {
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     disclaimer?: string | null;
     customMenu?:
       | {
@@ -638,6 +651,9 @@ export interface ResourceDirectory {
           id?: string | null;
         }[]
       | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     copyright?: string | null;
   };
   suggestions: {
@@ -899,10 +915,14 @@ export interface ResourceDirectory {
     searchSettings: {
       searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
       /**
-       * Choose how pinned/priority resources are handled for hybrid and AI classification search engines. Ignore drops pinned status; Boost adds a score contribution; Top hard-sorts pinned resources to the top of results.
+       * How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.
        */
       pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
       resultsLimit: number;
+      /**
+       * Plots up to 10,000 results of a search on the map as small circles, with the current page in the brand colour, instead of only the current page. The results list is capped at the same 10,000.
+       */
+      showAllResultsOnMap?: boolean | null;
       radiusSelectValues?:
         | {
             value: number;
@@ -913,6 +933,14 @@ export interface ResourceDirectory {
        * Must match one of the radius values above
        */
       defaultRadius?: number | null;
+      /**
+       * Used when a visitor picks a state, county, city or ZIP code; picking an address still searches a radius around it. A resource "serves" the area when its service area overlaps any part of it. Resources without an address are virtual services, hotlines and PO boxes. The last option also lists resources based elsewhere, such as a statewide hotline with an office in another county.
+       */
+      areaMatchMode?: ('located' | 'located_or_serving' | 'serving') | null;
+      /**
+       * They cannot be placed in any area, so each one is listed in every area search or in none. A virtual service with no service area usually serves everyone. "All" also lists physical services that are missing their address.
+       */
+      unlocatedInAreaSearch?: ('none' | 'virtual' | 'all') | null;
     };
     facets?:
       | {
@@ -1014,16 +1042,25 @@ export interface ResourceDirectory {
   accessibilityPage?: {
     enabled?: boolean | null;
     title?: string | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     content?: string | null;
   };
   privacyPolicyPage?: {
     enabled?: boolean | null;
     title?: string | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     content?: string | null;
   };
   termsOfUsePage?: {
     enabled?: boolean | null;
     title?: string | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     content?: string | null;
   };
   featureFlags?: {
@@ -1467,6 +1504,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -1570,6 +1608,7 @@ export interface TenantsSelect<T extends boolean = true> {
 export interface TenantMediaSelect<T extends boolean = true> {
   tenant?: T;
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1649,6 +1688,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         hero?: T;
         openGraph?: T;
         phoneNumber?: T;
+        email?: T;
         theme?:
           | T
           | {
@@ -1860,6 +1900,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               searchEngine?: T;
               pinnedResourcesMode?: T;
               resultsLimit?: T;
+              showAllResultsOnMap?: T;
               radiusSelectValues?:
                 | T
                 | {
@@ -1867,6 +1908,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     id?: T;
                   };
               defaultRadius?: T;
+              areaMatchMode?: T;
+              unlocatedInAreaSearch?: T;
             };
         facets?:
           | T
@@ -2365,6 +2408,16 @@ export interface AnalyticsBlockedBotsWidget {
     [k: string]: unknown;
   };
   width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-crawler-traffic_widget".
+ */
+export interface AnalyticsCrawlerTrafficWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

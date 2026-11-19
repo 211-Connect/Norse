@@ -2,8 +2,7 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
-scrape_configs:
-  - job_name: 'pushgateway'
-    honor_labels: true
-    static_configs:
-      - targets: ['pushgateway:9091']
+# No scrape targets: norse-app telemetry arrives through Alloy (remote write) and Tempo's
+# metrics-generator writes service graphs / span metrics to the same remote-write receiver.
+# The old Pushgateway scrape job is gone with the service (see compose.yaml).
+scrape_configs: []

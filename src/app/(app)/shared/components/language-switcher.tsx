@@ -13,7 +13,8 @@ import {
   LANGUAGE_SWITCHER_TRIGGER_ID,
 } from '../lib/aria-constants';
 import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
-import { cn } from '../lib/utils';
+import { localeSwitchHrefs } from '../lib/locale-switch';
+import { cn, withOptionalCustomBasePath } from '../lib/utils';
 import { LanguageSwitcherPrimitive } from './language-switcher-primitive';
 
 export const LanguageSwitcher = () => {
@@ -34,20 +35,36 @@ export const LanguageSwitcher = () => {
   );
 
   const handleValueChange = useCallback(
-    (language: string) => {
-      if (language !== currentLanguage) {
-        trackEvent(AnalyticsEvent.LanguageSwitch, AnalyticsTools.Umami, {
-          destinationLanguage: language,
-        });
-      }
+    async (language: string) => {
+      if (language === currentLanguage) return;
+      trackEvent(AnalyticsEvent.LanguageSwitch, AnalyticsTools.Umami, {
+        destinationLanguage: language,
+      });
 
       start();
-      if (currentLanguage === appConfig.i18n.defaultLocale) {
-        router.push(`/${language}${currentPathname}${stringifiedSearchParams}`);
+      const { href, pageLoadHref } = localeSwitchHrefs({
+        pathname: currentPathname ?? '/',
+        search: stringifiedSearchParams,
+        from: currentLanguage,
+        to: language,
+        defaultLocale: appConfig.i18n.defaultLocale,
+      });
+
+      // Unprefixed paths take their language from the locale cookie, and the proxy only writes it on page
+      // loads, so the choice is saved before navigating (docs/locale-routing.md).
+      const saved = await fetch(withOptionalCustomBasePath('/api/locale'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ locale: language }),
+      }).then(
+        (response) => response.ok,
+        () => false,
+      );
+
+      if (saved) {
+        router.push(href);
       } else {
-        router.push(
-          `${currentPathname?.replace(`/${currentLanguage}`, `/${language}`)}${stringifiedSearchParams}`,
-        );
+        window.location.assign(withOptionalCustomBasePath(pageLoadHref));
       }
     },
     [

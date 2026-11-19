@@ -13,6 +13,11 @@ export function matchesDefaultLocation(
     PrintableDirectoryDefaultQueryConfigDto | null | undefined,
   queryParams: Record<string, unknown>,
 ): boolean {
+  // An area has no radius to compare.
+  if (defaultQueryConfig?.regionId && queryParams.region) {
+    return defaultQueryConfig.regionId === queryParams.region;
+  }
+
   if (!defaultQueryConfig?.coords || !queryParams.coords) {
     return false;
   }

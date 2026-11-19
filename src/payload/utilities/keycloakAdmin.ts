@@ -1,4 +1,5 @@
 import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -26,14 +27,16 @@ export async function getKeycloakAdminAccessToken(): Promise<string> {
     client_secret: clientSecret,
   });
 
-  const response = await fetch(tokenEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body,
-    signal: AbortSignal.timeout(FETCH_TIMEOUT),
-  });
+  const response = await trackDependency('keycloak', 'token', () =>
+    fetch(tokenEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body,
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
+    }),
+  );
 
   if (!response.ok) {
     const bodyText = await response.text();
@@ -58,14 +61,16 @@ export async function getVerifiedEnabledUsersCount(
   const token = await getKeycloakAdminAccessToken();
   const usersCountUrl = `${baseUrl}/admin/realms/${encodeURIComponent(realmId)}/users/count?enabled=true&emailVerified=true`;
 
-  const response = await fetch(usersCountUrl, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-    },
-    signal: AbortSignal.timeout(FETCH_TIMEOUT),
-  });
+  const response = await trackDependency('keycloak', 'users_count', () =>
+    fetch(usersCountUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
+    }),
+  );
 
   if (!response.ok) {
     const bodyText = await response.text();

@@ -49,6 +49,11 @@ export async function navigateToSearchWithCoords(
         (intent) => ({
           ...intent,
           coords: { stated: true, value: placeMetadata.coordinates },
+          // An area (state, county, city, ZIP) is searched as its shape: docs/area-search.md.
+          ...(placeMetadata.region_id && {
+            region: { stated: true, value: placeMetadata.region_id },
+            distance: { stated: false },
+          }),
         }),
         { newSearch: false, basePath: `/${locale}` },
       ),

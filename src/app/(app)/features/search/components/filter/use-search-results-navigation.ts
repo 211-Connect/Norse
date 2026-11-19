@@ -10,6 +10,7 @@ import {
   type SearchIntent,
 } from '@/app/(app)/features/search/intent';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { useLocalePrefix } from '@/app/(app)/shared/hooks/use-locale-prefix';
 
 import {
   PENDING_FOCUS_TARGET_STORAGE_KEY,
@@ -30,6 +31,7 @@ export function useSearchResultsNavigation() {
   const { stringifiedSearchParams, searchParamsObject } =
     useClientSearchParams();
   const { start } = useTopLoader();
+  const localePrefix = useLocalePrefix();
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
@@ -39,7 +41,8 @@ export function useSearchResultsNavigation() {
   /**
    * Navigates to the current search with a change: the URL is lifted, changed and serialized, so a
    * repeated key reaches the next page as its first value instead of `key[n]` (ISS-2409). A changed
-   * search starts on the first page.
+   * search starts on the first page. The URL keeps the page's locale prefix, so the next page is in the
+   * same language without depending on the locale cookie.
    */
   const updateSearch = useCallback(
     (change: (intent: SearchIntent) => SearchIntent) => {
@@ -48,14 +51,14 @@ export function useSearchResultsNavigation() {
       const url = rewriteSearchUrl(
         rawSearchParams(stringifiedSearchParams.replace(/^\?/, '')),
         change,
-        { newSearch: true },
+        { newSearch: true, basePath: localePrefix },
       );
 
       setIsPending(true);
       start();
       router.push(url);
     },
-    [router, stringifiedSearchParams, start],
+    [router, stringifiedSearchParams, start, localePrefix],
   );
 
   return {

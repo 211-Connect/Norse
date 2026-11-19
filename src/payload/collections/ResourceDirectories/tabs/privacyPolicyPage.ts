@@ -1,6 +1,7 @@
 import { Tab } from 'payload';
 
 import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
+import { TEMPLATE_TAGS_DESCRIPTION } from '../templateTagsDescription';
 
 export const privacyPolicyPage: Tab = {
   name: 'privacyPolicyPage',
@@ -20,6 +21,9 @@ export const privacyPolicyPage: Tab = {
     {
       name: 'content',
       type: 'textarea',
+      admin: {
+        description: TEMPLATE_TAGS_DESCRIPTION,
+      },
     },
   ],
 };

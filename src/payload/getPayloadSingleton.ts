@@ -1,3 +1,4 @@
+import { ROOT_CONTEXT, context } from '@opentelemetry/api';
 import { Payload, getPayload } from 'payload';
 
 import { createLogger } from '@/lib/logger';
@@ -46,8 +47,12 @@ export async function getPayloadSingleton(): Promise<Payload> {
     return initPromise;
   }
 
-  // Start initialization
-  initPromise = getPayload({ config })
+  // Start initialization. Run it inside the empty root context: Payload's
+  // `_initializeCrons()` runs during init and would otherwise capture the
+  // OTel context of the first request that triggers it, carrying that
+  // request's trace into every cron tick.
+  initPromise = context
+    .with(ROOT_CONTEXT, () => getPayload({ config }))
     .then((payload) => {
       cachedPayload = payload;
       initPromise = null;

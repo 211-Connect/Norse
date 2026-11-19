@@ -35,7 +35,6 @@ import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/c
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
-import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { default as default_c5dffe636895d753138026b95fe2f960 } from '@/payload/components/AnalyticsView'
 import { default as default_935f67371f05c46a1bc08ee807616da6 } from '@/payload/components/AnalyticsRedirectView'
 import { default as default_31be5857ede30a47c40f3a0eb21d716a } from '@/payload/components/ScorecardsView'
@@ -55,6 +54,7 @@ import { default as default_69d23959707ed857d328adc822ab95d6 } from '@/payload/c
 import { default as default_26a30d2d7154615da33fbb2d808fd957 } from '@/payload/components/analytics/widgets/AlertClicksWidget'
 import { default as default_723f4a967de6eda4bbdcbf96fd002037 } from '@/payload/components/analytics/widgets/PageViewsWidget'
 import { default as default_5f0934ffc0c4e4c4c4d73e71b399151f } from '@/payload/components/analytics/widgets/BlockedBotsWidget'
+import { default as default_9dd93c0cc95b8d48291a69c892454e5a } from '@/payload/components/analytics/widgets/CrawlerTrafficWidget'
 import { default as default_ae2d726342a3a45563bf3152abfad607 } from '@/payload/components/analytics/widgets/PageviewsChartWidget'
 import { default as default_40e5d1b279d66a0c65b1a98e988971c4 } from '@/payload/components/analytics/widgets/AnalyticsMapWidget'
 import { default as default_98e4c30b1a18b3c28aae84e3179686a8 } from '@/payload/components/analytics/widgets/ResourceTitlesWidget'
@@ -71,6 +71,7 @@ import { default as default_0498effad1df9bb7659c094484ba586c } from '@/payload/c
 import { default as default_7bde3d84622be8438dee4c2944b96470 } from '@/payload/components/analytics/widgets/VerifiedUsersWidget'
 import { default as default_7cf458d23045e60073c7c95062307bdb } from '@/payload/components/analytics/widgets/EventCardWidget'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -111,7 +112,6 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/payload/components/AnalyticsView#default": default_c5dffe636895d753138026b95fe2f960,
   "@/payload/components/AnalyticsRedirectView#default": default_935f67371f05c46a1bc08ee807616da6,
   "@/payload/components/ScorecardsView#default": default_31be5857ede30a47c40f3a0eb21d716a,
@@ -131,6 +131,7 @@ export const importMap = {
   "@/payload/components/analytics/widgets/AlertClicksWidget#default": default_26a30d2d7154615da33fbb2d808fd957,
   "@/payload/components/analytics/widgets/PageViewsWidget#default": default_723f4a967de6eda4bbdcbf96fd002037,
   "@/payload/components/analytics/widgets/BlockedBotsWidget#default": default_5f0934ffc0c4e4c4c4d73e71b399151f,
+  "@/payload/components/analytics/widgets/CrawlerTrafficWidget#default": default_9dd93c0cc95b8d48291a69c892454e5a,
   "@/payload/components/analytics/widgets/PageviewsChartWidget#default": default_ae2d726342a3a45563bf3152abfad607,
   "@/payload/components/analytics/widgets/AnalyticsMapWidget#default": default_40e5d1b279d66a0c65b1a98e988971c4,
   "@/payload/components/analytics/widgets/ResourceTitlesWidget#default": default_98e4c30b1a18b3c28aae84e3179686a8,
@@ -146,5 +147,6 @@ export const importMap = {
   "@/payload/components/analytics/widgets/FavoriteAddToListWidget#default": default_0498effad1df9bb7659c094484ba586c,
   "@/payload/components/analytics/widgets/VerifiedUsersWidget#default": default_7bde3d84622be8438dee4c2944b96470,
   "@/payload/components/analytics/widgets/EventCardWidget#default": default_7cf458d23045e60073c7c95062307bdb,
-  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

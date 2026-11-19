@@ -5,6 +5,7 @@ import { TranslationServiceClient } from '@google-cloud/translate';
 import crypto from 'crypto';
 
 import { translationCacheService } from '@/cacheService';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 // Google does not support some language codes - especially dialects.
 // Therefore, we map them to the closest supported language.
@@ -79,13 +80,20 @@ async function translateWithAzure(
   });
 
   const inputText = texts.map((text) => ({ text }));
-  const translateResponse = await client.path('/translate').post({
-    body: inputText,
-    queryParameters: {
-      to: targetLocale,
-      from: sourceLocale,
-    },
-  });
+  const translateResponse = await trackDependency(
+    'translation',
+    'azure',
+    async () =>
+      client.path('/translate').post({
+        body: inputText,
+        queryParameters: {
+          to: targetLocale,
+          from: sourceLocale,
+        },
+      }),
+    // The Azure SDK resolves with the failure response instead of throwing.
+    (result) => (isUnexpected(result) ? 'error' : 'ok'),
+  );
 
   if (isUnexpected(translateResponse)) {
     throw new Error(
@@ -123,7 +131,9 @@ async function translateWithGoogle(
     targetLanguageCode: LANGUAGE_ALIAS[targetLocale] || targetLocale,
   };
 
-  const [response] = await client.translateText(request);
+  const [response] = await trackDependency('translation', 'google', () =>
+    client.translateText(request),
+  );
   return response.translations?.map((t) => t.translatedText || '') || [];
 }
 

@@ -1,7 +1,10 @@
 'use client';
 
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
-import { type Favorite as FavoriteType } from '@/app/(app)/shared/store/favorites';
+import {
+  type Favorite as FavoriteType,
+  getFavoriteResourceId,
+} from '@/app/(app)/shared/store/favorites';
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { transformFacetsToArray } from '@/app/(app)/shared/utils/toFacetsWithTranslation';
 import { ResourceTranslationOpenApiDto } from '@/lib/api/generated/data-contracts';
@@ -50,7 +53,7 @@ export function favoriteToResult(
 
   return {
     _id: favorite._id ?? '',
-    id: favorite._id ?? '',
+    id: getFavoriteResourceId(favorite),
     alert: translation?.alert ?? null,
     alertDate: translation?.alertDate ?? null,
     address: displayAddress ?? '',

@@ -4,7 +4,7 @@ import { createLogger } from '@/lib/logger';
 import { suggestionApiClient } from '@/lib/api/clients';
 import { SuggestionCombinedResponseDto } from '@/lib/api/generated/data-contracts';
 import { RequestParams } from '@/lib/api/generated/http-client';
-import { ONE_MINUTE, stableHash, withCache } from '@/utilities/withCache';
+import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
 import { getApiHeaders } from '@/lib/api';
 
 const log = createLogger('search-suggestions-service');
@@ -14,7 +14,7 @@ const EMPTY_SUGGESTIONS: SuggestionCombinedResponseDto = {
   organizations: [],
 };
 
-const SUGGESTIONS_CACHE_TTL = 5 * ONE_MINUTE;
+const SUGGESTIONS_CACHE_TTL = ONE_HOUR;
 
 async function createSuggestionRequestParams(
   locale: string,

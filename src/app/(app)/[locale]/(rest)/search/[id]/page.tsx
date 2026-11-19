@@ -8,15 +8,51 @@ import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
+import {
+  canonicalOrigin,
+  resourceCanonicalUrl,
+} from '@/app/(app)/features/resource/seo/resourceSeo';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getHost } from '@/app/(app)/shared/utils/getHost';
+import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
 import { protectPage } from '@/lib/arcjet-page';
+import { getTenantByHost } from '@/lib/cms/tenants';
 import { createLogger } from '@/lib/logger';
 import { Resource } from '@/types/resource';
 
 const log = createLogger('resource-page');
 
 const i18nNamespaces = ['page-resource', 'page-list', 'common'];
+
+/**
+ * The page's canonical URL (ISS-2678): the record's own id on the tenant's primary (first trusted) domain, so an
+ * `_id` or cross-tenant fallback lookup, or a second domain, never declares itself the canonical page. Falls back
+ * to the request's host when the tenant cannot be read.
+ */
+async function canonicalFor(
+  locale: string,
+  defaultLocale: string,
+  resourceId: string,
+) {
+  const { host, protocol } = await getHost();
+  let trustedDomains: string[] = [];
+  try {
+    const tenant = await getTenantByHost(parseHost(host));
+    trustedDomains = (tenant?.trustedDomains ?? []).map(({ domain }) => domain);
+  } catch (err) {
+    log.warn(
+      { err, host },
+      'Tenant lookup failed; canonical uses the request host',
+    );
+  }
+  return resourceCanonicalUrl({
+    ...canonicalOrigin({ trustedDomains, host, protocol }),
+    locale,
+    defaultLocale,
+    id: resourceId,
+  });
+}
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { id, locale } = await params;
@@ -38,7 +74,14 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
     return {};
   }
 
+  const canonical = await canonicalFor(
+    locale,
+    appConfig.i18n.defaultLocale,
+    resource.id,
+  );
+
   return {
+    alternates: { canonical },
     openGraph: {
       description: resource.description ?? undefined,
       images: appConfig.brand.openGraphUrl

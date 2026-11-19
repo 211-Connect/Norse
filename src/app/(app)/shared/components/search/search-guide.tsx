@@ -241,7 +241,7 @@ export function SearchGuide({
     event.preventDefault();
     const sent = navigate({
       landing: true,
-      locationPayload: await buildSearchLocationPayload(
+      locationPayload: buildSearchLocationPayload(
         searchCoordinates,
         userCoordinates,
         appConfig.tenantId,

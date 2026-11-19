@@ -1,4 +1,5 @@
 import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 let cachedToken: string | null = null;
 
@@ -7,14 +8,18 @@ async function isTokenValid(
   token: string,
 ): Promise<boolean> {
   try {
-    const res = await fetch(`${umamiApiUrl}/api/auth/verify`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-      signal: AbortSignal.timeout(FETCH_TIMEOUT),
-    });
+    // A 401 is the expected answer for an expired cached token — the caller
+    // logs in again — so `classifyStatus` records it as `ok`.
+    const res = await trackDependency('umami', 'auth_verify', () =>
+      fetch(`${umamiApiUrl}/api/auth/verify`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT),
+      }),
+    );
     return res.ok;
   } catch {
     return false;
@@ -31,12 +36,14 @@ async function login(umamiApiUrl: string): Promise<string> {
     );
   }
 
-  const res = await fetch(`${umamiApiUrl}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
-    signal: AbortSignal.timeout(FETCH_TIMEOUT),
-  });
+  const res = await trackDependency('umami', 'auth_login', () =>
+    fetch(`${umamiApiUrl}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
+    }),
+  );
 
   if (!res.ok) {
     const body = await res.text();

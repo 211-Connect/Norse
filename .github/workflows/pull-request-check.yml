@@ -36,6 +36,13 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # Non-blocking at first: flags direct dependencies whose locked version is
+      # deprecated on npm (see scripts/check-deprecated.sh). Make it required once
+      # the allowlist is stable.
+      - name: Check deprecated dependencies
+        continue-on-error: true
+        run: bash scripts/check-deprecated.sh
+
   # The Dockerfile's app and cms targets delete routes before building, so a
   # stray import of a deleted file only fails here. The public app's bundle
   # must also stay free of Payload (docs/cms-app-separation-plan.md).

@@ -4,6 +4,7 @@ import { Locate } from 'lucide-react';
 import { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { SEARCH_DIALOG_ID } from '../../lib/constants';
@@ -20,12 +21,15 @@ export interface AddMyLocationButtonProps {
 
 export function AddMyLocationButton({
   className = '',
-  location,
+  location: rawLocation,
   variant = 'ghost',
   onClick = () => {},
   buttonRef,
 }: AddMyLocationButtonProps) {
   const { t } = useTranslation('common');
+  const location = isEverywhereLocation(rawLocation)
+    ? t('search.everywhere', 'Everywhere')
+    : rawLocation;
   const buttonLabel = location
     ? t('search.change_location_label', {
         location,

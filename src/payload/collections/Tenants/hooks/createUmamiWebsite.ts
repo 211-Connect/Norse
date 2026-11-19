@@ -3,19 +3,24 @@ import type { CollectionAfterChangeHook } from 'payload';
 import type { Tenant } from '../../../payload-types';
 import { getUmamiToken } from '../../../utilities/umamiAuth';
 import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
+import { trackDependency } from '@/lib/telemetry/dependency';
 
 async function verifyUmamiTeam(
   umamiApiUrl: string,
   teamId: string,
   token: string,
 ): Promise<boolean> {
-  const res = await fetch(`${umamiApiUrl}/api/teams/${teamId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-    },
-    signal: AbortSignal.timeout(FETCH_TIMEOUT),
-  });
+  // A 404 means the team is not accessible — website creation is skipped — so
+  // `classifyStatus` records it as `ok`.
+  const res = await trackDependency('umami', 'team_get', () =>
+    fetch(`${umamiApiUrl}/api/teams/${teamId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
+    }),
+  );
 
   if (!res.ok) {
     console.warn(
@@ -34,16 +39,18 @@ async function createUmamiWebsiteRequest(
   name: string,
   domain: string,
 ): Promise<string | null> {
-  const res = await fetch(`${umamiApiUrl}/api/websites`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({ name, domain, teamId }),
-    signal: AbortSignal.timeout(FETCH_TIMEOUT),
-  });
+  const res = await trackDependency('umami', 'website_create', () =>
+    fetch(`${umamiApiUrl}/api/websites`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ name, domain, teamId }),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
+    }),
+  );
 
   if (!res.ok) {
     const body = await res.text();

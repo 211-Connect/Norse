@@ -1,5 +1,6 @@
 import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
+import { trackDependency } from '@/lib/telemetry/dependency';
 import {
   getKeycloakAdminAccessToken,
   getKeycloakAdminBaseUrl,
@@ -23,14 +24,16 @@ export async function syncKeycloakRealmBrandingAttributes(
 
   const realmUrl = `${baseUrl}/admin/realms/${encodeURIComponent(realmId)}`;
 
-  const realmResponse = await fetch(realmUrl, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-    },
-    signal: AbortSignal.timeout(FETCH_TIMEOUT),
-  });
+  const realmResponse = await trackDependency('keycloak', 'realm_get', () =>
+    fetch(realmUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
+    }),
+  );
 
   if (!realmResponse.ok) {
     const bodyText = await realmResponse.text();
@@ -48,18 +51,20 @@ export async function syncKeycloakRealmBrandingAttributes(
     ...attributes,
   };
 
-  const updateResponse = await fetch(realmUrl, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...realmRepresentation,
-      attributes: mergedAttributes,
+  const updateResponse = await trackDependency('keycloak', 'realm_update', () =>
+    fetch(realmUrl, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...realmRepresentation,
+        attributes: mergedAttributes,
+      }),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
     }),
-    signal: AbortSignal.timeout(FETCH_TIMEOUT),
-  });
+  );
 
   if (!updateResponse.ok) {
     const bodyText = await updateResponse.text();

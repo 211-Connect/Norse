@@ -186,6 +186,38 @@ export async function waitForFavoriteToBeAbsentOnListPage(
     .toBe(0);
 }
 
+/** The resource id a `/search/<id>` href points at (locale prefix, query and trailing slash ignored). */
+export function resourceIdFromHref(href: string | null): string | null {
+  return href?.match(/\/search\/([^/?#]+)/)?.[1] ?? null;
+}
+
+/**
+ * Opens a favorite from the list page by its card link and asserts the
+ * resource page loads. The link must carry the serviceAtLocationId (a UUID,
+ * like search-result links) — on tenants whose Mongo `_id` is an ObjectId
+ * (e.g. SCC), linking by `_id` lands on a 404.
+ */
+export async function openFavoriteResourceFromListPage(
+  page: Page,
+  resourceName: string,
+) {
+  const link = page
+    .getByTestId('resource-link')
+    .filter({ hasText: resourceName })
+    .first();
+  await expect(link).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  const resourceId = resourceIdFromHref(await link.getAttribute('href'));
+
+  await link.click();
+
+  await expectPageUrl(page, /\/search\/[a-f0-9-]{36}\/?(?:[?#]|$)/);
+  await expect(page.getByTestId('favorite-btn').first()).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
+  return resourceId;
+}
+
 export function favoriteListCardByExactName(page: Page, listName: string) {
   return page.getByTestId('favorite-list-card').filter({
     has: page.getByRole('link', { name: listName, exact: true }),
@@ -464,4 +496,42 @@ export async function removeFirstResourceFromListPage(page: Page) {
   await expect(page.getByText('Removed from list')).toBeVisible({
     timeout: ASYNC_UI_TIMEOUT_MS,
   });
+}
+
+/**
+ * Anonymous (local) favoriting: hearts the top `count` search results, waits
+ * for each heart to fill, and returns their names in result order.
+ */
+export async function favoriteTopResultsLocally(page: Page, count: number) {
+  const names: string[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const button = page.getByTestId('favorite-btn').nth(i);
+    await expect(button).toHaveAttribute(
+      'data-session-status',
+      'unauthenticated',
+      { timeout: UI_SHELL_TIMEOUT_MS },
+    );
+    names.push(
+      (
+        (await page.getByTestId('resource-link').nth(i).textContent()) ?? ''
+      ).trim(),
+    );
+    await button.click();
+    await expect(button.locator('svg')).toHaveClass(/fill-current/, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+  }
+  return names;
+}
+
+/** Asserts the local favorites page lists exactly `names`. */
+export async function expectLocalFavorites(page: Page, names: string[]) {
+  await expect(page.getByTestId('resource-link')).toHaveCount(names.length, {
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+  for (const name of names) {
+    await expect(
+      page.getByTestId('resource-link').filter({ hasText: name }).first(),
+    ).toBeVisible();
+  }
 }

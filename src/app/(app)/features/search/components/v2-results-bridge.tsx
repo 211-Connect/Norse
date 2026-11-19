@@ -21,12 +21,9 @@ export function V2ResultsBridge({ children }: PropsWithChildren) {
   return (
     <SearchResultsProvider
       value={{
+        ...base,
         results: v2?.results ?? base.results,
         totalResults: v2?.totalResults ?? base.totalResults,
-        currentPage: base.currentPage,
-        filters: base.filters,
-        sort: base.sort,
-        coordinates: base.coordinates,
       }}
     >
       {children}

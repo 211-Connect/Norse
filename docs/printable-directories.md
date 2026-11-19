@@ -84,8 +84,14 @@ choices (ADR 0002).
 
 ### Directory List
 
-- Route: localized page under app shell.
+- Route: localized page under app shell (`/directories`).
 - Visible only to users with basic access (see "Access control").
+- Header link (`shouldShowPrintableDirectoriesLink()`): shown to users with
+  basic access, and, in the `everyone` access mode, to everyone, signed in
+  or not, so the feature is easy to find. A signed-out user who clicks it is
+  sent to sign in (the page redirects with `redirect=/directories`) and
+  lands on the list afterwards. In `allowlist` mode the link stays hidden
+  until a user on the allow-list signs in.
 - Supports search by directory name and the creation wizard.
 
 ### Creation wizard
@@ -101,7 +107,9 @@ choices (ADR 0002).
   suggestion becomes a text search) and a "Default location". The query
   creates at most one section with one query source, which has no location
   of its own. The location becomes the directory's `defaultQueryConfig`
-  (clearing it to "Everywhere" means none), used by every query source
+  (clearing it to "Everywhere" means none; an area also stores its
+  `regionId` and an optional `areaMatch`, see
+  [area-search.md](/docs/area-search.md#printable-directories)), used by every query source
   without a location — in the PDF (Norse API) and in the source's "Go to
   search results" link (`withDefaultQueryParams()`). No filters and no
   favorites lists here; both are available later.
@@ -131,7 +139,8 @@ suggestions are on their way.
 - **General info**: name, Share URL (an uneditable base URL followed by the
   editable slug; a taken slug is reported, not auto-suffixed, because the
   user chose it; with a copy button), languages (checkboxes; the primary
-  language is fixed), access policy, default location and default radius.
+  language is fixed), access policy, default location and default radius (for an area, which
+  resources count as in it instead).
 - **Cover**: title and description (basic); front/back images (Cover
   Customization; hidden without it). Primary color and cover layout type are
   hidden until more cover layouts exist.

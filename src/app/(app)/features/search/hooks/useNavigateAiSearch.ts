@@ -48,7 +48,7 @@ export const useNavigateAiSearch = ({
       extraParams?: Record<string, string>;
       /** Prototype: open the landing page (its questions come before the results) instead of the results. */
       landing?: boolean;
-      locationPayload: SearchLocationPayload;
+      locationPayload: Promise<SearchLocationPayload>;
     }) => {
       const query = (search.query || search.searchTerm || '').trim();
       if (!query) {
@@ -63,6 +63,7 @@ export const useNavigateAiSearch = ({
           taxonomies,
           location: search.searchLocation,
           coordinates: search.searchCoordinates,
+          region: search.searchRegion,
           distance: search.searchDistance,
           searchEngine: appConfig.search.searchEngine,
           skipLegacyLinkCheck: true,
@@ -79,15 +80,25 @@ export const useNavigateAiSearch = ({
       startTransition(() => {
         setDialogOpen?.(false);
         setSearchEntry(ResourceEntry.SearchCard);
-        trackSearchEvent(
-          'hybrid',
-          {
-            query,
-            queryLabel: String(search.queryLabel ?? ''),
-            tenantId: appConfig.tenantId ?? '',
-            ...locationPayload,
+        void locationPayload.then(
+          (resolvedLocationPayload) => {
+            trackSearchEvent(
+              'hybrid',
+              {
+                query,
+                queryLabel: String(search.queryLabel ?? ''),
+                tenantId: appConfig.tenantId ?? '',
+                ...resolvedLocationPayload,
+              },
+              appConfig.sessionId,
+            );
           },
-          appConfig.sessionId,
+          (error) => {
+            console.error(
+              'Failed to resolve search location for analytics',
+              error,
+            );
+          },
         );
         router.push(url);
       });
@@ -102,6 +113,7 @@ export const useNavigateAiSearch = ({
       search.searchTerm,
       search.searchLocation,
       search.searchCoordinates,
+      search.searchRegion,
       search.searchDistance,
       searchParams,
       appConfig.search.searchEngine,

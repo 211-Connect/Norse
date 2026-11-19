@@ -12,30 +12,22 @@ import { createLogger } from '@/lib/logger';
 const log = createLogger('error-boundary');
 
 // Create a wrapper component that has access to router
-function ErrorBoundaryWithRouter({
-  children,
-  appConfig,
-  basePath,
-}: {
-  children: ReactNode;
-  appConfig?: any;
-  basePath?: string;
-}) {
-  return (
-    <ErrorBoundary appConfig={appConfig} basePath={basePath}>
-      {children}
-    </ErrorBoundary>
-  );
+function ErrorBoundaryWithRouter(props: Props) {
+  return <ErrorBoundary {...props} />;
 }
 
 type Props = {
   children: ReactNode;
   appConfig?: any;
   basePath?: string;
+  /** Shown in place of children on error, instead of the full-page error. */
+  fallback?: ReactNode;
+  /** Try children again when this changes. */
+  resetKey?: unknown;
 };
 
 type State = {
-  hasError: false;
+  hasError: boolean;
 };
 
 class ErrorBoundary extends Component<Props, State> {
@@ -50,6 +42,12 @@ class ErrorBoundary extends Component<Props, State> {
     // Update state so the next render will show the fallback UI
 
     return { hasError: true };
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false });
+    }
   }
 
   private checkWebGLSupport(): boolean {
@@ -118,6 +116,8 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     // Check if the error is thrown
     if (this.state.hasError) {
+      if (this.props.fallback !== undefined) return this.props.fallback;
+
       return (
         <div className="relative flex min-h-screen flex-col">
           <Image

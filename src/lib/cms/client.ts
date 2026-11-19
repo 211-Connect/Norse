@@ -1,3 +1,5 @@
+import { context, propagation } from '@opentelemetry/api';
+
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { describeError, truncateBody } from '@/lib/describe-error';
 import { createLogger } from '@/lib/logger';
@@ -63,6 +65,12 @@ export async function cmsRequest<T>(
   if (body !== undefined && !isFormData) {
     headers['content-type'] = 'application/json';
   }
+  // `@vercel/otel` injects `traceparent` only for sampled spans. Without this
+  // an unsampled app request reaches the CMS with no parent; the CMS, which
+  // continues context from this caller, would start a new root and sample it
+  // at its own ratio. A `-00` header makes it follow the app's decision. For a
+  // sampled request `@vercel/otel` overwrites it with its fetch span.
+  propagation.inject(context.active(), headers);
 
   let response: Response;
   try {

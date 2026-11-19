@@ -66,5 +66,13 @@
     "update": "Update list details",
     "purge": "Clear all favorites from this list",
     "delete": "Delete this list"
+  },
+  "unavailable": {
+    "title": "We couldn't open this list",
+    "description": "This list is private, or it has been deleted.",
+    "hint_owner": "If this is your list, sign in with the account you used to create it.",
+    "hint_owner_signed_in": "If this is your list, make sure you are signed in with the account you used to create it.",
+    "hint_shared": "If someone shared this link with you, ask them to check that the list still exists and is set to public.",
+    "sign_in": "Sign in"
   }
 }

@@ -108,8 +108,8 @@ export function SearchInlineBox({
     // Prototype (Lucas 2026-11-19): a new query typed here goes to /find (guided questions first);
     // router.push keeps the old results one Back away. The same query, or a new place, stays here.
     navigate({
-      landing: fromBox && opensLandingFromBar(query, searchParams.get('query')),
-      locationPayload: await buildSearchLocationPayload(
+      landing: fromBox && opensLandingFromBar(query, searchParams?.get('query')),
+      locationPayload: buildSearchLocationPayload(
         searchCoordinates,
         userCoordinates,
         appConfig.tenantId,

@@ -1,6 +1,6 @@
 import { cmsOnly, isInternalRequest } from '@/lib/cms/internal-route';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
-import { withCache } from '@/utilities/withCache';
+import { ONE_HOUR, withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 
 export const GET = cmsOnly(async (request: Request) => {
@@ -16,11 +16,13 @@ export const GET = cmsOnly(async (request: Request) => {
   }
 
   const tenantBasicConfig = await withCache(
-    `tenant_basic_config:${host}`,
+    `tenant_basic_config:v2:${host}`,
     async () => {
       const tenant = await findTenantByHost(host);
 
       return {
+        tenantId: tenant ? String(tenant.id) : null,
+        name: tenant?.name ?? null,
         enabledLocales: tenant ? tenant.enabledLocales : [],
         defaultLocale: tenant ? tenant.defaultLocale : 'en',
         auth: {
@@ -35,7 +37,7 @@ export const GET = cmsOnly(async (request: Request) => {
         },
       };
     },
-    { redis: true, memory: true },
+    { redis: true, memory: true, ttl: ONE_HOUR },
   );
 
   if (tenantBasicConfig) {

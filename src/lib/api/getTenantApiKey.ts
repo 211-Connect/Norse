@@ -2,23 +2,19 @@
 
 import { createLogger } from '@/lib/logger';
 import { getTenantById } from '@/lib/cms/tenants';
-import { withCache } from '@/utilities/withCache';
 
 const log = createLogger('getTenantApiKey');
 
-async function fetchTenantApiKey(tenantId: string): Promise<string | null> {
-  const tenant = await getTenantById(tenantId);
-  return tenant?.api?.apiKey ?? null;
-}
-
+/**
+ * The tenant's Norse API key. Read from the tenant document, which
+ * `getTenantById` caches (memory + Redis) and the Tenants `revalidateCache`
+ * hook invalidates on save; no separate cache entry for the key.
+ */
 export async function getTenantApiKey(
   tenantId: string,
 ): Promise<string | null> {
-  const apiKey = await withCache(
-    `tenant_api_key:${tenantId}`,
-    () => fetchTenantApiKey(tenantId),
-    { redis: true, memory: true },
-  );
+  const tenant = await getTenantById(tenantId);
+  const apiKey = tenant?.api?.apiKey ?? null;
 
   if (!apiKey) {
     log.warn({ tenantId }, 'Norse API key not configured for tenant');

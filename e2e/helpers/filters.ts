@@ -166,3 +166,64 @@ export async function getCheckedFilterDisplayedCount(
   const rowText = ((await row.textContent()) ?? '').trim();
   return parseTrailingInteger(rowText);
 }
+
+/**
+ * A filter checkbox by its visible label inside a facet group (the group's
+ * `fieldset`/`legend`, e.g. "Payment"). Expands the group's "Show all" first
+ * when the option is hidden behind it.
+ */
+export async function getFilterCheckboxByLabel(
+  page: Page,
+  group: string,
+  label: string,
+) {
+  const fieldset = page
+    .locator('#filter-panel')
+    .getByRole('group', { name: group, exact: true });
+  await expect(fieldset).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+  const checkbox = fieldset.getByRole('checkbox', { name: label, exact: true });
+  if ((await checkbox.count()) === 0) {
+    const showAll = fieldset.getByRole('button', { name: /show all/i });
+    if ((await showAll.count()) > 0) {
+      await showAll.click();
+    }
+  }
+  await expect(checkbox).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  return checkbox;
+}
+
+/** The result count badge next to a filter checkbox (its `aria-describedby`). */
+export async function getFilterOptionCount(
+  page: Page,
+  group: string,
+  label: string,
+): Promise<number> {
+  const checkbox = await getFilterCheckboxByLabel(page, group, label);
+  const countId = await checkbox.getAttribute('aria-describedby');
+  if (!countId) {
+    throw new Error(`Filter "${label}" has no count (aria-describedby)`);
+  }
+  const text =
+    (await page
+      .locator(
+        `[id="${escapeCssAttributeValue(countId)}"] [aria-hidden="true"]`,
+      )
+      .textContent()) ?? '';
+  return parseTrailingInteger(text.trim());
+}
+
+/** Checks a filter by group + label and waits until it reads as checked. */
+export async function checkFilterByLabel(
+  page: Page,
+  group: string,
+  label: string,
+) {
+  await waitForFilterPanelInteractive(page);
+  const checkbox = await getFilterCheckboxByLabel(page, group, label);
+  await checkbox.scrollIntoViewIfNeeded();
+  await checkbox.click();
+  await expect(checkbox).toHaveAttribute('data-state', 'checked', {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}

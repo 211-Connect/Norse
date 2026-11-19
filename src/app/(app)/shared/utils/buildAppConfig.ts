@@ -1,3 +1,4 @@
+import { DEFAULT_AREA_MATCH, DEFAULT_UNLOCATED } from '@/types/areaSearch';
 import { TypedLocale } from 'payload';
 
 import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
@@ -12,6 +13,7 @@ import { AppConfig } from '@/types/appConfig';
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
 import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
+import { applyTemplateTags } from './applyTemplateTags';
 
 /**
  * Builds a tenant's app config from its Payload documents. Reads the
@@ -294,7 +296,10 @@ export async function buildAppConfig(
         radiusOptions: [],
         searchEngine: 'classic',
         resultsLimit: 25,
+        showAllResultsOnMap: false,
         pinnedResourcesMode: 'boost',
+        areaMatch: DEFAULT_AREA_MATCH,
+        unlocatedInAreaSearch: DEFAULT_UNLOCATED,
       },
       badges: [],
       suggestions: [],
@@ -363,7 +368,7 @@ export async function buildAppConfig(
     );
   }
 
-  return {
+  const config: CachedAppConfig = {
     accessibility: {
       fontSize: {
         allowedValues: a11yAllowedFontSizes,
@@ -384,6 +389,7 @@ export async function buildAppConfig(
     },
     contact: {
       number: resourceDirectory.brand.phoneNumber ?? undefined,
+      email: resourceDirectory.brand.email ?? undefined,
     },
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {
@@ -547,8 +553,16 @@ export async function buildAppConfig(
       searchEngine:
         resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
+      showAllResultsOnMap:
+        resourceDirectory.search.searchSettings.showAllResultsOnMap ?? false,
       pinnedResourcesMode:
         resourceDirectory.search.searchSettings.pinnedResourcesMode ?? 'boost',
+      areaMatch:
+        resourceDirectory.search.searchSettings.areaMatchMode ??
+        DEFAULT_AREA_MATCH,
+      unlocatedInAreaSearch:
+        resourceDirectory.search.searchSettings.unlocatedInAreaSearch ??
+        DEFAULT_UNLOCATED,
       texts: {
         locationInputPlaceholder:
           resourceDirectory.search.texts?.locationInputPlaceholder ?? undefined,
@@ -676,4 +690,11 @@ export async function buildAppConfig(
     providersCustomHeading:
       resourceDirectory.common?.customDataProvidersHeading ?? undefined,
   };
+
+  // Replace {name}/{phone}/{email} in every CMS string (docs/template-tags.md).
+  return applyTemplateTags(config, {
+    name: config.brand.name,
+    phone: config.contact.number,
+    email: config.contact.email,
+  });
 }

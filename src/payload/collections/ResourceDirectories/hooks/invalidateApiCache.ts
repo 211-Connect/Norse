@@ -1,4 +1,5 @@
 import { createLogger } from '@/lib/logger';
+import { trackDependency } from '@/lib/telemetry/dependency';
 import { ResourceDirectory } from '@/payload/payload-types';
 
 const log = createLogger('invalidateApiCache');
@@ -22,13 +23,15 @@ export async function invalidateApiCache({ doc }): Promise<ResourceDirectory> {
   }
 
   try {
-    const response = await fetch(`${apiUrl}/cms-config/cache/clear`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-internal-api-key': internalApiKey,
-      },
-    });
+    const response = await trackDependency('norse_api', 'cms_config', () =>
+      fetch(`${apiUrl}/cms-config/cache/clear`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-internal-api-key': internalApiKey,
+        },
+      }),
+    );
 
     if (!response.ok) {
       log.error(

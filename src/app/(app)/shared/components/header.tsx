@@ -30,6 +30,7 @@ import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { dialogsAtom } from '../store/dialogs';
 import { usePrintableDirectoryAccess } from '../hooks/use-printable-directory-capability';
+import { shouldShowPrintableDirectoriesLink } from '../utils/canAccessPrintableDirectories';
 import { FontSizeToggle } from './accessibility/font-size-toggle';
 import { LanguageSwitcher } from './language-switcher';
 import { Link } from './link';
@@ -120,6 +121,10 @@ export function Header() {
     appConfig.header.feedbackButtonLabel?.trim() || t('header.report');
   const { canAccess: hasPrintableDirectoriesAccess } =
     usePrintableDirectoryAccess();
+  const showPrintableDirectoriesLink = shouldShowPrintableDirectoriesLink(
+    hasPrintableDirectoriesAccess,
+    appConfig,
+  );
 
   const sitemap = useMemo(
     () =>
@@ -229,7 +234,7 @@ export function Header() {
             {favoritesButtonLabel}
           </Button>
         </li>,
-        hasPrintableDirectoriesAccess ? (
+        showPrintableDirectoriesLink ? (
           <li key="item-printable-directories-7">
             <Link
               href={withOptionalTrailingSlash('/directories')}
@@ -325,7 +330,7 @@ export function Header() {
       newLayoutEnabled,
       t,
       favoritesButtonLabel,
-      hasPrintableDirectoriesAccess,
+      showPrintableDirectoriesLink,
       feedbackButtonLabel,
       getAriaCurrent,
       session.status,

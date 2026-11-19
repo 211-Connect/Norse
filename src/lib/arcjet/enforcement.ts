@@ -43,7 +43,7 @@ export interface ArcjetEnforcement {
 
 /**
  * Where a DENY is enforced (403). Everywhere else Arcjet still runs and
- * logs `arcjet_denied` with `enforced: false`, but the request is served.
+ * writes `arcjet_decision` with `enforced=false`, but the request is served.
  * Read from env at startup, so rollout and rollback are env changes. This is
  * deliberately not a per-tenant Payload setting: every tenant gets the same
  * protection. See docs/bot-protection.md.

@@ -31,7 +31,15 @@ type MapRendererProps = {
   disableUserLocation?: boolean;
   center?: [number, number];
   zoom?: number;
+  /** Small circles for what `markers` leaves out. Only the maplibre adapter, the one in use, draws them. */
+  points?: MarkerDef[];
+  /** Outline of the searched area; the user's pin is hidden with it. */
+  searchArea?: ServiceAreaGeoJSON;
+  /** An area search: no user pin, even before its outline has loaded. */
+  hideUserLocation?: boolean;
 };
+
+const NO_LOCATION: [number, number][] = [];
 
 const MapRenderer = (props: MapRendererProps) => {
   const appConfig = useAppConfig();
@@ -67,8 +75,15 @@ const MapRenderer = (props: MapRendererProps) => {
           zoom={appConfig.search.map.zoom}
           markers={markers}
           serviceArea={props.serviceArea}
-          usersLocation={userCoords}
+          // An area search shows the area, not the point it was picked from.
+          usersLocation={
+            props.searchArea || props.hideUserLocation
+              ? NO_LOCATION
+              : userCoords
+          }
           disableUserLocation={props.disableUserLocation}
+          points={props.points}
+          searchArea={props.searchArea}
         />
       </div>
     </div>

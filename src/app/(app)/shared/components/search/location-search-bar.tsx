@@ -13,7 +13,11 @@ import {
   clearLocationCookies,
   setLocationCookies,
 } from '../../lib/location-cookies';
-import { cn, toBbox } from '../../lib/utils';
+import {
+  EVERYWHERE_LOCATION,
+  isEverywhereLocation,
+} from '../../lib/search-utils';
+import { cn } from '../../lib/utils';
 import {
   prevSearchLocationAtom,
   searchCoordinatesAtom,
@@ -41,7 +45,12 @@ type IntegratedModeProps = BaseProps & {
 // Standalone mode - uses local state and callbacks
 type StandaloneModeProps = BaseProps & {
   mode: 'standalone';
-  onLocationChange: (location: string, coordinates: number[] | null) => void;
+  /** `regionId`: the picked place's Region (state, county, city, ZIP), else null. */
+  onLocationChange: (
+    location: string,
+    coordinates: number[] | null,
+    regionId: string | null,
+  ) => void;
   initialValue?: string;
 };
 
@@ -97,8 +106,12 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   // "Everywhere" is an option of its own, not a place: never geocode it
   // (that would suggest e.g. "Everywhere Street, Houston").
   const everywhereLabel = t('search.everywhere', 'Everywhere');
-  const isEverywhere = (value: string) =>
-    value.trim().toLowerCase() === everywhereLabel.toLowerCase();
+  const isEverywhere = useCallback(
+    (value: string) =>
+      isEverywhereLocation(value) ||
+      value.trim().toLowerCase() === everywhereLabel.toLowerCase(),
+    [everywhereLabel],
+  );
   const rawLocationQuery = isStandalone ? searchLocation : prevSearchLocation;
   const locationQuery = isEverywhere(rawLocationQuery) ? '' : rawLocationQuery;
   const debouncedSearchLocation = useDebounce(
@@ -207,6 +220,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         props.onLocationChange(
           value,
           coords.type === 'invalid' ? null : (coords.coordinates ?? null),
+          coords.type === 'coordinates' ? (coords.region_id ?? null) : null,
         );
       } else {
         setSearch?.((prev) => {
@@ -225,16 +239,19 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
                     coords.type === 'invalid' ? [] : (coordinates ?? []),
                 }
               : {}),
-            searchLocation: value,
+            // The state holds the sentinel, not the translated label, so URL
+            // writers can recognise "no location" in every locale.
+            searchLocation: isEverywhere(value) ? EVERYWHERE_LOCATION : value,
             searchLocationValidationError: '',
-            // Capture place metadata for advanced geospatial filtering
-            searchPlaceType: coords.place_type ?? [],
-            searchBbox: toBbox(coords.bbox) ?? null,
+            // An area (state, county, city, ZIP) is searched as its shape;
+            // an address or a place with no Region yet as a point and radius.
+            searchRegion:
+              coords.type === 'coordinates' ? (coords.region_id ?? '') : '',
           };
         });
       }
     },
-    [findCoords, setSearch, isStandalone, props, userCoordinates],
+    [findCoords, isEverywhere, setSearch, isStandalone, props, userCoordinates],
   );
 
   // Called on every keystroke (Autocomplete's onInputChange) — purely a live
@@ -285,8 +302,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           searchLocation: nextValue,
           prevSearchLocation: nextValue,
           searchLocationValidationError: '',
-          searchPlaceType: [],
-          searchBbox: null,
+          searchRegion: '',
         }));
       }
     },
@@ -328,7 +344,11 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         blockMode
         onDecommit={handleDecommit}
         onEscape={handleClear}
-        value={searchLocation}
+        value={
+          isEverywhereLocation(searchLocation)
+            ? everywhereLabel
+            : searchLocation
+        }
         clearButtonLabel={t('call_to_action.remove')}
         autoSelectIndex={autoSelectIndex}
         autoSelectOnBlurIndex={autoSelectIndex}

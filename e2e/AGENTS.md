@@ -42,9 +42,9 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 
 ## Multi-tenant test matrix
 
-The full suite (`search-taxonomy`, `translations`, `search-geocode`,
+The full suite (`search-taxonomy`, `translations`, `search-geocode`, `area-search`,
 `favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
-`organization`) runs against the 7 tenants' dev hosts in CI — see
+`organization`, `mboa-qa-checklist`, `map-pins`, `cms`) runs against the 7 tenants' dev hosts in CI — see
 `.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only).
 CI does not run against production: production hosts are enforced by Arcjet
 bot protection, which is expected to deny headless Chromium, while the dev hosts stay
@@ -106,6 +106,30 @@ codes/labels, broad queries, test-account emails, `aiSearchEnabled`,
   search is tenant-environment-gated by `organizationSearchEnabled` and
   currently enabled for DUPAGE and SCC (`e2e/fixtures/tenants.ts`).
 
+- `search-area.spec.ts` (project `area-search`) covers area search
+  ([docs/area-search.md](/docs/area-search.md)): picking a state, county, ZIP
+  and (where seeded) city gives `region=<id>`, no `distance`, no radius select,
+  a "Search area" legend row and `data-search-area="shown"` on `search-map`
+  (the outline is on the canvas); an address and an unseeded city stay point
+  searches. Also deep links, the saved-area cookie, pagination, a shared area
+  link with a distance cookie, and an invalid id. Picks are real geocoder
+  suggestions in `tenant.areaSearch`; `city`/`unseededCity` are optional and
+  skip where missing.
+- `search-map-pins.spec.ts` (project `map-pins`) covers every result on the
+  search map ([docs/map-pins.md](/docs/map-pins.md)): an empty search's
+  result total and legend, all pins loaded within `MAP_PINS_LOAD_TIMEOUT_MS`,
+  no counts on the whole-directory view and counts after zooming in, then two
+  endings: a shared list address's popup lists its resources, or a
+  single-resource list location's popup shows its "Learn more" button; either
+  link leads to a working resource page. It runs only where
+  `tenant.mapPins[env]` is set (the flag is per tenant), whose `resultTotal`
+  is the exact `#result-total` text of an empty search. The canvas has no
+  DOM, so the map writes `data-zoom`, `data-shown-places` and
+  `data-shown-counts` on `search-map` each time it settles, and each list
+  circle's focus target (`map-point`) carries `data-resources`. Popups are
+  `map-site-popup` (with `map-site-popup-resource` links) and `map-popup` (with
+  its `map-popup-resource` button).
+
 ## Helper module map (`e2e/helpers/`)
 
 Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
@@ -120,6 +144,8 @@ Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
 | `favorites.ts`  | Favorites navigation, list-page waits, dialog add/remove flows                                                                                            |
 | `auth.ts`       | `loginViaKeycloak`                                                                                                                                        |
 | `i18n.ts`       | `switchLanguage`                                                                                                                                          |
+| `map.ts`        | Search map: its `data-*` readings, `waitForMapPinsLoaded`, shared list circles, wheel zoom and canvas clicks                                              |
+| `cms.ts`        | Payload CMS admin: `loginToCms` (REST login), `gotoCms` (waits for the hydrated sidebar), `clickCmsNavLink`, `getCmsNavLinks`, Settings-view assertions   |
 | `internal.ts`   | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic)                                                                                 |
 
 New helpers go in the module matching their domain, not back into a flat
@@ -203,6 +229,77 @@ via `deleteFavoriteList(page, listName)` (`helpers/favorites.ts`), called
 directly in the test that owns the list, not from a broad `beforeAll`/
 `afterAll` sweep.
 
+## MBOA QA checklist (`mboa-qa-checklist*.spec.ts`)
+
+Project `mboa-qa-checklist` automates the MBOA team's weekly manual QA
+checklist (`Connect211-QA Checklist.xlsx`, one sheet per run; automated from
+the `11102026` sheet). One `test()` per checklist "Test Name" and one
+`test.step()` per checklist step, labelled with the sheet's step number, so a
+failure names the same step a manual tester would report.
+
+- MBOA-only: both files `test.skip` unless `E2E_TENANT_KEY` is `MBOA` (the
+  default). All data is in `fixtures/mboa-qa-checklist.ts` — guided-topic
+  names, St. Paul / Duluth addresses, MN filter labels, named resources.
+- `mboa-qa-checklist.spec.ts` needs no account. Its "Anonymous User Lists"
+  test only touches browser-local favorites.
+- `mboa-qa-checklist-favorites.spec.ts` needs `TEST_USER_PASSWORD` and creates,
+  renames and deletes lists on the test account. It follows the log-in-once
+  pattern above, except "Anonymous User Lists — sign in keeps local
+  favorites", which tests the anonymous → signed-in sync and so signs in from
+  its own fresh context. `beforeAll` deletes leftover `My New List` lists
+  (step 13 expects exactly one). The API names the synced list
+  `My New List`; the QA sheet's "My new list" is stale, and list cards are
+  matched case-sensitively. The last test
+  logs the shared session out, so `afterAll` sweeps leftovers with a fresh
+  login.
+- Sort after adding a location: located **taxonomy** searches (guided topics,
+  "Topics"/"Taxonomies"/"Suggestions" picks) expect "Nearest First"; a
+  located **text** search expects "Most Relevant" (PR #1185).
+- Where the sheet's wording no longer matches the app, the test asserts the
+  current behaviour and says why in a comment (e.g. "Login" after logging out
+  goes straight to Keycloak instead of a "Sign in required" dialog; "Site Area
+  Served" is free text such as "Southern St. Louis counties", so it is matched
+  on "St. Louis").
+- New-tab links (websites, the UDALSA PDF, print) are checked on the network
+  (the new tab's navigation request), not `popup.url()`. Headless Chromium has
+  no PDF viewer, so a tab opened onto a PDF keeps an empty URL.
+- Run: `npm run test:e2e:mboa-qa-checklist` (against stg-mboa by default via
+  `E2E_TENANT_KEY=MBOA`).
+  CI runs it in every tenant cell of the e2e workflow; it skips everywhere
+  but MBOA.
+
+## Payload CMS admin (`e2e/cms/`, project `cms`)
+
+Covers the Payload admin per role, not a tenant's public site. **Dev CMS
+only, never production**, so customers never see test-account activity.
+
+- Which tenants run it: those with `cmsBaseUrl` in `e2e/fixtures/tenants.ts`
+  (WA today, on `https://dev-cms.c211.io`). Set it on one tenant per CMS
+  deployment: the super-admin tests run in that tenant's cell. The field has
+  only a `dev` key, and `getCmsBaseUrlForCurrentTenant()` returns nothing
+  outside `dev`, so every other cell skips.
+- Accounts (Payload users on the dev CMS, not Keycloak):
+  `test-cms-admin-dev@c211.io` (super-admin, no tenants) and
+  `test-cms-<tenant>-dev@c211.io` (tenant-admin on that one tenant, e.g.
+  `test-cms-wa-dev@c211.io`). Both share the `TEST_CMS_PASSWORD` secret;
+  without it the spec skips.
+- Read-only: tests log in through `POST /api/users/login` (no IdP chain, so
+  per test is cheap) and navigate; they never save.
+- `admin-navigation.spec.ts`: the tenant-admin's Settings opens its own tenant
+  Settings (from the sidebar, the list URL and a direct link), and every
+  sidebar link opens its own page instead of bouncing to the Analytics
+  dashboard; the super-admin gets the same checks. Below Payload's wide
+  breakpoint the sidebar starts closed, so `clickCmsNavLink` opens it first,
+  and `gotoCms` waits for `nav--nav-hydrated` because the toggle is not
+  rendered before hydration.
+- One worker: parallel logins of the same user deadlock the CMS's
+  4-connection Postgres pool.
+- Local run against a dev server holding the same accounts:
+  `E2E_TENANT_KEY=WA E2E_CMS_BASE_URL=http://localhost:3000 TEST_CMS_PASSWORD=… npm run test:e2e:cms`.
+  A dev server stuck on Drizzle's interactive schema-push prompt (local DB
+  schema behind the checked-out branch) hangs every Payload request, logins
+  included.
+
 ## Known risks (documented, not fixed here)
 
 - **Data-dependent tests silently skip**: several tests call
@@ -231,8 +328,9 @@ directly in the test that owns the list, not from a broad `beforeAll`/
 
 - `npm run test:e2e` — full suite (all projects, Desktop Chrome only).
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
-  `translations`, `search-geocode`, `search-taxonomy`, `share-link`,
-  `resource-direct-link`, `organization`).
+  `translations`, `search-geocode`, `area-search`, `search-taxonomy`, `share-link`,
+  `resource-direct-link`, `organization`, `mboa-qa-checklist`, `map-pins`,
+  `cms`).
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`
   when no tenant/env is selected, otherwise it is derived from
   `e2e/fixtures/tenants.ts`. Override with `E2E_BASE_URL` at any time.

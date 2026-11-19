@@ -7,6 +7,7 @@ import {
   SEARCH_NAV_TIMEOUT_MS,
   UI_SHELL_TIMEOUT_MS,
 } from '../timeouts';
+import { toSingleRegexLiteral } from './url';
 
 export const LOCALE = 'en';
 
@@ -53,5 +54,32 @@ export async function expectAuthenticatedShell(page: Page) {
 
   await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({
     timeout: AUTH_NAV_TIMEOUT_MS,
+  });
+}
+
+/** Clicks the header's "Home" link and waits for the home page shell. */
+export async function clickHeaderHome(page: Page) {
+  await page
+    .locator('#app-header')
+    .getByRole('link', { name: 'Home', exact: true })
+    .click();
+  await expectOnHomePage(page);
+}
+
+/**
+ * Asserts the browser is on the tenant home page (base path, optionally with
+ * a locale segment) with the guided-search topics rendered.
+ */
+export async function expectOnHomePage(page: Page) {
+  const basePath = new URL(baseURL).pathname.replace(/\/+$/, '');
+  await expect(page).toHaveURL(
+    (u) =>
+      new RegExp(
+        `^${toSingleRegexLiteral(basePath)}(?:/[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,4})?)?/?$`,
+      ).test(u.pathname),
+    { timeout: SEARCH_NAV_TIMEOUT_MS },
+  );
+  await expect(page.locator('.categories')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
   });
 }

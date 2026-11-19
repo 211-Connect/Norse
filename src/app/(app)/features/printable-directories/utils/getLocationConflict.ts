@@ -22,7 +22,7 @@ const parseCoordsParam = (
 };
 
 /**
- * Determines whether a query's location params (`coords`/`location`)
+ * Determines whether a query's location params (`region`/`coords`/`location`)
  * conflict with a printable directory's own `defaultQueryConfig`.
  *
  * Returns `false` when the directory has no default location at all — there
@@ -35,6 +35,11 @@ export function getLocationConflict(
 ): boolean {
   if (!defaultQueryConfig) {
     return false;
+  }
+
+  // Two areas are the same place only when they are the same Region.
+  if (defaultQueryConfig.regionId && typeof queryParams.region === 'string') {
+    return defaultQueryConfig.regionId !== queryParams.region;
   }
 
   const defaultCoords = defaultQueryConfig.coords;

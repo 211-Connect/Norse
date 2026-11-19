@@ -11,6 +11,8 @@
  */
 
 import {
+  SearchControllerGetPinsData,
+  SearchControllerGetPinsParams,
   SearchControllerGetResourcesData,
   SearchControllerGetResourcesParams,
   SearchControllerGetResourcesPostData,
@@ -45,11 +47,13 @@ export class Search<
       ...params,
     });
   /**
-   * No description
+   * @description Deprecated: search an area with `GET /search?region=…` instead (see docs/area-search.md). This endpoint will be removed.
    *
    * @tags Search
    * @name SearchControllerGetResourcesPost
+   * @summary Search resources by a GeoJSON shape (deprecated)
    * @request POST:/search
+   * @deprecated
    */
   searchControllerGetResourcesPost = (
     query: SearchControllerGetResourcesPostParams = {},
@@ -62,6 +66,25 @@ export class Search<
       query: query,
       body: data,
       type: "application/json",
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description The locations of a search independent of list pagination, up to 10,000. Takes the same params as GET /search; `page` and `limit` are ignored. Matches without coordinates are left out, including from `total`.
+   *
+   * @tags Search
+   * @name SearchControllerGetPins
+   * @summary Map pins for a search
+   * @request GET:/search/pins
+   */
+  searchControllerGetPins = (
+    query: SearchControllerGetPinsParams = {},
+    params: RequestParams = {},
+  ) =>
+    this.request<SearchControllerGetPinsData, any>({
+      path: `/search/pins`,
+      method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

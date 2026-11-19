@@ -56,9 +56,12 @@ const SHARED_API_PREFIXES = [
 /** `/api` routes of the public app; every other `/api` route is the CMS's. */
 const APP_API_PREFIXES = [
   '/api/auth',
+  '/api/cms-admin-redirect',
+  '/api/locale',
   '/api/share',
   '/api/resource-titles',
   '/api/search-config',
+  '/api/search-pins',
   '/api/webhook',
 ];
 

@@ -18,6 +18,22 @@ for narrower, adjacent flows.
 gets classified (see `deriveQueryType()` below) — it has no effect on
 taxonomy or organization selections, which always bypass it.
 
+### Pinned resources
+
+`pinnedResourcesMode` (Search tab → Search settings, default `boost`) sets how
+pinned resources rank, under every sort order. Norse-API reads it from
+`search_config.pinned_resources_mode` in Redis (`buildHybridSearchConfigCache`)
+for every engine, so the field shows in the CMS whatever the engine:
+
+| Mode     | Hybrid / AI classification                         | Classic (keyword, taxonomy)          |
+| -------- | -------------------------------------------------- | ------------------------------------ |
+| `ignore` | pinned status not used                             | pinned status not used               |
+| `boost`  | adds to the relevance score; pinned need not lead  | pinned first (no score to add to)    |
+| `top`    | pinned first, then the chosen sort                 | pinned first, then the chosen sort   |
+
+"Pinned first" keeps pinned resources at the top even under `sort=distance`,
+so a pinned virtual service (no map point) does not drop to the bottom.
+
 ## The four autocomplete groups
 
 The search dialog's query input (`search-bar.tsx`) shows up to four grouped
@@ -94,7 +110,9 @@ For `ai_classification` tenants, a free-text query triggers a second API
 call (`predictSearchNeeds`) *before* navigation, which can either resolve
 directly to a `hybrid` search or open a clarification UI
 (`AiClassificationOptions`) that ultimately calls `reRankSearchNeeds` and
-then navigates. This is the precedent for "a second API call feeding a
+then navigates. The prediction gets 8 seconds (`PREDICT_TIMEOUT_MS`); past
+that, or if it fails, it is `null` and the search goes ahead as typed rather
+than leaving the dialog's Search button spinning. This is the precedent for "a second API call feeding a
 `queryType` before the user reaches results" — organization search doesn't
 need this (it resolves synchronously from the already-fetched suggestion
 list), but it's useful context if a future queryType needs the same shape.
@@ -117,7 +135,8 @@ other:
 (`src/app/(app)/shared/services/search-suggestions-service.ts`) wraps this
 call with the standard per-request `x-tenant-id`/`accept-language`/
 `x-api-key` headers (see the "Norse API tenant requirement" in
-[AGENTS.md](/AGENTS.md)). `useSearchSuggestions()` exposes it as a
+[AGENTS.md](/AGENTS.md)) and caches each response for a minute in memory and
+an hour in Redis. `useSearchSuggestions()` exposes it as a
 react-query hook. The `enableOrganizationSearch` flag does **not** change
 what's requested — the API always returns both — it only controls whether
 `search-bar.tsx` turns the `organizations` array into visible dropdown

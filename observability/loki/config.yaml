@@ -1,0 +1,36 @@
+# Local Loki: single binary, filesystem storage, schema v13 (same shape as production Loki).
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+  log_level: info
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+# trace_id and other log attributes arrive as structured metadata (OTLP resource/record attributes).
+limits_config:
+  allow_structured_metadata: true
+
+analytics:
+  reporting_enabled: false

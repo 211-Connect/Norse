@@ -5,7 +5,7 @@ import { GeocodingControllerReverseGeocodeData } from '@/lib/api/generated/data-
 import { GeocodeResult } from '@/types/resource';
 import {
   CacheKey,
-  ONE_MONTH,
+  ONE_DAY,
   stableHash,
   withCache,
 } from '@/utilities/withCache';
@@ -45,7 +45,7 @@ export async function reverseGeocode(
 
       return response.data || [];
     },
-    { redis: true, memory: false, ttl: ONE_MONTH },
+    { redis: true, memory: false, ttl: 7 * ONE_DAY },
   );
 
   return data || [];

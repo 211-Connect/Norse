@@ -2,6 +2,7 @@ import { SocketAddress, isIP } from 'node:net';
 
 import ipaddr from 'ipaddr.js';
 
+import { KeyedMinuteCap } from './decision-sampling';
 import type { ArcjetRequestLike } from './types';
 
 /** Headers that carry client IPs; logged masked (see `maskIp`). */
@@ -15,9 +16,12 @@ const IP_HEADERS = new Set([
 ]);
 
 /**
- * The only headers ever logged. An allowlist, so a header added later is
- * excluded by default. Never add `referer` (it carries the search query),
- * `cookie` or `authorization`.
+ * The only headers ever logged by `redactHeaders` (the MBOA
+ * `arcjet_no_client_ip` event). An allowlist, so a header added later is
+ * excluded by default. Never log the referer or origin path or query (it
+ * carries the search query): the `arcjet_decision` record keeps only the
+ * referer host and shape flags (`features.ts`). Never `cookie` or
+ * `authorization`.
  */
 const LOGGED_HEADERS = new Set([
   'host',
@@ -45,11 +49,12 @@ function addressOf(value: string): string | undefined {
 
 /**
  * Mask an address for logging: IPv4 to its first two octets, IPv6 to its
- * first two groups, IPv4-mapped IPv6 as its IPv4 address. Every address is
- * masked the same way, routable or not. A port is dropped first. Anything
- * that is not an address becomes `x`, so a malformed value never leaks.
+ * first `ipv6Groups` groups (default 2), IPv4-mapped IPv6 as its IPv4
+ * address. Every address is masked the same way, routable or not. A port is
+ * dropped first. Anything that is not an address becomes `x`, so a malformed
+ * value never leaks.
  */
-export function maskIp(value: string): string {
+export function maskIp(value: string, ipv6Groups = 2): string {
   const trimmed = value.trim();
   if (!trimmed) return trimmed;
   const address = addressOf(trimmed);
@@ -59,8 +64,18 @@ export function maskIp(value: string): string {
     const [a, b] = (ip as ipaddr.IPv4).octets;
     return `${a}.${b}.x.x`;
   }
-  const [a, b] = (ip as ipaddr.IPv6).parts;
-  return `${a.toString(16)}:${b.toString(16)}:x`;
+  const groups = (ip as ipaddr.IPv6).parts
+    .slice(0, ipv6Groups)
+    .map((g) => g.toString(16));
+  return `${groups.join(':')}:x`;
+}
+
+/**
+ * The client's network for the `arcjet_decision` record (`client_net`):
+ * /16 for IPv4, /48 for IPv6. '' when there is no address.
+ */
+export function maskNet(value: string): string {
+  return maskIp(value, 3);
 }
 
 export function maskIpList(value: string): string {
@@ -91,15 +106,6 @@ export function createMinuteSampler(
   maxPerMinute: number,
   now: () => number = Date.now,
 ): () => boolean {
-  let windowStart = 0;
-  let count = 0;
-  return () => {
-    const minute = Math.floor(now() / 60_000);
-    if (minute !== windowStart) {
-      windowStart = minute;
-      count = 0;
-    }
-    count += 1;
-    return count <= maxPerMinute;
-  };
+  const cap = new KeyedMinuteCap(maxPerMinute, now);
+  return () => cap.take() !== undefined;
 }

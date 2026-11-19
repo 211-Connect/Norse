@@ -27,13 +27,21 @@ const ALLOWED: Record<string, { count: number; why: string }> = {
     count: 1,
     why: 'the request URL for bot protection, not a link',
   },
+  'app/(app)/shared/serverActions/search/getPrintableDirectoryData.ts': {
+    count: 1,
+    why: 'the request path for bot protection of the print action, not a link',
+  },
   'app/(app)/shared/services/search-service.ts': {
-    count: 2,
-    why: 'Norse-API requests, not page URLs',
+    count: 1,
+    why: 'the Norse-API request, not a page URL',
   },
   'app/(app)/shared/lib/paths.ts': {
     count: 1,
     why: 'recognises the search pathname, builds no URL',
+  },
+  'lib/telemetry/api-fetch.ts': {
+    count: 2,
+    why: 'fixed path templates for dependency metrics, builds no URL',
   },
 };
 
@@ -86,8 +94,8 @@ const ALLOWED_EDITS: Record<string, { count: number; why: string }> = {
     why: 'a typeahead topic of type link opens its CMS href verbatim (BUILDERS 3)',
   },
   'app/(app)/shared/components/language-switcher.tsx': {
-    count: 1,
-    why: 'swaps the locale prefix on the current URL (BUILDERS 10)',
+    count: 2,
+    why: 'swaps the locale prefix on the current URL (BUILDERS 10): a client push, or a page load of the prefixed URL when the locale cookie could not be saved (docs/locale-routing.md)',
   },
   'app/(app)/shared/components/printable-directories/save-source-to-directory-button.tsx':
     {
