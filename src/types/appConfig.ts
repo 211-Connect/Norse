@@ -61,6 +61,7 @@ export type AppConfig = {
   };
   contact: {
     number?: string;
+    email?: string;
   };
   sms: {
     provider: 'Twilio' | 'EMS';
