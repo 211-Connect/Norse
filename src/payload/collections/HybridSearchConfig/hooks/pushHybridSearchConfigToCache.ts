@@ -18,7 +18,7 @@ export const pushHybridSearchConfigToCache = async (
   tenantId: string,
   req: PayloadRequest,
   overrides: Overrides = {},
-): Promise<void> => {
+): Promise<boolean> => {
   try {
     const { payload } = req;
 
@@ -55,20 +55,29 @@ export const pushHybridSearchConfigToCache = async (
         { tenantId },
         'No resource directory found for tenant; skipping hybrid search config cache update',
       );
-      return;
+      return true;
     }
 
     const cacheKey = getHybridSearchConfigKey(tenantId);
     await apiConfigCacheService.set(cacheKey, JSON.stringify(cache));
 
     log.info({ tenantId }, 'Hybrid search config cache updated');
+    return true;
   } catch (error) {
+    // Never throw here: an afterChange throw rolls back the whole save
+    // (Payload calls killTransaction). Log with an alert tag and report failure.
     log.error(
-      { err: error, tenantId },
+      { err: error, tenantId, alert: HYBRID_SEARCH_CACHE_PUSH_ALERT },
       'Error pushing hybrid search config to cache',
     );
+    return false;
   }
 };
+
+/** Set on `req.context` when the Redis push failed but the save was kept. */
+export const HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY =
+  'hybridSearchCachePushFailed';
+export const HYBRID_SEARCH_CACHE_PUSH_ALERT = 'hybrid-search-cache-push-failed';
 
 export const pushHybridSearchConfigToCacheAfterChangeHook: CollectionAfterChangeHook<
   HybridSearchConfig
@@ -83,9 +92,10 @@ export const pushHybridSearchConfigToCacheAfterChangeHook: CollectionAfterChange
     return doc;
   }
 
-  await pushHybridSearchConfigToCache(tenantId, req, {
+  const ok = await pushHybridSearchConfigToCache(tenantId, req, {
     hybridSearchConfig: doc,
   });
+  if (!ok) req.context[HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY] = true;
 
   return doc;
 };
