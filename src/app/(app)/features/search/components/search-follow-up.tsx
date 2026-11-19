@@ -33,6 +33,7 @@ import {
   Check,
   ChevronDown,
   GripVertical,
+  Info,
   LogOut,
   Phone,
   Plus,
@@ -41,6 +42,7 @@ import {
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   type DOMAttributes,
+  type ReactNode,
   type RefObject,
   useEffect,
   useMemo,
@@ -95,10 +97,12 @@ import {
 import { helpControlHidden } from '../v2/help-visibility';
 import {
   cardWording,
+  countTone,
   emergencyPopupMode,
   isUrgencyAnswered,
   NO_MATCH_ID,
   otherChanges,
+  visibleOptions,
   withEmergencyAnswers,
 } from '../v2/v2-contract';
 
@@ -107,6 +111,7 @@ type Answer = {
   add: string[];
   remove?: string[];
   keeps?: number;
+  value?: string;
 };
 type Question = {
   id: string;
@@ -927,7 +932,7 @@ export function OtherBox({
 const ORANGE = {
   card: 'border-orange-400 bg-orange-50',
   label: 'text-orange-800',
-  title: 'This changes your results',
+  title: '',
   button: 'border-orange-400 text-orange-900 bg-white',
 };
 const QUIET = {
@@ -977,6 +982,69 @@ function AddMoreLine({
       <p className="pb-2 text-sm empty:hidden" role="status">
         {noted}
       </p>
+    </div>
+  );
+}
+
+/** The option's count: nothing for null, red for 0 (Lucas 2026-11-19). */
+export function OptionCount({ count, className }: { count?: number | null; className?: string }) {
+  const { t } = useTranslation('common');
+  const tone = countTone(count);
+  if (tone === 'none') return null;
+  return (
+    <span
+      data-testid="option-count"
+      data-tone={tone}
+      className={cn(
+        'text-xs font-normal',
+        tone === 'zero' ? 'font-semibold text-red-700' : 'text-muted-foreground',
+        className,
+      )}
+    >
+      {t('search.v2_option_services_count', { count: count as number })}
+    </span>
+  );
+}
+
+/**
+ * One option card: the short description (one line) and a small info icon at the card's top right
+ * that shows the full text (Lucas 2026-11-19). The icon is a sibling of the answer button.
+ */
+export function OptionCard({
+  description,
+  className,
+  children,
+}: {
+  description?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={cn('relative flex flex-col', className)} data-testid="option-card">
+      {children}
+      {description && (
+        <>
+          <button
+            type="button"
+            aria-label="More about this option"
+            aria-expanded={open}
+            data-testid="option-info"
+            className="text-muted-foreground hover:text-foreground absolute top-1 right-1 flex size-7 cursor-pointer items-center justify-center rounded-full after:absolute after:-inset-1 after:content-['']"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <Info className="size-4" aria-hidden="true" />
+          </button>
+          {open && (
+            <p
+              className="text-muted-foreground bg-muted/50 rounded-b-lg px-3 py-2 text-xs"
+              data-testid="option-info-text"
+            >
+              {description}
+            </p>
+          )}
+        </>
+      )}
     </div>
   );
 }
@@ -1458,6 +1526,7 @@ export function toCardQuestion(q: V2Question): Question & { values: string[] } {
       label: o.label,
       add: [o.value],
       keeps: o.results_count ?? undefined,
+      value: o.value,
     })),
   };
 }
@@ -1472,7 +1541,6 @@ export const valueOfLabel = (q: V2Question, label: string) =>
  */
 export function SearchRefineQuestion() {
   // The count key lives in `common`; the search page's default namespace is `page-search`.
-  const { t } = useTranslation('common');
   const { data, isFetching, query: label } = useV2Search();
   const { refine, params, asked, needs, passedNeeds } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
@@ -1506,6 +1574,13 @@ export function SearchRefineQuestion() {
         answers: [],
       };
   const { picks, toggle } = useAnswerPicks(question.id);
+  const [showAll, setShowAll] = useState(false);
+  useEffect(() => setShowAll(false), [question.id]);
+  const { shown: shownAnswers, hidden: hiddenCount } = visibleOptions(
+    { type: question.type },
+    question.answers.map((a) => ({ ...a, value: a.value ?? a.label })),
+    showAll,
+  );
   const [noted, setNoted] = useState('');
   const pin = usePhonePin(collapsed, setCollapsed);
   // Lucas 2026-11-06: on a phone a quiet question starts small and stays small, also at the top;
@@ -1664,7 +1739,7 @@ export function SearchRefineQuestion() {
             onClick={pin.toggle}
           >
             <span className={cn('text-sm font-semibold', style.label)}>
-              {cardTitle}
+              {cardTitle || 'Refine your search'}
             </span>
             <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium">
               {collapsed ? 'Show' : 'Hide'}
@@ -1674,11 +1749,16 @@ export function SearchRefineQuestion() {
               />
             </span>
           </button>
-          <p
-            className={cn('hidden text-sm font-semibold md:block', style.label)}
-          >
-            {cardTitle}
-          </p>
+          {cardTitle && (
+            <p
+              className={cn(
+                'hidden text-sm font-semibold md:block',
+                style.label,
+              )}
+            >
+              {cardTitle}
+            </p>
+          )}
           <div
             className={cn(
               'flex flex-col gap-2 md:gap-3',
@@ -1706,17 +1786,19 @@ export function SearchRefineQuestion() {
               aria-labelledby="refine-question"
               className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
             >
-              {question.answers.map((option) => {
+              {shownAnswers.map((option) => {
                 const on = picks.includes(option.label);
                 return (
-                  <button
+                  <OptionCard
                     key={option.label}
+                    description={needDescription(option.add[0])}
+                  >
+                  <button
                     type="button"
                     disabled={isPending}
                     aria-pressed={question.multi ? on : undefined}
-                    title={needDescription(option.add[0])}
                     className={cn(
-                      'group flex min-h-11 cursor-pointer rounded-lg border px-3 py-2 text-left text-sm font-medium',
+                      'group flex min-h-11 w-full cursor-pointer rounded-lg border py-2 pr-9 pl-3 text-left text-sm font-medium',
                       question.multi
                         ? 'items-center gap-2'
                         : 'flex-col items-start justify-center',
@@ -1733,21 +1815,28 @@ export function SearchRefineQuestion() {
                     <span className="flex min-w-0 flex-1 flex-col">
                       {option.label}
                       {needDescription(option.add[0]) && (
-                        <span className={NEED_DESC_CLASS}>
+                        <span
+                          className={cn(NEED_DESC_CLASS, 'line-clamp-1')}
+                        >
                           {needDescription(option.add[0])}
                         </span>
                       )}
-                      {typeof option.keeps === 'number' && (
-                        <span className="text-muted-foreground text-xs font-normal">
-                          {t('search.v2_option_services_count', {
-                            count: option.keeps,
-                          })}
-                        </span>
-                      )}
+                      <OptionCount count={option.keeps} />
                     </span>
                   </button>
+                  </OptionCard>
                 );
               })}
+              {hiddenCount > 0 && (
+                <button
+                  type="button"
+                  className="text-primary min-h-11 cursor-pointer justify-self-start px-1 text-sm font-semibold underline"
+                  data-testid="show-more-options"
+                  onClick={() => setShowAll(true)}
+                >
+                  Show more ({hiddenCount})
+                </button>
+              )}
               {(!v2 || v2.allow_other) && (
                 <OtherBox
                   className="col-span-2"
@@ -1766,7 +1855,7 @@ export function SearchRefineQuestion() {
                   className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
                   onClick={() => answer()}
                 >
-                  {v2.none_of_these ? 'None of these' : 'Skip'}
+                  Skip
                 </button>
               )}
               {picks.length > 0 && (

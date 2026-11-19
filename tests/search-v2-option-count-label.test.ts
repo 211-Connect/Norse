@@ -37,7 +37,8 @@ test('both cards draw the option count through the i18n key, not a hard-coded wo
     'src/app/(app)/shared/components/search/search-guide.tsx',
   ]) {
     const source = readFileSync(file, 'utf8');
-    assert.match(source, /v2_option_services_count/, file);
+    // The shared OptionCount (search-follow-up.tsx) holds the i18n key; the guide uses it.
+    assert.match(source, /v2_option_services_count|<OptionCount/, file);
     assert.doesNotMatch(source, /resultCount\(option\.keeps\)/, file);
   }
 });

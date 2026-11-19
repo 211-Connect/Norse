@@ -10,6 +10,10 @@ import {
   isSoftEmergency,
   isWeakMatch,
   noMatchQuestionOf,
+  countTone,
+  isNoneOption,
+  OPTION_LIMIT,
+  visibleOptions,
   otherChanges,
   nextV2Params,
   styleOf,
@@ -298,4 +302,24 @@ test('nextV2Params: a new query text also drops asked (Question 22.3)', () => {
   assert.equal(next.get('location'), 'Sampleton');
   const same = nextV2Params(current, { query: ' rent ' });
   assert.equal(same.get('asked'), 'U-1,start');
+});
+
+test('countTone: null and absent draw nothing, 0 is red', () => {
+  assert.equal(countTone(null), 'none');
+  assert.equal(countTone(undefined), 'none');
+  assert.equal(countTone(0), 'zero');
+  assert.equal(countTone(12), 'some');
+});
+
+test('visibleOptions hides None of these and truncates find_need and narrow', () => {
+  const opt = (n: number) => ({ label: `Need ${n}`, value: `N-${n}` });
+  const many = Array.from({ length: 9 }, (_, i) => opt(i));
+  const withNone = [...many, { label: 'None of these', value: 'none' }];
+  const first = visibleOptions({ type: 'find_need' }, withNone, false);
+  assert.equal(first.shown.length, OPTION_LIMIT);
+  assert.equal(first.hidden, 9 - OPTION_LIMIT);
+  assert.equal(visibleOptions({ type: 'narrow' }, withNone, true).shown.length, 9);
+  assert.equal(visibleOptions({ type: 'confirm_urgency' }, many, false).hidden, 0);
+  assert.equal(visibleOptions({ type: 'find_need' }, many.slice(0, 3), false).hidden, 0);
+  assert.ok(!isNoneOption({ label: 'Housing', value: 'N-HOU' }));
 });

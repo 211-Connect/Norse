@@ -491,3 +491,30 @@ export function v2FilterPairs(
   filters.sort(([a, av], [b, bv]) => (a === b ? av.localeCompare(bv) : a.localeCompare(b)));
   return [...other, ...filters.slice(0, MAX_FILTER_PAIRS)];
 }
+
+/** Show this many options first on a find_need or narrow question; "Show more" reveals the rest (Lucas 2026-11-19). */
+export const OPTION_LIMIT = 6;
+
+/** An option that stands for "None of these" is never drawn (Lucas 2026-11-19). The free-text box stays. */
+export const isNoneOption = (o: Pick<V2Option, 'label' | 'value'>) =>
+  /^none( of (these|the above))?$/i.test(o.label.trim()) ||
+  /^(none|none_of_these|no_match)$/i.test(o.value);
+
+/** The options the page may draw: no "None of these", at most `limit` until the person asks for more. */
+export function visibleOptions<T extends Pick<V2Option, 'label' | 'value'>>(
+  q: { type?: string },
+  options: T[],
+  showAll: boolean,
+  limit: number = OPTION_LIMIT,
+): { shown: T[]; hidden: number } {
+  const real = options.filter((o) => !isNoneOption(o));
+  const truncates = q.type === 'find_need' || q.type === 'narrow';
+  if (!truncates || showAll || real.length <= limit) {
+    return { shown: real, hidden: 0 };
+  }
+  return { shown: real.slice(0, limit), hidden: real.length - limit };
+}
+
+/** `none`: no number is drawn (null or absent). `zero`: drawn in red. `some`: drawn as usual. */
+export const countTone = (count: number | null | undefined): 'none' | 'zero' | 'some' =>
+  typeof count !== 'number' || !Number.isFinite(count) ? 'none' : count === 0 ? 'zero' : 'some';

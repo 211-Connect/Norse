@@ -96,8 +96,8 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
           data-testid="weak-match-note"
         >
           <p>
-            We could not find a good match for &ldquo;{query}&rdquo;. Choose
-            what you need help with, or type a new search in the box above.
+            No results found for your search. Need help? Call{' '}
+            {contactNumber ?? '211'}.
           </p>
           {contactNumber && (
             <DialButton

@@ -18,6 +18,8 @@ import {
   EmergencyPopup,
   emergencyPopupDismissedAtom,
   flaggedAtom,
+  OptionCard,
+  OptionCount,
   OtherBox,
   PICKED,
   PickMark,
@@ -45,6 +47,7 @@ import {
   emergencyPopupMode,
   isUrgencyAnswered,
   otherChanges,
+  visibleOptions,
   withEmergencyAnswers,
 } from '@/app/(app)/features/search/v2/v2-contract';
 import {
@@ -344,6 +347,13 @@ export function SearchGuideFromUrl({
   const soft = isSoftEmergency(emergencyQ);
   const isPending = isFetching || isWriting;
   const { picks, toggle, clear } = useAnswerPicks(question?.id);
+  const [showAll, setShowAll] = useState(false);
+  useEffect(() => setShowAll(false), [question?.id]);
+  const { shown: shownAnswers, hidden: hiddenCount } = visibleOptions(
+    { type: question?.type },
+    (card?.answers ?? []).map((a) => ({ ...a, value: a.value ?? a.label })),
+    showAll,
+  );
   const canDeferLocation = showLocation && !requireLocation;
   const canSkip = !showLocation || !requireLocation;
   // The one left button of a question step, in the row with Show results now.
@@ -632,47 +642,55 @@ export function SearchGuideFromUrl({
                   aria-labelledby="guide-question"
                   className="flex flex-col gap-2"
                 >
-                  {card.answers.map((option) => {
+                  {shownAnswers.map((option) => {
                     const on = picks.includes(option.label);
                     return (
-                      <button
+                      <OptionCard
                         key={option.label}
-                        type="button"
-                        disabled={isPending}
-                        aria-pressed={card.multi ? on : undefined}
-                        title={needDescription(option.add[0])}
-                        className={cn(
-                          'group flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left font-medium disabled:opacity-60',
-                          !card.multi && 'justify-between',
-                          style.button,
-                          on && PICKED,
-                        )}
-                        onClick={() =>
-                          card.multi
-                            ? toggle(option.label)
-                            : answerQuestion([option.label])
-                        }
+                        description={needDescription(option.add[0])}
                       >
-                        {card.multi && <PickMark on={on} />}
-                        <span className="flex flex-1 flex-col">
-                          {option.label}
-                          {/* Lucas 2026-11-16: say what kind of need this is (SUNE spoken description). */}
-                          {needDescription(option.add[0]) && (
-                            <span className={NEED_DESC_CLASS}>
-                              {needDescription(option.add[0])}
-                            </span>
+                        <button
+                          type="button"
+                          disabled={isPending}
+                          aria-pressed={card.multi ? on : undefined}
+                          className={cn(
+                            'group flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg border py-2 pr-10 pl-4 text-left font-medium disabled:opacity-60',
+                            style.button,
+                            on && PICKED,
                           )}
-                        </span>
-                        {typeof option.keeps === 'number' && (
-                          <span className="text-muted-foreground shrink-0 text-xs font-normal">
-                            {t('search.v2_option_services_count', {
-                              count: option.keeps,
-                            })}
+                          onClick={() =>
+                            card.multi
+                              ? toggle(option.label)
+                              : answerQuestion([option.label])
+                          }
+                        >
+                          {card.multi && <PickMark on={on} />}
+                          <span className="flex flex-1 flex-col">
+                            {option.label}
+                            {/* Lucas 2026-11-16: say what kind of need this is (SUNE spoken description). */}
+                            {needDescription(option.add[0]) && (
+                              <span
+                                className={cn(NEED_DESC_CLASS, 'line-clamp-1')}
+                              >
+                                {needDescription(option.add[0])}
+                              </span>
+                            )}
+                            <OptionCount count={option.keeps} />
                           </span>
-                        )}
-                      </button>
+                        </button>
+                      </OptionCard>
                     );
                   })}
+                  {hiddenCount > 0 && (
+                    <button
+                      type="button"
+                      className="text-primary min-h-11 cursor-pointer self-start px-1 font-semibold underline"
+                      data-testid="show-more-options"
+                      onClick={() => setShowAll(true)}
+                    >
+                      Show more ({hiddenCount})
+                    </button>
+                  )}
                   {question.allow_other && (
                     <OtherBox
                       key={question.id}
@@ -693,19 +711,7 @@ export function SearchGuideFromUrl({
                     >
                       Continue
                     </button>
-                  ) : (
-                    question.none_of_these && (
-                      <button
-                        type="button"
-                        disabled={isPending}
-                        className="border-control-border min-h-12 cursor-pointer rounded-lg border bg-white px-5 text-left font-medium"
-                        data-testid="guide-none"
-                        onClick={() => answerQuestion([])}
-                      >
-                        None of these
-                      </button>
-                    )
-                  )}
+                  ) : null}
                 </div>
               </div>
             )}

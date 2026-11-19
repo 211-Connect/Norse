@@ -2,14 +2,12 @@
 
 import { Phone } from 'lucide-react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -23,7 +21,6 @@ import { DialButton } from './no-dial';
 export function NoResultsCard() {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
-  const searchParams = useSearchParams();
 
   const text =
     appConfig.search.texts?.noResultsFallbackText ||
@@ -35,9 +32,6 @@ export function NoResultsCard() {
     <Card data-testid="no-results-card">
       <CardHeader className="text-center">
         <CardTitle>{t('no_results.title')}</CardTitle>
-        <CardDescription>
-          {searchParams?.get('query_label') || searchParams?.get('query')}
-        </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center p-2">
         <Image
