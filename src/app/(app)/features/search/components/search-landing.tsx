@@ -11,11 +11,7 @@ import {
 } from '@/app/(app)/shared/components/search/search-guide';
 import { SEARCH_INPUT_ID } from '@/app/(app)/shared/lib/constants';
 
-import {
-  useV2Navigate,
-  useV2Prefetch,
-  useV2Url,
-} from '../v2/use-v2-search';
+import { useV2Navigate, useV2Prefetch, useV2Url } from '../v2/use-v2-search';
 import { EmergencyLine } from './emergency-line';
 
 /**
@@ -93,8 +89,15 @@ export function SearchLanding() {
       }}
       onEscape={onEscape}
     >
-      <div className="flex flex-col gap-4 pt-6" data-testid="landing-popup">
-        <div>
+      <div
+        className="flex flex-col gap-4 pt-6 max-sm:pt-0"
+        data-testid="landing-popup"
+      >
+        {/* Phone: this block (crisis chips + search box) stays pinned while the options scroll. */}
+        <div
+          className="max-sm:sticky max-sm:top-0 max-sm:z-20 max-sm:-mt-14 max-sm:bg-white max-sm:pt-14 max-sm:pb-2"
+          data-testid="landing-header"
+        >
           <EmergencyLine />
           {compact && (
             <button

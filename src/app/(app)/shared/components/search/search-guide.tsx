@@ -364,6 +364,8 @@ export function SearchGuideFromUrl({
   // The one left button of a question step, in the row with Show results now.
   const canSkipQuestion =
     onPage && Boolean(question) && !isEmergency && picks.length === 0;
+  // The bottom bar: Skip question + Show results now, or Continue once something is picked.
+  const showBar = canSkip || canDeferLocation || onPage || picks.length > 0;
   const finished = Boolean(data) && !isPending && !showLocation && !question;
   // Lucas 2026-11-16: after Enter the card does not change until the answer is known. One status
   // line while the first answer loads (no skeleton, no buttons), then a question or the results.
@@ -699,17 +701,6 @@ export function SearchGuideFromUrl({
                   <p className="sr-only" role="status">
                     {picks.length > 0 ? `${picks.length} picked.` : ''}
                   </p>
-                  {picks.length > 0 ? (
-                    <button
-                      type="button"
-                      disabled={isPending}
-                      className="bg-primary text-primary-foreground min-h-12 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60"
-                      data-testid="guide-continue"
-                      onClick={() => answerQuestion(picks)}
-                    >
-                      Continue
-                    </button>
-                  ) : null}
                 </div>
               </div>
             )}
@@ -723,7 +714,7 @@ export function SearchGuideFromUrl({
         </p>
       )}
 
-      {!waiting && (canSkip || canDeferLocation || onPage) && (
+      {!waiting && showBar && (
         <div
           className={cn(
             'flex min-h-11 flex-wrap items-center justify-between gap-3',
@@ -754,16 +745,24 @@ export function SearchGuideFromUrl({
               Not now
             </button>
           )}
-          {(canSkip || onPage) && (
+          {picks.length > 0 && question && (
+            // One Continue, in the bar: it takes the place of Skip question and Show results now
+            // while at least one option is picked (Lucas 2026-11-19).
+            <button
+              type="button"
+              disabled={isPending}
+              className="bg-primary text-primary-foreground min-h-11 w-full cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60"
+              data-testid="guide-continue"
+              onClick={() => answerQuestion(picks)}
+            >
+              Continue
+            </button>
+          )}
+          {(canSkip || onPage) && picks.length === 0 && (
             <button
               type="button"
               disabled={isWriting}
-              className={cn(
-                'ml-auto min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60 max-sm:px-3',
-                picks.length > 0
-                  ? 'border-primary text-primary border bg-white'
-                  : 'bg-primary text-primary-foreground',
-              )}
+              className="bg-primary text-primary-foreground ml-auto min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60 max-sm:px-3"
               data-testid="guide-see-results"
               onClick={seeResults}
             >

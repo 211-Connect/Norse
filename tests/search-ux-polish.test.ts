@@ -18,7 +18,6 @@ import {
   EmergencyBox,
   HotlineNumbers,
 } from '../src/app/(app)/features/search/components/search-follow-up';
-import { SearchCrisisButton } from '../src/app/(app)/shared/components/search/search-need-form';
 import { pickNeedSuggestions } from '../src/app/(app)/shared/components/search/need-suggestions';
 import { nextV2Params } from '../src/app/(app)/features/search/v2/v2-contract';
 
@@ -42,7 +41,6 @@ test('no-dial: every emergency control renders as a button with no tel: or sms: 
     renderToStaticMarkup(
       createElement(EmergencyBox, { hotlines: DEFAULT_HOTLINES }),
     ),
-    renderToStaticMarkup(createElement(SearchCrisisButton)),
     renderToStaticMarkup(
       createElement(DialButton, { number: '211', children: 'Call 211' }),
     ),
@@ -145,14 +143,17 @@ test('landing wait: one status line, no skeleton and no buttons before the first
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   assert.match(guide, /const waiting = \(!data && !error\) \|\| finished;/);
   assert.doesNotMatch(guide, /\{!data && !error && <GuideSkeleton \/>\}/);
-  assert.match(guide, /\{!waiting && \(canSkip \|\| canDeferLocation \|\| onPage\) && \(/);
-  assert.match(guide, /\{data && \(showLocation \|\| \(card && !isEmergency\)\) && \(/);
+  assert.match(guide, /\{!waiting && showBar && \(/);
+  assert.match(
+    guide,
+    /\{data && \(showLocation \|\| \(card && !isEmergency\)\) && \(/,
+  );
 });
 
 // UX pass 2026-11-16: on a 390x700 phone the actions sat 211 px below the fold of the dialog.
 test('guide actions: the row sticks to the bottom of the dialog and stays one row on a phone', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
-  const row = guide.slice(guide.indexOf('(canSkip || canDeferLocation || onPage) && ('));
+  const row = guide.slice(guide.indexOf('{!waiting && showBar && ('));
   assert.match(row.slice(0, 600), /sticky -bottom-5/);
   assert.match(row.slice(0, 600), /max-sm:flex-nowrap/);
   assert.match(row, /Skip question/);
@@ -163,22 +164,34 @@ test('guide actions: the row sticks to the bottom of the dialog and stays one ro
 // UX pass 2026-11-16: Escape or Close on the landing left focus on <body> after going home.
 test('landing close: focus goes to the home search box, after the path is home', () => {
   const landing = read(`${APP}features/search/components/search-landing.tsx`);
-  assert.match(landing, /focusWhenReady\('\/', '\[data-testid="search-trigger"\]'\)/);
+  assert.match(
+    landing,
+    /focusWhenReady\('\/', '\[data-testid="search-trigger"\]'\)/,
+  );
   assert.match(landing, /new URL\(document\.URL\)\.pathname === path/);
 });
 
 // Lucas 2026-11-06: on a phone a quiet question starts small; orange and red open.
 test('refine card: quiet questions start collapsed on a phone only', () => {
   const src = read(`${APP}features/search/components/search-follow-up.tsx`);
-  assert.match(src, /const quiet = !v2 \|\| QUESTION_STYLES\[styleOf\(v2\)\] === QUIET;/);
-  assert.match(src, /if \(quiet && window\.matchMedia\(PHONE_QUERY\)\.matches\) \{\s*setCollapsed\(true\);/);
+  assert.match(
+    src,
+    /const quiet = !v2 \|\| QUESTION_STYLES\[styleOf\(v2\)\] === QUIET;/,
+  );
+  assert.match(
+    src,
+    /if \(quiet && window\.matchMedia\(PHONE_QUERY\)\.matches\) \{\s*setCollapsed\(true\);/,
+  );
 });
 
 // Lucas 2026-11-18: the red emergency question is a full-screen popup only, with three answers.
 test('emergency popup: popup only, three urgency answers, Quick exit inside the dialog', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   const card = read(`${APP}features/search/components/search-follow-up.tsx`);
-  assert.doesNotMatch(guide + card, /isSafeAnswer|emergencySafeThisVisitAtom|safeAnsweredInUrl/);
+  assert.doesNotMatch(
+    guide + card,
+    /isSafeAnswer|emergencySafeThisVisitAtom|safeAnsweredInUrl/,
+  );
   assert.match(card, /export const SHOW_QUICK_EXIT_ON_EMERGENCY = true;/);
   assert.match(card, /fixed inset-0 z-\[70\][^"]*bg-red-800/);
   assert.match(card, /<DialogPrimitive.Root open modal>/);
@@ -195,7 +208,10 @@ test('guide back: small arrow beside the title, never back to the emergency ques
   assert.match(guide, /aria-label="Previous question"/);
   assert.doesNotMatch(guide, />\s*Back\s*<\/button>/);
   assert.match(guide, /id !== emergencyId && i >= askedAtStart\.current/);
-  assert.match(guide, /window\.history\.go\(-\(asked\.length - lastBackIdx\)\)/);
+  assert.match(
+    guide,
+    /window\.history\.go\(-\(asked\.length - lastBackIdx\)\)/,
+  );
   const arrow = guide.indexOf('data-testid="guide-back"');
   assert.ok(arrow > guide.indexOf('card && !isEmergency && style && question'));
   assert.ok(arrow < guide.indexOf('id="guide-question"'));
@@ -203,7 +219,8 @@ test('guide back: small arrow beside the title, never back to the emergency ques
 
 // Lucas UX walk 2026-11-19: after a safe answer the red 911/988 box must not flash in the guide card.
 test('safe answer: no hotline box while the old emergency question is still in the data', async () => {
-  const { isUrgencyAnswered } = await import('../src/app/(app)/features/search/v2/v2-contract');
+  const { isUrgencyAnswered } =
+    await import('../src/app/(app)/features/search/v2/v2-contract');
   assert.equal(isUrgencyAnswered('U-1'), true);
   assert.equal(isUrgencyAnswered('U-2'), true);
   assert.equal(isUrgencyAnswered('U-0'), false);
@@ -211,4 +228,36 @@ test('safe answer: no hotline box while the old emergency question is still in t
   assert.equal(isUrgencyAnswered(null), false);
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   assert.match(guide, /!isUrgencyAnswered\(params\.get\('urgency'\)\)/);
+});
+
+// Lucas 2026-11-19: one Continue, in the bottom bar, in place of Skip question and Show results now.
+test('bottom bar: Continue replaces Skip and Show results now while options are picked; no Continue below the list', () => {
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  assert.equal(guide.match(/data-testid="guide-continue"/g)?.length, 1);
+  const bar = guide.slice(guide.indexOf('{!waiting && showBar && ('));
+  assert.ok(bar.includes('data-testid="guide-continue"'));
+  assert.match(bar, /\{canSkipQuestion && \(/);
+  assert.match(bar, /picks\.length === 0 && \(/);
+  assert.ok(
+    guide.indexOf('data-testid="guide-continue"') >
+      guide.indexOf('{!waiting && showBar && ('),
+  );
+});
+
+test('crisis line: the first search shows the two small buttons, no large 988 button', () => {
+  const form = read(`${APP}shared/components/search/search-need-form.tsx`);
+  assert.match(form, /<EmergencyLine \/>/);
+  assert.doesNotMatch(form, /SearchCrisisButton|in a crisis/);
+  const html = renderToStaticMarkup(createElement(EmergencyLine));
+  assert.match(html, /always-on-911-link/);
+  assert.match(html, /always-on-988-link/);
+});
+
+test('phone: the landing header block (chips and search box) is sticky', () => {
+  const landing = read(`${APP}features/search/components/search-landing.tsx`);
+  assert.match(
+    landing,
+    /max-sm:sticky[^"]*data-testid|data-testid="landing-header"/,
+  );
+  assert.match(landing, /max-sm:sticky max-sm:top-0/);
 });
