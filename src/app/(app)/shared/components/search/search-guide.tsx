@@ -18,6 +18,8 @@ import {
   EmergencyPopup,
   emergencyPopupDismissedAtom,
   flaggedAtom,
+  CARD_INFO_TEXT,
+  InfoToggle,
   OptionCard,
   OptionCount,
   OtherBox,
@@ -50,10 +52,7 @@ import {
   visibleOptions,
   withEmergencyAnswers,
 } from '@/app/(app)/features/search/v2/v2-contract';
-import {
-  NEED_DESC_CLASS,
-  needDescription,
-} from '@/app/(app)/features/search/v2/need-descriptions';
+import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useFlag } from '../../hooks/use-flag';
@@ -620,21 +619,31 @@ export function SearchGuideFromUrl({
                       <ArrowLeft className="size-5" aria-hidden="true" />
                     </button>
                   )}
-                  <div>
-                    <h2
-                      ref={headingRef}
-                      id="guide-question"
-                      aria-describedby={card.multi ? 'guide-hint' : undefined}
-                      tabIndex={-1}
-                      className="text-2xl font-semibold outline-none"
+                  <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-x-2">
+                    <div className="min-w-0 flex-1">
+                      <h2
+                        ref={headingRef}
+                        id="guide-question"
+                        aria-describedby={card.multi ? 'guide-hint' : undefined}
+                        tabIndex={-1}
+                        className="text-2xl font-semibold outline-none"
+                      >
+                        {card.text}
+                      </h2>
+                      {card.multi && (
+                        <p id="guide-hint" className="text-muted-foreground">
+                          Pick all that fit.
+                        </p>
+                      )}
+                    </div>
+                    <InfoToggle
+                      key={question.id}
+                      label="More about this question"
+                      testId="question-info"
+                      className="-mt-1"
                     >
-                      {card.text}
-                    </h2>
-                    {card.multi && (
-                      <p id="guide-hint" className="text-muted-foreground">
-                        Pick all that fit.
-                      </p>
-                    )}
+                      {CARD_INFO_TEXT}
+                    </InfoToggle>
                   </div>
                 </div>
                 <div
@@ -654,7 +663,7 @@ export function SearchGuideFromUrl({
                           disabled={isPending}
                           aria-pressed={card.multi ? on : undefined}
                           className={cn(
-                            'group flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg border py-2 pr-10 pl-4 text-left font-medium disabled:opacity-60',
+                            'group flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg border py-2 pr-12 pl-4 text-left font-medium disabled:opacity-60',
                             style.button,
                             on && PICKED,
                           )}
@@ -667,14 +676,6 @@ export function SearchGuideFromUrl({
                           {card.multi && <PickMark on={on} />}
                           <span className="flex flex-1 flex-col">
                             {option.label}
-                            {/* Lucas 2026-11-16: say what kind of need this is (SUNE spoken description). */}
-                            {needDescription(option.add[0]) && (
-                              <span
-                                className={cn(NEED_DESC_CLASS, 'line-clamp-1')}
-                              >
-                                {needDescription(option.add[0])}
-                              </span>
-                            )}
                             <OptionCount count={option.keeps} />
                           </span>
                         </button>

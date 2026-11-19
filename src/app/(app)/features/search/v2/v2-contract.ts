@@ -492,8 +492,8 @@ export function v2FilterPairs(
   return [...other, ...filters.slice(0, MAX_FILTER_PAIRS)];
 }
 
-/** Show this many options first on a find_need or narrow question; "Show more" reveals the rest (Lucas 2026-11-19). */
-export const OPTION_LIMIT = 6;
+/** Show this many options first on every question; "Show more" reveals the rest (Lucas 2026-11-19). */
+export const OPTION_LIMIT = 4;
 
 /** An option that stands for "None of these" is never drawn (Lucas 2026-11-19). The free-text box stays. */
 export const isNoneOption = (o: Pick<V2Option, 'label' | 'value'>) =>
@@ -508,8 +508,7 @@ export function visibleOptions<T extends Pick<V2Option, 'label' | 'value'>>(
   limit: number = OPTION_LIMIT,
 ): { shown: T[]; hidden: number } {
   const real = options.filter((o) => !isNoneOption(o));
-  const truncates = q.type === 'find_need' || q.type === 'narrow';
-  if (!truncates || showAll || real.length <= limit) {
+  if (showAll || real.length <= limit) {
     return { shown: real, hidden: 0 };
   }
   return { shown: real.slice(0, limit), hidden: real.length - limit };

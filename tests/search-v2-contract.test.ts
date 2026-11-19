@@ -311,7 +311,7 @@ test('countTone: null and absent draw nothing, 0 is red', () => {
   assert.equal(countTone(12), 'some');
 });
 
-test('visibleOptions hides None of these and truncates find_need and narrow', () => {
+test('visibleOptions hides None of these and truncates every question type', () => {
   const opt = (n: number) => ({ label: `Need ${n}`, value: `N-${n}` });
   const many = Array.from({ length: 9 }, (_, i) => opt(i));
   const withNone = [...many, { label: 'None of these', value: 'none' }];
@@ -319,7 +319,8 @@ test('visibleOptions hides None of these and truncates find_need and narrow', ()
   assert.equal(first.shown.length, OPTION_LIMIT);
   assert.equal(first.hidden, 9 - OPTION_LIMIT);
   assert.equal(visibleOptions({ type: 'narrow' }, withNone, true).shown.length, 9);
-  assert.equal(visibleOptions({ type: 'confirm_urgency' }, many, false).hidden, 0);
+  assert.equal(visibleOptions({ type: 'confirm_urgency' }, many, false).hidden, 9 - OPTION_LIMIT);
+  assert.equal(OPTION_LIMIT, 4);
   assert.equal(visibleOptions({ type: 'find_need' }, many.slice(0, 3), false).hidden, 0);
   assert.ok(!isNoneOption({ label: 'Housing', value: 'N-HOU' }));
 });

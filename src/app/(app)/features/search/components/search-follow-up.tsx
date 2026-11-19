@@ -1,10 +1,7 @@
 'use client';
 
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
-import {
-  NEED_DESC_CLASS,
-  needDescription,
-} from '@/app/(app)/features/search/v2/need-descriptions';
+import { needDescription } from '@/app/(app)/features/search/v2/need-descriptions';
 import {
   type Announcements,
   DndContext,
@@ -987,7 +984,13 @@ function AddMoreLine({
 }
 
 /** The option's count: nothing for null, red for 0 (Lucas 2026-11-19). */
-export function OptionCount({ count, className }: { count?: number | null; className?: string }) {
+export function OptionCount({
+  count,
+  className,
+}: {
+  count?: number | null;
+  className?: string;
+}) {
   const { t } = useTranslation('common');
   const tone = countTone(count);
   if (tone === 'none') return null;
@@ -997,7 +1000,9 @@ export function OptionCount({ count, className }: { count?: number | null; class
       data-tone={tone}
       className={cn(
         'text-xs font-normal',
-        tone === 'zero' ? 'font-semibold text-red-700' : 'text-muted-foreground',
+        tone === 'zero'
+          ? 'font-semibold text-red-700'
+          : 'text-muted-foreground',
         className,
       )}
     >
@@ -1006,9 +1011,56 @@ export function OptionCount({ count, className }: { count?: number | null; class
   );
 }
 
+/** The question card's info text: one fixed sentence; the API sends no description (Lucas 2026-11-19). */
+export const CARD_INFO_TEXT =
+  'Your answer narrows the list to services that fit. You can skip any question.';
+
 /**
- * One option card: the short description (one line) and a small info icon at the card's top right
- * that shows the full text (Lucas 2026-11-19). The icon is a sibling of the answer button.
+ * The one info control (Lucas 2026-11-19): a 44x44 px button with a 20 px icon on the right side.
+ * It toggles `children` open under the row (`aria-expanded`). Nothing shows until it is tapped.
+ */
+export function InfoToggle({
+  label,
+  className,
+  testId,
+  children,
+}: {
+  label: string;
+  className?: string;
+  testId: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        aria-label={label}
+        aria-expanded={open}
+        data-testid={testId}
+        className={cn(
+          'text-muted-foreground hover:text-foreground flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full',
+          className,
+        )}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Info className="size-5" aria-hidden="true" />
+      </button>
+      {open && (
+        <p
+          className="text-muted-foreground bg-muted/50 order-last w-full basis-full rounded-lg px-3 py-2 text-sm"
+          data-testid={`${testId}-text`}
+        >
+          {children}
+        </p>
+      )}
+    </>
+  );
+}
+
+/**
+ * One option card: the label only. A large info icon on the right toggles the description under
+ * it (Lucas 2026-11-19). The icon is a sibling of the answer button.
  */
 export function OptionCard({
   description,
@@ -1019,31 +1071,20 @@ export function OptionCard({
   className?: string;
   children: ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
   return (
-    <div className={cn('relative flex flex-col', className)} data-testid="option-card">
+    <div
+      className={cn('relative flex flex-col', className)}
+      data-testid="option-card"
+    >
       {children}
       {description && (
-        <>
-          <button
-            type="button"
-            aria-label="More about this option"
-            aria-expanded={open}
-            data-testid="option-info"
-            className="text-muted-foreground hover:text-foreground absolute top-1 right-1 flex size-7 cursor-pointer items-center justify-center rounded-full after:absolute after:-inset-1 after:content-['']"
-            onClick={() => setOpen((v) => !v)}
-          >
-            <Info className="size-4" aria-hidden="true" />
-          </button>
-          {open && (
-            <p
-              className="text-muted-foreground bg-muted/50 rounded-b-lg px-3 py-2 text-xs"
-              data-testid="option-info-text"
-            >
-              {description}
-            </p>
-          )}
-        </>
+        <InfoToggle
+          label="More about this option"
+          testId="option-info"
+          className="absolute top-0 right-0"
+        >
+          {description}
+        </InfoToggle>
       )}
     </div>
   );
@@ -1765,21 +1806,31 @@ export function SearchRefineQuestion() {
               collapsed && 'hidden md:flex',
             )}
           >
-            <div>
-              <h2
-                ref={questionRef}
-                id="refine-question"
-                aria-describedby={question.multi ? 'refine-hint' : undefined}
-                tabIndex={-1}
-                className="text-base font-semibold outline-none md:text-xl"
+            <div className="flex flex-wrap items-start justify-between gap-x-2">
+              <div className="min-w-0 flex-1">
+                <h2
+                  ref={questionRef}
+                  id="refine-question"
+                  aria-describedby={question.multi ? 'refine-hint' : undefined}
+                  tabIndex={-1}
+                  className="text-base font-semibold outline-none md:text-xl"
+                >
+                  {question.text}
+                </h2>
+                {question.multi && (
+                  <p id="refine-hint" className="text-muted-foreground text-sm">
+                    Pick all that fit.
+                  </p>
+                )}
+              </div>
+              <InfoToggle
+                key={question.id}
+                label="More about this question"
+                testId="question-info"
+                className="-mt-2"
               >
-                {question.text}
-              </h2>
-              {question.multi && (
-                <p id="refine-hint" className="text-muted-foreground text-sm">
-                  Pick all that fit.
-                </p>
-              )}
+                {CARD_INFO_TEXT}
+              </InfoToggle>
             </div>
             <div
               role="group"
@@ -1793,37 +1844,30 @@ export function SearchRefineQuestion() {
                     key={option.label}
                     description={needDescription(option.add[0])}
                   >
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    aria-pressed={question.multi ? on : undefined}
-                    className={cn(
-                      'group flex min-h-11 w-full cursor-pointer rounded-lg border py-2 pr-9 pl-3 text-left text-sm font-medium',
-                      question.multi
-                        ? 'items-center gap-2'
-                        : 'flex-col items-start justify-center',
-                      style.button,
-                      on && PICKED,
-                    )}
-                    onClick={() =>
-                      question.multi
-                        ? toggle(option.label)
-                        : answer([option.label])
-                    }
-                  >
-                    {question.multi && <PickMark on={on} />}
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      {option.label}
-                      {needDescription(option.add[0]) && (
-                        <span
-                          className={cn(NEED_DESC_CLASS, 'line-clamp-1')}
-                        >
-                          {needDescription(option.add[0])}
-                        </span>
+                    <button
+                      type="button"
+                      disabled={isPending}
+                      aria-pressed={question.multi ? on : undefined}
+                      className={cn(
+                        'group flex min-h-11 w-full cursor-pointer rounded-lg border py-2 pr-12 pl-3 text-left text-sm font-medium',
+                        question.multi
+                          ? 'items-center gap-2'
+                          : 'flex-col items-start justify-center',
+                        style.button,
+                        on && PICKED,
                       )}
-                      <OptionCount count={option.keeps} />
-                    </span>
-                  </button>
+                      onClick={() =>
+                        question.multi
+                          ? toggle(option.label)
+                          : answer([option.label])
+                      }
+                    >
+                      {question.multi && <PickMark on={on} />}
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        {option.label}
+                        <OptionCount count={option.keeps} />
+                      </span>
+                    </button>
                   </OptionCard>
                 );
               })}
