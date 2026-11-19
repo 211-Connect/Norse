@@ -186,6 +186,38 @@ export async function waitForFavoriteToBeAbsentOnListPage(
     .toBe(0);
 }
 
+/** The resource id a `/search/<id>` href points at (locale prefix, query and trailing slash ignored). */
+export function resourceIdFromHref(href: string | null): string | null {
+  return href?.match(/\/search\/([^/?#]+)/)?.[1] ?? null;
+}
+
+/**
+ * Opens a favorite from the list page by its card link and asserts the
+ * resource page loads. The link must carry the serviceAtLocationId (a UUID,
+ * like search-result links) — on tenants whose Mongo `_id` is an ObjectId
+ * (e.g. SCC), linking by `_id` lands on a 404.
+ */
+export async function openFavoriteResourceFromListPage(
+  page: Page,
+  resourceName: string,
+) {
+  const link = page
+    .getByTestId('resource-link')
+    .filter({ hasText: resourceName })
+    .first();
+  await expect(link).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  const resourceId = resourceIdFromHref(await link.getAttribute('href'));
+
+  await link.click();
+
+  await expectPageUrl(page, /\/search\/[a-f0-9-]{36}\/?(?:[?#]|$)/);
+  await expect(page.getByTestId('favorite-btn').first()).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
+  return resourceId;
+}
+
 export function favoriteListCardByExactName(page: Page, listName: string) {
   return page.getByTestId('favorite-list-card').filter({
     has: page.getByRole('link', { name: listName, exact: true }),
