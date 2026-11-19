@@ -54,7 +54,12 @@ export type V2Facet = {
 };
 
 /** A Region of an area search (Norse-API PR #327). */
-export type V2Region = { id: string; type?: string; name: string; state?: string };
+export type V2Region = {
+  id: string;
+  type?: string;
+  name: string;
+  state?: string;
+};
 
 /** Where an area search (`region`) was scoped. Absent for `coords` searches. */
 export type V2ResolvedLocation = {
@@ -244,12 +249,7 @@ export function groupByMatchedNeeds(
 }
 
 /** Answers that belong to one query text (Decision 51). */
-const PER_QUERY = [
-  'urgency',
-  'needs',
-  'passed_needs',
-  'asked',
-] as const;
+const PER_QUERY = ['urgency', 'needs', 'passed_needs', 'asked'] as const;
 
 export type V2Changes = Record<string, string | string[] | null>;
 
@@ -378,21 +378,23 @@ export const withoutNX = (needs: string | null) => {
 /** At most this many guided questions before the results (Lucas, round 10). */
 export const MAX_GUIDED = 3;
 
-
 /**
  * The rules engine asks one area at a time, so a question can offer a single need (live NY run
  * 2026-11-16: 66 of 198 searches). "Pick all that fit" over one checkbox reads wrong, so the page
  * shows it as a one-tap question: not multi-select, and "Do any of these also fit?" becomes
  * "Does this also fit?". Two or more options keep the engine's wording.
  */
-export function cardWording(q: Pick<V2Question, 'stem' | 'multi_select' | 'options'>): {
+export function cardWording(
+  q: Pick<V2Question, 'stem' | 'multi_select' | 'options'>,
+): {
   text: string;
   multi: boolean;
 } {
   const single = q.options.filter((o) => o.parameter === 'needs').length === 1;
   if (!single) return { text: q.stem, multi: q.multi_select };
   return {
-    text: q.stem === 'Do any of these also fit?' ? 'Does this also fit?' : q.stem,
+    text:
+      q.stem === 'Do any of these also fit?' ? 'Does this also fit?' : q.stem,
     multi: false,
   };
 }
@@ -406,11 +408,30 @@ export function cardWording(q: Pick<V2Question, 'stem' | 'multi_select' | 'optio
 export function facetsToFilters(
   facets: V2Response['facets'],
   active: Record<string, string[]> = {},
-): Record<string, { name: string; buckets: { key: string; display: string; doc_count: number }[] }> | undefined {
+):
+  | Record<
+      string,
+      {
+        name: string;
+        buckets: { key: string; display: string; doc_count: number }[];
+      }
+    >
+  | undefined {
   if (!Array.isArray(facets)) return undefined;
-  const out: Record<string, { name: string; buckets: { key: string; display: string; doc_count: number }[] }> = {};
+  const out: Record<
+    string,
+    {
+      name: string;
+      buckets: { key: string; display: string; doc_count: number }[];
+    }
+  > = {};
   for (const facet of facets) {
-    if (!facet?.key || !Array.isArray(facet.values) || facet.values.length === 0) continue;
+    if (
+      !facet?.key ||
+      !Array.isArray(facet.values) ||
+      facet.values.length === 0
+    )
+      continue;
     out[facet.key] = {
       name: facet.name?.locale || facet.name?.en || facet.key,
       buckets: facet.values.map((v) => ({
@@ -457,7 +478,9 @@ export function locationNote(resolved?: V2ResolvedLocation): string | null {
     .filter((n): n is string => Boolean(n));
   if (names.length === 0) return null;
   const list =
-    names.length <= 2 ? names.join(' and ') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+    names.length <= 2
+      ? names.join(' and ')
+      : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
   return `Showing results near ${list}`;
 }
 
@@ -488,9 +511,12 @@ export function v2FilterPairs(
   for (const [key, value] of params.entries()) {
     if (!value) continue;
     if (FILTER_KEY.test(key)) filters.push([key, value]);
-    else if ((V2_PASSTHROUGH_KEYS as readonly string[]).includes(key)) other.push([key, value]);
+    else if ((V2_PASSTHROUGH_KEYS as readonly string[]).includes(key))
+      other.push([key, value]);
   }
-  filters.sort(([a, av], [b, bv]) => (a === b ? av.localeCompare(bv) : a.localeCompare(b)));
+  filters.sort(([a, av], [b, bv]) =>
+    a === b ? av.localeCompare(bv) : a.localeCompare(b),
+  );
   return [...other, ...filters.slice(0, MAX_FILTER_PAIRS)];
 }
 
@@ -517,8 +543,14 @@ export function visibleOptions<T extends Pick<V2Option, 'label' | 'value'>>(
 }
 
 /** `none`: no number is drawn (null or absent). `zero`: drawn in red. `some`: drawn as usual. */
-export const countTone = (count: number | null | undefined): 'none' | 'zero' | 'some' =>
-  typeof count !== 'number' || !Number.isFinite(count) ? 'none' : count === 0 ? 'zero' : 'some';
+export const countTone = (
+  count: number | null | undefined,
+): 'none' | 'zero' | 'some' =>
+  typeof count !== 'number' || !Number.isFinite(count)
+    ? 'none'
+    : count === 0
+      ? 'zero'
+      : 'some';
 
 /** The option's description for the info icon: the trimmed text, or undefined when there is none. */
 export const optionDescription = (

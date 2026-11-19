@@ -42,22 +42,31 @@ test('groupByMatchedNeeds: all, some and none, in the order the hits came', () =
 
 test('groupByMatchedNeeds: one selected need gives only all or none', () => {
   assert.deepStrictEqual(
-    groupByMatchedNeeds([{ matched_needs: [RENT] }, { matched_needs: [] }], [RENT]),
+    groupByMatchedNeeds(
+      [{ matched_needs: [RENT] }, { matched_needs: [] }],
+      [RENT],
+    ),
     ['all', 'none'],
   );
 });
 
 test('groupByMatchedNeeds: no selected needs, or no matched_needs on a hit, gives no group', () => {
-  assert.deepStrictEqual(groupByMatchedNeeds([{ matched_needs: [] }, {}], []), [null, null]);
-  assert.deepStrictEqual(groupByMatchedNeeds([{}, { matched_needs: [RENT] }], [RENT]), [
+  assert.deepStrictEqual(groupByMatchedNeeds([{ matched_needs: [] }, {}], []), [
     null,
-    'all',
+    null,
   ]);
+  assert.deepStrictEqual(
+    groupByMatchedNeeds([{}, { matched_needs: [RENT] }], [RENT]),
+    [null, 'all'],
+  );
 });
 
 test('groupByMatchedNeeds: codes that were not selected, and repeats, do not count', () => {
   assert.deepStrictEqual(
-    groupByMatchedNeeds([{ matched_needs: ['N-MON-02', RENT, RENT] }], [RENT, FOOD]),
+    groupByMatchedNeeds(
+      [{ matched_needs: ['N-MON-02', RENT, RENT] }],
+      [RENT, FOOD],
+    ),
     ['some'],
   );
 });
@@ -111,7 +120,10 @@ test('answerChanges: each option writes its own parameter (Decision 55)', () => 
     { label: 'Food', parameter: 'needs', value: FOOD },
     { label: 'Not urgent', parameter: 'urgency', value: 'U-3' },
   ]);
-  const changes = answerChanges(q, [RENT, 'U-3'], { needs: [], passedNeeds: [] });
+  const changes = answerChanges(q, [RENT, 'U-3'], {
+    needs: [],
+    passedNeeds: [],
+  });
   assert.deepStrictEqual(changes, {
     urgency: 'U-3',
     needs: [RENT],
@@ -123,41 +135,79 @@ test('answerChanges: a passed_needs option and an urgency skip', () => {
   const pass = question([
     { label: 'Not this', parameter: 'passed_needs', value: 'N-MON-02' },
   ]);
-  assert.deepStrictEqual(answerChanges(pass, ['N-MON-02'], { needs: [RENT], passedNeeds: [] }), {
-    passed_needs: ['N-MON-02'],
-  });
+  assert.deepStrictEqual(
+    answerChanges(pass, ['N-MON-02'], { needs: [RENT], passedNeeds: [] }),
+    {
+      passed_needs: ['N-MON-02'],
+    },
+  );
   const time = question([
     { label: 'Today', parameter: 'urgency', value: 'U-1' },
     { label: 'Not urgent', parameter: 'urgency', value: 'U-3' },
   ]);
-  assert.deepStrictEqual(answerChanges(time, [], { needs: [], passedNeeds: [] }), {
-    urgency: 'U-X',
-  });
+  assert.deepStrictEqual(
+    answerChanges(time, [], { needs: [], passedNeeds: [] }),
+    {
+      urgency: 'U-X',
+    },
+  );
 });
 
 test('answerChanges: the emergency popup answers write U-0, U-1 and U-2 (Lucas 2026-11-18)', () => {
-  const q = withEmergencyAnswers({ ...question([]), id: 'emergency', type: 'emergency', importance: 'critical' });
+  const q = withEmergencyAnswers({
+    ...question([]),
+    id: 'emergency',
+    type: 'emergency',
+    importance: 'critical',
+  });
   for (const code of ['U-0', 'U-1', 'U-2']) {
-    assert.equal(answerChanges(q, [code], { needs: [], passedNeeds: [] }).urgency, code);
+    assert.equal(
+      answerChanges(q, [code], { needs: [], passedNeeds: [] }).urgency,
+      code,
+    );
   }
 });
 
 test('withEmergencyAnswers: exactly three options; the engine values win when all three match', () => {
-  const base = { ...question([]), id: 'emergency', type: 'emergency' as const, importance: 'critical' as const };
+  const base = {
+    ...question([]),
+    id: 'emergency',
+    type: 'emergency' as const,
+    importance: 'critical' as const,
+  };
   const mine = withEmergencyAnswers(base);
-  assert.deepStrictEqual(mine.options.map((o) => [o.label, o.value, o.parameter]), [
-    ['Yes, I am in danger', 'U-0', 'urgency'],
-    ['No, I am safe, I need help today', 'U-1', 'urgency'],
-    ['No, I am safe, I need help this week', 'U-2', 'urgency'],
-  ]);
-  const engine = (label: string, value: string) => ({ label, parameter: 'urgency' as const, value, results_count: null });
+  assert.deepStrictEqual(
+    mine.options.map((o) => [o.label, o.value, o.parameter]),
+    [
+      ['Yes, I am in danger', 'U-0', 'urgency'],
+      ['No, I am safe, I need help today', 'U-1', 'urgency'],
+      ['No, I am safe, I need help this week', 'U-2', 'urgency'],
+    ],
+  );
+  const engine = (label: string, value: string) => ({
+    label,
+    parameter: 'urgency' as const,
+    value,
+    results_count: null,
+  });
   const theirs = withEmergencyAnswers({
     ...base,
-    options: [engine('A', 'U-2'), engine('B', 'U-0'), engine('C', 'U-1'), engine('D', 'U-3')],
+    options: [
+      engine('A', 'U-2'),
+      engine('B', 'U-0'),
+      engine('C', 'U-1'),
+      engine('D', 'U-3'),
+    ],
   });
-  assert.deepStrictEqual(theirs.options.map((o) => o.label), ['B', 'C', 'A']);
+  assert.deepStrictEqual(
+    theirs.options.map((o) => o.label),
+    ['B', 'C', 'A'],
+  );
   // Older engine options (two answers, other codes): the page's own three.
-  const old = withEmergencyAnswers({ ...base, options: [engine('x', 'U-1'), engine('y', 'U-2')] });
+  const old = withEmergencyAnswers({
+    ...base,
+    options: [engine('x', 'U-1'), engine('y', 'U-2')],
+  });
   assert.equal(old.options[0].label, 'Yes, I am in danger');
 });
 
@@ -165,14 +215,23 @@ test('emergencyPopupMode: ask, danger, or none', () => {
   const crit = { id: 'emergency', importance: 'critical' as const };
   assert.equal(emergencyPopupMode(crit, null, []), 'ask');
   assert.equal(emergencyPopupMode(crit, 'U-0', ['emergency']), 'danger');
-  for (const u of ['U-1', 'U-2', 'U-3', 'U-4']) assert.equal(emergencyPopupMode(crit, u, ['emergency']), null);
+  for (const u of ['U-1', 'U-2', 'U-3', 'U-4'])
+    assert.equal(emergencyPopupMode(crit, u, ['emergency']), null);
   assert.equal(emergencyPopupMode(crit, null, ['emergency']), null);
-  assert.equal(emergencyPopupMode({ id: 'emergency', importance: 'high' }, null, []), null);
+  assert.equal(
+    emergencyPopupMode({ id: 'emergency', importance: 'high' }, null, []),
+    null,
+  );
   assert.equal(emergencyPopupMode(undefined, null, []), null);
 });
 
 test('emergencyQuestionOf reads the emergency only from the questions (Decision 54)', () => {
-  const emergency = { ...question([]), id: 'emergency', type: 'emergency' as const, importance: 'critical' as const };
+  const emergency = {
+    ...question([]),
+    id: 'emergency',
+    type: 'emergency' as const,
+    importance: 'critical' as const,
+  };
   const response = {
     clarification: { rules_version: 'r', questions: [question([]), emergency] },
   } as unknown as V2Response;
@@ -181,21 +240,30 @@ test('emergencyQuestionOf reads the emergency only from the questions (Decision 
 });
 
 test('withoutNX: N-X is never sent in needs= (Decision 43: the route would answer 400)', async () => {
-  const { withoutNX } = await import('../src/app/(app)/features/search/v2/v2-contract');
+  const { withoutNX } =
+    await import('../src/app/(app)/features/search/v2/v2-contract');
   assert.equal(withoutNX('N-HOU-02,N-X,N-FOD-01'), 'N-HOU-02,N-FOD-01');
   assert.equal(withoutNX('N-X'), null);
   assert.equal(withoutNX(null), null);
 });
 
 test('styleOf: the look follows type and importance, never a `level` field', () => {
-  const kinds = ['emergency', 'confirm_urgency', 'find_need', 'narrow'] as const;
+  const kinds = [
+    'emergency',
+    'confirm_urgency',
+    'find_need',
+    'narrow',
+  ] as const;
   const high = ['critical', 'high'] as const;
   const quiet = ['medium', 'low'] as const;
   for (const importance of [...high, ...quiet]) {
     assert.equal(styleOf({ type: 'emergency', importance }), 'emergency');
   }
   for (const importance of high) {
-    assert.equal(styleOf({ type: 'confirm_urgency', importance }), 'confirm_urgency');
+    assert.equal(
+      styleOf({ type: 'confirm_urgency', importance }),
+      'confirm_urgency',
+    );
     assert.equal(styleOf({ type: 'find_need', importance }), 'find_need');
     assert.equal(styleOf({ type: 'narrow', importance }), 'find_need');
   }
@@ -212,20 +280,41 @@ test('isSoftEmergency: critical is the full red card, anything lower the calmer 
   assert.equal(isSoftEmergency(undefined), false);
 });
 
-
 test('cardWording: a one-need question is one tap, not "Pick all that fit"', () => {
-  const opt = (value: string) => ({ label: value, parameter: 'needs', value, results_count: null });
-  const none = { label: 'None', parameter: 'passed_needs', value: 'x', results_count: null };
+  const opt = (value: string) => ({
+    label: value,
+    parameter: 'needs',
+    value,
+    results_count: null,
+  });
+  const none = {
+    label: 'None',
+    parameter: 'passed_needs',
+    value: 'x',
+    results_count: null,
+  };
   assert.deepEqual(
-    cardWording({ stem: 'Do any of these also fit?', multi_select: true, options: [opt('N-SAF-04')] } as never),
+    cardWording({
+      stem: 'Do any of these also fit?',
+      multi_select: true,
+      options: [opt('N-SAF-04')],
+    } as never),
     { text: 'Does this also fit?', multi: false },
   );
   assert.deepEqual(
-    cardWording({ stem: 'Which kind of help with Food & Water?', multi_select: true, options: [opt('N-FOD-01'), none] } as never),
+    cardWording({
+      stem: 'Which kind of help with Food & Water?',
+      multi_select: true,
+      options: [opt('N-FOD-01'), none],
+    } as never),
     { text: 'Which kind of help with Food & Water?', multi: false },
   );
   assert.deepEqual(
-    cardWording({ stem: 'Do any of these also fit?', multi_select: true, options: [opt('a'), opt('b')] } as never),
+    cardWording({
+      stem: 'Do any of these also fit?',
+      multi_select: true,
+      options: [opt('a'), opt('b')],
+    } as never),
     { text: 'Do any of these also fit?', multi: true },
   );
 });
@@ -247,7 +336,10 @@ const noMatch: V2Question = {
 };
 
 test('weak match: a Tier 1 pick writes needs and does not pass the other options', () => {
-  const changes = answerChanges(noMatch, ['N-FOD'], { needs: [], passedNeeds: [] });
+  const changes = answerChanges(noMatch, ['N-FOD'], {
+    needs: [],
+    passedNeeds: [],
+  });
   assert.deepStrictEqual(changes, { needs: ['N-FOD'] });
   const url = nextV2Params(new URLSearchParams('query=zzqx'), changes);
   assert.equal(url.get('needs'), 'N-FOD');
@@ -261,15 +353,23 @@ test('weak match: Other text joins the query and writes no needs and no `other`'
   assert.equal(first.query, 'zzqx. rent help');
   assert.equal('other' in first, false);
   assert.deepStrictEqual(first.needs, []);
-  assert.equal(otherChanges(noMatch, null, 'a ride to dialysis', state).query, 'a ride to dialysis');
-  assert.equal(otherChanges(noMatch, 'first', 'second', state).query, 'first. second');
+  assert.equal(
+    otherChanges(noMatch, null, 'a ride to dialysis', state).query,
+    'a ride to dialysis',
+  );
+  assert.equal(
+    otherChanges(noMatch, 'first', 'second', state).query,
+    'first. second',
+  );
 });
 
 test('Other text keeps the answers although the query text changes', () => {
   const state = { needs: ['N-FOD'], passedNeeds: ['N-HOU'], urgency: 'U-2' };
   const changes = otherChanges(noMatch, 'zzqx', 'rent help', state);
   const next = nextV2Params(
-    new URLSearchParams('query=zzqx&needs=N-FOD&passed_needs=N-HOU&urgency=U-2&asked=no_match'),
+    new URLSearchParams(
+      'query=zzqx&needs=N-FOD&passed_needs=N-HOU&urgency=U-2&asked=no_match',
+    ),
     { ...changes, asked: ['no_match'] },
   );
   assert.equal(next.get('query'), 'zzqx. rent help');
@@ -282,13 +382,18 @@ test('Other text keeps the answers although the query text changes', () => {
 
 test('Other text on another question still answers like a Skip', () => {
   const rent: V2Question = { ...noMatch, id: 'area_hou' };
-  const changes = otherChanges(rent, 'rent', 'x', { needs: [], passedNeeds: [] });
+  const changes = otherChanges(rent, 'rent', 'x', {
+    needs: [],
+    passedNeeds: [],
+  });
   assert.equal(changes.query, 'rent. x');
   assert.deepStrictEqual(changes.passed_needs, ['N-FOD', 'N-HOU', 'N-MON']);
 });
 
 test('isWeakMatch and noMatchQuestionOf read the response', () => {
-  const base = { clarification: { rules_version: 'r', questions: [noMatch] } } as unknown as V2Response;
+  const base = {
+    clarification: { rules_version: 'r', questions: [noMatch] },
+  } as unknown as V2Response;
   assert.equal(isWeakMatch(base), false);
   assert.equal(isWeakMatch({ ...base, weak_match: true }), true);
   assert.equal(noMatchQuestionOf(base)?.id, 'no_match');
@@ -319,16 +424,27 @@ test('visibleOptions hides None of these and truncates every question type', () 
   const first = visibleOptions({ type: 'find_need' }, withNone, false);
   assert.equal(first.shown.length, OPTION_LIMIT);
   assert.equal(first.hidden, 9 - OPTION_LIMIT);
-  assert.equal(visibleOptions({ type: 'narrow' }, withNone, true).shown.length, 9);
-  assert.equal(visibleOptions({ type: 'confirm_urgency' }, many, false).hidden, 9 - OPTION_LIMIT);
+  assert.equal(
+    visibleOptions({ type: 'narrow' }, withNone, true).shown.length,
+    9,
+  );
+  assert.equal(
+    visibleOptions({ type: 'confirm_urgency' }, many, false).hidden,
+    9 - OPTION_LIMIT,
+  );
   assert.equal(OPTION_LIMIT, 4);
-  assert.equal(visibleOptions({ type: 'find_need' }, many.slice(0, 3), false).hidden, 0);
+  assert.equal(
+    visibleOptions({ type: 'find_need' }, many.slice(0, 3), false).hidden,
+    0,
+  );
   assert.ok(!isNoneOption({ label: 'Housing', value: 'N-HOU' }));
 });
 
 test('optionDescription gives the server text, and nothing for a missing or blank one', () => {
   assert.equal(
-    optionDescription({ description: " You don't have clean water to drink. " }),
+    optionDescription({
+      description: " You don't have clean water to drink. ",
+    }),
     "You don't have clean water to drink.",
   );
   assert.equal(optionDescription({}), undefined);

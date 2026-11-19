@@ -108,7 +108,9 @@ test('facetsToFilters: a ticked value missing from the counts stays with 0', () 
 test('activeFiltersOf reads the three bracket forms', () => {
   assert.deepEqual(
     activeFiltersOf(
-      url('filters[languages]=Spanish&filters[age_group][0]=a&filters[age_group][]=b&filters[age_group][]=a'),
+      url(
+        'filters[languages]=Spanish&filters[age_group][0]=a&filters[age_group][]=b&filters[age_group][]=a',
+      ),
     ),
     { languages: ['Spanish'], age_group: ['a', 'b'] },
   );
@@ -119,7 +121,10 @@ test('locationNote: names the Regions, nothing without them', () => {
   assert.equal(locationNote(undefined), null);
   assert.equal(locationNote({ ...base, regions: [] }), null);
   assert.equal(
-    locationNote({ ...base, regions: [{ id: 'county:1', name: 'Jackson County, MO' }] }),
+    locationNote({
+      ...base,
+      regions: [{ id: 'county:1', name: 'Jackson County, MO' }],
+    }),
     'Showing results near Jackson County, MO',
   );
   assert.equal(
@@ -140,24 +145,39 @@ test('stub: filters filter (OR inside a facet, AND across facets), facet counts 
   const spanish = applyFacetFilters(all, { languages: ['Spanish'] });
   assert.ok(spanish.length > 0 && spanish.length < all.length);
   const vietnamese = applyFacetFilters(all, { languages: ['Vietnamese'] });
-  const either = applyFacetFilters(all, { languages: ['Spanish', 'Vietnamese'] });
+  const either = applyFacetFilters(all, {
+    languages: ['Spanish', 'Vietnamese'],
+  });
   // Two ticked values in one facet widen the list (OR), never narrow it.
-  assert.ok(either.length >= spanish.length && either.length >= vietnamese.length);
+  assert.ok(
+    either.length >= spanish.length && either.length >= vietnamese.length,
+  );
   const union = new Set([...spanish, ...vietnamese].map((x) => x.id));
   assert.equal(either.length, union.size);
   // A second facet narrows (AND across facets).
-  const seniors = applyFacetFilters(all, { languages: ['Spanish', 'Vietnamese'], age_group: ['Seniors'] });
+  const seniors = applyFacetFilters(all, {
+    languages: ['Spanish', 'Vietnamese'],
+    age_group: ['Seniors'],
+  });
   assert.ok(seniors.length <= either.length);
   const facets = facetsOf(spanish);
   const lang = facets.find((f) => f.key === 'languages')!;
-  assert.equal(lang.values.find((v) => v.en === 'Spanish')?.doc_count, spanish.length);
+  assert.equal(
+    lang.values.find((v) => v.en === 'Spanish')?.doc_count,
+    spanish.length,
+  );
 });
 
 test('stub: readParams reads filters, region, area_match, unlocated', () => {
   const p = readParams(
-    url('query=x&filters[languages]=Spanish&filters[age_group][0]=Seniors&region=county:53073,zip:98225&area_match=serving&unlocated=all'),
+    url(
+      'query=x&filters[languages]=Spanish&filters[age_group][0]=Seniors&region=county:53073,zip:98225&area_match=serving&unlocated=all',
+    ),
   );
-  assert.deepEqual(p.filters, { languages: ['Spanish'], age_group: ['Seniors'] });
+  assert.deepEqual(p.filters, {
+    languages: ['Spanish'],
+    age_group: ['Seniors'],
+  });
   assert.deepEqual(p.region, ['county:53073', 'zip:98225']);
   assert.equal(p.areaMatch, 'serving');
   assert.equal(p.unlocated, 'all');
@@ -168,7 +188,9 @@ test('stub: resolved_location for known Regions, 400 for an unknown one', () => 
   const r = resolveRegions({ region: ['county:53073'] });
   assert.equal(r?.regions[0].name, 'Whatcom County, WA');
   assert.equal(r?.area_match, 'located_or_serving');
-  assert.throws(() => resolveRegions({ region: ['county:00000'] }), { status: 400 });
+  assert.throws(() => resolveRegions({ region: ['county:00000'] }), {
+    status: 400,
+  });
 });
 
 test('stub: a ticked value does not shrink the other values of its own facet (OR), other facets still narrow it', () => {
@@ -177,7 +199,12 @@ test('stub: a ticked value does not shrink the other values of its own facet (OR
     facetsOfFiltered(all, filters).find((f) => f.key === 'languages')!.values;
   const untouched = lang({});
   assert.deepEqual(lang({ languages: ['Spanish'] }), untouched);
-  const age = facetsOfFiltered(all, { languages: ['Spanish'] }).find((f) => f.key === 'age_group')!;
+  const age = facetsOfFiltered(all, { languages: ['Spanish'] }).find(
+    (f) => f.key === 'age_group',
+  )!;
   const ageAll = facetsOfFiltered(all, {}).find((f) => f.key === 'age_group')!;
-  assert.ok(age.values.reduce((n, v) => n + v.doc_count, 0) <= ageAll.values.reduce((n, v) => n + v.doc_count, 0));
+  assert.ok(
+    age.values.reduce((n, v) => n + v.doc_count, 0) <=
+      ageAll.values.reduce((n, v) => n + v.doc_count, 0),
+  );
 });

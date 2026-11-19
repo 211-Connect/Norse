@@ -180,10 +180,7 @@ const geoMode: SlotDeclaration<GeoMode> = {
  * A comma list of codes or ids, in URL order, without repeats. `key=` and a list with no valid entry
  * read as stated and empty, as `coords=abc` does; only an absent key is unstated.
  */
-const codeList = (
-  key: string,
-  valid: RegExp,
-): SlotDeclaration<string[]> => ({
+const codeList = (key: string, valid: RegExp): SlotDeclaration<string[]> => ({
   keys: [key],
   decode: ({ raw }) => {
     const value = raw[key];

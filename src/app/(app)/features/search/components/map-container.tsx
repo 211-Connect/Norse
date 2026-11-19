@@ -155,7 +155,9 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
               distance={distance}
               id={linkId}
               name={name}
-              address={formatAddressForDisplay(pin.physical_address) || hit?.address}
+              address={
+                formatAddressForDisplay(pin.physical_address) || hit?.address
+              }
             />
           ),
         };

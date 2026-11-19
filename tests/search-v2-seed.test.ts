@@ -97,7 +97,9 @@ test('v2CallString keeps only call keys, drops N-X, in a stable order', () => {
 
 test('v2CallString puts facet filters in the key, so a filtered URL is not the unfiltered seed', () => {
   const plain = v2CallString(new URLSearchParams('query=food'));
-  const filtered = v2CallString(new URLSearchParams('query=food&filters[lang]=es'));
+  const filtered = v2CallString(
+    new URLSearchParams('query=food&filters[lang]=es'),
+  );
   assert.notEqual(plain, filtered);
   assert.match(filtered, /filters/);
 });

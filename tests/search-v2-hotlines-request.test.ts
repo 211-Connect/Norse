@@ -29,7 +29,12 @@ test('hotlinesOf: tenant hotlines from the response win, trimmed, at most 4', ()
 });
 
 test('hotlinesOf: absent, empty or malformed gives 988 then 911', () => {
-  for (const q of [undefined, {}, { hotlines: [] }, { hotlines: [{ label: 'x' }] }]) {
+  for (const q of [
+    undefined,
+    {},
+    { hotlines: [] },
+    { hotlines: [{ label: 'x' }] },
+  ]) {
     assert.deepEqual(hotlinesOf(q as never), DEFAULT_HOTLINES);
   }
   assert.deepEqual(
@@ -39,14 +44,21 @@ test('hotlinesOf: absent, empty or malformed gives 988 then 911', () => {
 });
 
 test('buildV2Url: tenant_id and locale are in the URL, locale defaults to en', () => {
-  const page = new URLSearchParams({ query: 'food', needs: 'N-FOD', junk: 'x', tenant_id: 'stub' });
+  const page = new URLSearchParams({
+    query: 'food',
+    needs: 'N-FOD',
+    junk: 'x',
+    tenant_id: 'stub',
+  });
   const url = new URL(buildV2Url('http://api', page, 'T-1'));
   assert.equal(url.pathname, '/v2/search');
   assert.equal(url.searchParams.get('tenant_id'), 'T-1');
   assert.equal(url.searchParams.get('locale'), 'en');
   assert.equal(url.searchParams.get('query'), 'food');
   assert.equal(url.searchParams.get('junk'), null);
-  const es = new URL(buildV2Url('http://api', new URLSearchParams({ locale: 'es' }), 'T-1'));
+  const es = new URL(
+    buildV2Url('http://api', new URLSearchParams({ locale: 'es' }), 'T-1'),
+  );
   assert.equal(es.searchParams.get('locale'), 'es');
 });
 
@@ -66,11 +78,17 @@ test('relayV2Response: a 4xx passes through with its status and body; 5xx and ne
     await relayV2Response(json({ error: 'needs=N-X is not allowed' }, 400)),
     { status: 400, body: { error: 'needs=N-X is not allowed' } },
   );
-  assert.equal((await relayV2Response(new Response('not json', { status: 422 }))).status, 422);
-  assert.deepStrictEqual((await relayV2Response(new Response('', { status: 404 }))).body, {
-    error: 'v2 search failed',
-    status: 404,
-  });
+  assert.equal(
+    (await relayV2Response(new Response('not json', { status: 422 }))).status,
+    422,
+  );
+  assert.deepStrictEqual(
+    (await relayV2Response(new Response('', { status: 404 }))).body,
+    {
+      error: 'v2 search failed',
+      status: 404,
+    },
+  );
   assert.equal((await relayV2Response(json({}, 500))).status, 502);
   assert.equal((await relayV2Response(json({}, 503))).status, 502);
   assert.deepStrictEqual(await relayV2Response(null), {

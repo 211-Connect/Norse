@@ -9,7 +9,12 @@ import { createInstance } from 'i18next';
 
 import common from '../public/locales/en/common.json';
 
-const SEARCH_PAGE_NAMESPACES = ['page-search', 'page-resource', 'page-list', 'common'];
+const SEARCH_PAGE_NAMESPACES = [
+  'page-search',
+  'page-resource',
+  'page-list',
+  'common',
+];
 
 async function searchPageI18n() {
   const i18n = createInstance();
@@ -26,13 +31,22 @@ async function searchPageI18n() {
 
 test('the count key resolves from the common namespace, one and many', async () => {
   const t = (await searchPageI18n()).getFixedT('en', 'common');
-  assert.equal(t('search.v2_option_services_count', { count: 12 }), '12 services offer this');
-  assert.equal(t('search.v2_option_services_count', { count: 1 }), '1 service offers this');
+  assert.equal(
+    t('search.v2_option_services_count', { count: 12 }),
+    '12 services offer this',
+  );
+  assert.equal(
+    t('search.v2_option_services_count', { count: 1 }),
+    '1 service offers this',
+  );
 });
 
 test('without the namespace the key stays raw (why the call must name it)', async () => {
   const t = (await searchPageI18n()).t;
-  assert.equal(t('search.v2_option_services_count', { count: 12 }), 'search.v2_option_services_count');
+  assert.equal(
+    t('search.v2_option_services_count', { count: 12 }),
+    'search.v2_option_services_count',
+  );
 });
 
 for (const file of [

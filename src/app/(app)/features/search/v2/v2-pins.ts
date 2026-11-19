@@ -29,11 +29,16 @@ const FILTER_ROOT = 'filters';
 const rootOf = (key: string) => key.split('[')[0];
 
 /** The result-changing parameters of a page URL, in a stable order (the query cache key). */
-export function pinsCallString(params: Pick<URLSearchParams, 'entries'>): string {
+export function pinsCallString(
+  params: Pick<URLSearchParams, 'entries'>,
+): string {
   const picked: [string, string][] = [];
   for (const [key, value] of params.entries()) {
     if (!value) continue;
-    if ((PINS_FORWARD as readonly string[]).includes(key) || rootOf(key) === FILTER_ROOT) {
+    if (
+      (PINS_FORWARD as readonly string[]).includes(key) ||
+      rootOf(key) === FILTER_ROOT
+    ) {
       picked.push([key, value]);
     }
   }
@@ -76,7 +81,11 @@ const isCoordinate = (c: unknown): c is [number, number] =>
   c.every((n) => typeof n === 'number' && Number.isFinite(n));
 
 /** Keeps the pins that can be drawn: an id and a longitude, latitude pair. */
-export function usablePins(response: Partial<V2PinsResponse> | null | undefined): V2Pin[] {
+export function usablePins(
+  response: Partial<V2PinsResponse> | null | undefined,
+): V2Pin[] {
   const pins = Array.isArray(response?.pins) ? response.pins : [];
-  return pins.filter((p) => p && typeof p.id === 'string' && isCoordinate(p.coordinates));
+  return pins.filter(
+    (p) => p && typeof p.id === 'string' && isCoordinate(p.coordinates),
+  );
 }

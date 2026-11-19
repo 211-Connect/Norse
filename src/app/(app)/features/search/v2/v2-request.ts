@@ -29,7 +29,8 @@ export const DEFAULT_LOCALE = 'en';
 /** The upstream URL: the forwarded parameters, then `tenant_id` and `locale` (always both). */
 export function buildV2Url(
   apiUrl: string,
-  incoming: Pick<URLSearchParams, 'get'> & Partial<Pick<URLSearchParams, 'entries'>>,
+  incoming: Pick<URLSearchParams, 'get'> &
+    Partial<Pick<URLSearchParams, 'entries'>>,
   tenantId: string,
 ): string {
   const outgoing = new URLSearchParams();
@@ -40,7 +41,9 @@ export function buildV2Url(
   // Facet filters (`filters[...]`), `age`, `organization_id`, `geo_type` and the area params
   // (`region`, `area_match`, `unlocated`) go through as the page URL has them.
   if (incoming.entries) {
-    for (const [key, value] of v2FilterPairs({ entries: incoming.entries.bind(incoming) })) {
+    for (const [key, value] of v2FilterPairs({
+      entries: incoming.entries.bind(incoming),
+    })) {
       outgoing.append(key, value);
     }
   }
@@ -50,7 +53,9 @@ export function buildV2Url(
 }
 
 /** Only the tenant key goes in a header. Tenant and language are in the URL, never here. */
-export function buildV2Headers(tenantApiKey?: string | null): Record<string, string> {
+export function buildV2Headers(
+  tenantApiKey?: string | null,
+): Record<string, string> {
   return tenantApiKey ? { 'x-api-key': tenantApiKey } : {};
 }
 

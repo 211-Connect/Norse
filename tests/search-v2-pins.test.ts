@@ -21,7 +21,14 @@ test('pinsCallString: keeps result-changing params, drops paging and answer-only
   assert.equal(call.get('coords'), '-76.1,43.0');
   assert.equal(call.get('distance'), '10');
   assert.equal(call.get('filters[language][0]'), 'es');
-  for (const k of ['page', 'passed_needs', 'urgency', 'clarify', 'asked', 'refine']) {
+  for (const k of [
+    'page',
+    'passed_needs',
+    'urgency',
+    'clarify',
+    'asked',
+    'refine',
+  ]) {
     assert.equal(call.has(k), false, k);
   }
 });
@@ -37,16 +44,32 @@ test('buildPinsUrl: path /v2/search/pins, tenant_id and locale in the URL', () =
   assert.equal(url.pathname, '/v2/search/pins');
   assert.equal(url.searchParams.get('tenant_id'), 'T-1');
   assert.equal(url.searchParams.get('locale'), 'en');
-  const es = new URL(buildPinsUrl('http://api', new URLSearchParams('query=x&locale=es'), 'T-1'));
+  const es = new URL(
+    buildPinsUrl('http://api', new URLSearchParams('query=x&locale=es'), 'T-1'),
+  );
   assert.equal(es.searchParams.get('locale'), 'es');
 });
 
 test('usablePins: drops pins without an id or a lon,lat pair; tolerates a bad body', () => {
-  const ok = { id: 'a', service_at_location_id: 's', name: 'n', physical_address: null, coordinates: [-76, 43] };
+  const ok = {
+    id: 'a',
+    service_at_location_id: 's',
+    name: 'n',
+    physical_address: null,
+    coordinates: [-76, 43],
+  };
   const pins = usablePins({
-    pins: [ok, { ...ok, id: 'b', coordinates: [NaN, 1] }, { ...ok, id: 'c', coordinates: [1] }, { ...ok, id: undefined }] as never,
+    pins: [
+      ok,
+      { ...ok, id: 'b', coordinates: [NaN, 1] },
+      { ...ok, id: 'c', coordinates: [1] },
+      { ...ok, id: undefined },
+    ] as never,
   });
-  assert.deepEqual(pins.map((p) => p.id), ['a']);
+  assert.deepEqual(
+    pins.map((p) => p.id),
+    ['a'],
+  );
   assert.deepEqual(usablePins(null), []);
   assert.deepEqual(usablePins({} as never), []);
 });

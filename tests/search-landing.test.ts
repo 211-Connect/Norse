@@ -144,8 +144,14 @@ test('the home search dialog hands its URL to the landing page, same query strin
 
 test('a typed search always asks: toLandingUrl adds refine=1 to a query without it, and leaves a given refine alone', () => {
   assert.equal(toLandingUrl('/search?query=food'), '/find?query=food&refine=1');
-  assert.equal(toLandingUrl('/search?query=food&refine=0'), '/find?query=food&refine=0');
-  assert.equal(toLandingUrl('/search?location=Seattle'), '/find?location=Seattle');
+  assert.equal(
+    toLandingUrl('/search?query=food&refine=0'),
+    '/find?query=food&refine=0',
+  );
+  assert.equal(
+    toLandingUrl('/search?location=Seattle'),
+    '/find?location=Seattle',
+  );
 });
 
 // Prototype (Lucas 2026-11-19): a new query typed in the results page's top search bar goes to

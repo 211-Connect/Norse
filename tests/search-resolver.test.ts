@@ -199,7 +199,10 @@ test('a URL that carries v2 answers is never classified or redirected (needs, ur
     assert.equal(snapshot.hasTag('page:redirect'), false, answers);
   }
   // No answers: the gate still classifies.
-  assert.equal(resolve('query=food&query_type=hybrid', AI).value, 'needs_prediction');
+  assert.equal(
+    resolve('query=food&query_type=hybrid', AI).value,
+    'needs_prediction',
+  );
 });
 
 test('a direct prediction redirects to the canonical AI URL', () => {

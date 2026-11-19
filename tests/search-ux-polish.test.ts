@@ -271,9 +271,13 @@ test('phone: the pinned landing header offset cancels the card top padding (spin
   const landing = read(`${APP}features/search/components/search-landing.tsx`);
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   const esc = (v: string) => v.replace(/[\\[\].]/g, '\\$&');
-  const pad = guide.match(/max-sm:rounded-none max-sm:pt-(\[[\d.]+rem\]|\d+)/)?.[1];
+  const pad = guide.match(
+    /max-sm:rounded-none max-sm:pt-(\[[\d.]+rem\]|\d+)/,
+  )?.[1];
   assert.ok(pad, 'GuideShell keeps a phone top padding class');
-  const header = landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ?? '';
+  const header =
+    landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ??
+    '';
   assert.match(header, new RegExp(`max-sm:-top-${esc(pad)}(\\s|$)`));
   assert.match(header, new RegExp(`max-sm:-mt-${esc(pad)}(\\s|$)`));
   assert.match(header, new RegExp(`max-sm:pt-${esc(pad)}(\\s|$)`));
@@ -289,7 +293,10 @@ test('phone layer top bar: Back closes top left, Quick exit top right, divider, 
   assert.match(close.slice(0, 700), /max-sm:left-2/);
   assert.match(close.slice(0, 700), /max-sm:h-11/);
   assert.match(close.slice(0, 900), /Back/);
-  assert.match(guide, /data-testid="guide-top-bar"[^>]*|border-b bg-white sm:hidden/);
+  assert.match(
+    guide,
+    /data-testid="guide-top-bar"[^>]*|border-b bg-white sm:hidden/,
+  );
   assert.match(guide, /max-sm:pt-\[4\.75rem\]/);
   assert.match(exit, /max-sm:top-2 max-sm:right-2/);
   assert.doesNotMatch(exit, /max-sm:left-2/);
@@ -298,16 +305,32 @@ test('phone layer top bar: Back closes top left, Quick exit top right, divider, 
 
 test('desktop guard: every full-screen / no-header rule in the layer is max-sm only', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
-  const cls = guide.match(/className="fixed top-\[calc\(var\(--guide-top\)[^"]*"/)?.[0] ?? '';
+  const cls =
+    guide.match(/className="fixed top-\[calc\(var\(--guide-top\)[^"]*"/)?.[0] ??
+    '';
   assert.ok(cls, 'dialog class found');
-  for (const token of ['top-0', 'left-0', 'h-dvh', 'w-full', 'rounded-none', 'translate-x-0', 'pt-[4.75rem]']) {
+  for (const token of [
+    'top-0',
+    'left-0',
+    'h-dvh',
+    'w-full',
+    'rounded-none',
+    'translate-x-0',
+    'pt-[4.75rem]',
+  ]) {
     assert.ok(
-      cls.split(/\s+/).filter((t) => t.includes(token)).every((t) => t.startsWith('max-sm:')),
+      cls
+        .split(/\s+/)
+        .filter((t) => t.includes(token))
+        .every((t) => t.startsWith('max-sm:')),
       `${token} must be max-sm only`,
     );
   }
   assert.match(guide, /bg-black\/40 max-sm:hidden/); // dim layer starts under the header on desktop
   assert.match(guide, /document\.querySelector\('header'\)/);
-  const bar = guide.slice(guide.indexOf('data-testid="guide-top-bar"'), guide.indexOf('data-testid="guide-top-bar"') + 200);
+  const bar = guide.slice(
+    guide.indexOf('data-testid="guide-top-bar"'),
+    guide.indexOf('data-testid="guide-top-bar"') + 200,
+  );
   assert.match(bar, /sm:hidden/);
 });

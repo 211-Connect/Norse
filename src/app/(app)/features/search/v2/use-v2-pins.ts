@@ -6,7 +6,12 @@ import { useMemo } from 'react';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
-import { pinsCallString, usablePins, type V2Pin, type V2PinsResponse } from './v2-pins';
+import {
+  pinsCallString,
+  usablePins,
+  type V2Pin,
+  type V2PinsResponse,
+} from './v2-pins';
 
 /**
  * The map's pins from `GET /v2/search/pins`, for the same page URL as the list. The call carries the
@@ -34,5 +39,8 @@ export function useV2Pins(): { pins: V2Pin[] | undefined; truncated: boolean } {
       return (await res.json()) as V2PinsResponse;
     },
   });
-  return { pins: data ? usablePins(data) : undefined, truncated: Boolean(data?.truncated) };
+  return {
+    pins: data ? usablePins(data) : undefined,
+    truncated: Boolean(data?.truncated),
+  };
 }

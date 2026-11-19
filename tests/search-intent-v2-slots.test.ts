@@ -14,7 +14,10 @@ const URL_ =
 test('v2 slots read codes in URL order, without repeats or invalid codes', () => {
   const { intent } = liftQueryString(URL_);
   assert.deepStrictEqual(intent.needs, { stated: true, value: ['N-HOU-02'] });
-  assert.deepStrictEqual(intent.passedNeeds, { stated: true, value: ['N-MON-02'] });
+  assert.deepStrictEqual(intent.passedNeeds, {
+    stated: true,
+    value: ['N-MON-02'],
+  });
   assert.deepStrictEqual(intent.urgency, { stated: true, value: 'U-2' });
   assert.deepStrictEqual(intent.other, { stated: true, value: 'no car' });
   assert.deepStrictEqual(intent.refine, { stated: true, value: true });
@@ -31,14 +34,23 @@ test('U-0 never reads from a URL: an emergency answer must not live in a shared 
 
 test('an absent v2 key stays unstated', () => {
   const { intent } = liftQueryString('query=food');
-  for (const slot of ['needs', 'passedNeeds', 'urgency', 'other', 'refine', 'asked'] as const) {
+  for (const slot of [
+    'needs',
+    'passedNeeds',
+    'urgency',
+    'other',
+    'refine',
+    'asked',
+  ] as const) {
     assert.deepStrictEqual(intent[slot], { stated: false }, slot);
   }
 });
 
 test('v2 slots write back to the same intent', () => {
   const lifted = liftQueryString(URL_);
-  const again = liftQueryString(serializeSearch(lifted.intent, lifted.envelope));
+  const again = liftQueryString(
+    serializeSearch(lifted.intent, lifted.envelope),
+  );
   assert.deepStrictEqual(again.intent, lifted.intent);
 });
 

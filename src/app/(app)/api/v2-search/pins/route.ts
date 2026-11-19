@@ -14,10 +14,16 @@ export async function GET(request: NextRequest) {
   const incoming = request.nextUrl.searchParams;
   const tenantId = incoming.get('tenant_id');
   if (!tenantId) {
-    return NextResponse.json({ error: 'tenant_id is required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'tenant_id is required' },
+      { status: 400 },
+    );
   }
   if (!API_URL) {
-    return NextResponse.json({ error: 'API_URL is not configured' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'API_URL is not configured' },
+      { status: 500 },
+    );
   }
 
   const upstream = await fetch(buildPinsUrl(API_URL, incoming, tenantId), {
