@@ -55,7 +55,6 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
-            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -79,7 +78,6 @@ jobs:
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
-          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}
 
   deploy-app:
     needs: deploy-cms
@@ -94,7 +92,6 @@ jobs:
             deployment: mboa
             custom_base_path: /adresources
             trailing_slashes: 'true'
-            advanced_geospatial_filtering: 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -115,7 +112,7 @@ jobs:
           maplibre-style-url: ${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
           # MBOA only tracks Umami in production.
           umami-script-url: ${{ (matrix.deployment == 'multitenant' || inputs.environment == 'production') && inputs.umami_script_url || '' }}
+          arcjet-script-url: ${{ vars.NEXT_PUBLIC_ARCJET_SCRIPT_URL }}
           allow-search-engines: ${{ inputs.allow_search_engines }}
           custom-base-path: ${{ matrix.custom_base_path }}
           trailing-slashes: ${{ matrix.trailing_slashes }}
-          advanced-geospatial-filtering: ${{ matrix.advanced_geospatial_filtering }}

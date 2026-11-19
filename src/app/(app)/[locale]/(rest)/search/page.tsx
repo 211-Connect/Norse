@@ -9,12 +9,9 @@ import { ResultsEvents } from '@/app/(app)/features/search/components/results-ev
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
-import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import {
   FindResourcesQuery,
   findResources,
-  findResourcesV2,
 } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
@@ -25,7 +22,6 @@ import {
   lastPageWithinPinLimit,
 } from '@/app/(app)/features/search/utils/map-pins';
 import { createLogger } from '@/lib/logger';
-import { toBbox } from '@/app/(app)/shared/lib/utils';
 import { type FiltersMap } from '@/types/search';
 
 import {
@@ -46,6 +42,19 @@ const log = createLogger('search-page');
 
 const i18nNamespaces = ['page-search', 'page-resource', 'page-list', 'common'];
 
+/** The tenant's area search settings, sent with every area search (`region`). */
+function withAreaSettings(
+  query: FindResourcesQuery,
+  appConfig: Awaited<ReturnType<typeof getAppConfigWithoutHost>>,
+): FindResourcesQuery {
+  if (!query.region) return query;
+  return {
+    ...query,
+    areaMatch: appConfig.search.areaMatch,
+    unlocated: appConfig.search.unlocatedInAreaSearch,
+  };
+}
+
 const getPageData = cache(async function (
   locale: string,
   rawParams: RawSearchParams,
@@ -53,9 +62,10 @@ const getPageData = cache(async function (
   const appConfig = await getAppConfigWithoutHost(locale);
 
   const { intent, envelope } = liftSearchRequest(rawParams);
-  const searchQuery = toFindResourcesQuery(intent);
+  const searchQuery = withAreaSettings(toFindResourcesQuery(intent), appConfig);
 
-  if (searchQuery.location && !searchQuery.coordinates) {
+  // An area search needs no coords; they would only set the distance-sort origin.
+  if (searchQuery.location && !searchQuery.coordinates && !searchQuery.region) {
     // The redirect re-serialises the URL as received; moving it onto the serializer is ISS-2376.
     await navigateToSearchWithCoords(
       locale,
@@ -89,71 +99,28 @@ const getPageData = cache(async function (
       ? toPinsQuery(searchQuery, locale, searchEngine)
       : null;
 
-  let useFindResourcesV2 = false;
   let results: ResultType[] = [];
   let totalResults = 0;
   let filters: FiltersMap = {};
 
-  if (isAdvancedGeoEnabled() && searchQuery.location) {
-    const [placeMetadata] = await forwardGeocode(searchQuery.location, {
-      locale,
-      tenantId: appConfig.tenantId,
-    });
+  const searchResult = await findResources(
+    searchQuery,
+    locale,
+    page,
+    limit,
+    appConfig.tenantId,
+    appConfig.search.searchEngine,
+  );
 
-    if (placeMetadata) {
-      const geoQuery: FindResourcesQuery = {
-        ...searchQuery,
-        coordinates: searchQuery.coordinates ?? placeMetadata.coordinates,
-        placeType: placeMetadata.place_type,
-        bbox: toBbox(placeMetadata.bbox),
-      };
-
-      try {
-        const v2Result = await findResourcesV2(
-          geoQuery,
-          locale,
-          page,
-          limit,
-          appConfig.tenantId,
-          appConfig.search.searchEngine,
-        );
-        results = v2Result.results as ResultType[];
-        totalResults = v2Result.totalResults;
-        filters = v2Result.filters;
-        useFindResourcesV2 = true;
-      } catch (error) {
-        log.error(
-          { err: error },
-          'Geospatial search failed; falling back to legacy',
-        );
-      }
-    }
-  }
-
-  // Fallback to legacy search if geospatial wasn't used or failed
-  if (!useFindResourcesV2) {
-    const searchResult = await findResources(
-      searchQuery,
-      locale,
-      page,
-      limit,
-      appConfig.tenantId,
-      appConfig.search.searchEngine,
+  if (!searchResult) {
+    log.warn(
+      { locale, page, limit, tenantId: appConfig.tenantId },
+      'Search returned no result object; defaulting to empty results',
     );
-
-    if (!searchResult) {
-      log.warn(
-        { searchQuery, locale, page, limit, tenantId: appConfig.tenantId },
-        'Search returned no result object; defaulting to empty results',
-      );
-      results = [];
-      totalResults = 0;
-      filters = {};
-    } else {
-      results = searchResult.results as ResultType[];
-      totalResults = searchResult.totalResults;
-      filters = searchResult.filters;
-    }
+  } else {
+    results = searchResult.results as ResultType[];
+    totalResults = searchResult.totalResults;
+    filters = searchResult.filters;
   }
 
   const { resources, t } = await initTranslations(
@@ -273,6 +240,7 @@ export default async function SearchPage({
       translationData={{ i18nNamespaces, locale, resources }}
       search={{
         coords: searchQuery.coordinates?.join(','),
+        region: searchQuery.region,
         distance: searchQuery.distance,
         location: searchQuery.location,
         query: searchQuery.query,
@@ -293,6 +261,7 @@ export default async function SearchPage({
           filters,
           sort: searchQuery.sort ?? 'relevance',
           coordinates: searchQuery.coordinates ?? null,
+          region: searchQuery.region ?? null,
         }}
       >
         <SearchPageShell

@@ -4,7 +4,9 @@ import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
+  USER_PREF_REGION_ID,
 } from '@/app/(app)/shared/lib/constants';
+import { isRegionId } from '@/types/areaSearch';
 import { isSearchPathname } from '@/app/(app)/shared/lib/paths';
 import { validateCoordsString } from '@/app/(app)/shared/lib/validators';
 
@@ -14,6 +16,7 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
   const prefLocation = request.cookies.get(USER_PREF_LOCATION)?.value;
   const prefCoords = request.cookies.get(USER_PREF_COORDS)?.value;
   const prefDistance = request.cookies.get(USER_PREF_DISTANCE)?.value;
+  const prefRegion = request.cookies.get(USER_PREF_REGION_ID)?.value;
 
   const alreadyHasLocation = searchParams.has('location');
   const alreadyHasCoords = searchParams.has('coords');
@@ -23,8 +26,13 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
     let anyChanges = false;
     const url = request.nextUrl.clone();
 
+    // A saved area brings its Region and searches without a radius.
+    const restoresRegion =
+      Boolean(prefLocation) && !alreadyHasLocation && isRegionId(prefRegion);
+
     if (prefLocation && !alreadyHasLocation) {
       url.searchParams.set('location', prefLocation);
+      if (restoresRegion) url.searchParams.set('region', prefRegion!);
       anyChanges = true;
     }
 
@@ -49,7 +57,9 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
         anyChanges = true;
       }
     }
-    if (prefDistance && !alreadyHasDistance) {
+    // An area (the URL's own or a restored one) is searched without a radius.
+    const isAreaSearch = restoresRegion || searchParams.has('region');
+    if (prefDistance && !alreadyHasDistance && !isAreaSearch) {
       url.searchParams.set('distance', prefDistance);
       anyChanges = true;
     }

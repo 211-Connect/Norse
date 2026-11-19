@@ -16,6 +16,7 @@ import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import type { Configuration } from '@vercel/otel';
 
 import { countActiveResources } from '@/lib/telemetry/active-resources';
+import { norseDeployment } from '@/lib/telemetry/deployment';
 import { norseMeter } from '@/lib/telemetry/meter';
 
 import packageJson from '../package.json';
@@ -71,18 +72,7 @@ export type ResourceAttributeInput = {
   packageVersion: string;
 };
 
-/**
- * Which App Platform app this process belongs to: the multi-tenant apps or
- * MBOA's. Both run the same services (`norse-app`, `norse-cms`) under the
- * same names, so this is what tells them apart. Unset means `multi-tenant`;
- * an unusable value is reported as `unknown` (it becomes a Prometheus and
- * Loki label, so it must stay a short slug).
- */
-export function norseDeployment(raw: string | undefined): string {
-  const value = raw?.trim().toLowerCase();
-  if (!value) return 'multi-tenant';
-  return /^[a-z0-9][a-z0-9-]{0,31}$/.test(value) ? value : 'unknown';
-}
+export { norseDeployment };
 
 /**
  * Resource attributes shared by traces, metrics and logs. Derived once per

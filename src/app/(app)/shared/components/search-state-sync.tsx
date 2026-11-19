@@ -9,7 +9,9 @@ import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
+  USER_PREF_REGION_ID,
 } from '../lib/constants';
+import { isRegionId } from '@/types/areaSearch';
 import { validateCoordsString } from '../lib/validators';
 import { DEFAULT_SEARCH_STATE, SearchState, searchAtom } from '../store/search';
 
@@ -21,6 +23,8 @@ export interface PageSearchState {
   location?: string;
   /** Comma-separated `lng,lat`. */
   coords?: string;
+  /** The area searched, when the location is one (docs/area-search.md). */
+  region?: string;
   distance?: string;
 }
 
@@ -52,6 +56,8 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
   const urlCoords = search?.coords ?? '';
   const cookieCoords = cookies[USER_PREF_COORDS] ?? '';
   const cookieLocation = cookies[USER_PREF_LOCATION] ?? '';
+  const urlRegion = search?.region ?? '';
+  const cookieRegion = cookies[USER_PREF_REGION_ID] ?? '';
   const distance =
     search?.distance?.trim() ||
     cookies[USER_PREF_DISTANCE]?.trim() ||
@@ -61,6 +67,13 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
   const location = urlLocation
     ? decodeURIComponent(urlLocation)
     : cookieLocation;
+
+  // The region belongs to the location it came with: the URL's, else the saved one.
+  const region = urlLocation
+    ? urlRegion
+    : isRegionId(cookieRegion)
+      ? cookieRegion
+      : '';
 
   const coords = urlCoords
     ? decodeURIComponent(urlCoords)
@@ -84,8 +97,13 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
       setCookie(USER_PREF_LOCATION, decodeURIComponent(urlLocation), {
         path: '/',
       });
+      if (urlRegion) {
+        setCookie(USER_PREF_REGION_ID, urlRegion, { path: '/' });
+      } else {
+        deleteCookie(USER_PREF_REGION_ID, { path: '/' });
+      }
     }
-  }, [urlLocation]);
+  }, [urlLocation, urlRegion]);
 
   const atomValues = useMemo(
     () =>
@@ -102,10 +120,11 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
             searchLocation: location,
             prevSearchLocation: location,
             searchCoordinates: coords ? parseCoords(coords) : [],
+            searchRegion: region,
           } satisfies SearchState,
         ],
       ] as const,
-    [coords, distance, location, query, queryLabel, queryType],
+    [coords, distance, location, query, queryLabel, queryType, region],
   );
 
   useHydrateAndSyncAtoms(atomValues);

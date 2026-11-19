@@ -6,12 +6,6 @@ import { cache } from 'react';
 import { resourceApiClient } from '@/lib/api/clients';
 import type { TransformedResourceOpenApiDto } from '@/lib/api/generated/data-contracts';
 import type { Resource, ServiceArea } from '@/types/resource';
-import {
-  CacheKey,
-  ONE_HOUR,
-  stableHash,
-  withCache,
-} from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 import { getApiHeaders } from '@/lib/api';
 
@@ -135,38 +129,35 @@ async function fetchResourcesIndividually(
   );
 }
 
+/**
+ * Not cached in memory or Redis: a resource detail page is mostly a one-off
+ * visit (each bot crawl hits a different id), so a cache costs Redis memory
+ * and a round trip on nearly every request for almost no hits
+ * (docs/caching.md). React `cache()` below still dedupes the page and its
+ * `generateMetadata` within one request.
+ */
 async function fetchAndTransformResourceOrigin(
   id: string,
   locale: string,
   tenantId: string,
   originalId: boolean,
 ): Promise<Resource | null> {
-  const cacheKey: CacheKey = originalId
-    ? `resource:${tenantId}:original:${id}:${locale}`
-    : `resource:${tenantId}:${id}:${locale}`;
+  const args = {
+    id,
+    locale,
+    tenant_id: tenantId,
+  } as const;
+  const headers = await getApiHeaders(tenantId, locale);
 
-  return await withCache(
-    cacheKey,
-    async () => {
-      const args = {
-        id,
-        locale,
-        tenant_id: tenantId,
-      } as const;
-      const headers = await getApiHeaders(tenantId, locale);
+  const response = await (originalId
+    ? resourceApiClient.resourceControllerGetResourceByOriginalId(args, {
+        headers,
+      })
+    : resourceApiClient.resourceControllerGetResourceById(args, {
+        headers,
+      }));
 
-      const response = await (originalId
-        ? resourceApiClient.resourceControllerGetResourceByOriginalId(args, {
-            headers,
-          })
-        : resourceApiClient.resourceControllerGetResourceById(args, {
-            headers,
-          }));
-
-      return transformApiResource(response.data);
-    },
-    { memory: false, redis: true, ttl: ONE_HOUR },
-  );
+  return transformApiResource(response.data);
 }
 
 // Primitive arguments only: React `cache()` compares arguments by identity, so
@@ -174,42 +165,31 @@ async function fetchAndTransformResourceOrigin(
 // by a page and its `generateMetadata` within one request.
 const fetchAndTransformResource = cache(fetchAndTransformResourceOrigin);
 
-async function fetchAndTransformResourcesBatchOrigin(
+/** Not cached, like a single resource (docs/caching.md). */
+async function fetchAndTransformResourcesBatch(
   ids: string[],
-  options: { locale: string; tenantId: string; cacheKey: CacheKey },
-): Promise<Record<string, Resource> | null> {
-  return await withCache(
-    options.cacheKey,
-    async () => {
-      const response =
-        await resourceApiClient.resourceControllerGetResourcesBatch(
-          { locale: options.locale, tenant_id: options.tenantId },
-          { ids },
-          {
-            headers: await getApiHeaders(options.tenantId, options.locale),
-          },
-        );
+  locale: string,
+  tenantId: string,
+): Promise<Record<string, Resource>> {
+  const response = await resourceApiClient.resourceControllerGetResourcesBatch(
+    { locale, tenant_id: tenantId },
+    { ids },
+    { headers: await getApiHeaders(tenantId, locale) },
+  );
 
-      const data = response.data;
+  const data = response.data;
 
-      if (!data?.data) {
-        return {};
-      }
+  if (!data?.data) {
+    return {};
+  }
 
-      return Object.fromEntries(
-        Object.entries(data.data).map(([id, resource]) => [
-          id,
-          transformApiResource(resource),
-        ]),
-      );
-    },
-    { memory: false, redis: true, ttl: ONE_HOUR },
+  return Object.fromEntries(
+    Object.entries(data.data).map(([id, resource]) => [
+      id,
+      transformApiResource(resource),
+    ]),
   );
 }
-
-const fetchAndTransformResourcesBatch = cache(
-  fetchAndTransformResourcesBatchOrigin,
-);
 
 export async function getResource(
   id: string,
@@ -241,11 +221,7 @@ export async function getResources(
 
   const settledChunks = await Promise.allSettled(
     chunks.map((chunk) =>
-      fetchAndTransformResourcesBatch(chunk, {
-        locale,
-        tenantId: tenantId,
-        cacheKey: `resource_batch:${tenantId}:${locale}:${stableHash(chunk)}`,
-      }),
+      fetchAndTransformResourcesBatch(chunk, locale, tenantId),
     ),
   );
 

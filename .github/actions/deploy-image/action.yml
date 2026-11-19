@@ -33,15 +33,16 @@ inputs:
   umami-script-url:
     required: false
     default: ''
+  arcjet-script-url:
+    description: Arcjet signals script URL baked into the public app build
+    required: false
+    default: ''
   allow-search-engines:
     required: true
   custom-base-path:
     required: false
     default: ''
   trailing-slashes:
-    required: false
-    default: ''
-  advanced-geospatial-filtering:
     required: false
     default: ''
 
@@ -111,10 +112,10 @@ runs:
           NEXT_PUBLIC_MAPBOX_STYLE_URL=${{ inputs.mapbox-style-url }}
           NEXT_PUBLIC_MAPLIBRE_STYLE_URL=${{ inputs.maplibre-style-url }}
           NEXT_PUBLIC_UMAMI_SCRIPT_URL=${{ inputs.umami-script-url }}
+          NEXT_PUBLIC_ARCJET_SCRIPT_URL=${{ inputs.arcjet-script-url }}
           NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=${{ inputs.allow-search-engines }}
           NEXT_PUBLIC_CUSTOM_BASE_PATH=${{ inputs.custom-base-path }}
           NEXT_PUBLIC_WITH_TRAILING_SLASHES=${{ inputs.trailing-slashes }}
-          NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG=${{ inputs.advanced-geospatial-filtering }}
         cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
         cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache-new,mode=max
 

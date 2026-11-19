@@ -300,10 +300,7 @@ export const search: Tab = {
           ],
           admin: {
             description:
-              'Choose how pinned/priority resources are handled for hybrid and AI classification search engines. Ignore drops pinned status; Boost adds a score contribution; Top hard-sorts pinned resources to the top of results.',
-            condition: (_, siblingData) =>
-              siblingData?.searchEngine === 'hybrid' ||
-              siblingData?.searchEngine === 'ai_classification',
+              'How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
@@ -360,6 +357,66 @@ export const search: Tab = {
           },
           name: 'defaultRadius',
           type: 'number',
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
+          name: 'areaMatchMode',
+          type: 'select',
+          dbName: 'area_match',
+          label: 'Area search: which resources to list',
+          defaultValue: 'located_or_serving',
+          options: [
+            {
+              label: 'Only resources with an address in the area',
+              value: 'located',
+            },
+            {
+              label:
+                'Resources with an address in the area, plus resources without an address that serve it',
+              value: 'located_or_serving',
+            },
+            {
+              label:
+                'Every resource that serves the area, wherever its address is',
+              value: 'serving',
+            },
+          ],
+          admin: {
+            description:
+              'Used when a visitor picks a state, county, city or ZIP code; picking an address still searches a radius around it. A resource "serves" the area when its service area overlaps any part of it. Resources without an address are virtual services, hotlines and PO boxes. The last option also lists resources based elsewhere, such as a statewide hotline with an office in another county.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
+          name: 'unlocatedInAreaSearch',
+          type: 'select',
+          dbName: 'unlocated',
+          label: 'Area search: resources with no address and no service area',
+          defaultValue: 'virtual',
+          options: [
+            {
+              label: 'Leave them out',
+              value: 'none',
+            },
+            {
+              label: 'List virtual services only',
+              value: 'virtual',
+            },
+            {
+              label: 'List all of them',
+              value: 'all',
+            },
+          ],
+          admin: {
+            description:
+              'They cannot be placed in any area, so each one is listed in every area search or in none. A virtual service with no service area usually serves everyone. "All" also lists physical services that are missing their address.',
+          },
           access: {
             create: superAdminOrSupportOrTenantAccess,
             update: superAdminOrSupportOrTenantAccess,

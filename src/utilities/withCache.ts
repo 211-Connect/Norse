@@ -13,11 +13,9 @@ const FIFTEEN_MINUTES: Seconds = 15 * ONE_MINUTE;
 export const ONE_HOUR: Seconds = 60 * ONE_MINUTE;
 export const ONE_DAY: Seconds = 24 * ONE_HOUR;
 export const ONE_MONTH: Seconds = 30 * ONE_DAY;
-const MAX_CACHE_ENTRIES = 1000;
 
 type Domain = string;
 type Locale = string;
-type ResourceId = string;
 type TenantId = string;
 type Hash = string;
 
@@ -31,8 +29,7 @@ export type CacheKey =
   | `search_pins:${TenantId}:${Locale}:${Hash}`
   | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
-  | `resource:${TenantId}:${ResourceId}:${Locale}`
-  | `resource_batch:${TenantId}:${Locale}:${Hash}`
+  | `region_area:${string}`
   | `search_config:${TenantId}:${Locale}`
   | `search_suggestions:${TenantId}:${Locale}:${Hash}`
   | `orchestration_config:${TenantId}`;
@@ -49,15 +46,110 @@ const DEFAULT_CACHE_CONFIG: CacheConfig = {
   ttl: FIFTEEN_MINUTES,
 };
 
-const memoryCache = new LRUCache<CacheKey, string>({
-  max: MAX_CACHE_ENTRIES,
-  ttl: ONE_MINUTE * 1000, // it's not possible to invalidate memory cache for all instances so use shorter TTL to limit stale data
-  noUpdateTTL: true, // only reset TTL on set, not on get/has, to avoid keeping stale data indefinitely in a long-running instance
-});
+/** The part of a key before the first `:`, e.g. `search_results`. */
+export type CacheFeature = CacheKey extends `${infer Feature}:${string}`
+  ? Feature
+  : never;
 
-export const clearMemoryCache = () => {
-  memoryCache.clear();
+type MemoryLimit = {
+  /** Most entries kept. */
+  maxEntries: number;
+  /** Most bytes kept, counted as the length of the serialized value. */
+  maxBytes: number;
+  /** How long a value stays in memory; default `MEMORY_TTL_SECONDS`. */
+  ttlSeconds?: Seconds;
 };
+
+const MB = 1024 * 1024;
+
+/**
+ * One in-memory LRU per feature, each with its own entry and size budget,
+ * so a burst of one kind of value (e.g. search results) can never evict
+ * another (e.g. tenant configs), and big values (area shapes) can't grow the
+ * heap without bound. Worst case for all of them together: about 120 MB per
+ * instance. A feature not listed gets `DEFAULT_MEMORY_LIMIT`.
+ */
+export const MEMORY_CACHE_LIMITS: Partial<Record<CacheFeature, MemoryLimit>> = {
+  tenant: { maxEntries: 256, maxBytes: 16 * MB },
+  tenant_basic_config: { maxEntries: 256, maxBytes: 4 * MB },
+  resource_directory: { maxEntries: 256, maxBytes: 16 * MB },
+  app_config: { maxEntries: 256, maxBytes: 16 * MB },
+  search_config: { maxEntries: 256, maxBytes: 16 * MB },
+  search_suggestions: { maxEntries: 1024, maxBytes: 64 * MB },
+  // Only common searches (docs/caching.md), one page of results each. They
+  // change only when the directory's data does, so they stay 15 minutes.
+  search_results: {
+    maxEntries: 4096,
+    maxBytes: 128 * MB,
+    ttlSeconds: FIFTEEN_MINUTES,
+  },
+  region_area: { maxEntries: 2048, maxBytes: 64 * MB },
+};
+
+const DEFAULT_MEMORY_LIMIT: MemoryLimit = { maxEntries: 500, maxBytes: 4 * MB };
+
+/**
+ * It's not possible to invalidate the memory cache on all instances, so by
+ * default it keeps values for a short time to limit stale data.
+ */
+const MEMORY_TTL_SECONDS: Seconds = ONE_MINUTE;
+
+const memoryCaches = new Map<string, LRUCache<CacheKey, string>>();
+
+function createMemoryCache({
+  maxEntries,
+  maxBytes,
+  ttlSeconds = MEMORY_TTL_SECONDS,
+}: MemoryLimit): LRUCache<CacheKey, string> {
+  return new LRUCache<CacheKey, string>({
+    max: maxEntries,
+    maxSize: maxBytes,
+    // A single value may use at most a quarter of its feature's budget, so
+    // one huge value can't flush everything else; a bigger one isn't kept.
+    maxEntrySize: Math.max(1, Math.floor(maxBytes / 4)),
+    sizeCalculation: (value) => Math.max(1, value.length),
+    ttl: ttlSeconds * 1000,
+    // Only reset the TTL on set, not on get/has, so a long-running instance
+    // never keeps stale data indefinitely.
+    noUpdateTTL: true,
+  });
+}
+
+export function cacheFeatureOf(key: CacheKey): string {
+  const separator = key.indexOf(':');
+  return separator === -1 ? key : key.slice(0, separator);
+}
+
+/** The memory cache of the feature `key` belongs to, created on first use. */
+function memoryCacheFor(key: CacheKey): LRUCache<CacheKey, string> {
+  const feature = cacheFeatureOf(key);
+  let cache = memoryCaches.get(feature);
+  if (!cache) {
+    cache = createMemoryCache(
+      MEMORY_CACHE_LIMITS[feature as CacheFeature] ?? DEFAULT_MEMORY_LIMIT,
+    );
+    memoryCaches.set(feature, cache);
+  }
+  return cache;
+}
+
+/** Clears every feature's memory cache on this instance. */
+export const clearMemoryCache = () => {
+  for (const cache of memoryCaches.values()) cache.clear();
+};
+
+/** Entries and bytes per feature on this instance (tests, diagnostics). */
+export function memoryCacheStats(): Record<
+  string,
+  { entries: number; bytes: number }
+> {
+  return Object.fromEntries(
+    [...memoryCaches].map(([feature, cache]) => [
+      feature,
+      { entries: cache.size, bytes: cache.calculatedSize },
+    ]),
+  );
+}
 
 /**
  * Upper bound on how long concurrent misses wait on one shared fetch. Past
@@ -97,7 +189,7 @@ export const withCache = async <T>(
 
   if (memory) {
     try {
-      const memCachedValue = memoryCache.get(key);
+      const memCachedValue = memoryCacheFor(key).get(key);
       if (memCachedValue !== undefined) {
         try {
           const parsed = JSON.parse(memCachedValue);
@@ -108,7 +200,7 @@ export const withCache = async <T>(
             { err: parseError, key },
             'Failed to parse memory cached value; evicting key',
           );
-          memoryCache.delete(key);
+          memoryCacheFor(key).delete(key);
         }
       }
     } catch (error) {
@@ -124,7 +216,7 @@ export const withCache = async <T>(
           const parsed = JSON.parse(cachedValue);
           if (memory) {
             try {
-              memoryCache.set(key, cachedValue);
+              memoryCacheFor(key).set(key, cachedValue);
             } catch (error) {
               log.error({ err: error, key }, 'Error writing to memory cache');
             }
@@ -169,7 +261,7 @@ export const withCache = async <T>(
 
       if (memory) {
         try {
-          memoryCache.set(key, serialized);
+          memoryCacheFor(key).set(key, serialized);
         } catch (error) {
           log.error({ err: error, key }, 'Error writing to memory cache');
         }
@@ -215,6 +307,3 @@ export function stableHash(value: unknown): string {
     return randomUUID();
   }
 }
-
-// Export memory cache instance for manual invalidation if needed
-export { memoryCache };

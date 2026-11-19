@@ -2,7 +2,7 @@ import { API_URL } from '@/app/(app)/shared/lib/constants';
 import { instrumentedApiFetch } from '@/lib/telemetry/api-fetch';
 
 import { Analytics } from './generated/Analytics';
-import { BlockedTrafficInternal } from './generated/BlockedTrafficInternal';
+import { CrawlerTrafficInternal } from './generated/CrawlerTrafficInternal';
 import { FavoriteList } from './generated/FavoriteList';
 import { Favorite } from './generated/Favorite';
 import { Geocoding } from './generated/Geocoding';
@@ -10,6 +10,7 @@ import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { PrintableDirectoryDeliveries } from './generated/PrintableDirectoryDeliveries';
 import { PrintableDirectoryDeliveriesInternal } from './generated/PrintableDirectoryDeliveriesInternal';
+import { Region } from './generated/Region';
 import { Resource } from './generated/Resource';
 import { Search } from './generated/Search';
 import { ShortUrl } from './generated/ShortUrl';
@@ -33,8 +34,8 @@ const clientArgs = (clientName: string) => ({
 
 export const analyticsApiClient = new Analytics(clientArgs('analytics'));
 
-export const blockedTrafficInternalApiClient = new BlockedTrafficInternal(
-  clientArgs('blocked-traffic-internal'),
+export const crawlerTrafficInternalApiClient = new CrawlerTrafficInternal(
+  clientArgs('crawler-traffic-internal'),
 );
 
 export const searchApiClient = new Search(clientArgs('search'));
@@ -69,6 +70,8 @@ export const favoriteListApiClient = new FavoriteList(
 );
 
 export const favoriteApiClient = new Favorite(clientArgs('favorite'));
+
+export const regionApiClient = new Region(clientArgs('region'));
 
 export const resourceApiClient = new Resource(clientArgs('resource'));
 

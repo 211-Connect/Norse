@@ -24,6 +24,15 @@ import { keepLocaleCookieForDocumentNavigations } from './middlewares/localeCook
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_MINUTE } from './utilities/withCache';
 import { trackDependency } from './lib/telemetry/dependency';
+import { minuteLimitResponse } from './lib/load-shed/minute-limit';
+import { rememberTenant } from './lib/load-shed/tenant-registry';
+import { recordPageRequest } from './lib/telemetry/arcjet';
+import {
+  ARCJET_SIGNALS_CSP,
+  clientHeaderNamesOf,
+  routeOfPath,
+  setClientRequestHeaders,
+} from './lib/arcjet/request';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
@@ -381,6 +390,9 @@ export async function proxy(request: NextRequest) {
 
   addRootSpanExtras(request);
 
+  // The client's own header names, before this proxy changes anything.
+  const clientHeaderNames = clientHeaderNamesOf(request.headers);
+
   const trapped = crawlTrapMiddleware(request);
   if (trapped) return trapped;
 
@@ -525,6 +537,27 @@ export async function proxy(request: NextRequest) {
     locales.push(defaultLocale);
   }
 
+  // Per-tenant load limit (docs/load-shedding.md): before anything renders.
+  const tenantId = tenantConfig?.tenantId ?? undefined;
+  if (tenantId) {
+    rememberTenant(host, {
+      tenantId,
+      name: tenantConfig?.name ?? undefined,
+    });
+  }
+  const shed = await minuteLimitResponse(
+    {
+      method: request.method,
+      pathname: request.nextUrl.pathname,
+      host,
+      rsc:
+        request.headers.get('rsc') === '1' ||
+        request.nextUrl.searchParams.has('_rsc'),
+    },
+    tenantId,
+  );
+  if (shed) return shed;
+
   const rdwrIp = request.headers.get('x-rdwr-ip');
   if (rdwrIp) {
     const existingXff = request.headers.get('x-forwarded-for');
@@ -540,6 +573,16 @@ export async function proxy(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   const { pathname } = url;
+
+  // Always overwritten, so a client can't forge them (lib/arcjet/request.ts).
+  const returning = request.cookies.has(SESSION_ID);
+  setClientRequestHeaders(request.headers, {
+    method: request.method,
+    clientHeaderNames,
+    returning,
+    search: request.nextUrl.search,
+  });
+  recordPageRequest(host, routeOfPath(pathname), returning);
 
   if (
     tenantConfig?.auth?.requiresLogin &&
@@ -616,16 +659,20 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL,
   );
 
+  const arcjetScriptOrigin = getOriginFromUrl(
+    process.env.NEXT_PUBLIC_ARCJET_SCRIPT_URL,
+  );
+
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com ${umamiScriptOrigin ?? ''} ${isProduction ? "'strict-dynamic'" : "'unsafe-eval' 'unsafe-inline'"};
+    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com ${arcjetScriptOrigin ?? ''} ${ARCJET_SIGNALS_CSP.scriptSrc.join(' ')} ${umamiScriptOrigin ?? ''} ${isProduction ? "'strict-dynamic'" : "'unsafe-eval' 'unsafe-inline'"};
     style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com;
     img-src 'self' blob: data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cdn.c211.io *.digitaloceanspaces.com *.feathr.co www.googletagmanager.com;
     font-src 'self' data: https://fonts.gstatic.com;
-    connect-src 'self' data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${umamiScriptOrigin ?? ''} ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
+    connect-src 'self' data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${arcjetScriptOrigin ?? ''} ${ARCJET_SIGNALS_CSP.connectSrc.join(' ')} ${umamiScriptOrigin ?? ''} ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
     worker-src 'self' blob:;
     child-src 'self' blob:;
-    frame-src 'self' blob:;
+    frame-src 'self' blob: ${arcjetScriptOrigin ?? ''} ${ARCJET_SIGNALS_CSP.frameSrc.join(' ')};
     object-src 'none';
     base-uri 'self';
     form-action 'self';

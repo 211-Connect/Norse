@@ -45,7 +45,7 @@ export const OPERATIONS = {
     'short_url',
     'taxonomy_scorecard',
     'tenant_config',
-    'blocked_traffic',
+    'crawler_traffic',
     'analytics',
     'cms_config',
     'other',

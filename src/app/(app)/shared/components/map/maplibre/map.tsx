@@ -23,6 +23,8 @@ import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { MapErrorFallback } from '../map-error-fallback';
 import {
   MarkerDef,
+  SEARCH_AREA_COLOR,
+  SEARCH_AREA_FILL_OPACITY,
   ServiceAreaGeoJSON,
   getBoundsFromServiceArea,
   getCoreExtent,
@@ -34,8 +36,11 @@ import {
 } from '../map-shared';
 import {
   bindPointEvents,
+  describeShownPoints,
+  getLowestPointsLayerId,
   removePointsLayer,
   setPointsData,
+  setSelectedPlace,
 } from './points-layer';
 
 const log = createLogger('maplibre');
@@ -112,7 +117,13 @@ type MapProps = {
   disableUserLocation?: boolean;
   serviceArea?: ServiceAreaGeoJSON;
   points?: MarkerDef[];
+  /** Outline of the area the search is filtered to: drawn under the results, and the view fits it. */
+  searchArea?: ServiceAreaGeoJSON;
 };
+
+const SEARCH_AREA_SOURCE_ID = 'search-area';
+const SEARCH_AREA_FILL_ID = 'search-area-fill';
+const SEARCH_AREA_OUTLINE_ID = 'search-area-outline';
 
 // Allows maplibre to load pmtiles from a single hosted file
 // https://docs.protomaps.com/pmtiles/maplibre
@@ -127,6 +138,7 @@ export function Map({
   disableUserLocation,
   serviceArea,
   points,
+  searchArea,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapLibreMap = useRef<any>(null);
@@ -141,6 +153,8 @@ export function Map({
   // the map by then keeps their view.
   const lastMarkersKeyRef = useRef<string | null>(null);
   const userInteractedRef = useRef(false);
+  // With an area, the area frames the view, not the results.
+  const hasSearchAreaRef = useRef(Boolean(searchArea));
 
   const [activePopup, setActivePopup] = useState<{
     element: HTMLElement;
@@ -152,6 +166,11 @@ export function Map({
   } | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+
+  // Declared before the markers' effect, which reads it in the same commit.
+  useEffect(() => {
+    hasSearchAreaRef.current = Boolean(searchArea);
+  }, [searchArea]);
 
   const patchAttributionToggleAccessibility = () => {
     const attributionToggle = mapContainer.current?.querySelector<HTMLElement>(
@@ -210,6 +229,19 @@ export function Map({
       });
 
       mapLibreMap.current.once('load', () => setIsMapLoaded(true));
+
+      // For e2e tests, which can't see into the canvas: the zoom, the circles
+      // in view and the counts shown, each time the map settles.
+      const map = mapLibreMap.current;
+      map.on('idle', () => {
+        const element = mapContainer.current;
+        if (!element || !map.style) return;
+
+        const { places, counts } = describeShownPoints(map);
+        element.dataset.zoom = map.getZoom().toFixed(2);
+        element.dataset.shownPlaces = String(places);
+        element.dataset.shownCounts = String(counts);
+      });
 
       mapLibreMap.current.on('error', (e: any) => {
         log.error({ err: e.error ?? e }, 'MapLibre error');
@@ -270,6 +302,9 @@ export function Map({
     }).setDOMContent(popupDiv);
 
     popup.on('open', () => {
+      if (mapLibreMap.current && isValidCoordinate(m.coordinates)) {
+        setSelectedPlace(mapLibreMap.current, toPlaceKey(m.coordinates!));
+      }
       setActivePopup({
         element: popupDiv,
         popup: getPopupContent(m),
@@ -317,6 +352,7 @@ export function Map({
     });
 
     popup.on('close', () => {
+      if (mapLibreMap.current) setSelectedPlace(mapLibreMap.current, null);
       setActivePopup(null);
       if (restoreFocusOnCloseRef.current) {
         requestAnimationFrame(restoreFocus);
@@ -364,6 +400,10 @@ export function Map({
           markerElement.setAttribute('aria-disabled', 'true');
         }
         markerElement.classList.add('custom-marker');
+        if (points) {
+          markerElement.dataset.testid = 'map-point';
+          markerElement.dataset.resources = String(m.count ?? 1);
+        }
         markerElement.addEventListener('click', () => {
           // Built on first use. MapLibre's click handler on the map runs after
           // this one, as the event bubbles, and opens it.
@@ -455,7 +495,7 @@ export function Map({
       userInteractedRef.current;
     lastMarkersKeyRef.current = markersKey;
 
-    if (isSameSet || keepsUserView) return;
+    if (isSameSet || keepsUserView || hasSearchAreaRef.current) return;
 
     const fittedCount = _markers.current.length + (points?.length ?? 0);
 
@@ -538,6 +578,77 @@ export function Map({
         .addTo(map);
     });
   }, [center, zoom]);
+
+  useEffect(() => {
+    const map: maplibregl.Map | null = mapLibreMap.current;
+    if (!map || !isMapLoaded) return;
+
+    const cleanup = () => {
+      mapContainer.current?.removeAttribute('data-search-area');
+      try {
+        if (map.getLayer(SEARCH_AREA_FILL_ID))
+          map.removeLayer(SEARCH_AREA_FILL_ID);
+        if (map.getLayer(SEARCH_AREA_OUTLINE_ID))
+          map.removeLayer(SEARCH_AREA_OUTLINE_ID);
+        if (map.getSource(SEARCH_AREA_SOURCE_ID))
+          map.removeSource(SEARCH_AREA_SOURCE_ID);
+      } catch {
+        // The map may already be gone.
+      }
+    };
+
+    cleanup();
+    if (!searchArea) return;
+
+    const normalized = normalizeServiceArea(structuredClone(searchArea));
+    if (!normalized) return;
+
+    try {
+      map.addSource(SEARCH_AREA_SOURCE_ID, {
+        type: 'geojson',
+        data: { type: 'Feature', geometry: normalized as any, properties: {} },
+      });
+      // Under the result circles, so the area never hides a result.
+      const beforeId = getLowestPointsLayerId(map);
+      map.addLayer(
+        {
+          id: SEARCH_AREA_FILL_ID,
+          type: 'fill',
+          source: SEARCH_AREA_SOURCE_ID,
+          paint: {
+            'fill-color': SEARCH_AREA_COLOR,
+            'fill-opacity': SEARCH_AREA_FILL_OPACITY,
+          },
+        },
+        beforeId,
+      );
+      map.addLayer(
+        {
+          id: SEARCH_AREA_OUTLINE_ID,
+          type: 'line',
+          source: SEARCH_AREA_SOURCE_ID,
+          paint: {
+            'line-color': SEARCH_AREA_COLOR,
+            'line-width': 2,
+            'line-opacity': 0.8,
+          },
+        },
+        beforeId,
+      );
+
+      const bounds = getBoundsFromServiceArea(normalized);
+      if (bounds) {
+        userInteractedRef.current = false;
+        map.fitBounds(bounds, { padding: 40, animate: false });
+      }
+      // The canvas has no DOM: tests read that the outline is drawn here.
+      mapContainer.current?.setAttribute('data-search-area', 'shown');
+    } catch (err) {
+      log.warn({ err }, 'Failed to draw the search area');
+    }
+
+    return cleanup;
+  }, [searchArea, isMapLoaded]);
 
   // The map component displays a service area polygon when there are no valid markers.
   // normalizeServiceArea: Ensures all polygon rings are closed and supports Polygon, MultiPolygon, and GeometryCollection types. It modifies the geometry so it is valid for rendering.
@@ -643,7 +754,11 @@ export function Map({
         <MapErrorFallback error={mapError} />
       ) : (
         <>
-          <div ref={mapContainer} className="size-full"></div>
+          <div
+            ref={mapContainer}
+            data-testid="search-map"
+            className="size-full"
+          ></div>
           {activePopup &&
             createPortal(
               <div

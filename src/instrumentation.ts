@@ -226,6 +226,17 @@ export async function register(
 ) {
   const setupErrors: TelemetrySetupError[] = [];
 
+  // Per-tenant concurrency limit (docs/load-shedding.md). Before telemetry,
+  // which may return early; only processes that serve the public app.
+  if (process.env.NEXT_RUNTIME === 'nodejs' && getNorseRole() !== 'cms') {
+    try {
+      const { installLoadShedHook } = await import('@/lib/load-shed/http-hook');
+      installLoadShedHook();
+    } catch (error) {
+      setupErrors.push({ signal: 'register', error });
+    }
+  }
+
   try {
     const endpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
     if (!endpoint) {
@@ -317,6 +328,11 @@ export async function register(
         const { registerActiveResourcesGauge } =
           await import('./instrumentation.node');
         registerActiveResourcesGauge();
+        // Reads the per-process burst state the pages write (globalThis).
+        const { registerBurstGauge } = await import('@/lib/telemetry/arcjet');
+        const { decisionLogState } =
+          await import('@/lib/arcjet/decision-sampling');
+        registerBurstGauge(() => decisionLogState().burst.knownHosts());
       } catch (error) {
         setupErrors.push({ signal: 'metrics', error });
       }

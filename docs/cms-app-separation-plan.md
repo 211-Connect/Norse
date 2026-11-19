@@ -132,7 +132,7 @@ with `isCmsRemote()`:
 
 | Bridge function (`@/lib/cms/...`)                  | Used by                                                                                                                   | CMS side                                          |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `tenants` `getTenantByHost`                        | `getServerSession`, `api/auth/[...nextauth]`, `api/auth/keycloak-logout`, share and favorites pages, `robots.ts`, `lib/blocked-traffic.ts` | `findTenantByHost`                                |
+| `tenants` `getTenantByHost`                        | `getServerSession`, `api/auth/[...nextauth]`, `api/auth/keycloak-logout`, share and favorites pages, `robots.ts`, `lib/crawler-traffic.ts` | `findTenantByHost`                                |
 | `tenants` `getTenantById`                          | `api/share/[tenantId]`, `lib/api/getTenantApiKey.ts` (the Norse API key is a tenant field)                               | `findTenantById`                                  |
 | `tenants` `getTenantByRealmId`                     | `api/keycloak/domain-check` (served by both apps)                                                                         | `findTenantByRealmId`                             |
 | `getAppConfig` in `shared/utils/appConfig.ts`      | every page                                                                                                                | `buildAppConfig` (`shared/utils/buildAppConfig.ts`) |

@@ -30,6 +30,8 @@ import {
 } from '@/app/(app)/shared/components/ui/select';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { LocationSearchBar } from '@/app/(app)/shared/components/search/location-search-bar';
+import { type AreaMatch } from '@/types/areaSearch';
+import { AreaMatchSelect } from './area-match-select';
 import { useSearchSuggestions } from '@/app/(app)/shared/hooks/api/use-search-suggestions';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useDebounce } from '@/app/(app)/shared/hooks/use-debounce';
@@ -89,6 +91,8 @@ export function CreateDirectoryWizard({
   );
   const [locationName, setLocationName] = useState('');
   const [coordinates, setCoordinates] = useState<number[] | null>(null);
+  const [regionId, setRegionId] = useState<string | null>(null);
+  const [areaMatch, setAreaMatch] = useState<AreaMatch | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -231,6 +235,8 @@ export function CreateDirectoryWizard({
             coords: coordinates
               ? { latitude: coordinates[1], longitude: coordinates[0] }
               : undefined,
+            // An area is searched as its shape (docs/area-search.md).
+            ...(regionId ? { regionId, areaMatch } : {}),
           }
         : undefined;
 
@@ -508,15 +514,28 @@ export function CreateDirectoryWizard({
                   showIcon={false}
                   placeholder=""
                   initialValue={locationName}
-                  onLocationChange={(location, nextCoordinates) => {
+                  onLocationChange={(
+                    location,
+                    nextCoordinates,
+                    nextRegionId,
+                  ) => {
                     setLocationName(location);
                     setCoordinates(nextCoordinates);
+                    setRegionId(nextRegionId);
                   }}
                 />
                 <p className="text-muted-foreground text-xs">
                   {t('wizard_location_help', { ns: 'page-directories' })}
                 </p>
               </div>
+
+              {regionId && (
+                <AreaMatchSelect
+                  id="wizard-area-match"
+                  value={areaMatch}
+                  onChange={setAreaMatch}
+                />
+              )}
             </div>
 
             {error && (

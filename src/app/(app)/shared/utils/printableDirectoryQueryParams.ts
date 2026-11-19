@@ -1,4 +1,5 @@
 import { SearchQueryApiDto } from '@/lib/api/generated/data-contracts';
+import { isRegionId } from '@/types/areaSearch';
 
 import type { QueryType } from '../lib/search-utils';
 import type { FindResourcesQuery } from '../services/search-service';
@@ -30,7 +31,10 @@ export function toQuerySourceParams(
   if (rawParams.coords) {
     params.coords = String(rawParams.coords);
 
-    if (rawParams.distance) {
+    // An area is searched as its shape, so it has no radius.
+    if (isRegionId(rawParams.region)) {
+      params.region = rawParams.region;
+    } else if (rawParams.distance) {
       params.distance = Number(rawParams.distance);
     }
 

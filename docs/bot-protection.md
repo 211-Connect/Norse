@@ -20,6 +20,7 @@ per-tenant setting, so the rollout does not depend on CMS changes.
 | `ARCJET_ENFORCED_HOSTS` | unset | Comma list of hosts, or `*` for all. Unset or empty: nothing is enforced (log-only everywhere). This is the kill switch. |
 | `ARCJET_UNENFORCED_HOSTS` | unset | Hosts never enforced, also under `*`. Wins over `ARCJET_ENFORCED_HOSTS`. |
 | `ARCJET_TIMEOUT_MS` | `500` | Decide API timeout. On timeout the request is served (fail open). |
+| `ARCJET_RATE_LIMIT_PER_MINUTE` | `60` | Requests one client IP may make to covered pages per sliding minute. `0` removes the rate-limit rule. |
 | `ARCJET_LOG_LEVEL` | `info` | SDK log level. `debug` only for a short diagnostic window. |
 
 Host matching uses the `host` header only, case-insensitive, without port or
@@ -44,10 +45,21 @@ page.tsx / generateMetadata
       ├ enforced:     await arcjetProtect → denied → forbidden() → 403 + forbidden.tsx
       └ not enforced: after(arcjetProtect)  (after the response; logs and counts only)
 
-arcjetProtect                    src/lib/arcjet/index.ts
-  ├ isMboaWithoutClientIp → ipSrc   client-ip.ts
-  ├ aj.protect(request)             rules.ts (detectBot LIVE, no-UA filter DRY_RUN)
-  └ logs                            redact.ts
+server action (print)
+  └ protectAction({ route: 'print', path })   same decision, method POST, route rules
+
+src/proxy.ts                      sets x-norse-req-method / -client-headers /
+                                  -client-returning / -query-keys (always overwritten)
+prepare(path, route)              buildArcjetRequest (request.ts): path, method,
+                                  client headers, aj_signals cookie only
+arcjet.protect span               src/lib/arcjet-page.ts
+  ├ BurstDetector.record(host)      decision-sampling.ts
+  ├ arcjetProtect                   src/lib/arcjet/index.ts
+  │   ├ isMboaWithoutClientIp → ipSrc   client-ip.ts
+  │   ├ arcjetClientFor: per-IP rate limit client, or none for MBOA ipSrc
+  │   └ client[.withRule(routeRules)].protect(request, { correlationId, metadata })
+  ├ span attributes, metrics        telemetry/arcjet.ts
+  └ arcjet_decision record          decision-record.ts → telemetry/arcjet-decision-log.ts (OTel Logs only)
 ```
 
 - **Where it runs.** `protectPage(path)` is awaited at the top of each page
@@ -60,23 +72,82 @@ arcjetProtect                    src/lib/arcjet/index.ts
 - **Only enforced hosts wait for Arcjet.** On an enforced host the page
   waits for the decision (up to `ARCJET_TIMEOUT_MS`) so it can answer `403`.
   On every other host a denial cannot change the response, so the decision
-  runs in `after()`, once the response is sent: it still logs
-  `arcjet_denied` and counts for the Blocked Bots widget, but adds no
+  runs in `after()`, once the response is sent: it still writes its
+  `arcjet_decision` record and the per-crawler counts, but adds no
   latency. Awaiting it everywhere, as v2.30.0 did, put up to 500 ms on every
   observe-only page view and held renders open under load.
 - **Covered routes:** `/[locale]/search`, `/[locale]/search/[id]`,
   `/[locale]/details/original/[original_id]`, and the route handler
-  `/api/search-pins` (through `isRouteDenied`, which answers a JSON `403`).
-  Server Actions and `/api/resource-titles` are not covered yet (follow-up
-  ticket).
+  `/api/search-pins` (through `isRouteDenied`, which answers a JSON `403`),
+  and the print server action `getPrintableDirectoryData` (through
+  `protectAction`, see "Print action" below). Other server actions and
+  `/api/resource-titles` are not covered yet (follow-up ticket).
 - **The 403 is real only before streaming.** Do not move the call below a
   `<Suspense>` boundary or into a segment with `loading.tsx`: the status
   becomes `200`. `forbidden()` needs `experimental.authInterrupts` in
   `next.config.js`.
-- **Rules** (`src/lib/arcjet/rules.ts`): `detectBot` in `LIVE` with the allow
-  list `ARCJET_ALLOWED_BOTS`, and a `filter` in `DRY_RUN` that denies
-  requests with no `User-Agent` (ISS-1744). AI training crawlers are denied
-  and also disallowed in `src/app/robotsRules.ts`; keep the two lists in agreement.
+- **Rules** (`src/lib/arcjet/rules.ts`). Base rules, on every route: the
+  per-IP `slidingWindow` in `LIVE` (below); `detectBot` in `LIVE` with the allow list `ARCJET_ALLOWED_BOTS`; a `filter`
+  in `DRY_RUN` that denies requests with no `User-Agent` (ISS-1744); a
+  `filter` in `DRY_RUN` on browsers from hosting networks
+  (`HOSTING_IP_FILTER`: `ip.src.hosting and not ip.src.crawler and not
+  ip.src.relay and len(http.request.headers["sec-fetch-mode"]) gt 0`,
+  recommended by Arcjet on 2026-11-18: about a third of production traffic
+  came from cloud and hosting networks, ~123k requests a day claiming to be a
+  browser, e.g. Zillion AS54801 with fully consistent browser headers). Before
+  promoting it to `LIVE`, read its dry-run matches: it would also block real
+  people on VPNs or cloud desktops, and any allowed bot that runs a real
+  browser from a cloud IP without being flagged a crawler (look for
+  `allowed_bots` on the matches). AI training crawlers are denied
+  and also disallowed in `src/app/robotsRules.ts`; keep the two lists in
+  agreement.
+- **Per-IP rate limit** (`slidingWindow`, `LIVE`): at most
+  `ARCJET_RATE_LIMIT_PER_MINUTE` (60) requests per client IP in any 60
+  seconds, keyed by Arcjet's default fingerprint (`ip.src`, resolved through
+  the proxies below). Counted by Arcjet's Decide API in the same call as the
+  bot check, so it adds no request. On an enforced host a client over the
+  limit gets the 403 (`reasonType` `RATE_LIMIT`), and the SDK caches the
+  denial locally for the TTL Arcjet returns, so its next requests are denied
+  without a call. On an observe-only host it is only logged.
+  There is no exemption for allowed crawlers: they spread their requests over
+  many IPs. It stops single-IP crawlers, not rotating residential proxies,
+  which change IP every few seconds. MBOA internal traffic (State
+  of Minnesota network behind the mn.gov proxy) is never rate limited: its
+  `ipSrc` is the proxy's private hop, shared by every State visitor, so it
+  goes through a second Arcjet client with the same bot rules and no rate
+  limit (`arcjetClientFor`). With no usable hop at all it skips Arcjet
+  entirely (`NO_CLIENT_IP`). MBOA visitors on the public internet have their
+  own IP and are limited like everyone else.
+- **Rules per route** (`routeRules(route)`, added with `withRule` on top of
+  either base client, one client per route built once):
+
+  | Route | Extra rules |
+  | --- | --- |
+  | `search`, `resource`, `details`, `pins` | none |
+  | `print` | `detectBot` `LIVE` allowing only `CATEGORY:SEARCH_ENGINE`, `CATEGORY:PREVIEW` (and `ARCJET_SIGNALS` while observed); `slidingWindow` `DRY_RUN`, 20 per 10 minutes per `norse_visitor` |
+
+  Arcjet rules carry no custom ID, so a dry-run match is read per route from
+  the record's `route` plus `dry_run_matches` (`ruleType`, `ruleId`). Promote
+  a `DRY_RUN` rule to `LIVE` only after reading those matches.
+- **Advanced Signals.** Set the repository Actions variable
+  `NEXT_PUBLIC_ARCJET_SCRIPT_URL` (the URL from the Arcjet dashboard, e.g.
+  `https://signals-cdn.arcjet.com/aj-sig.js`) for the **build** of both
+  DigitalOcean apps (multi-tenant and MBOA): it is inlined at build time. The
+  shared deploy workflow passes it only to the public-app image build, where
+  the Dockerfile bakes it into the Next.js bundle. Changing the variable alone
+  does not trigger a build; dispatch the development workflow or wait for the
+  next deployment. The CSP (`ARCJET_SIGNALS_CSP` in `src/lib/arcjet/request.ts`, used by
+  `src/proxy.ts`) allows
+  `https://signals-cdn.arcjet.com` and `'wasm-unsafe-eval'` in `script-src`,
+  `https://signals-cdn.arcjet.com` and `https://signals.arcjet.com` in
+  `connect-src`, and `https://signals-cdn.arcjet.com` in `frame-src`.
+  `detectBot` reads the `aj_signals` cookie and denies with `ARCJET_SIGNALS`
+  when the signals look automated (a missing cookie alone is not a denial).
+  `ARCJET_SIGNALS` is in `ARCJET_ALLOWED_BOTS` for now, so such requests show
+  in `allowed_bots` without being blocked; remove it once the data shows few
+  false positives. Coverage per host: `aj_signals_present` on
+  `norse_arcjet_decisions_total` and on the record. Ask Arcjet about the
+  data-retention and data-sent options before turning it on everywhere.
 - **Client IP** (`src/lib/arcjet/client-ip.ts`): the SDK resolves it through
   `cloudflare()` and `MBOA_PROXY_IP`. MBOA internal traffic (only private hops
   behind the mn.gov proxy) gets `ipSrc` set to the hop that proxy appended;
@@ -89,22 +160,110 @@ arcjetProtect                    src/lib/arcjet/index.ts
   real people included: enforce hosts a few at a time and watch their
   latency.
 
+### What Arcjet receives
+
+`buildArcjetRequest` (`src/lib/arcjet/request.ts`) replaces `request()` from
+`@arcjet/next`, which sent no path or method, our response headers
+(`set-cookie`, `x-middleware-set-cookie`, `x-frame-options`) and every cookie.
+
+| Field | Value |
+| --- | --- |
+| `method` | `x-norse-req-method` from the proxy (`GET` for a page render, `POST` for a server action) |
+| `url` | the path only, e.g. `/en/search/123`; never the query string (crisis searches, coordinates). With no `nextUrl` the SDK sets `query` to `""` |
+| `headers` | only the names the client sent (`x-norse-client-headers`), read from `headers()`; never `x-norse-*`, `x-middleware-*`, `set-cookie` or other response headers. `x-forwarded-for` is kept for IP resolution (including MBOA `ipSrc`). Without the list (a request that skipped the proxy) a denylist drops ours |
+| `cookies` | `{ aj_signals }` only, when present |
+| `correlationId` | the active `trace_id`: our trace ID is on Arcjet's record, their decision ID on ours |
+| `metadata` | `{ tenant_id, route, deployment, client_signature }`; never a user agent, IP or anything personal (Arcjet stores it unredacted) |
+
+The proxy always overwrites the `x-norse-*` headers, so a client can't forge
+them. `x-norse-client-returning` is decided there because the proxy sets the
+`session-id` cookie on the response: a server component can't tell a new
+client from a returning one.
+
+### Print action
+
+`getPrintableDirectoryData` (`POST /search` with a `next-action` header) is
+callable by anyone with the action ID from the JS bundle, so:
+
+- **Tenant from the server.** `protectAction` resolves it from the request host
+  with the app-config resolution the pages use (`requestTenantId`). The
+  client's `tenantId` argument is kept for compatibility and ignored.
+- **Arcjet first:** `protectAction({ route: 'print', path: '/<locale>/search' })`,
+  method `POST`, base rules plus the print rules. On an enforced host a denial
+  returns `null`, which the print dialog shows as its "could not load"
+  message; the action never throws for it. On an observe-only host the
+  decision runs in `after()`.
+- **Every call is logged** (`arcjet_decision`, `route=print`, `ids_requested`,
+  `ids_unique`, tenant) and counted in `norse_print_requests_total`. The
+  action's own server span carries `arcjet.route` and `arcjet.tenant_id`, so
+  print and favorites `/resource/batch` calls can be told apart per tenant.
+- **No ID cap yet** (next release): choose it from `ids_requested`.
+- **Per-visitor rate limit** (`DRY_RUN`): keyed on `norse_visitor`, a hash of
+  the session cookie (or of the client IP without one), never the IP itself,
+  since IPs rotate.
+
 ### Logs
 
-| Event | When | Contents |
-| --- | --- | --- |
-| `arcjet_denied` | A denial | host, path, reason, `deniedBots`, `decisionId`, `enforced`, `sampledOutSinceLast`. At most 30 lines per minute per process; the rest are counted in the next line. |
-| `arcjet_dry_run_match` | A `DRY_RUN` rule matched | host, path, rule, `decisionId` |
-| `arcjet_fingerprint_failed` | SDK threw or the decision errored (includes timeouts) | host, path, error, redacted headers. Sampled, 5 per minute; `*_sampled_out` otherwise. |
-| `arcjet_no_client_ip` | MBOA traffic with no routable client IP | host, path, masked hops, redacted headers. Sampled as above. |
+Every decision outcome is an `arcjet_decision` OTel log record (Loki only,
+never stdout); see [observability.md](/docs/observability.md#arcjet_decision)
+for its fields and sampling. The pino events `arcjet_denied`,
+`arcjet_dry_run_match` and `arcjet_fingerprint_failed` are gone. Only MBOA's
+`arcjet_no_client_ip` remains (debug, masked, sampled 5 per minute).
 
-Every denial, enforced or not, is also counted for the tenant's Blocked
-Bots widget after the response; see
+The SDK's own logging goes through `arcjet({ log })` (`sdk-log.ts`): `debug`
+and `info` to OTel Logs only (scope `arcjet-sdk`), `warn` and `error` to pino.
+Set `ARCJET_LOG_LEVEL=warn` in both DO apps.
+
+Every denial, enforced or not, and every request from an allowed crawler is
+also counted per crawler after the response (Blocked Bots and Crawler
+traffic widgets); see
 [blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
 
-Decision logs contain no IP address: find the request in the Arcjet console
-by `decisionId`. Events with no decision log headers from an allow list only,
-with every IP masked (`maskIp`). Paths never include the query string.
+Records contain no full IP (only `client_net`, the /16 or /48), no referer or
+origin path or query, no query values, cookies or credentials. Paths never
+include the query string.
+
+### Bot report and alert
+
+The PrometheusRule `NorseTenantSearchBurst` (charts) fires on a per-tenant
+burst on norse-api. Then run `charts/tools/bot-report` (port-forward only; see
+its README) or open the Grafana dashboard "Bot traffic / Arcjet":
+
+1. **Missed** (mostly ALLOW): send the Slack report with the `req_` IDs to
+   Arcjet. If urgent, write a `DRY_RUN` filter from the top feature, then
+   switch it to `LIVE`.
+2. **Served-denied** (mostly DENIED_NOT_ENFORCED): consider adding the host to
+   `ARCJET_ENFORCED_HOSTS`, after checking the share of returning clients in
+   the enforcement report.
+3. **Saturated** (many ERROR): a capacity problem.
+4. **One request:** click a log row → `trace_id` → its cost in Tempo. The same
+   `trace_id` is the `correlationId` on Arcjet's record.
+
+### Open questions for Arcjet
+
+1. Does the dashboard show and search `correlationId` and `metadata`? How long
+   are they kept?
+2. Is sending `tenant_id` and `client_signature` in `metadata` acceptable? Any
+   limits on our plan?
+3. How do custom rate-limit characteristics work from `protect()` props (the
+   per-visitor print limit)?
+4. ~~Exact field names for hosting / VPN in filter expressions.~~ Answered
+   2026-11-18: `ip.src.hosting`, `ip.src.crawler`, `ip.src.relay` (see
+   `HOSTING_IP_FILTER`).
+5. Data-retention and data-sent options for Advanced Signals.
+6. Do `lreq_` decisions (timeouts or local cache) reach Arcjet at all?
+
+### Privacy (needs sign-off before merge)
+
+- **Newly logged:** allowlisted header values and all header names; referer
+  and origin host and shape flags; query key names; the /16 (/48) network;
+  optionally `client_ip_hash` (only with `ARCJET_LOG_IP_HASH_KEY`).
+- **Newly sent to Arcjet:** path (no query) and method, `correlationId` (trace
+  ID), `metadata` (`tenant_id`, `route`, `deployment`, `client_signature`).
+- **No longer sent to Arcjet:** our response headers, every cookie except
+  `aj_signals`.
+- **Still never logged or sent:** the full IP in our logs, the referer path or
+  query, query values, cookies, `authorization`, API keys.
 
 ## Crawl trap: `amp;` keys (ISS-2307)
 
@@ -143,12 +302,12 @@ Arcjet counterpart, since the edge 410 comes first.
 
 1. Deploy with `ARCJET_ENFORCED_HOSTS` unset. Every host is observe-only.
 2. Do the staging checks in ISS-2423.
-3. Read `arcjet_denied` in the logs and the Arcjet console for 2 to 3 days.
-4. Set `ARCJET_ENFORCED_HOSTS` to one agreed host. Watch `arcjet_denied`
-   with `enforced: true` on it for some days.
+3. Read the `arcjet_decision` records and the Arcjet console for 2 to 3 days.
+4. Set `ARCJET_ENFORCED_HOSTS` to one agreed host. Watch `arcjet_decision`
+   records with `enforced=true` on it for some days.
 5. Set `ARCJET_UNENFORCED_HOSTS=mboa.c211.io` on both production apps.
 6. Set `ARCJET_ENFORCED_HOSTS=*`. New tenants are then enforced from their
-   first request; read `arcjet_denied` for a new host in its first week.
+   first request; read its `arcjet_decision` denials in its first week.
 7. Remove `mboa.c211.io` from `ARCJET_UNENFORCED_HOSTS` only after MNIT
    replies (ISS-1737).
 
@@ -165,12 +324,18 @@ takes effect after the redeploy, a few minutes.
 | A bot we need is denied | Add its Arcjet label to `ARCJET_ALLOWED_BOTS` (code change and deploy). Meanwhile, unenforce the affected host. |
 
 Until the redeploy finishes, blocked people see the 403 page. Read the
-`arcjet_denied` lines (`deniedBots`, `decisionId`) to find which rule or bot
+`arcjet_decision` records (`denied_bots`, `reason_type`, `decision_id`) to find which rule or bot
 label caused it.
 
 ## Tests
 
-- Unit: `tests/arcjet.test.ts` (rules, enforcement, client IP, logging);
+- Unit: `tests/arcjet.test.ts` (rules, enforcement, client IP);
+  `tests/arcjet-decision-observability.test.ts` (request sent to Arcjet,
+  including an SDK-level check of path/method/`query === ""`, proxy
+  `x-norse-*` overwrite, CSP sources, referer shape, client signature,
+  sampling and burst mode, the `arcjet_decision` record, the SDK log adapter);
+  `tests/arcjet-timing.test.ts`; `tests/telemetry-arcjet-search.test.ts`
+  (metric labels);
   `tests/crawl-trap.test.ts` (edge 410, writers, robots patterns).
 - E2E runs in CI against the dev hosts only, which stay unenforced. It does
   not run against production, where headless Chromium is expected to be

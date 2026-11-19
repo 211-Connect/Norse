@@ -1,60 +1,170 @@
-import { request } from '@arcjet/next';
-import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { SpanStatusCode, TraceFlags, trace } from '@opentelemetry/api';
+import { createHash } from 'node:crypto';
+import { cookies, headers } from 'next/headers';
 import { forbidden } from 'next/navigation';
 import { after } from 'next/server';
 import { cache } from 'react';
 
+import { SESSION_ID } from '@/app/(app)/shared/lib/constants';
+import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import {
+  ARCJET_SIGNALS_COOKIE,
   type ArcjetLog,
-  type ArcjetRequestLike,
+  type ArcjetProtectResult,
+  type ArcjetRoute,
+  type BuiltArcjetRequest,
+  type RequestFeatures,
+  VISITOR_CHARACTERISTIC,
   arcjetProtect,
+  buildArcjetRequest,
+  buildDecisionRecord,
+  decisionLogState,
+  decisionSpanAttributes,
+  dryRunKeysOf,
   isArcjetDeniedResult,
   isEnforcedHost,
+  localeOfPath,
+  requestFeatures,
+  resolveArcjetClientIp,
+  routeOfPath,
 } from '@/lib/arcjet';
-import { recordBlockedTraffic } from '@/lib/blocked-traffic';
+import { recordArcjetTraffic } from '@/lib/crawler-traffic';
 import { createLogger } from '@/lib/logger';
 import {
   arcjetSpanAttributes,
   isArcjetErrorConclusion,
   recordArcjetDecision,
+  recordPrintRequest,
 } from '@/lib/telemetry/arcjet';
+import { emitArcjetDecision } from '@/lib/telemetry/arcjet-decision-log';
+import { norseDeployment } from '@/lib/telemetry/deployment';
 
 const logger = createLogger('arcjet');
 
+/**
+ * Pino, for the few events that still go there (MBOA `arcjet_no_client_ip`
+ * at debug, crawler-traffic push failures at warn). Decisions never do: they
+ * are `arcjet_decision` OTel records.
+ */
 const log: ArcjetLog = (level, event, data) => {
   logger[level]({ event, ...data });
 };
 
+/** Per process: burst state per host, and the decision-log policy. */
+const { burst: burstDetector, sampler: decisionSampler } = decisionLogState();
+
+/** Everything one decision needs, read eagerly so it works in `after()`. */
+interface PreparedRequest {
+  built: BuiltArcjetRequest;
+  features: RequestFeatures;
+  route: ArcjetRoute;
+  tenantId: string;
+  /** Hashed session id (or client IP): the per-visitor rate-limit key. */
+  visitor: string;
+}
+
+const sha12 = (value: string) =>
+  createHash('sha256').update(value).digest('hex').slice(0, 12);
+
 /**
- * The request as Arcjet reads it, once per request. `request()` reads
- * headers and cookies eagerly, so the result stays usable inside `after()`,
- * where request APIs cannot be called.
+ * The tenant of this request, from the same app-config resolution the pages
+ * use (host → resource directory → tenant). Never from the client. '' when
+ * it can't be resolved.
  */
-const arcjetRequest = cache(async () => {
-  // `request()` always sets `headers` from next/headers; its declared type
-  // is the wider ArcjetNextRequest, where `headers` is optional.
-  return (await request()) as ArcjetRequestLike;
+export const requestTenantId = cache(async (locale: string) => {
+  try {
+    const { tenantId } = await getAppConfigWithoutHost(locale || 'en');
+    return tenantId && tenantId !== 'unknown' ? tenantId : '';
+  } catch {
+    return '';
+  }
 });
 
+/**
+ * The request as Arcjet should see it, once per request, path and route:
+ * real path and method, client headers only, only the `aj_signals` cookie
+ * (see `buildArcjetRequest`).
+ */
+const prepare = cache(
+  async (
+    path: string,
+    route: ArcjetRoute,
+    defaultMethod: string,
+  ): Promise<PreparedRequest> => {
+    const [headerList, cookieList] = await Promise.all([headers(), cookies()]);
+    const session = cookieList.get(SESSION_ID)?.value;
+    const built = buildArcjetRequest({
+      headers: headerList,
+      ajSignals: cookieList.get(ARCJET_SIGNALS_COOKIE)?.value,
+      path,
+      defaultMethod,
+      hasSessionCookie: Boolean(session),
+    });
+    const tenantId = await requestTenantId(localeOfPath(built.context.path));
+    const visitor = session
+      ? `s:${sha12(session)}`
+      : `i:${sha12(resolveArcjetClientIp(built.request) || 'none')}`;
+    return {
+      built,
+      features: requestFeatures(headerList, built.context),
+      route,
+      tenantId,
+      visitor,
+    };
+  },
+);
+
 const tracer = trace.getTracer('norse-app');
+
+interface DecisionExtras {
+  idsRequested?: number;
+  idsUnique?: number;
+}
 
 /**
  * The Arcjet SDK calls its API over a `node:http2` Connect RPC session, not
  * the global `fetch` that @vercel/otel instruments, so the call needs a
- * manual span to show up in traces (see docs/observability.md).
+ * manual span to show up in traces (see docs/observability.md). The
+ * `arcjet_decision` record is emitted inside this span, so it carries the
+ * span's `trace_id`/`span_id`/`flags`.
  */
 function tracedProtect(
-  req: ArcjetRequestLike,
-  pathName: string,
+  prepared: PreparedRequest,
   afterResponse: boolean,
+  extras: DecisionExtras = {},
 ) {
   return tracer.startActiveSpan('arcjet.protect', async (span) => {
+    const { built, features, route, tenantId } = prepared;
+    const { context } = built;
+    const enforced = !afterResponse;
     span.setAttributes({
-      'url.path': pathName,
-      'arcjet.enforced': !afterResponse,
+      'url.path': context.path,
+      'arcjet.enforced': enforced,
     });
     try {
-      const result = await arcjetProtect(req, pathName, log);
+      const burst = burstDetector.record(context.host);
+      const spanContext = span.spanContext();
+      const traceSampled =
+        (spanContext.traceFlags & TraceFlags.SAMPLED) === TraceFlags.SAMPLED;
+
+      const result = await arcjetProtect(built.request, context.path, log, {
+        route,
+        correlationId: trace.isSpanContextValid(spanContext)
+          ? spanContext.traceId
+          : undefined,
+        // Never personal data: Arcjet stores metadata unredacted.
+        metadata: {
+          ...(tenantId && { tenant_id: tenantId }),
+          route,
+          deployment: norseDeployment(),
+          client_signature: features.signature,
+        },
+        characteristics:
+          route === 'print'
+            ? { [VISITOR_CHARACTERISTIC]: prepared.visitor }
+            : undefined,
+      });
+
       span.setAttribute('arcjet.conclusion', result.conclusion);
       span.setAttributes(
         arcjetSpanAttributes({
@@ -63,16 +173,33 @@ function tracedProtect(
           timing: result.timing,
         }),
       );
-      if (isArcjetDeniedResult(result)) {
-        span.setAttribute('arcjet.reason_type', result.reasonType);
-      }
+      span.setAttributes(
+        decisionSpanAttributes({
+          result,
+          route,
+          tenantId,
+          context,
+          features,
+          burst,
+        }),
+      );
       // A decision the API never answered (timeout/transport error) is a
       // failed span even though the page fails open.
       if (isArcjetErrorConclusion(result.conclusion)) {
         span.setStatus({ code: SpanStatusCode.ERROR });
       }
       // One sample per decision, enforced or observe-only.
-      recordArcjetDecision(result.conclusion, !afterResponse);
+      recordArcjetDecision(result.conclusion, enforced, {
+        reasonType: result.reasonType,
+        route,
+        host: context.host,
+        ajSignalsPresent: context.ajSignalsPresent,
+      });
+      if (route === 'print') {
+        recordPrintRequest(context.host, result.conclusion, enforced);
+      }
+
+      logDecision(prepared, result, enforced, burst, traceSampled, extras);
       return result;
     } catch (error) {
       span.recordException(error as Error);
@@ -84,21 +211,63 @@ function tracedProtect(
   });
 }
 
+/** Emits the `arcjet_decision` record when the sampling policy says so. */
+function logDecision(
+  prepared: PreparedRequest,
+  result: ArcjetProtectResult,
+  enforced: boolean,
+  burst: boolean,
+  traceSampled: boolean,
+  extras: DecisionExtras,
+) {
+  try {
+    const { built, features, route, tenantId } = prepared;
+    const sampling = decisionSampler.decide({
+      conclusion: result.conclusion,
+      route,
+      host: built.context.host,
+      traceSampled,
+      burst,
+      reasonType: result.reasonType,
+      deniedBots: isArcjetDeniedResult(result) ? result.deniedBots : undefined,
+      dryRunKeys: dryRunKeysOf(result, route),
+    });
+    if (!sampling.log) return;
+    emitArcjetDecision(
+      buildDecisionRecord({
+        result,
+        enforced,
+        route,
+        tenantId,
+        context: built.context,
+        features,
+        request: built.request,
+        burst,
+        sampledOutSinceLast: sampling.sampledOutSinceLast,
+        ...extras,
+      }),
+    );
+  } catch {
+    // Telemetry must never break a request (plan rule 7).
+  }
+}
+
 /**
- * One Arcjet decision; a denial, enforced or not, is also counted for the
- * Blocked Bots widget (ISS-2366). While the response is still pending the
- * count is deferred to `after()` so it never delays it; `afterResponse`
- * means we already run there and count directly.
+ * One Arcjet decision, also counted per crawler for the analytics widgets:
+ * denials (blocked, rate-limited, or logged on an observe-only host) and
+ * allowed crawlers (`recordArcjetTraffic` ignores the rest). While the
+ * response is still pending the count is deferred to `after()` so it never
+ * delays it; `afterResponse` means we already run there and count directly.
  */
 async function decideAndCount(
-  req: ArcjetRequestLike,
-  pathName: string,
+  prepared: PreparedRequest,
   afterResponse: boolean,
+  extras?: DecisionExtras,
 ) {
-  const result = await tracedProtect(req, pathName, afterResponse);
-  if (isArcjetDeniedResult(result)) {
-    const host = req.headers.get('host') ?? '';
-    const count = () => recordBlockedTraffic(host, result, log);
+  const result = await tracedProtect(prepared, afterResponse, extras);
+  if (isArcjetDeniedResult(result) || result.allowedBots?.length) {
+    const host = prepared.built.context.host;
+    const count = () => recordArcjetTraffic(host, result, log);
     if (afterResponse) await count();
     else after(count);
   }
@@ -108,21 +277,23 @@ async function decideAndCount(
 /**
  * Enforced hosts: one Arcjet decision per request and path, awaited before
  * the page renders. React `cache` is scoped to the request, so the page and
- * its `generateMetadata` share the decision: one Decide call, one log line,
- * one blocked-traffic count.
+ * its `generateMetadata` share the decision: one Decide call, one record,
+ * one crawler-traffic count.
  */
 const decide = cache(async (pathName: string) =>
-  decideAndCount(await arcjetRequest(), pathName, false),
+  decideAndCount(await prepare(pathName, routeOfPath(pathName), 'GET'), false),
 );
 
 /**
  * Observe-only hosts: the decision cannot change the response, so it runs
  * in `after()` and never delays the page. `cache` schedules it once per
  * request although the page and `generateMetadata` both call `protectPage`.
+ * `arcjet.protect` stays a child of the request's render span there too
+ * (`after()` keeps the active context); don't change how it is propagated.
  */
 const observe = cache(async (pathName: string) => {
-  const req = await arcjetRequest();
-  after(() => decideAndCount(req, pathName, true));
+  const prepared = await prepare(pathName, routeOfPath(pathName), 'GET');
+  after(() => decideAndCount(prepared, true));
 });
 
 /**
@@ -157,10 +328,58 @@ export async function isRouteDenied(pathName: string): Promise<boolean> {
 }
 
 async function isDenied(pathName: string): Promise<boolean> {
-  const req = await arcjetRequest();
-  if (!isEnforcedHost(req)) {
+  const { built } = await prepare(pathName, routeOfPath(pathName), 'GET');
+  if (!isEnforcedHost(built.request)) {
     await observe(pathName);
     return false;
   }
   return (await decide(pathName)).denied;
+}
+
+export interface ProtectActionInput {
+  route: Extract<ArcjetRoute, 'print'>;
+  /** Path only, e.g. `/en/search` (the page the action is posted to). */
+  path: string;
+  idsRequested?: number;
+  idsUnique?: number;
+}
+
+export interface ProtectActionResult {
+  denied: boolean;
+  /** The tenant resolved on the server from the request host. */
+  tenantId: string;
+}
+
+/**
+ * Bot protection for a server action. Same rules as pages plus the route's
+ * own (`routeRules`), with method `POST`. Every call gets an
+ * `arcjet_decision` record (print is never sampled out).
+ *
+ * On an enforced host the decision is awaited and `denied` tells the action
+ * to return an error result (never throw). On an observe-only host it runs
+ * in `after()`. The tenant is resolved on the server and returned, so the
+ * action never trusts the client's tenant.
+ */
+export async function protectAction(
+  input: ProtectActionInput,
+): Promise<ProtectActionResult> {
+  const prepared = await prepare(input.path, input.route, 'POST');
+  const extras = {
+    idsRequested: input.idsRequested,
+    idsUnique: input.idsUnique,
+  };
+
+  // The action's own server span, so print and favorites `/resource/batch`
+  // calls can be told apart per tenant.
+  trace.getActiveSpan()?.setAttributes({
+    'arcjet.route': input.route,
+    ...(prepared.tenantId && { 'arcjet.tenant_id': prepared.tenantId }),
+  });
+
+  if (!isEnforcedHost(prepared.built.request)) {
+    after(() => decideAndCount(prepared, true, extras));
+    return { denied: false, tenantId: prepared.tenantId };
+  }
+  const result = await decideAndCount(prepared, false, extras);
+  return { denied: result.denied, tenantId: prepared.tenantId };
 }

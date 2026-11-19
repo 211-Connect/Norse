@@ -270,6 +270,30 @@ const blockedTrafficEndpoint = proxyEndpoint(
   { skipWebsiteIdValidation: true },
 );
 
+type Granularity = 'hour' | 'day';
+
+function granularityParam(value: unknown): Granularity {
+  return value === 'hour' ? 'hour' : 'day';
+}
+
+/**
+ * Requests per crawler and outcome (blocked, logged, rate-limited, allowed,
+ * load-limited), counted per tenant by Norse, not by Umami, so the selected
+ * websites do not apply.
+ */
+const crawlerTrafficEndpoint = proxyEndpoint(
+  '/analytics/crawler-traffic',
+  (ctx, query) => {
+    const start = toISO(query?.startAt as string);
+    const end = toISO(query?.endAt as string);
+    return analyticsApiClient.analyticsControllerGetCrawlerTraffic(
+      { start, end, granularity: granularityParam(query?.granularity) },
+      { headers: ctx.headers },
+    );
+  },
+  { skipWebsiteIdValidation: true },
+);
+
 export const analyticsProxyEndpoints: Endpoint[] = [
   infoEndpoint,
   statsEndpoint,
@@ -286,4 +310,5 @@ export const analyticsProxyEndpoints: Endpoint[] = [
   eventValuesEndpoint,
   eventCatalogEndpoint,
   blockedTrafficEndpoint,
+  crawlerTrafficEndpoint,
 ];

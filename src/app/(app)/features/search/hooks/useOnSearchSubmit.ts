@@ -112,14 +112,12 @@ export const useOnSearchSubmit = ({
       }
 
       if (routed.value === 'navigating_classic') {
-        startTransition(async () => {
-          const locationPayload = await buildSearchLocationPayload(
-            searchCoordinates,
-            userCoordinates,
-            appConfig.tenantId,
-          );
-          await navigateClassicSearch(locationPayload);
-        });
+        const locationPayload = buildSearchLocationPayload(
+          searchCoordinates,
+          userCoordinates,
+          appConfig.tenantId,
+        );
+        navigateClassicSearch(locationPayload);
         return;
       }
 
@@ -139,19 +137,19 @@ export const useOnSearchSubmit = ({
       });
 
       if (routed.value === 'navigating_classic') {
-        const locationPayload = await buildSearchLocationPayload(
+        const locationPayload = buildSearchLocationPayload(
           searchCoordinates,
           userCoordinates,
           appConfig.tenantId,
         );
-        await navigateClassicSearch(locationPayload);
+        navigateClassicSearch(locationPayload);
         return;
       }
 
       setAiSearchScenario(routed.context.scenario);
 
       if (routed.value === 'navigating_ai') {
-        const locationPayload = await buildSearchLocationPayload(
+        const locationPayload = buildSearchLocationPayload(
           searchCoordinates,
           userCoordinates,
           appConfig.tenantId,

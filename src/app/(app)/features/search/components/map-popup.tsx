@@ -46,13 +46,14 @@ export function MapPopup({
   const badges = labels.map((label) => ({ label }));
 
   return (
-    <Card className="shadow-md">
+    <Card data-testid="map-popup" className="shadow-md">
       <CardContent className="flex flex-col gap-3">
         {badges.length > 0 && <Badges items={badges} />}
         <p className="pr-6 text-sm leading-snug font-semibold">{name}</p>
         <MapPopupLocation address={address} distance={distance} />
         <Link
           href={`/search/${id}`}
+          data-testid="map-popup-resource"
           aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
           className={cn(buttonVariants({ variant: 'outline' }), 'w-full')}
           prefetch={false}
@@ -78,7 +79,10 @@ export function MapSitePopup({
   const { t } = useTranslation('page-search');
 
   return (
-    <Card className="flex max-h-(--map-popup-max-height) flex-col shadow-md">
+    <Card
+      data-testid="map-site-popup"
+      className="flex max-h-(--map-popup-max-height) flex-col shadow-md"
+    >
       <CardContent className="flex min-h-0 flex-col gap-3">
         <p className="pr-6 text-sm leading-snug font-semibold">
           {t('map_site_title', {
@@ -95,6 +99,7 @@ export function MapSitePopup({
               <li key={pin.id}>
                 <Link
                   href={`/search/${pin.resourceId}`}
+                  data-testid="map-site-popup-resource"
                   className={cn(
                     'hover:bg-accent focus-visible:ring-ring flex items-start gap-2 rounded-sm px-1 py-1.5 text-sm no-underline transition-colors focus-visible:ring-2 focus-visible:outline-none',
                     isInList && 'bg-primary/5',

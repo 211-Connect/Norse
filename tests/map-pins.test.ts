@@ -54,6 +54,19 @@ test('a result on the current page is a pin, so it gets no circle', () => {
   );
 });
 
+test('a listed resource whose cached pin has an older _id is still omitted', () => {
+  // Pins outlive the list in the cache; an import re-ids the same resource.
+  const stale = { ...pin('old-a', [1, 1]), resourceId: 'a' };
+  const unlinked = { ...pin('old-b', [2, 2]), resourceId: null };
+
+  const circles = omitPagePins([stale, unlinked], [pin('a', [1, 1])]);
+
+  assert.deepEqual(
+    circles.map(({ id }) => id),
+    ['old-b'],
+  );
+});
+
 test('coordinates round to two decimals, so neighbours share a cache entry', () => {
   assert.deepEqual(
     roundCoordinatesForPins([-77.4361, 37.5407]),
@@ -97,17 +110,20 @@ test('no locations have no extent to fit', () => {
 });
 
 test('circles are known by place and count their resources', () => {
-  const { features } = toFeatureCollection([
-    { id: 'no-location', inList: true },
-    { id: 'one', coordinates: [-120, 46] },
-    { id: 'site', coordinates: [-121.123456, 47], count: 3, inList: true },
-  ]);
+  const { features } = toFeatureCollection(
+    [
+      { id: 'no-location', inList: true },
+      { id: 'one', coordinates: [-120, 46] },
+      { id: 'site', coordinates: [-121.123456, 47], count: 3, inList: true },
+    ],
+    'subtle',
+  );
 
   assert.deepEqual(
     features.map(({ properties }) => properties),
     [
-      { key: '-120.00000,46.00000', resources: 1, stack: 0 },
-      { key: '-121.12346,47.00000', resources: 3, stack: 1 },
+      { key: '-120.00000,46.00000', resources: 1, stack: 0, tone: 'subtle' },
+      { key: '-121.12346,47.00000', resources: 3, stack: 1, tone: 'subtle' },
     ],
   );
 });

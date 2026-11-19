@@ -20,9 +20,9 @@ export const DEFAULT_SEARCH_STATE = {
   prevSearchLocation: '',
   searchLocationValidationError: '',
   searchDistance: '',
-  // New fields for advanced geospatial filtering
-  searchPlaceType: [] as string[],
-  searchBbox: null as [number, number, number, number] | null,
+  // The Region id when the location is an area (state, county, city, ZIP):
+  // searched as its shape, with no radius. Empty for an address or a point.
+  searchRegion: '',
 };
 
 export const searchAtom = atom<SearchState>(DEFAULT_SEARCH_STATE);
@@ -51,9 +51,6 @@ export const searchCoordinatesAtom = atom(
 
 export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);
 
-export const searchPlaceTypeAtom = atom(
-  (get) => get(searchAtom).searchPlaceType,
-);
-export const searchBboxAtom = atom((get) => get(searchAtom).searchBbox);
+export const searchRegionAtom = atom((get) => get(searchAtom).searchRegion);
 
 export const searchEntryAtom = atom<ResourceEntry>(ResourceEntry.SearchCard);

@@ -135,7 +135,13 @@
     "location_name_placeholder": "Seattle, WA",
     "coords_placeholder": "-122.3321,47.6062",
     "radius_label": "Default radius",
-    "radius_placeholder": "25"
+    "radius_placeholder": "25",
+    "area_match_label": "Which resources to list",
+    "area_match_site_default": "Site default",
+    "area_match_located": "Only resources with an address in the area",
+    "area_match_located_or_serving": "Address in the area, or no address and serving it",
+    "area_match_serving": "Every resource serving the area",
+    "area_match_help": "The whole area is searched, so no radius applies. \"Serving\" means the service area overlaps any part of the area."
   },
   "query_params_label": "Query params",
   "query_param_overrides_default_location": "This query parameter overrides the default location configuration",

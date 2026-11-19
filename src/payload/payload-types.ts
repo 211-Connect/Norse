@@ -249,6 +249,7 @@ export interface Config {
     'analytics-alert-clicks': AnalyticsAlertClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
     'analytics-blocked-bots': AnalyticsBlockedBotsWidget;
+    'analytics-crawler-traffic': AnalyticsCrawlerTrafficWidget;
     'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
@@ -901,7 +902,7 @@ export interface ResourceDirectory {
     searchSettings: {
       searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
       /**
-       * Choose how pinned/priority resources are handled for hybrid and AI classification search engines. Ignore drops pinned status; Boost adds a score contribution; Top hard-sorts pinned resources to the top of results.
+       * How pinned resources are ranked, for every sort order. Ignore: pinned status is not used. Top: pinned resources come first. Boost: with the Hybrid and AI Classification engines, pinned status adds to the relevance score, so pinned resources rank higher but do not always lead; the Classic engine has no score to add to, so Boost works like Top there.
        */
       pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
       resultsLimit: number;
@@ -919,6 +920,14 @@ export interface ResourceDirectory {
        * Must match one of the radius values above
        */
       defaultRadius?: number | null;
+      /**
+       * Used when a visitor picks a state, county, city or ZIP code; picking an address still searches a radius around it. A resource "serves" the area when its service area overlaps any part of it. Resources without an address are virtual services, hotlines and PO boxes. The last option also lists resources based elsewhere, such as a statewide hotline with an office in another county.
+       */
+      areaMatchMode?: ('located' | 'located_or_serving' | 'serving') | null;
+      /**
+       * They cannot be placed in any area, so each one is listed in every area search or in none. A virtual service with no service area usually serves everyone. "All" also lists physical services that are missing their address.
+       */
+      unlocatedInAreaSearch?: ('none' | 'virtual' | 'all') | null;
     };
     facets?:
       | {
@@ -1876,6 +1885,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     id?: T;
                   };
               defaultRadius?: T;
+              areaMatchMode?: T;
+              unlocatedInAreaSearch?: T;
             };
         facets?:
           | T
@@ -2374,6 +2385,16 @@ export interface AnalyticsBlockedBotsWidget {
     [k: string]: unknown;
   };
   width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-crawler-traffic_widget".
+ */
+export interface AnalyticsCrawlerTrafficWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

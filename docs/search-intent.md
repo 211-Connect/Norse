@@ -42,6 +42,8 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
   - taxonomy codes are split, trimmed and de-duplicated;
   - "Everywhere" (the literal `EVERYWHERE_LOCATION`, never its translated label) means no location; coords are written only as a pair; distance only with a location
     or coords;
+  - `region` (an area's Region id, see [area-search.md](/docs/area-search.md)) only with a location and a
+    valid id; with it, distance is dropped;
   - a new search starts on page 1.
 - **Writers that edit the URL the visitor is on** (filter navigation, the coords redirect) lift it, change
   the intent and serialize it, through `rewriteSearchUrl` (`rewrite.ts`). They read the URL as the page
@@ -69,7 +71,7 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
 
 Exactly one generation matches every URL; a test fails if that ever stops being true. Modifiers are
 reported beside the generation: location without coords, printable directory, filters, sort, page, age,
-distance, coords.
+distance, coords, region.
 
 ## Resolver
 

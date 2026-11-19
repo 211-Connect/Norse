@@ -29,6 +29,9 @@ import {
   AnalyticsMetricsWithTrend,
   fetchAnalyticsAreaSearches,
   fetchAnalyticsBlockedTraffic,
+  fetchAnalyticsCrawlerTraffic,
+  type CrawlerTrafficData,
+  type CrawlerTrafficGranularity,
   fetchAnalyticsEventCatalog,
   fetchAnalyticsEventValues,
   fetchAnalyticsHeatmap,
@@ -364,4 +367,61 @@ export function useAnalyticsEventValues(
     ...state,
     refetch: () => load(true, false),
   };
+}
+
+/** Per-crawler counts of the selected tenant, for the Crawler traffic widget. */
+export function useAnalyticsCrawlerTraffic(
+  granularity: CrawlerTrafficGranularity,
+): AsyncData<CrawlerTrafficData> {
+  const { range, tenantId } = useAnalyticsParams();
+  const [state, setState] = useState<
+    Omit<AsyncData<CrawlerTrafficData>, 'refetch'>
+  >({ loading: true, error: null, data: null });
+
+  const paramsRef = useRef({ range, tenantId, granularity });
+  paramsRef.current = { range, tenantId, granularity };
+  const requestIdRef = useRef(0);
+
+  const load = useCallback((force: boolean, resetData: boolean) => {
+    const requestId = ++requestIdRef.current;
+    const current = paramsRef.current;
+
+    if (!current.tenantId) {
+      setState({ loading: false, error: null, data: null });
+      return;
+    }
+
+    setState((prev) => ({
+      loading: true,
+      error: null,
+      data: resetData ? null : prev.data,
+    }));
+    fetchAnalyticsCrawlerTraffic(
+      current.range,
+      current.tenantId,
+      undefined,
+      { granularity: current.granularity },
+      force,
+    )
+      .then((data) => {
+        if (requestIdRef.current === requestId) {
+          setState({ loading: false, error: null, data });
+        }
+      })
+      .catch((err) => {
+        if (requestIdRef.current === requestId) {
+          setState({
+            loading: false,
+            error: err instanceof Error ? err.message : String(err),
+            data: null,
+          });
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    load(false, true);
+  }, [range, tenantId, granularity, load]);
+
+  return { ...state, refetch: () => load(true, false) };
 }

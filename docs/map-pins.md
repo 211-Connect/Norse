@@ -52,7 +52,10 @@ MapContainer
   (`Cache-Control: private, max-age=3600`) and Redis for 6 hours under
   `search_pins:<tenant>:<locale>:<hash>`, an empty result included (a failure
   is never cached). Search results stay in Redis for an hour, so after a data
-  import the map can lag the list by up to 5 hours. Turning the list's page sends no pins
+  import the map can lag the list by up to 5 hours. An import can also give a
+  resource a new `_id`, so the list's own results are dropped from the pins by
+  `_id` or resource id (`omitPagePins`); otherwise each would count twice at
+  its address. Turning the list's page sends no pins
   request at all, and neither does a search whose results all fit on its first
   page: the map then draws its circles from the page alone. `coords` are rounded to two decimals (about 1 km) so neighbours share
   one too. They cannot be dropped: they filter by service area even at
@@ -65,32 +68,52 @@ MapContainer
 - **AI classification.** It needs no special handling: results load through
   `GET /search`, so pins use the same request. Pins are skipped only when the
   clarify dialog opens over the page and hides the map.
-- **`POST /search`.** Not supported, as it is being removed. With
-  `NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG` on, the list and pins
-  could disagree.
+- **Area search.** Pins take the same `region`, `area_match` and
+  `unlocated` as the list, so they show the same resources; the map
+  draws the area's outline under them (see docs/area-search.md).
 
 ## Map behavior
 
-- **Circles** are MapLibre `circle` layers (`maplibre/points-layer.ts`), drawn
-  by the GPU rather than as DOM elements, with an 8px click tolerance. Two
-  sources: every location, light, uploaded once per search, and the list's
-  current page, dark, drawn above it. Turning the page re-uploads only the page's
-  locations; the rest stay while they're the same places, checked by an
-  order-independent signature (`toPlacesSignature`) rather than by sorting.
-  A circle is known by its place (`toPlaceKey`), as a shared address's first
-  result changes with the page.
+- **Circles** are MapLibre `circle` layers (`maplibre/points-layer.ts`),
+  drawn by the GPU at their own size, so their edges stay smooth at every zoom,
+  with an 8px click tolerance. From zoom 10 a shared address's circle turns
+  transparent and an icon takes its place: the circle with its count drawn in,
+  centred on the digits, drawn on a canvas at the size it shows (9px or 11px
+  radius, at the screen's pixel density) the first time the map asks for it
+  (`styleimagemissing`). Text in its own layer would draw above every circle;
+  the icons sit above their own colour's circles (larger counts stack higher
+  anyway) and below the next colour's, so a list circle covers a light count.
+  An icon scaled far from its drawn size blurs and loses its round edge, which
+  is why single circles aren't icons. Three sources: every location, light, uploaded once per
+  search; the list's current page, dark, drawn above it; and the hovered circle
+  and the one whose popup is open, drawn larger above both. Turning the page
+  re-uploads only the page's locations; the rest stay while they're the same
+  places, checked by an order-independent signature (`toPlacesSignature`)
+  rather than by sorting. A circle is known by its place (`toPlaceKey`), as a
+  shared address's first result changes with the page.
 - **Popups are built when they open** (`MarkerDef.getPopup`), not for every one
   of 10,000 circles on each page change.
 - **Circles are the same size** whether or not they're in the list. Only the
-  colour differs, and the list's are drawn on top. They grow with the zoom and on
-  hover.
+  colour differs, and the list's are drawn on top. They grow with the zoom, from
+  3px radius at zoom 5 to 10px at 14, so a zoomed-out state shows where results
+  are dense rather than one blot. They grow 2px on hover and 3px while their popup
+  is open (`setSelectedPlace`), drawn again above all others.
+- **Circle colours.** The list's: the primary with a white ring. The rest: the
+  primary halfway to white with a primary ring, which keeps them visible on a
+  light basemap, and 55% opaque at zoom 5, solid from 9, so overlapping circles
+  read darker where results are dense. Rings are a share of the radius, so they
+  grow with the circle.
 - **Several resources at one address** share a circle, whose popup lists them
   without scrolling, moving the map to fit, unless the list is taller than the map.
-  Its count shows from zoom 7, where the circle still holds two digits, and hides
-  only once a circle above reaches its digits. Larger counts stack higher within
-  each colour, so a shared address sits above single resources and keeps its count. An address counts as in the list if any of its
-  resources is, and its popup marks those resources with the same dark dot and a
-  faint tint, listing them first.
+  Below zoom 10 the circle has a second one just behind it, so it reads as a
+  stack. From zoom 10 (city level) it shows its count instead, and is at least
+  9px in radius (11px for `99+`, above 99) so the digits fit. On a light circle
+  the count is the primary nearly halfway to black (white there is only about
+  2:1), on a list circle the primary's foreground colour. Larger counts stack
+  higher within each colour, so a shared address sits above single resources.
+  An address counts as in the list if any of its resources is, and its popup
+  marks those resources with the same dark dot and a faint tint, listing them
+  first.
 - **Clicking a circle in the list** scrolls the list to that result, just below
   the header when the tenant's header is sticky.
 - **A legend** in the map's corner explains the two circles, the count on a shared
@@ -114,6 +137,18 @@ MapContainer
 - **Pins arriving after the reader has used the map** (a drag, wheel, tap or key
   on it) add their circles without refitting, so the map doesn't move under
   them. Otherwise the map fits the whole search once the pins arrive.
+
+## Testing
+
+`e2e/search-map-pins.spec.ts` (project `map-pins`) runs an empty search on
+tenants whose fixture has `mapPins` set. The canvas has no DOM, so each time the
+map settles (`idle`) it writes `data-zoom`, `data-shown-places` and
+`data-shown-counts` (`describeShownPoints`) on its `search-map` container, and
+each list circle's focus target is a `map-point` with `data-resources`. The
+legend is `map-legend`, its loading row `map-legend-loading`, a shared address's
+popup `map-site-popup` with `map-site-popup-resource` links, a single
+resource's popup `map-popup` with its `map-popup-resource` button. One scenario
+ends on a shared address's list, the other on a single resource's button.
 
 ## List cap
 
