@@ -93,9 +93,12 @@ export function SearchLanding() {
         className="flex flex-col gap-4 pt-6 max-sm:pt-0"
         data-testid="landing-popup"
       >
-        {/* Phone: this block (crisis chips + search box) stays pinned while the options scroll. */}
+        {/* Phone: this block (crisis chips + search box) stays pinned while the options scroll.
+            The card has 3.5rem top padding (room for Quick exit), and Chrome pins a sticky block
+            inside that padding: top-0 pinned it 3.5rem low, over the loading line and the question
+            title (Lucas 2026-11-19). -top-14 pins it at the card's top edge; pt-14 keeps the room. */}
         <div
-          className="max-sm:sticky max-sm:top-0 max-sm:z-20 max-sm:-mt-14 max-sm:bg-white max-sm:pt-14 max-sm:pb-2"
+          className="max-sm:sticky max-sm:-top-14 max-sm:z-20 max-sm:-mt-14 max-sm:bg-white max-sm:pt-14 max-sm:pb-2"
           data-testid="landing-header"
         >
           <EmergencyLine />

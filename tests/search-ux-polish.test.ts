@@ -259,5 +259,22 @@ test('phone: the landing header block (chips and search box) is sticky', () => {
     landing,
     /max-sm:sticky[^"]*data-testid|data-testid="landing-header"/,
   );
-  assert.match(landing, /max-sm:sticky max-sm:top-0/);
+  assert.match(landing, /max-sm:sticky max-sm:-top-14/);
+});
+
+// Regression (Lucas 2026-11-19, bugs A and B): the phone card has pt-14 (room for Quick exit) and
+// Chrome pins a sticky block inside the scroller's padding. With top-0 the pinned header sat 56 px
+// low, over the 'Looking at your search' line and the question title, so the spinner was hidden
+// and the top of the option list could not be scrolled into view. The sticky offset must cancel
+// the card's top padding exactly.
+test('phone: the pinned landing header offset cancels the card top padding (spinner and list stay visible)', () => {
+  const landing = read(`${APP}features/search/components/search-landing.tsx`);
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  const pad = guide.match(/max-sm:rounded-none max-sm:pt-(\d+)/)?.[1];
+  assert.ok(pad, 'GuideShell keeps a phone top padding class');
+  const header = landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ?? '';
+  assert.match(header, new RegExp(`max-sm:-top-${pad}(\\s|$)`));
+  assert.match(header, new RegExp(`max-sm:-mt-${pad}(\\s|$)`));
+  assert.match(header, new RegExp(`max-sm:pt-${pad}(\\s|$)`));
+  assert.doesNotMatch(header, /max-sm:top-0/);
 });

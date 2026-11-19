@@ -8,6 +8,7 @@ import {
   landingStep,
   resultsUrlFor,
   toLandingUrl,
+  opensLandingFromBar,
 } from '../src/app/(app)/features/search/v2/landing';
 import {
   answerChanges,
@@ -145,4 +146,14 @@ test('a typed search always asks: toLandingUrl adds refine=1 to a query without 
   assert.equal(toLandingUrl('/search?query=food'), '/find?query=food&refine=1');
   assert.equal(toLandingUrl('/search?query=food&refine=0'), '/find?query=food&refine=0');
   assert.equal(toLandingUrl('/search?location=Seattle'), '/find?location=Seattle');
+});
+
+// Prototype (Lucas 2026-11-19): a new query typed in the results page's top search bar goes to
+// /find, so the guided questions come first. The same query (or a new place only) stays on /search.
+test('top search bar: a new query opens /find, the same query stays on the results page', () => {
+  assert.equal(opensLandingFromBar('rent', 'food'), true);
+  assert.equal(opensLandingFromBar('food', null), true);
+  assert.equal(opensLandingFromBar('food', 'food'), false);
+  assert.equal(opensLandingFromBar('  Food ', 'food'), false);
+  assert.equal(opensLandingFromBar('', 'food'), false);
 });

@@ -79,6 +79,20 @@ export function landingStep(state: {
 }
 
 /**
+ * Prototype (Lucas 2026-11-19): a search typed in the results page's top search bar goes to the
+ * landing page when its text differs from the current query, so the guided questions come first.
+ * The same text again (or only a new place) stays on the results page.
+ */
+export function opensLandingFromBar(
+  typed: string,
+  currentQuery: string | null | undefined,
+): boolean {
+  const next = typed.trim().toLowerCase();
+  if (!next) return false;
+  return next !== (currentQuery ?? '').trim().toLowerCase();
+}
+
+/**
  * A results URL, moved to the landing page with the same query string. For the home page's search
  * dialog, which hands a new search to the landing page instead of the results page.
  */

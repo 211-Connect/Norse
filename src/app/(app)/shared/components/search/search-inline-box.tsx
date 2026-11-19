@@ -2,10 +2,12 @@
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowUp, MapPin, Search } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { ReactNode, useEffect, useRef, useState, useTransition } from 'react';
 
 import { searchClearedAtom } from '@/app/(app)/features/search/components/search-follow-up';
 import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
+import { opensLandingFromBar } from '@/app/(app)/features/search/v2/landing';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 
 import { useAppConfig } from '../../hooks/use-app-config';
@@ -41,6 +43,7 @@ export function SearchInlineBox({
   const [emptyError, setEmptyError] = useState(false);
   const locationButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigateAiSearch({ startTransition });
+  const searchParams = useSearchParams();
   const locationRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [scrolledPast, setScrolledPast] = useState(false);
@@ -93,7 +96,7 @@ export function SearchInlineBox({
     }));
   };
 
-  const submit = async () => {
+  const submit = async (fromBox = true) => {
     const query = searchTerm.trim();
     if (!query) return setEmptyError(true);
     if (isBusy) return;
@@ -102,7 +105,10 @@ export function SearchInlineBox({
     // No predicted `taxonomy` in the URL (Lucas, 2026-11-14): predicted need and urgency codes there
     // make the v2 call treat the need as known, so it returns no area question and the results
     // page asked nothing. The home popup and the landing page send the text alone, and so does this.
+    // Prototype (Lucas 2026-11-19): a new query typed here goes to /find (guided questions first);
+    // router.push keeps the old results one Back away. The same query, or a new place, stays here.
     navigate({
+      landing: fromBox && opensLandingFromBar(query, searchParams.get('query')),
       locationPayload: await buildSearchLocationPayload(
         searchCoordinates,
         userCoordinates,
@@ -119,7 +125,7 @@ export function SearchInlineBox({
     lastLocation.current = searchLocation;
     if (editingLocation) {
       closeLocation();
-      void submit();
+      void submit(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchLocation]);
