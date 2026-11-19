@@ -117,6 +117,7 @@ const CALL_KEYS = [
   'coords',
   'distance',
   'page',
+  'sort',
 ] as const;
 
 /** The `/v2/search` parameters of a page URL, in one stable string (the query cache key). */

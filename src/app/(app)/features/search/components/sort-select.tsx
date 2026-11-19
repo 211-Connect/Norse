@@ -16,7 +16,9 @@ import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { SortOption } from '@/app/(app)/shared/utils/getSortOption';
 
 import { useSearchResults } from '../context/search-results-context';
+import { sortOptionValues } from '../utils/sort-options';
 import { sortHref } from '../utils/sortHref';
+import { useV2Search } from '../v2/use-v2-search';
 
 const SORT_LABEL: Record<SortOption, string> = {
   relevance: 'Most Relevant',
@@ -44,16 +46,12 @@ export function SortSelect() {
     router.push(sortHref(pathname, searchParams, value));
   };
 
-  const sortOptions = [
-    { value: 'relevance', label: SORT_LABEL.relevance },
-    { value: 'name', label: SORT_LABEL.name },
-    ...(showServiceName
-      ? [{ value: 'organization', label: SORT_LABEL.organization }]
-      : []),
-    ...(hasSearchCoordinates
-      ? [{ value: 'distance', label: SORT_LABEL.distance }]
-      : []),
-  ];
+  const { query } = useV2Search();
+  const sortOptions = sortOptionValues({
+    isV2: Boolean(query),
+    showServiceName,
+    hasCoordinates: hasSearchCoordinates,
+  }).map((value) => ({ value, label: SORT_LABEL[value] }));
 
   return (
     <div className="flex items-center gap-2">

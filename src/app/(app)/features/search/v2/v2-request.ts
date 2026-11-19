@@ -22,6 +22,7 @@ export const V2_FORWARD = [
   'distance',
   'taxonomy',
   'page',
+  'sort',
 ] as const;
 
 export const DEFAULT_LOCALE = 'en';

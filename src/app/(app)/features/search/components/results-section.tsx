@@ -31,6 +31,8 @@ import { ResultTotal } from './result-total';
 import { ResultsHelpItem } from './search-follow-up';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
+import { showsSort } from '../utils/sort-options';
+import { useV2Search } from '../v2/use-v2-search';
 import { SaveQueryToDirectoryButton } from './save-query-to-directory-button';
 
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
@@ -143,7 +145,9 @@ export function ResultsSection({
     return nextParams;
   }, [searchParams, query, queryType]);
 
-  const showSort = queryType !== 'hybrid';
+  // The v2 engine shows the sort dropdown for every query type; v1 hides it for hybrid.
+  const { query: v2Query } = useV2Search();
+  const showSort = showsSort({ queryType, isV2: Boolean(v2Query) });
 
   const loadPrintableData = useCallback(
     (locale: string) => {
