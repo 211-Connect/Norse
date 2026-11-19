@@ -270,7 +270,7 @@ test('phone: the landing header block (chips and search box) is sticky', () => {
 test('phone: the pinned landing header offset cancels the card top padding (spinner and list stay visible)', () => {
   const landing = read(`${APP}features/search/components/search-landing.tsx`);
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
-  const esc = (v: string) => v.replace(/[[\].]/g, '\\$&');
+  const esc = (v: string) => v.replace(/[\\[\].]/g, '\\$&');
   const pad = guide.match(/max-sm:rounded-none max-sm:pt-(\[[\d.]+rem\]|\d+)/)?.[1];
   assert.ok(pad, 'GuideShell keeps a phone top padding class');
   const header = landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ?? '';

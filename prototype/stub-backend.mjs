@@ -55,7 +55,12 @@ http.createServer((req, res) => {
     // Real backend (2026-11-16 standup demo): V2_UPSTREAM=http://127.0.0.1:8091 V2_TENANT=<tenant uuid> forwards
     // /v2/search and /search to a local Norse-API v2 build, which reads the real Elasticsearch index of that tenant.
     if (process.env.V2_UPSTREAM && p.startsWith('/geocoding/')) {
-      return void fetch(new URL(p + u.search, process.env.V2_UPSTREAM), { headers: { 'x-tenant-id': process.env.V2_TENANT, 'accept-language': 'en' } })
+      // Dev-only proxy: the forwarded URL must stay on the configured upstream origin and keep a plain /geocoding/ path.
+      const upstream = new URL(process.env.V2_UPSTREAM);
+      const target = new URL(upstream.origin + '/geocoding/' + encodeURIComponent(p.slice('/geocoding/'.length)).replace(/%2F/gi, '/'));
+      target.search = u.search;
+      if (target.origin !== upstream.origin || target.pathname.includes('..')) { res.writeHead(400); return void res.end(); }
+      return void fetch(target, { headers: { 'x-tenant-id': process.env.V2_TENANT, 'accept-language': 'en' } })
         .then(async (r) => { const text = await r.text(); console.log('  geocode', r.status); res.writeHead(r.status, { 'content-type': 'application/json' }); res.end(text); })
         .catch((err) => { console.error(err); res.writeHead(502); res.end(); });
     }
