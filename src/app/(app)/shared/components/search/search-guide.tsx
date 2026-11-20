@@ -49,6 +49,7 @@ import {
   canGoBackFrom,
   hasSavedLocation,
   keepsGuideOpen,
+  asksLocationStep,
   MIN_PLACE_LOADING_MS,
   showBottomBar,
 } from '@/app/(app)/features/search/v2/guide-rules';
@@ -408,10 +409,15 @@ export function SearchGuideFromUrl({
   // place already counts as saved, which would hide the step at once (live walk 2026-11-20).
   const showLocation =
     placeSaving ||
-    (!locationDone &&
-      v2?.type !== 'emergency' &&
-      used < MAX_GUIDED &&
-      (!onPage || hasQuestions || used > 0));
+    asksLocationStep({
+      locationDone,
+      isEmergency: v2?.type === 'emergency',
+      used,
+      maxGuided: MAX_GUIDED,
+      onPage,
+      hasQuestions,
+      requireLocation,
+    });
   const question =
     v2?.type === 'emergency' || (!showLocation && used < MAX_GUIDED)
       ? v2

@@ -30,6 +30,7 @@ import { RenderResults } from './render-results';
 import { ResultTotal } from './result-total';
 import { ResultsHelpItem } from './search-follow-up';
 import { ResultsPagination } from './results-pagination';
+import { RadiusSelect } from './radius-select';
 import { SortSelect } from './sort-select';
 import { showsSort } from '../utils/sort-options';
 import { useV2Search } from '../v2/use-v2-search';
@@ -235,7 +236,12 @@ export function ResultsSection({
             <ShareButton title={shareTitle} body={shareBody} />
           </div>
         </div>
-        {showSort && <SortSelect />}
+        {(showSort || Boolean(v2Query)) && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            {showSort && <SortSelect />}
+            {Boolean(v2Query) && <RadiusSelect />}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-6">

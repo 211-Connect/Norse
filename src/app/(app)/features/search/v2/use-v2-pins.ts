@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import {
+  pinsCallEnabled,
   pinsCallString,
   usablePins,
   type V2Pin,
@@ -20,7 +21,7 @@ import {
  */
 export function useV2Pins(): { pins: V2Pin[] | undefined; truncated: boolean } {
   const params = useSearchParams()!;
-  const { tenantId, featureFlags } = useAppConfig();
+  const { tenantId, featureFlags, search } = useAppConfig();
   const callString = useMemo(() => pinsCallString(params), [params]);
   const query = featureFlags.enableV2Api
     ? (params.get('query_label') ?? params.get('query') ?? '').trim()
@@ -28,7 +29,11 @@ export function useV2Pins(): { pins: V2Pin[] | undefined; truncated: boolean } {
 
   const { data } = useQuery({
     queryKey: ['v2-pins', tenantId, callString],
-    enabled: Boolean(query && tenantId),
+    enabled: pinsCallEnabled({
+      query,
+      tenantId,
+      showAllResultsOnMap: search.showAllResultsOnMap,
+    }),
     placeholderData: keepPreviousData,
     staleTime: 60_000,
     retry: false,
@@ -42,7 +47,7 @@ export function useV2Pins(): { pins: V2Pin[] | undefined; truncated: boolean } {
     },
   });
   return {
-    pins: data ? usablePins(data) : undefined,
-    truncated: Boolean(data?.truncated),
+    pins: data && search.showAllResultsOnMap ? usablePins(data) : undefined,
+    truncated: Boolean(search.showAllResultsOnMap && data?.truncated),
   };
 }
