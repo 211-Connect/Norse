@@ -174,10 +174,10 @@ export function HeroSection() {
       />
 
       <div
-        className="bg-primary flex w-full max-w-[31rem] flex-col gap-2 rounded-lg p-3"
+        className="bg-primary animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-[31rem] flex-col gap-2 rounded-lg p-3 shadow-xl ring-1 shadow-black/20 ring-white/10 duration-500 ease-out sm:p-4"
         role="search"
       >
-        <h2 className="text-2xl font-medium text-white">
+        <h2 className="text-2xl font-semibold tracking-tight text-white">
           {appConfig.search.texts?.title ||
             t('search.hero_title', { ns: 'common' })}
         </h2>

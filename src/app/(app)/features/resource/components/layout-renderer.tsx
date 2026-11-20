@@ -100,7 +100,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
           return (
             <Card
               key={`group-${groupIndex}`}
-              className="overflow-hidden print:border-none print:shadow-none"
+              className="overflow-hidden sm:p-4 print:border-none print:shadow-none"
             >
               <CardContent className="flex min-w-0 flex-col gap-2">
                 {renderedComponents}

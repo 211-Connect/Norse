@@ -25,7 +25,7 @@ export function MediaCard({
   footer,
 }: MediaCardProps) {
   return (
-    <Card className="flex h-full flex-col gap-2 sm:gap-4">
+    <Card className="group flex h-full flex-col gap-2 transition-[box-shadow,transform,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md sm:gap-4">
       {image && (
         <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-t-lg">
           <Image
@@ -33,6 +33,7 @@ export function MediaCard({
             alt={imageAlt}
             fill
             style={{ objectFit: 'contain' }}
+            className="transition-transform duration-300 ease-out group-hover:scale-[1.03]"
           />
         </div>
       )}

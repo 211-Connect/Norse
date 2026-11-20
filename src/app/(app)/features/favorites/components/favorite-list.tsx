@@ -24,7 +24,10 @@ export function FavoriteList({ list }: { list: FavoriteListItemDto }) {
   const { stringifiedSearchParams } = useClientSearchParams();
 
   return (
-    <Card data-testid="favorite-list-card">
+    <Card
+      data-testid="favorite-list-card"
+      className="hover:border-primary/30 transition-[box-shadow,border-color] duration-200 ease-out hover:shadow-md"
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <Badge variant="outline">

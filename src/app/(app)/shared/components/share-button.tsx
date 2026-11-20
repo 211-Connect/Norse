@@ -41,6 +41,7 @@ export function ShareButton({
   const clipboard = useClipboard();
   const { t } = useTranslation('common');
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const optionsRef = useRef<HTMLDivElement | null>(null);
   const dialogId = useId();
   const copyStatusId = useId();
 
@@ -119,6 +120,18 @@ export function ShareButton({
           restoreFocusElement={triggerRef.current}
           closeLabel={t('call_to_action.close')}
           data-testid="share-dialog"
+          onOpenAutoFocus={(event) => {
+            // Radix skips links when it picks the first focus target, so focus
+            // would land on the disabled SMS button and open its "not
+            // available" tooltip over the share links. Start on the first
+            // share option instead.
+            const firstOption = optionsRef.current?.querySelector('a');
+
+            if (firstOption) {
+              event.preventDefault();
+              firstOption.focus();
+            }
+          }}
         >
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_via')}</DialogTitle>
@@ -127,7 +140,10 @@ export function ShareButton({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-6">
+          <div
+            ref={optionsRef}
+            className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-6"
+          >
             <Button
               asChild
               variant="outline"
