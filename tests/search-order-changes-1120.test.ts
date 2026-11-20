@@ -174,6 +174,10 @@ test('place list: taller, capped, and fits above the keyboard', () => {
     /inFlowList = placement === 'below' && !positionBelowElementId/,
   );
   assert.match(src, /window\.visualViewport\?\.height/);
+  // Inside a scroll region (the questions card), the list stops where the region can reach,
+  // so the card itself never scrolls for it.
+  assert.equal(belowListMaxHeight(590, 369, 16), 205);
+  assert.match(src, /scrollRegionMaxBottom\(input\)/);
   assert.match(
     src,
     /floatingRefs\.setFloating\(inFlowList \? null : element\)/,

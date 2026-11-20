@@ -26,6 +26,7 @@ import {
 import { AutocompleteListbox } from './autocomplete-listbox';
 import {
   belowListMaxHeight,
+  LIST_IN_SCROLLER_RESERVE_PX,
   listMiddlewareNames,
   MIN_LIST_SPACE_PX,
 } from './placement';
@@ -56,6 +57,31 @@ const middlewareByName: Record<string, () => Middleware> = {
       },
     }),
 };
+
+/**
+ * The lowest the scroll region around `element` can reach on screen, or null with no scroll
+ * region. A card that grows up to a max height (the /find questions card) counts at its full
+ * height, minus what sits under the region (its bottom buttons), so a list in the region never
+ * makes the card itself scroll.
+ */
+function scrollRegionMaxBottom(element: HTMLElement): number | null {
+  let scroller: HTMLElement | null = element.parentElement;
+  while (
+    scroller &&
+    !/auto|scroll/.test(getComputedStyle(scroller).overflowY)
+  ) {
+    scroller = scroller.parentElement;
+  }
+  if (!scroller) return null;
+  const scrollerBottom = scroller.getBoundingClientRect().bottom;
+  for (let el: HTMLElement | null = scroller; el; el = el.parentElement) {
+    const maxHeight = getComputedStyle(el).maxHeight;
+    if (!maxHeight.endsWith('px')) continue;
+    const box = el.getBoundingClientRect();
+    return box.top + parseFloat(maxHeight) - (box.bottom - scrollerBottom);
+  }
+  return scrollerBottom;
+}
 
 /**
  * Text input with a suggestion list (WAI-ARIA combobox). Behavior lives in
@@ -147,8 +173,16 @@ export function Autocomplete({
       const input = refs.inputRef.current;
       if (!input) return;
       const visible = window.visualViewport?.height ?? window.innerHeight;
+      const inputBottom = input.getBoundingClientRect().bottom;
+      const scrollBottom = scrollRegionMaxBottom(input);
       setBelowMaxHeight(
-        belowListMaxHeight(visible, input.getBoundingClientRect().bottom),
+        scrollBottom == null
+          ? belowListMaxHeight(visible, inputBottom)
+          : belowListMaxHeight(
+              Math.min(visible, scrollBottom),
+              inputBottom,
+              LIST_IN_SCROLLER_RESERVE_PX,
+            ),
       );
     };
     measure();
