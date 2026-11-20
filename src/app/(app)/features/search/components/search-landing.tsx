@@ -6,6 +6,8 @@ import { FormEvent, useEffect, useState } from 'react';
 
 import { MainSearchLayoutContextProvider } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout-context';
 import { NeedBox } from '@/app/(app)/shared/components/search/need-box';
+import { needBoxTexts } from '@/app/(app)/shared/components/search/need-texts';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import {
   GuideShell,
   SearchGuideFromUrl,
@@ -25,6 +27,7 @@ import { LandingLocation } from './landing-location';
  */
 export function SearchLanding() {
   const { query } = useV2Url();
+  const needTexts = needBoxTexts(useAppConfig().search.texts);
   const { write, toResults, isPending: isWriting } = useV2Navigate();
   const prefetch = useV2Prefetch();
   // Lucas 2026-11-16: after Enter nothing moves until the answer is known. The box stays as it is,
@@ -138,7 +141,7 @@ export function SearchLanding() {
                 htmlFor={SEARCH_INPUT_ID}
                 className="text-2xl font-semibold"
               >
-                What do you need help with?
+                {needTexts.title}
               </label>
               <NeedBox
                 inputId={SEARCH_INPUT_ID}
@@ -147,7 +150,7 @@ export function SearchLanding() {
                 autoFocus={!query}
                 disabled={isPending}
                 busy={isPending}
-                placeholder="For example: I need help with rent."
+                placeholder={needTexts.placeholder}
                 describedBy={emptyError ? 'landing-empty-error' : undefined}
                 onChange={(value) => {
                   setText(value);

@@ -6,7 +6,9 @@ import { EmergencyLine } from '../../../features/search/components/emergency-lin
 import { useV2Navigate } from '../../../features/search/v2/use-v2-search';
 import { suggestionPickChanges } from '../../../features/search/v2/landing';
 import { searchTermAtom } from '../../store/search';
+import { useAppConfig } from '../../hooks/use-app-config';
 import { NeedBox } from './need-box';
+import { needBoxTexts } from './need-texts';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
 /** Prototype: the need box of the search dialog. */
@@ -18,6 +20,7 @@ export function SearchNeedInput({
   onChange?: () => void;
 }) {
   const searchTerm = useAtomValue(searchTermAtom);
+  const needTexts = needBoxTexts(useAppConfig().search.texts);
   const { setSearch } = useMainSearchLayoutContext();
   const { toResults } = useV2Navigate();
 
@@ -39,7 +42,7 @@ export function SearchNeedInput({
     <div className="flex flex-col gap-2">
       <EmergencyLine />
       <label htmlFor={inputId} className="text-2xl font-semibold">
-        What do you need help with?
+        {needTexts.title}
       </label>
       <NeedBox
         inputId={inputId}
@@ -47,7 +50,7 @@ export function SearchNeedInput({
         onChange={onChange}
         rows={4}
         autoFocus
-        placeholder="For example: I think I will run out of food this week."
+        placeholder={needTexts.placeholder}
         onPick={(option) => toResults(suggestionPickChanges(option))}
         testId="search-need-input"
       />

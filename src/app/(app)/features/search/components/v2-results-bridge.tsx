@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, type PropsWithChildren } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   SearchResultsProvider,
@@ -25,7 +26,8 @@ export const useIsV2 = () => useContext(IsV2Context);
 export function V2ResultsBridge({ children }: PropsWithChildren) {
   const base = useSearchResults();
   const { data } = useV2Search();
-  const v2 = v2Results(data, base.results);
+  const { i18n } = useTranslation();
+  const v2 = v2Results(data, base.results, i18n.language);
   return (
     <IsV2Context.Provider value={Boolean(v2)}>
       <SearchResultsProvider

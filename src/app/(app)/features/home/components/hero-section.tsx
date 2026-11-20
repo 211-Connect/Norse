@@ -11,12 +11,15 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
+import { heroImageSrc } from '../utils/hero-image';
+
 type TourPositionPreference = 'above' | 'below';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
   // The tenant's v2 switch: off keeps the v1 hero.
   const v2 = appConfig.featureFlags.enableV2Api;
+  const heroSrc = heroImageSrc(appConfig.heroUrl);
   const { setCurrentStep, setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
@@ -173,13 +176,13 @@ export function HeroSection() {
         v2 ? 'max-h-80 md:max-h-[28rem]' : 'max-h-64 md:max-h-96',
       )}
     >
-      {v2 ? (
-        // Prototype: stands in for the tenant's hero photo.
+      {v2 && !heroSrc ? (
+        // No tenant photo: a plain gradient instead.
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#a9d3dc] via-[#8fb3bd] to-[#20433f]" />
       ) : (
         <Image
           fill
-          src={appConfig.heroUrl ?? ''}
+          src={v2 ? (heroSrc ?? '') : (appConfig.heroUrl ?? '')}
           priority
           alt=""
           style={{ objectFit: 'cover', zIndex: -1, objectPosition: 'center' }}

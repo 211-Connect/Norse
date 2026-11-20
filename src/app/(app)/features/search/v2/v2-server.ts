@@ -17,14 +17,26 @@ const TIMEOUT_MS = 6000;
 export async function fetchV2Server(
   incoming: Pick<URLSearchParams, 'get'>,
   tenantId: string,
+  /** The route's locale (`/es/search` is `es`), sent as it is. */
+  locale?: string,
 ): Promise<V2Response | null> {
   if (!API_URL) return null;
   try {
-    const res = await fetch(buildV2Url(API_URL, incoming, tenantId), {
-      headers: buildV2Headers(await getTenantApiKey(tenantId)),
-      cache: 'no-store',
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
+    const res = await fetch(
+      buildV2Url(
+        API_URL,
+        {
+          get: (key) =>
+            key === 'locale' && locale ? locale : incoming.get(key),
+        },
+        tenantId,
+      ),
+      {
+        headers: buildV2Headers(await getTenantApiKey(tenantId)),
+        cache: 'no-store',
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      },
+    );
     if (!res.ok) {
       log.warn({ status: res.status }, 'v2 search failed on the server');
       return null;

@@ -4,6 +4,7 @@ import test from 'node:test';
 import type { ResultType } from '../src/app/(app)/shared/store/results';
 import {
   hitToResult,
+  weakMatchText,
   v2Results,
 } from '../src/app/(app)/features/search/v2/v2-results';
 import type { V2Response } from '../src/app/(app)/features/search/v2/v2-contract';
@@ -79,4 +80,53 @@ test('v2Results with no hits is an empty list, not the v1 list', () => {
   ] as unknown as ResultType[])!;
   assert.deepEqual(out.results, []);
   assert.equal(out.totalResults, 0);
+});
+
+test('a v2-only hit gets translated facets from the response facet list', () => {
+  const data = {
+    search: {
+      hits: {
+        total: 1,
+        hits: [
+          { _id: 'a', _source: { name: 'A', facets: { lang: ['Spanish'] } } },
+        ],
+      },
+    },
+    facets: [
+      {
+        key: 'lang',
+        name: { en: 'Language', locale: 'Idioma' },
+        values: [],
+      },
+    ],
+  } as unknown as V2Response;
+  const out = v2Results(data, [], 'es');
+  const facets = (out?.results[0] as any).facets;
+  assert.equal(facets.length, 1);
+  assert.equal(facets[0].taxonomyName, 'Idioma');
+  assert.equal(facets[0].taxonomyNameEn, 'Language');
+  assert.equal(facets[0].termName, 'Spanish');
+});
+
+test('a hit with no facets has no facets key', () => {
+  const out = hitToResult({ _id: 'a', _source: { name: 'A' } });
+  assert.equal('facets' in out, false);
+});
+
+test('weakMatchText: the tenant text wins', () => {
+  assert.equal(weakMatchText('  Call us!  ', '555'), 'Call us!');
+});
+
+test('weakMatchText: empty or blank text falls back', () => {
+  const fallback = 'No results found for your search. Need help? Call 555.';
+  assert.equal(weakMatchText('', '555'), fallback);
+  assert.equal(weakMatchText('   ', '555'), fallback);
+  assert.equal(weakMatchText(undefined, '555'), fallback);
+});
+
+test('weakMatchText: the fallback uses 211 without a number', () => {
+  assert.equal(
+    weakMatchText(undefined, undefined),
+    'No results found for your search. Need help? Call 211.',
+  );
 });

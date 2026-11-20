@@ -72,6 +72,10 @@ const ALLOWED_EDITS: Record<string, { count: number; why: string }> = {
     count: 1,
     why: 'prototype round 17: an answer writes needs, passed_needs, urgency, other, asked and refine',
   },
+  'app/(app)/features/search/components/radius-select.tsx': {
+    count: 1,
+    why: 'v2 radius dropdown writes distance and page 1 into the current URL (Payload radiusSelectValues, PR #1228)',
+  },
   'app/(app)/features/search/components/sort-select.tsx': {
     count: 1,
     why: 'sort edits the current URL (BUILDERS 8, parity harness "sort")',

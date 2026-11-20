@@ -89,3 +89,19 @@ export function usablePins(
     (p) => p && typeof p.id === 'string' && isCoordinate(p.coordinates),
   );
 }
+
+/**
+ * Pure: whether the map asks `/v2/search/pins`. The tenant's showAllResultsOnMap setting decides
+ * (Lucas 2026-11-20): off = the map shows only the list's current page.
+ */
+export function pinsCallEnabled({
+  query,
+  tenantId,
+  showAllResultsOnMap,
+}: {
+  query: string;
+  tenantId: string | undefined;
+  showAllResultsOnMap: boolean;
+}): boolean {
+  return Boolean(query && tenantId && showAllResultsOnMap);
+}

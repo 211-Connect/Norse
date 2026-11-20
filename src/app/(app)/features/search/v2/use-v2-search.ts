@@ -16,9 +16,12 @@ import {
   type ReactNode,
 } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import { resultsUrlFor } from './landing';
+import { v2ApiPath } from './v2-request';
 import { seedMatches, v2CallString, type V2Seed } from './v2-seed';
 
 import {
@@ -66,12 +69,13 @@ export function useV2Url() {
 async function fetchV2(
   tenantId: string | undefined,
   callString: string,
+  limit: number | undefined,
+  locale: string | undefined,
   signal?: AbortSignal,
 ): Promise<V2Response> {
-  const res = await fetch(
-    `/api/v2-search?tenant_id=${encodeURIComponent(tenantId ?? '')}&${callString}`,
-    { signal },
-  );
+  const res = await fetch(v2ApiPath(tenantId, callString, limit, locale), {
+    signal,
+  });
   if (!res.ok) throw new Error(`v2 search ${res.status}`);
   return (await res.json()) as V2Response;
 }
@@ -92,9 +96,17 @@ export function V2SeedProvider({
   return createElement(V2SeedContext.Provider, { value: seed }, children);
 }
 
+/** The page's language, as it is: a Spanish page asks for Spanish results. Part of the cache key. */
+function useV2Locale(): string | undefined {
+  const { i18n } = useTranslation();
+  return i18n.language || undefined;
+}
+
 export function useV2Search() {
   const { params, query: urlQuery } = useV2Url();
-  const { tenantId, featureFlags } = useAppConfig();
+  const { tenantId, featureFlags, search } = useAppConfig();
+  const locale = useV2Locale();
+  const limit = search.resultsLimit;
   // The tenant's switch: with it off no v2 call runs, and `query` is empty, so every caller shows v1.
   const v2On = featureFlags.enableV2Api;
   const query = v2On ? urlQuery : '';
@@ -105,11 +117,12 @@ export function useV2Search() {
   const result = useQuery({
     initialData: seeded?.data,
     initialDataUpdatedAt: seeded?.fetchedAt,
-    queryKey: ['v2-search', tenantId, callString],
+    queryKey: ['v2-search', tenantId, locale, callString],
     enabled: Boolean(query && tenantId),
     placeholderData: keepPreviousData,
     staleTime: 60_000,
-    queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
+    queryFn: ({ signal }) =>
+      fetchV2(tenantId, callString, limit, locale, signal),
   });
   // The query client outlives requests on the server, so a server render uses the seed, never an
   // older cache entry. On the client the two are the same until the first refetch.
@@ -138,20 +151,23 @@ export function useV2Facets() {
  */
 export function useV2Prefetch() {
   const { params } = useV2Url();
-  const { tenantId } = useAppConfig();
+  const { tenantId, search } = useAppConfig();
+  const locale = useV2Locale();
+  const limit = search.resultsLimit;
   const queryClient = useQueryClient();
   return useCallback(
     async (changes: V2Changes) => {
       const callString = v2CallString(nextV2Params(params, changes));
       await queryClient
         .fetchQuery({
-          queryKey: ['v2-search', tenantId, callString],
+          queryKey: ['v2-search', tenantId, locale, callString],
           staleTime: 60_000,
-          queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
+          queryFn: ({ signal }) =>
+            fetchV2(tenantId, callString, limit, locale, signal),
         })
         .catch(() => undefined);
     },
-    [params, queryClient, tenantId],
+    [params, queryClient, tenantId, limit, locale],
   );
 }
 

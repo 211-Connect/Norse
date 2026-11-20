@@ -7,6 +7,7 @@
  */
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
 import type { ResultType } from '@/app/(app)/shared/store/results';
+import { transformFacetsToArray } from '@/app/(app)/shared/utils/toFacetsWithTranslation';
 import { ensureUrlProtocol } from '@/utils';
 
 import { totalOf, type V2Hit, type V2Response } from './v2-contract';
@@ -15,11 +16,20 @@ const obj = (value: unknown): Record<string, any> =>
   value && typeof value === 'object' ? (value as Record<string, any>) : {};
 
 /** One v2 hit as a card's data. Missing fields are left out, as the v1 mapper does. */
-export function hitToResult(hit: V2Hit): ResultType {
+export function hitToResult(
+  hit: V2Hit,
+  facetDefinitions: Record<string, Record<string, string>> = {},
+  locale = 'en',
+): ResultType {
   const source = obj(hit._source);
   const service = obj(source.service);
   const location = obj(source.location);
   const organization = obj(source.organization);
+  const facets = transformFacetsToArray(
+    source.facets,
+    facetDefinitions,
+    locale,
+  );
   const result = {
     _id: hit._id,
     id: source.service_at_location_id ?? null,
@@ -42,6 +52,8 @@ export function hitToResult(hit: V2Hit): ResultType {
     applicationProcess: service.application_process ?? null,
     hours: source.schedule ?? null,
     attributeValues: source.attribute_values ?? null,
+    // The card badges read this; left out when empty, as v1 does.
+    facets: facets.length > 0 ? facets : null,
   };
   return Object.fromEntries(
     Object.entries(result).filter(([, value]) => value != null),
@@ -55,12 +67,35 @@ export function hitToResult(hit: V2Hit): ResultType {
 export function v2Results(
   data: V2Response | null | undefined,
   v1: readonly ResultType[],
+  locale = 'en',
 ): { results: ResultType[]; totalResults: number } | null {
   const hits = data?.search?.hits?.hits;
   if (!data || !Array.isArray(hits)) return null;
   const v1ById = new Map(v1.map((result) => [result._id, result]));
+  // Same definitions v1 builds from the response facet list, so badge names are translated alike.
+  const facetDefinitions = Object.fromEntries(
+    (Array.isArray(data.facets) ? data.facets : []).map((f) => [
+      f.key,
+      { en: f.name?.en, [locale]: f.name?.locale },
+    ]),
+  );
   return {
-    results: hits.map((hit) => v1ById.get(hit._id) ?? hitToResult(hit)),
+    results: hits.map(
+      (hit) =>
+        v1ById.get(hit._id) ?? hitToResult(hit, facetDefinitions, locale),
+    ),
     totalResults: totalOf(data),
   };
+}
+
+/** The note for a weak match with no cards: the tenant's own text first, as the v1 no-results card does. */
+export function weakMatchText(
+  fallbackText: string | undefined,
+  contactNumber: string | undefined,
+): string {
+  const text = fallbackText?.trim();
+  return (
+    text ||
+    `No results found for your search. Need help? Call ${contactNumber ?? '211'}.`
+  );
 }

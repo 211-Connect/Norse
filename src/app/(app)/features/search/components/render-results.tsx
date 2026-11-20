@@ -21,6 +21,7 @@ import {
 } from '../v2/use-v2-search';
 import { CardLayoutRenderer } from './card-layout-renderer';
 import { NoResultsCard } from './no-results-card';
+import { weakMatchText } from '../v2/v2-results';
 import { DialButton } from './no-dial';
 
 type RenderResultsProps = {
@@ -45,7 +46,9 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
   const { results, currentPage } = useSearchResults();
   const { data } = useV2Search();
   const { needs, query } = useV2Url();
-  const contactNumber = useAppConfig()?.contact?.number;
+  const appConfig = useAppConfig();
+  const contactNumber = appConfig?.contact?.number;
+  const noResultsText = appConfig?.search?.texts?.noResultsFallbackText;
 
   // `matched_needs` comes on each v2 hit (Decision 56). The list keeps the server order.
   const matchedById = useMemo(
@@ -95,10 +98,7 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
           className="bg-muted flex flex-col items-start gap-2 rounded-lg border p-3 text-sm"
           data-testid="weak-match-note"
         >
-          <p>
-            No results found for your search. Need help? Call{' '}
-            {contactNumber ?? '211'}.
-          </p>
+          <p>{weakMatchText(noResultsText, contactNumber)}</p>
           {contactNumber && (
             <DialButton
               number={contactNumber}

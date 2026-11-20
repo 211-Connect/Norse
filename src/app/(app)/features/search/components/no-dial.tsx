@@ -2,12 +2,10 @@
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
-/**
- * Prototype safety switch (Lucas, 2026-11-14): while true, no 911, 988 or help-line control dials
- * or texts. Each one is a plain button that shows a short test-mode notice. Set it to false only
- * for a real launch; the `false` branch renders the normal `tel:` link.
- */
-export const PROTOTYPE_NO_DIAL = true;
+import { NO_DIAL } from './no-dial-flag';
+
+/** The no-dial switch; see `no-dial-flag.ts`. ON until the turn-on PR. */
+export const PROTOTYPE_NO_DIAL = NO_DIAL;
 
 /** The notice text for one number. Pure, so the tests can read it. */
 export const noDialNotice = (number: string) =>

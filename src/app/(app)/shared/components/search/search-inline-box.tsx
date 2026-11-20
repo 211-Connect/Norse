@@ -19,6 +19,7 @@ import {
   userCoordinatesAtom,
 } from '../../store/search';
 import { LocationSearchBar } from './location-search-bar';
+import { needBoxTexts } from './need-texts';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
 /** Prototype: the results page edits the search where it stands. Results stay on screen. */
@@ -155,7 +156,7 @@ export function SearchInlineBox({
         }}
       >
         <label htmlFor={SEARCH_INPUT_ID} className="sr-only">
-          What do you need help with?
+          {needBoxTexts(appConfig.search.texts).title}
         </label>
         <textarea
           id={SEARCH_INPUT_ID}

@@ -1,5 +1,7 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js/min';
 
+import { NO_DIAL } from '@/app/(app)/features/search/components/no-dial-flag';
+
 // Norse tenants are US 211 directories; numbers without a country code are
 // interpreted as US numbers.
 const DEFAULT_COUNTRY = 'US';
@@ -30,13 +32,16 @@ export function formatPhoneNumber(raw: string | null | undefined): string {
 }
 
 /**
- * `tel:` URI for a phone number. Extensions use a pause (`,`) rather than
- * RFC 3966 `;ext=`, because phone dialers dial the pause and ignore `;ext=`.
- * `noDial` (v2 results only, Lucas 2026-11-18) returns '' ("no link"): the number shows as text.
+/**
+ * The `tel:` link for a provider phone number, or '' for "no link". While the no-dial switch is on
+ * (`NO_DIAL`, every environment until the turn-on PR, Lucas 2026-11-20) it is always '', so cards
+ * and resource pages show the number as text. With the switch off the v1 rules apply: extensions
+ * use a pause (`,`) rather than RFC 3966 `;ext=`, because phone dialers dial the pause and ignore
+ * `;ext=`, and a number that does not parse keeps its raw text.
  */
 export function getPhoneHref(
   raw: string | null | undefined,
-  { noDial = false }: { noDial?: boolean } = {},
+  { noDial = NO_DIAL }: { noDial?: boolean } = {},
 ): string {
   if (noDial || !raw) {
     return '';
