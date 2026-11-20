@@ -28,6 +28,7 @@ import {
 } from '../lib/constants';
 import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
+import { QUICK_EXIT_CLASSNAME } from './quick-exit-button';
 import { dialogsAtom } from '../store/dialogs';
 import { usePrintableDirectoryAccess } from '../hooks/use-printable-directory-capability';
 import { shouldShowPrintableDirectoriesLink } from '../utils/canAccessPrintableDirectories';
@@ -312,6 +313,7 @@ export function Header() {
               className={cn(
                 buttonVariants({ variant: 'outline' }),
                 'flex items-center gap-1',
+                QUICK_EXIT_CLASSNAME,
               )}
             >
               {appConfig.header.safeExit?.text}

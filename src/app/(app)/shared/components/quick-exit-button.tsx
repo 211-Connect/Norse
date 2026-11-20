@@ -10,6 +10,10 @@ import { cn } from '../lib/utils';
 import { emergencyPopupOpenAtom, searchGuideOpenAtom } from '../store/dialogs';
 import { Link } from './link';
 
+/** The one red of Quick exit, in the header and floating (red-700 passes contrast with white). */
+export const QUICK_EXIT_CLASSNAME =
+  'border-red-700 bg-red-700 text-white hover:bg-red-800 hover:text-white';
+
 /**
  * Prototype: below `xl` the header's Quick exit sits inside the menu, two taps away.
  * This one tap stays on screen, above every dialog. Outside <header>, because a sticky
@@ -37,7 +41,8 @@ export function QuickExitButton() {
       }}
       aria-label={newTab ? `${safeExit.text}${NEW_TAB_WARNING}` : safeExit.text}
       className={cn(
-        'pointer-events-auto fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-[60] flex min-h-11 items-center gap-1 rounded-lg bg-red-700 px-4 text-sm font-semibold text-white shadow-lg print:hidden',
+        'pointer-events-auto fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-[60] flex min-h-11 items-center gap-1 rounded-lg px-4 text-sm font-semibold shadow-lg print:hidden',
+        QUICK_EXIT_CLASSNAME,
         'xl:hidden',
         guideOpen &&
           'max-sm:top-2 max-sm:right-2 max-sm:bottom-auto max-sm:left-auto max-sm:min-w-11 max-sm:justify-center',
