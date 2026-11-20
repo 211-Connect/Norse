@@ -1,5 +1,7 @@
 'use client';
 
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+
 import { CategoriesComponent as ResourceCategoriesComponent } from '../../../resource/components/resource-components';
 import { SearchCardComponentProps } from './types';
 
@@ -11,7 +13,16 @@ import { SearchCardComponentProps } from './types';
 export const MAX_CARD_CATEGORIES = 6;
 
 export function CategoriesComponent({ result }: SearchCardComponentProps) {
+  const v2 = useFlag('enableV2Api');
   const all = result?.taxonomies ?? [];
+  // The tenant's v2 switch: off lists every category, as v1 does.
+  if (!v2) {
+    return (
+      <ResourceCategoriesComponent
+        resource={{ categories: result?.taxonomies }}
+      />
+    );
+  }
   const hidden = Math.max(0, all.length - MAX_CARD_CATEGORIES);
   const resource = { categories: all.slice(0, MAX_CARD_CATEGORIES) };
   return (

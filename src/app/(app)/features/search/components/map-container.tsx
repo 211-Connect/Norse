@@ -206,7 +206,11 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
       ref={mapRef}
       data-testid="results-map"
       className={cn(
-        'order-last h-[320px] w-full p-[10px] lg:sticky lg:top-[105px] md:min-h-0 md:h-auto md:self-stretch lg:flex-1',
+        'order-last h-[320px] w-full p-[10px] lg:sticky lg:top-[105px] lg:flex-1',
+        // The tenant's v2 switch: off keeps the v1 map height.
+        appConfig.featureFlags.enableV2Api
+          ? 'md:h-auto md:min-h-0 md:self-stretch'
+          : 'lg:h-[var(--search-map-height)]',
         appConfig.newLayout?.enabled && 'xl:top-[144px]',
         phoneView && 'max-md:h-[calc(100dvh-6.5rem)]',
       )}

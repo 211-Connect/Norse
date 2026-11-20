@@ -1,7 +1,7 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, SearchIcon } from 'lucide-react';
 import {
   MutableRefObject,
   ReactNode,
@@ -22,7 +22,7 @@ import {
   AddMyLocationButton,
   AddMyLocationButtonProps,
 } from '../add-my-location-button';
-import type { SearchDialogProps } from '../search-dialog';
+import { SearchDialog, type SearchDialogProps } from '../search-dialog';
 import { SearchGuide } from '../search-guide';
 import { SearchInlineBox } from '../search-inline-box';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
@@ -54,6 +54,8 @@ export function MainSearchLayout({
   searchIntent,
 }: MainSearchLayoutProps) {
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 search box and its dialog.
+  const v2 = appConfig.featureFlags.enableV2Api;
   const { t } = useTranslation();
 
   const searchLocation = useAtomValue(searchLocationAtom);
@@ -106,7 +108,7 @@ export function MainSearchLayout({
     );
   }, [appConfig.search.texts?.queryInputPlaceholder, searchTerm, t]);
 
-  if (inlineSearch) {
+  if (v2 && inlineSearch) {
     return (
       <MainSearchLayoutContextProvider>
         <SearchInlineBox belowSearch={belowSearch} className={className} />
@@ -128,7 +130,10 @@ export function MainSearchLayout({
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
             className={cn(
-              'search-box flex h-auto min-h-16 w-full items-start justify-start rounded-lg border-[#00000080] bg-white py-3 pr-14 pl-4 text-left text-base font-normal shadow-sm hover:bg-white',
+              'search-box flex h-auto w-full justify-start rounded-lg border-[#00000080] bg-white text-left font-normal shadow-sm hover:bg-white',
+              v2
+                ? 'min-h-16 items-start py-3 pr-14 pl-4 text-base'
+                : 'min-h-10 py-2 pr-3 pl-[2.7rem] text-xs',
             )}
           >
             <span
@@ -142,12 +147,19 @@ export function MainSearchLayout({
               {searchTriggerText}
             </span>
           </Button>
-          <span
-            className="bg-primary text-primary-foreground pointer-events-none absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-lg"
-            aria-hidden="true"
-          >
-            <ArrowUp className="size-5" />
-          </span>
+          {v2 ? (
+            <span
+              className="bg-primary text-primary-foreground pointer-events-none absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-lg"
+              aria-hidden="true"
+            >
+              <ArrowUp className="size-5" />
+            </span>
+          ) : (
+            <SearchIcon
+              className="text-primary pointer-events-none absolute top-2 left-4 size-6"
+              aria-hidden="true"
+            />
+          )}
         </div>
         {belowSearch}
         <AddMyLocationButton
@@ -157,7 +169,21 @@ export function MainSearchLayout({
           onClick={() => openSearchDialog('location')}
         />
       </div>
-      {dialogOpened && (
+      {!v2 && (
+        <SearchDialog
+          focusByDefault={focusByDefault}
+          onLegacyAiClarifyAction={onLegacyAiClarifyAction}
+          intent={searchIntent}
+          open={dialogOpened}
+          setOpen={setDialogOpened}
+          restoreFocusElement={
+            focusByDefault === 'location'
+              ? addMyLocationButtonRef.current
+              : searchTriggerRef.current
+          }
+        />
+      )}
+      {v2 && dialogOpened && (
         <SearchGuide
           focusByDefault={focusByDefault}
           setOpen={setDialogOpened}

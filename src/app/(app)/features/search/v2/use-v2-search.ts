@@ -93,11 +93,14 @@ export function V2SeedProvider({
 }
 
 export function useV2Search() {
-  const { params, query } = useV2Url();
-  const { tenantId } = useAppConfig();
+  const { params, query: urlQuery } = useV2Url();
+  const { tenantId, featureFlags } = useAppConfig();
+  // The tenant's switch: with it off no v2 call runs, and `query` is empty, so every caller shows v1.
+  const v2On = featureFlags.enableV2Api;
+  const query = v2On ? urlQuery : '';
   const callString = useMemo(() => v2CallString(params), [params]);
   const seed = useContext(V2SeedContext);
-  const seeded = seedMatches(seed, tenantId, callString) ? seed : null;
+  const seeded = v2On && seedMatches(seed, tenantId, callString) ? seed : null;
 
   const result = useQuery({
     initialData: seeded?.data,

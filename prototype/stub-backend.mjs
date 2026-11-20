@@ -65,6 +65,8 @@ const appConfig = {
   featureFlags: {
     enablePrintableDirectories: false,
     enableOrganizationSearch: false,
+    // The tenant's v2 switch (Payload enableV2Api, super-admin only, default off). The demo defaults on.
+    enableV2Api: process.env.STUB_V2_API !== '0',
     requireUserLocation: process.env.STUB_REQUIRE_LOCATION === '1',
     showAgeFilter: false,
     showFeedbackButtonGlobal: false,

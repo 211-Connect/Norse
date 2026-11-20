@@ -237,6 +237,7 @@ export async function buildAppConfig(
       featureFlags: {
         enablePrintableDirectories: false,
         enableOrganizationSearch: false,
+        enableV2Api: false,
         requireAuthenticationForFavorites: false,
         requireUserLocation: false,
         showAgeFilter: false,
@@ -397,6 +398,7 @@ export async function buildAppConfig(
         resourceDirectory.featureFlags?.enablePrintableDirectories ?? false,
       enableOrganizationSearch:
         resourceDirectory.featureFlags?.enableOrganizationSearch ?? false,
+      enableV2Api: resourceDirectory.featureFlags?.enableV2Api ?? false,
       requireAuthenticationForFavorites:
         resourceDirectory.featureFlags?.requireAuthenticationForFavorites ??
         false,

@@ -37,6 +37,7 @@ import {
 import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchDialogHeaderActions } from './search-dialog-header-actions';
+import { SearchBar } from './search-bar';
 import { SearchNeedInput } from './search-need-form';
 import {
   useNavigateAiSearch,
@@ -89,6 +90,8 @@ export function SearchDialog({
   const { t, i18n } = useTranslation('common');
   const [isPending, startTransition] = useTransition();
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 dialog layout and search bar.
+  const v2 = appConfig.featureFlags.enableV2Api;
 
   const requireUserLocation = useFlag('requireUserLocation');
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
@@ -352,9 +355,19 @@ export function SearchDialog({
             {open && (
               <form
                 onSubmit={onSubmit}
-                className="flex w-full flex-col gap-4 pb-6"
+                className={cn(
+                  'flex w-full flex-col gap-4 pb-6',
+                  !v2 &&
+                    'max-w-100 overflow-y-auto pt-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30',
+                )}
               >
-                <div className="sticky top-0 z-10 -mx-6 -mt-6 flex flex-row justify-between gap-4 border-b bg-white px-6 py-3 [&_button]:h-12 [&_button]:px-7 [&_button]:text-base">
+                <div
+                  className={cn(
+                    'flex flex-row justify-between gap-4',
+                    v2 &&
+                      'sticky top-0 z-10 -mx-6 -mt-6 border-b bg-white px-6 py-3 [&_button]:h-12 [&_button]:px-7 [&_button]:text-base',
+                  )}
+                >
                   <SearchDialogHeaderActions
                     clarifyVisible={clarifyVisible}
                     disableSearchControls={disableSearchControls}
@@ -368,14 +381,26 @@ export function SearchDialog({
                 </div>
                 <div
                   id="search-form-inputs"
-                  className="mx-auto w-full max-w-xl pt-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-16"
+                  className={
+                    v2
+                      ? 'mx-auto w-full max-w-xl pt-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-16'
+                      : 'overflow-y-auto'
+                  }
                   onFocusCapture={handleSearchFormFocusCapture}
                   onBlurCapture={handleSearchFormBlurCapture}
                 >
-                  <SearchNeedInput
-                    inputId={SEARCH_INPUT_ID}
-                    onChange={handleSearchInputChange}
-                  />
+                  {v2 ? (
+                    <SearchNeedInput
+                      inputId={SEARCH_INPUT_ID}
+                      onChange={handleSearchInputChange}
+                    />
+                  ) : (
+                    <SearchBar
+                      inputId={SEARCH_INPUT_ID}
+                      hideOptions={clarifyVisible}
+                      onQueryInputChange={handleSearchInputChange}
+                    />
+                  )}
                   <LocationSearchBar
                     inputId={LOCATION_INPUT_ID}
                     className="mt-4"

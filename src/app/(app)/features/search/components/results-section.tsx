@@ -95,6 +95,8 @@ export function ResultsSection({
 }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 results list.
+  const v2 = appConfig.featureFlags.enableV2Api;
   const searchParams = useSearchParams();
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const { results, totalResults, currentPage } = useSearchResults();
@@ -186,7 +188,8 @@ export function ResultsSection({
       aria-labelledby={SEARCH_RESULTS_HEADING_ID}
       className={cn(
         // max-md:pb-24 keeps the phone's bottom bar off the last card and the help item.
-        'bg-muted/40 flex w-full flex-col gap-3 overflow-y-auto md:min-h-0 p-2.5 max-md:pb-24 lg:max-w-100 xl:max-w-137.5 print:bg-transparent',
+        'bg-muted/40 flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5 print:bg-transparent',
+        v2 && 'md:min-h-0 max-md:pb-24',
         className,
       )}
     >
@@ -238,7 +241,7 @@ export function ResultsSection({
       <div className="flex flex-col gap-6">
         <RenderResults cardLayout={cardLayout} />
         <ResultsPagination />
-        <ResultsHelpItem />
+        {v2 && <ResultsHelpItem />}
       </div>
     </section>
   );

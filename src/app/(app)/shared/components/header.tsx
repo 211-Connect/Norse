@@ -51,6 +51,8 @@ export const SAFE_EXIT_KEY = 'item-safe-exit-8';
 
 export function Header() {
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 header.
+  const v2 = appConfig.featureFlags.enableV2Api;
   const { t, i18n } = useTranslation('common');
   const router = useRouter();
   const pathname = usePathname();
@@ -316,7 +318,7 @@ export function Header() {
               className={cn(
                 buttonVariants({ variant: 'outline' }),
                 'flex items-center gap-1',
-                QUICK_EXIT_CLASSNAME,
+                v2 && QUICK_EXIT_CLASSNAME,
               )}
             >
               {appConfig.header.safeExit?.text}
@@ -348,20 +350,26 @@ export function Header() {
 
   // Below xl the floating Quick exit (quick-exit-button.tsx) is always on screen, also over the
   // open menu, so the menu does not list Quick exit a second time.
-  const mobileSitemap = sitemap.filter(
-    (item) => (item as { key?: string } | null)?.key !== SAFE_EXIT_KEY,
-  );
+  const mobileSitemap = v2
+    ? sitemap.filter(
+        (item) => (item as { key?: string } | null)?.key !== SAFE_EXIT_KEY,
+      )
+    : sitemap;
 
   return (
     <header
       id={HEADER_ID}
       className={cn(
         // The top bar has a light gray outline on every width (Lucas, 2026-11-20).
-        'z-[3] border-b border-gray-200 px-3 print:hidden',
+        'z-[3] px-3 print:hidden',
+        v2 && 'border-b border-gray-200',
         appConfig.header?.position === 'sticky' && 'sticky top-0',
         newLayoutEnabled
           ? 'py-[18px] lg:p-8'
-          : 'bg-white/95 shadow-xs backdrop-blur supports-[backdrop-filter]:bg-white/85',
+          : cn(
+              'bg-white/95 shadow-xs backdrop-blur supports-[backdrop-filter]:bg-white/85',
+              !v2 && 'border-b',
+            ),
       )}
     >
       <div
@@ -417,7 +425,7 @@ export function Header() {
               />
             </SheetTrigger>
             {/* The menu opens on the side of its button, the right (Lucas, 2026-11-20). */}
-            <SheetContent side="right">
+            <SheetContent side={v2 ? 'right' : 'left'}>
               <SheetHeader>
                 <SheetTitle>
                   <Link

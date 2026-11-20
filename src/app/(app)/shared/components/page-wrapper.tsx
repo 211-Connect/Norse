@@ -47,17 +47,20 @@ export const PageWrapper = ({
   fitViewport = false,
 }: PropsWithChildren<PageWrapperProps>) => {
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 page frame (no Quick exit button, the page scrolls as a whole).
+  const v2 = appConfig.featureFlags.enableV2Api;
+  const fit = v2 && fitViewport;
   const page = (
     <>
       <Header />
-      <QuickExitButton />
+      {v2 && <QuickExitButton />}
       <main
         id={MAIN_CONTENT_ID}
-        className={cn('flex flex-1 flex-col', fitViewport && 'md:min-h-0')}
+        className={cn('flex flex-1 flex-col', fit && 'md:min-h-0')}
       >
         {children}
       </main>
-      <div className={cn(fitViewport && 'md:hidden')}>
+      <div className={cn(fit && 'md:hidden')}>
         <Footer />
       </div>
     </>
@@ -79,7 +82,7 @@ export const PageWrapper = ({
         >
           Skip to content
         </a>
-        {fitViewport ? (
+        {fit ? (
           <div className="flex min-h-0 flex-1 flex-col max-md:contents md:h-dvh md:flex-none md:overflow-hidden">
             {page}
           </div>

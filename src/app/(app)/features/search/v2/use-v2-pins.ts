@@ -20,9 +20,11 @@ import {
  */
 export function useV2Pins(): { pins: V2Pin[] | undefined; truncated: boolean } {
   const params = useSearchParams()!;
-  const { tenantId } = useAppConfig();
+  const { tenantId, featureFlags } = useAppConfig();
   const callString = useMemo(() => pinsCallString(params), [params]);
-  const query = (params.get('query_label') ?? params.get('query') ?? '').trim();
+  const query = featureFlags.enableV2Api
+    ? (params.get('query_label') ?? params.get('query') ?? '').trim()
+    : '';
 
   const { data } = useQuery({
     queryKey: ['v2-pins', tenantId, callString],

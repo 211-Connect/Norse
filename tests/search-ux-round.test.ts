@@ -169,7 +169,7 @@ test('E: the search page fits the viewport on md and up; the footer steps aside 
   const wrapper = read('shared/components/page-wrapper.tsx');
   assert.match(wrapper, /fitViewport\?: boolean/);
   assert.match(wrapper, /md:h-dvh md:flex-none md:overflow-hidden/);
-  assert.match(wrapper, /fitViewport && 'md:hidden'/);
+  assert.match(wrapper, /fit && 'md:hidden'/);
   const shell = read('features/search/components/search-page-shell.tsx');
   assert.match(shell, /h-full min-h-0 w-full flex-col/);
   assert.match(

@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { useBreakpoint } from '@/app/(app)/shared/hooks/use-breakpoint';
 import { resultsViewAtom } from '@/app/(app)/shared/store/results';
 
@@ -42,6 +43,28 @@ export function SearchPageShell({
   const handleLegacyDialogClose = useCallback(() => {
     setHideSupplementaryContent(false);
   }, []);
+
+  // The tenant's v2 switch: off keeps the v1 results page layout.
+  if (!useFlag('enableV2Api')) {
+    return (
+      <div className="flex h-full w-full flex-col md:flex-row">
+        <FilterPanel
+          legacyAiClarifyState={legacyAiClarifyState}
+          onLegacyAiClarifyAction={handleLegacyDialogClose}
+          searchIntent={searchIntent}
+        />
+        {!hideSupplementaryContent && (
+          <>
+            <ResultsSection
+              cardLayout={cardLayout}
+              aiSearchAlert={aiSearchAlert}
+            />
+            <MapContainer />
+          </>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">

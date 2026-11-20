@@ -10,6 +10,7 @@ import {
   serializeSearchUrl,
 } from '@/app/(app)/features/search/intent';
 import { isDirectResultsLink } from '@/app/(app)/features/search/v2/landing';
+import { isV2Enabled } from '@/app/(app)/features/search/v2/enabled';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
@@ -60,6 +61,10 @@ export default async function FindPage({
     getCookies({ cookies }),
   ]);
   const search = toQueryString(raw);
+
+  // The tenant's v2 switch (Payload enableV2Api, default off): /find is the v2 page. A tenant
+  // without it has no /find, and a visitor lands on the v1 home page.
+  if (!isV2Enabled(await getAppConfigWithoutHost(locale))) redirect('/');
 
   if (isDirectResultsLink(search)) {
     const { intent, envelope } = liftQueryString(search.toString());

@@ -105,7 +105,7 @@ test('/find menu: the header and the menu panel keep the questions open', () => 
 
 test('/find menu: panel on the right, Quick exit listed once', () => {
   const src = read(HEADER);
-  assert.match(src, /<SheetContent side="right">/);
+  assert.match(src, /<SheetContent side=\{v2 \? 'right' : 'left'\}>/);
   assert.match(src, /\{mobileSitemap\}/);
   assert.match(src, /key !== SAFE_EXIT_KEY/);
   assert.match(src, /<li key=\{SAFE_EXIT_KEY\}>/);
@@ -116,7 +116,7 @@ test('/find menu: panel on the right, Quick exit listed once', () => {
 test('header: a light gray bottom outline on every width and layout', () => {
   assert.match(
     read(HEADER),
-    /'z-\[3\] border-b border-gray-200 px-3 print:hidden'/,
+    /v2 && 'border-b border-gray-200'/,
   );
   assert.match(
     read(GUIDE),
