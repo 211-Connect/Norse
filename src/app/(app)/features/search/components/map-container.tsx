@@ -15,13 +15,12 @@ import {
   Coords,
   cn,
   distanceBetweenCoordsInMiles,
-  formatAddressForDisplay,
 } from '@/app/(app)/shared/lib/utils';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { useSearchResults } from '../context/search-results-context';
-import { useV2Pins } from '../v2/use-v2-pins';
+import { useV2PinsQuery } from '../v2/use-v2-pins';
 import {
   type PinSite,
   type SearchPin,
@@ -110,12 +109,15 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
   const searchArea = regionArea?.geometry;
   // When the page holds every result, the pins could add nothing to it.
   const isWholeSearchOnPage = totalResults <= results.length;
+  // A v2 page asks `/v2/search/pins` through the same hook and route, so the map shows every
+  // located match of the search the list shows, not only the list's page.
+  const v2PinsQuery = useV2PinsQuery();
+  const mapPinsQuery = v2PinsQuery ?? pinsQuery;
   const { pins, isLoading: isLoadingPins } = useSearchPins(
-    isWholeSearchOnPage ? null : pinsQuery,
+    isWholeSearchOnPage ? null : mapPinsQuery,
+    { v2: v2PinsQuery !== null },
   );
   const coords = useAtomValue(userCoordinatesAtom);
-  // The map shows every located match of the search (`/v2/search/pins`), not only the list's page.
-  const { pins: v2Pins } = useV2Pins();
 
   useEffect(() => {
     const header = document.getElementById(HEADER_ID);
@@ -133,43 +135,16 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
 
   const pagePins = useMemo(() => results.map(toPin), [results]);
 
-  // Memoize to prevent unecessary map re-renders. The v2 pins (`/v2/search/pins`) cover every
-  // located match of the search; without them the map shows the list's current page.
-  const pageMarkers = useMemo(() => {
-    if (v2Pins?.length) {
-      const byId = new Map(results.map((r) => [r._id, r]));
-      return v2Pins.map((pin) => {
-        const hit = byId.get(pin.id);
-        const distance =
-          (coords?.length ?? 0) === 2
-            ? distanceBetweenCoordsInMiles(coords as Coords, pin.coordinates)
-            : undefined;
-        const name = pin.name ?? hit?.name ?? '';
-        const linkId = pin.service_at_location_id ?? hit?.id ?? pin.id;
-        return {
-          id: pin.id,
-          coordinates: pin.coordinates,
-          label: name,
-          popup: (
-            <MapPopup
-              distance={distance}
-              id={linkId}
-              name={name}
-              address={
-                formatAddressForDisplay(pin.physical_address) || hit?.address
-              }
-            />
-          ),
-        };
-      });
-    }
-    return pagePins.map((pin) => toMarker([pin], coords, t));
-  }, [coords, pagePins, results, t, v2Pins]);
+  // Memoize to prevent unecessary map re-renders.
+  const pageMarkers = useMemo(
+    () => pagePins.map((pin) => toMarker([pin], coords, t)),
+    [coords, pagePins, t],
+  );
 
   // With the flag on, the page's results are circles from the first render;
   // the rest of the search joins them once its pins arrive.
   const mapPoints = useMemo(() => {
-    if (!pinsQuery) return null;
+    if (!mapPinsQuery) return null;
 
     const onPage = new Set(pagePins.map((pin) => pin.id));
 
@@ -181,7 +156,7 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
       ...toMarker(site, coords, t, { listIds: onPage, isLazy: true }),
       inList: onPage.has(site[0].id),
     }));
-  }, [coords, pagePins, pins, pinsQuery, t]);
+  }, [coords, pagePins, pins, mapPinsQuery, t]);
 
   // The legend explains only what the map shows.
   const legendRows = useMemo(

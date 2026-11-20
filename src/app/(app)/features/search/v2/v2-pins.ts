@@ -46,6 +46,10 @@ export function pinsCallString(
   return new URLSearchParams(picked).toString();
 }
 
+import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
+
+import type { SearchPin } from '../utils/map-pins';
+
 export const DEFAULT_LOCALE = 'en';
 
 /** The upstream URL: the forwarded parameters, then `tenant_id` and `locale` (always both). */
@@ -88,6 +92,22 @@ export function usablePins(
   return pins.filter(
     (p) => p && typeof p.id === 'string' && isCoordinate(p.coordinates),
   );
+}
+
+/**
+ * A v2 pin as the v1 map pins (`SearchPin`): the map groups, dedupes and draws both with the same
+ * code. The card link is the service-at-location id; the address is the pin's own physical address.
+ */
+export function toSearchPins(
+  response: Partial<V2PinsResponse> | null | undefined,
+): SearchPin[] {
+  return usablePins(response).map((pin) => ({
+    id: pin.id,
+    resourceId: pin.service_at_location_id ?? pin.id,
+    name: pin.name,
+    address: formatAddressForDisplay(pin.physical_address),
+    coordinates: pin.coordinates,
+  }));
 }
 
 /**

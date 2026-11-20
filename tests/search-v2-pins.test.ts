@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 import {
   buildPinsUrl,
   pinsCallString,
+  toSearchPins,
   usablePins,
 } from '../src/app/(app)/features/search/v2/v2-pins';
 
@@ -72,4 +74,39 @@ test('usablePins: drops pins without an id or a lon,lat pair; tolerates a bad bo
   );
   assert.deepEqual(usablePins(null), []);
   assert.deepEqual(usablePins({} as never), []);
+});
+
+test('toSearchPins: a v2 pin becomes the v1 map pin the one map code draws', () => {
+  const [pin, ...rest] = toSearchPins({
+    pins: [
+      {
+        id: 'hit-1',
+        service_at_location_id: 'sal-1',
+        name: 'Food Bank',
+        physical_address: {
+          address_1: '1 Main St',
+          city: 'Seattle',
+          state_province: 'WA',
+          postal_code: '98101',
+        },
+        coordinates: [-122.3, 47.6],
+      },
+      { id: 'no-coords', coordinates: null } as never,
+    ],
+  });
+  assert.equal(rest.length, 0);
+  assert.equal(pin.id, 'hit-1');
+  assert.equal(pin.resourceId, 'sal-1');
+  assert.equal(pin.name, 'Food Bank');
+  assert.deepEqual(pin.coordinates, [-122.3, 47.6]);
+  assert.match(pin.address, /1 Main St/);
+});
+
+test('one pins hook and one route: no second copy for v2', () => {
+  const read = (f: string) => readFileSync(f, 'utf8');
+  const hook = read('src/app/(app)/features/search/hooks/useSearchPins.ts');
+  assert.match(hook, /v2=1&/);
+  const route = read('src/app/(app)/api/search-pins/route.ts');
+  assert.match(route, /enableV2Api/);
+  assert.equal(existsSync('src/app/(app)/api/v2-search/pins/route.ts'), false);
 });

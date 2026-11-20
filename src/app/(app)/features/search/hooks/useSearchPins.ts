@@ -11,14 +11,21 @@ const ONE_HOUR_MS = 60 * 60 * 1000;
  * so turning a page of the list reuses the pins already loaded. Null until
  * they arrive, and when they fail: the map then shows the page's own results.
  *
- * @param pinsQuery  From `toPinsQuery`, or null when the map shows the page only.
+ * @param pinsQuery  From `toPinsQuery` (or `useV2PinsQuery` with `v2`), or null when the map shows
+ *                  the page only.
+ * @param v2  The query is a v2 page's: the same route asks Norse-API `/v2/search/pins`.
  */
-export function useSearchPins(pinsQuery: string | null) {
+export function useSearchPins(
+  pinsQuery: string | null,
+  { v2 = false }: { v2?: boolean } = {},
+) {
   const { data, isFetching } = useQuery({
-    queryKey: ['search-pins', pinsQuery],
+    queryKey: ['search-pins', v2, pinsQuery],
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        withOptionalCustomBasePath(`/api/search-pins?${pinsQuery}`),
+        withOptionalCustomBasePath(
+          `/api/search-pins?${v2 ? 'v2=1&' : ''}${pinsQuery}`,
+        ),
         { signal },
       );
 
