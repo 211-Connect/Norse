@@ -90,6 +90,7 @@ import {
   type V2Hotline,
   type V2Question,
 } from '../v2/use-v2-search';
+import { DEMO_PEEK_ENABLED } from '../v2/demo-flag';
 import { helpControlHidden } from '../v2/help-visibility';
 import {
   cardWording,
@@ -1923,7 +1924,7 @@ export function SearchRefineQuestion() {
 /** Demo only: shows Skyler what drove the screen. Not part of the proposed design. */
 export function SearchClassifierPeek() {
   const { data, error, query } = useV2Search();
-  if (!query) return null;
+  if (!DEMO_PEEK_ENABLED || !query) return null;
 
   return (
     <details className="text-muted-foreground mt-3 hidden text-xs md:block print:hidden">
