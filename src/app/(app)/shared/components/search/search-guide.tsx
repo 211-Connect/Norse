@@ -609,6 +609,7 @@ export function SearchGuideFromUrl({
                 </p>
                 <LocationSearchBar
                   inputId={LOCATION_INPUT_ID}
+                  listClassName="z-30"
                   className="w-full"
                 />
                 {locationError && (

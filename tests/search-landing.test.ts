@@ -256,3 +256,24 @@ test('the landing page provides the search layout context to its location boxes'
   assert.match(src, /<MainSearchLayoutContextProvider>/);
   assert.match(src, /<\/MainSearchLayoutContextProvider>/);
 });
+
+// Regression (live walk 2026-11-20, 390 px): the place list flipped above the input and slid under the
+// pinned landing header (z-20), so 'Syracuse, New York' could not be tapped. Both /find boxes lift it.
+test('the /find location boxes lift their suggestion list above the pinned header', () => {
+  const header = read('features/search/components/search-landing.tsx').match(
+    /className="([^"]*)"\s*data-testid="landing-header"/,
+  )?.[1];
+  assert.match(header ?? '', /max-sm:z-20/);
+  assert.match(
+    read('shared/components/search/search-guide.tsx'),
+    /<LocationSearchBar\s+inputId=\{LOCATION_INPUT_ID\}\s+listClassName="z-30"/,
+  );
+  assert.match(
+    read('features/search/components/landing-location.tsx'),
+    /listClassName="z-30"/,
+  );
+  assert.match(
+    read('shared/components/search/location-search-bar.tsx'),
+    /props\.listClassName/,
+  );
+});

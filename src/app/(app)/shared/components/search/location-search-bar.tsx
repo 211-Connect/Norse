@@ -35,6 +35,11 @@ type BaseProps = {
   inputId?: string;
   showIcon?: boolean;
   placeholder?: string;
+  /**
+   * Extra classes for the suggestion list. The /find page pins its header (z-20) over a scroller, and
+   * a list flipped above the input slid under it (live walk 2026-11-20); it passes `z-30`.
+   */
+  listClassName?: string;
 };
 
 // Integrated mode - uses global atoms and context
@@ -355,7 +360,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         loading={isPendingResults}
         // Standalone fields live in dialogs, where the list floats over the
         // dialog's other content.
-        listboxClassName={isStandalone ? FLOATING_LISTBOX_CLASSNAME : undefined}
+        listboxClassName={cn(
+          isStandalone ? FLOATING_LISTBOX_CLASSNAME : undefined,
+          props.listClassName,
+        )}
         positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
       />
       {validationError && (

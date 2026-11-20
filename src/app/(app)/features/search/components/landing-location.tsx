@@ -54,7 +54,6 @@ export function LandingLocation() {
       write(locationChanges(searchLocation, searchCoordinates, searchRegion));
       setChanging(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchLocation]);
 
   useEffect(() => {
@@ -82,7 +81,11 @@ export function LandingLocation() {
         data-testid="landing-location"
       >
         <div className="min-w-0 flex-1">
-          <LocationSearchBar inputId={INPUT_ID} className="w-full" />
+          <LocationSearchBar
+            inputId={INPUT_ID}
+            className="w-full"
+            listClassName="z-30"
+          />
         </div>
         <button
           type="button"
