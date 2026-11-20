@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { useSearchResults } from '../context/search-results-context';
 import { sortLabel, sortOptionValues } from '../utils/sort-options';
