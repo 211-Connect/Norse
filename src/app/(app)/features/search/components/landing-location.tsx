@@ -2,9 +2,15 @@
 
 import { useAtomValue } from 'jotai';
 import { MapPin } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import { LocationSearchBar } from '@/app/(app)/shared/components/search/location-search-bar';
+import { MainSearchLayoutContext } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout-context';
+import {
+  LocationCookieSnapshot,
+  restoreLocationCookies,
+  snapshotLocationCookies,
+} from '@/app/(app)/shared/lib/location-cookies';
 import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import {
@@ -18,6 +24,8 @@ import {
   isPickedPlace,
   landingLocationLabel,
   locationChanges,
+  PlaceBeforeChange,
+  restorePlace,
 } from '../v2/landing';
 import { useV2Navigate } from '../v2/use-v2-search';
 
@@ -37,6 +45,31 @@ export function LandingLocation() {
   const [changing, setChanging] = useState(false);
   const label = landingLocationLabel(searchLocation);
   const lastLocation = useRef(searchLocation);
+  const setSearch = useContext(MainSearchLayoutContext)?.setSearch;
+  // The place shown when Change was tapped. The box edits the shared search state as the person
+  // types or taps x, so Cancel puts this back: only a new pick replaces the place (Lucas, 2026-11-20).
+  const before = useRef<
+    (PlaceBeforeChange & { cookies: LocationCookieSnapshot }) | null
+  >(null);
+
+  const startChange = () => {
+    before.current = {
+      location: searchLocation,
+      coordinates: searchCoordinates,
+      region: searchRegion,
+      cookies: snapshotLocationCookies(),
+    };
+    setChanging(true);
+  };
+
+  // Cancel closes the box first and puts the place back after: removing the focused box fires a
+  // blur, and the box's blur auto-pick would otherwise overwrite the restored place.
+  const restoreAfterClose = useRef<typeof before.current>(null);
+  const cancelChange = () => {
+    restoreAfterClose.current = before.current;
+    before.current = null;
+    setChanging(false);
+  };
 
   // A place picked in the box writes to the URL, so the questions and results follow it.
   useEffect(() => {
@@ -55,7 +88,15 @@ export function LandingLocation() {
   }, [searchLocation]);
 
   useEffect(() => {
-    if (changing) document.getElementById(INPUT_ID)?.focus();
+    if (changing) {
+      document.getElementById(INPUT_ID)?.focus();
+      return;
+    }
+    const saved = restoreAfterClose.current;
+    restoreAfterClose.current = null;
+    if (!saved) return;
+    restoreLocationCookies(saved.cookies);
+    setSearch?.((prev) => restorePlace(prev, saved));
   }, [changing]);
 
   if (!label && !changing) return null;
@@ -82,7 +123,10 @@ export function LandingLocation() {
         <button
           type="button"
           className={cn(BUTTON, '-mt-[5px]')}
-          onClick={() => setChanging(false)}
+          data-testid="landing-location-cancel"
+          // Leaving the box auto-picks the top match; Cancel must not pick (tap, click or Tab).
+          data-skip-blur-pick
+          onClick={cancelChange}
         >
           Cancel
         </button>
@@ -104,7 +148,7 @@ export function LandingLocation() {
         className={BUTTON}
         aria-label={`Change location: ${label}`}
         data-testid="landing-location-change"
-        onClick={() => setChanging(true)}
+        onClick={startChange}
       >
         Change
       </button>

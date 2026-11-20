@@ -19,6 +19,9 @@ import { enterAction } from './enter-action';
 import { groupAutocompleteOptions } from './group-options';
 import { AutocompleteOption, AutocompleteProps } from './types';
 
+/** Mark a control with this attribute so moving focus to it never auto-picks an option. */
+export const SKIP_BLUR_PICK_SELECTOR = '[data-skip-blur-pick]';
+
 /** No option highlighted: the input shows what the user typed. */
 const NONE = -1;
 
@@ -90,6 +93,8 @@ export function useAutocomplete({
   const isComposingRef = useRef(false);
   /** The user is touching/scrolling the list itself: keep it open on blur. */
   const keepOpenOnBlurRef = useRef(false);
+  // Set by a pointer down on a data-skip-blur-pick control: the blur that follows picks nothing.
+  const skipBlurPickRef = useRef(false);
   /** Focus is being restored programmatically (after clearing): don't open. */
   const skipNextFocusOpenRef = useRef(false);
   const openOnFocusTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -369,10 +374,19 @@ export function useAutocomplete({
       keepOpenOnBlurRef.current ||
       Boolean(nextFocus && listboxRef.current?.contains(nextFocus));
 
+    // Focus moving to a control marked data-skip-blur-pick (the /find place row's Cancel) picks
+    // nothing: Cancel keeps the old place (Lucas, 2026-11-20).
+    const leavingToSkipPick =
+      skipBlurPickRef.current ||
+      (nextFocus instanceof Element &&
+        nextFocus.closest(SKIP_BLUR_PICK_SELECTOR) != null);
+    skipBlurPickRef.current = false;
+
     // An empty box picks nothing on blur: after the x, the old list may still be there
     // (live walk 2026-11-20: leaving an emptied box put the old place back).
     if (
       autoSelectOnBlurIndex != null &&
+      !leavingToSkipPick &&
       inputText.trim() !== '' &&
       !selectedOption &&
       !isInteractingWithList &&
@@ -450,7 +464,12 @@ export function useAutocomplete({
     setOpen(false);
     setActiveIndex(NONE);
     keepOpenOnBlurRef.current = false;
+    skipBlurPickRef.current =
+      event.target instanceof Element &&
+      event.target.closest(SKIP_BLUR_PICK_SELECTOR) != null;
     inputRef.current?.blur();
+    // No blur followed (the box was not focused): the flag must not leak into a later blur.
+    skipBlurPickRef.current = false;
   }, []);
 
   useOnPointerDownOutside(wrapperRef, handlePointerDownOutside);

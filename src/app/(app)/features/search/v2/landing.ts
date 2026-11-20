@@ -139,3 +139,28 @@ export function isPickedPlace(
   const point = Array.isArray(coords) ? coords.length > 0 : Boolean(coords);
   return point || Boolean(region);
 }
+
+/** The place the /find place row showed when Change was tapped. */
+export interface PlaceBeforeChange {
+  location: string;
+  coordinates: unknown[];
+  region: string;
+}
+
+/**
+ * Cancel on the /find place row: the search state with the place from before Change. Clearing the
+ * box (x) or typing only edits the box; only a new pick replaces the place (Lucas, 2026-11-20).
+ */
+export function restorePlace<T extends object>(
+  prev: T,
+  before: PlaceBeforeChange,
+): T {
+  return {
+    ...prev,
+    searchLocation: before.location,
+    prevSearchLocation: before.location,
+    searchCoordinates: before.coordinates,
+    searchRegion: before.region,
+    searchLocationValidationError: '',
+  };
+}

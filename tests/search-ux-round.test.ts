@@ -264,3 +264,65 @@ test('B: a pick is saved even though the picked place hides the step in the same
   );
   assert.match(src, /wasShowingLocation\.current = showLocation;/);
 });
+
+// ---- Lucas 2026-11-20: Change -> clear the box -> Cancel restores the old place ----
+
+test('Cancel on the place row puts back the place from before Change', async () => {
+  const { restorePlace } =
+    await import('../src/app/(app)/features/search/v2/landing');
+  // State after x in the box: LocationSearchBar's decommit empties the place.
+  const cleared = {
+    searchLocation: '',
+    prevSearchLocation: '',
+    searchCoordinates: [],
+    searchRegion: '',
+    searchLocationValidationError: '',
+    other: 1,
+  };
+  const back = restorePlace(cleared, {
+    location: 'Syracuse, New York',
+    coordinates: [-76.15, 43.05],
+    region: '',
+  });
+  assert.equal(back.searchLocation, 'Syracuse, New York');
+  assert.equal(back.prevSearchLocation, 'Syracuse, New York');
+  assert.deepEqual(back.searchCoordinates, [-76.15, 43.05]);
+  assert.equal(back.other, 1);
+});
+
+test('Cancel on the place row restores the state and the cookies saved at Change', () => {
+  const src = read(LANDING_LOCATION);
+  assert.match(src, /onClick=\{startChange\}/);
+  assert.match(src, /snapshotLocationCookies\(\)/);
+  // The restore runs after the box closes, so the blur on removal cannot overwrite it.
+  assert.match(
+    src,
+    /const cancelChange = \(\) => \{\s*restoreAfterClose\.current = before\.current;[\s\S]*?setChanging\(false\);/,
+  );
+  assert.match(
+    src,
+    /const saved = restoreAfterClose\.current;[\s\S]*?restoreLocationCookies\(saved\.cookies\);\s*setSearch\?\.\(\(prev\) => restorePlace\(prev, saved\)\);\s*\}, \[changing\]\);/,
+  );
+  assert.match(
+    src,
+    /data-testid="landing-location-cancel"[\s\S]{0,400}onClick=\{cancelChange\}/,
+  );
+});
+
+// Live check 2026-11-20: after typing 'ev', tapping Cancel blurred the box and the blur auto-pick
+// chose Evanston, so the row showed the new place. Cancel must never pick.
+test('Cancel on the place row never triggers the blur auto-pick', () => {
+  const row = read(LANDING_LOCATION);
+  assert.match(row, /data-skip-blur-pick\s+onClick=\{cancelChange\}/);
+  const hook = read('shared/components/ui/autocomplete/use-autocomplete.ts');
+  assert.match(hook, /closest\(SKIP_BLUR_PICK_SELECTOR\)/);
+  // A tap or click outside blurs the box from the pointer-down handler (no relatedTarget).
+  assert.match(
+    hook,
+    /skipBlurPickRef\.current =\s+event\.target instanceof Element &&\s+event\.target\.closest\(SKIP_BLUR_PICK_SELECTOR\) != null;\s+inputRef\.current\?\.blur\(\);/,
+  );
+  assert.match(
+    hook,
+    /autoSelectOnBlurIndex != null &&\s+!leavingToSkipPick &&/,
+  );
+});
