@@ -116,10 +116,16 @@ MapContainer
   first.
 - **Clicking a circle in the list** scrolls the list to that result, just below
   the header when the tenant's header is sticky.
-- **A legend** in the map's corner explains the two circles, the count on a shared
+- **A legend** in the map's corner explains the two circles ("On this page" and
+  "On another page", so a light circle reads as a result still in the search,
+  just not on the list's current page), the count on a shared
   address and the user's location, each row only when the map shows it. Below
   `lg`, where the map is 320px high, it stays folded behind a "Map legend"
   button, which shows a spinner while the rest of the circles load.
+- **Zoom buttons** (+ / −) sit in the top-right corner of every MapLibre map
+  (search, resource, favorites), for readers without a scroll wheel or pinch.
+  Using them counts as using the map, so the rest of the circles arriving later
+  doesn't refit the view.
 - **First load and new searches** fit the central 95% of locations
   (`getCoreExtent`), so a few distant results don't zoom out to the continent.
 - **Turning the list's page** recolours the circles and leaves the map where it

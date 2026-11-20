@@ -337,5 +337,10 @@
       "description": "The need to give or receive through community generosity — whether a person needs donated goods, or has the capacity and desire to contribute time, skills, or resources to others. Encompasses needs on both sides of civic exchange: individuals seeking material donations or donated services, and individuals or organizations seeking to connect volunteers and donors with meaningful opportunities to help.",
       "displayDescription": "Need donated goods or want to help others? We can connect people who want to give with people who need a hand."
     }
+  },
+  "map": {
+    "controls_label": "Map zoom",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out"
   }
 }

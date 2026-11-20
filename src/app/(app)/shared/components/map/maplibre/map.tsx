@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import mapLibreGl, {
   AttributionControl,
   LngLatBounds,
@@ -12,11 +12,13 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 import {
   HEADER_ID,
   MAPLIBRE_STYLE_URL,
 } from '@/app/(app)/shared/lib/constants';
+import { cn } from '@/app/(app)/shared/lib/utils';
 import { createLogger } from '@/lib/logger';
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
@@ -61,6 +63,9 @@ const createPointFocusTarget = () => {
 
   return element;
 };
+
+const ZOOM_BUTTON =
+  'hover:bg-accent focus-visible:ring-ring flex size-8 items-center justify-center transition-colors focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset';
 
 const POPUP_MAP_MARGIN_PX = 8;
 const POPUP_WIDTH_PX = 240;
@@ -140,6 +145,7 @@ export function Map({
   points,
   searchArea,
 }: MapProps) {
+  const { t } = useTranslation('common');
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapLibreMap = useRef<any>(null);
   const _markers = useRef<maplibregl.Marker[]>([]);
@@ -748,8 +754,19 @@ export function Map({
     };
   }, [serviceArea, markers]);
 
+  // For readers without a scroll wheel or pinch: the buttons zoom around the
+  // map's centre, and count as using the map so a later fit keeps their view.
+  const zoomBy = (direction: 1 | -1) => {
+    const map = mapLibreMap.current;
+    if (!map) return;
+
+    userInteractedRef.current = true;
+    if (direction > 0) map.zoomIn();
+    else map.zoomOut();
+  };
+
   return (
-    <div className="size-full">
+    <div className="relative size-full">
       {mapError ? (
         <MapErrorFallback error={mapError} />
       ) : (
@@ -759,6 +776,31 @@ export function Map({
             data-testid="search-map"
             className="size-full"
           ></div>
+          <div
+            role="group"
+            aria-label={t('map.controls_label', { defaultValue: 'Map zoom' })}
+            data-testid="map-zoom-controls"
+            className="bg-card/95 text-card-foreground absolute top-2 right-2 flex flex-col overflow-hidden rounded-md border shadow-sm print:hidden"
+          >
+            <button
+              type="button"
+              onClick={() => zoomBy(1)}
+              aria-label={t('map.zoom_in', { defaultValue: 'Zoom in' })}
+              title={t('map.zoom_in', { defaultValue: 'Zoom in' })}
+              className={ZOOM_BUTTON}
+            >
+              <Plus aria-hidden className="size-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => zoomBy(-1)}
+              aria-label={t('map.zoom_out', { defaultValue: 'Zoom out' })}
+              title={t('map.zoom_out', { defaultValue: 'Zoom out' })}
+              className={cn(ZOOM_BUTTON, 'border-t')}
+            >
+              <Minus aria-hidden className="size-4" />
+            </button>
+          </div>
           {activePopup &&
             createPortal(
               <div
