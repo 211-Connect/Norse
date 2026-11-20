@@ -23,9 +23,24 @@ export const V2_FORWARD = [
   'taxonomy',
   'page',
   'sort',
+  'limit',
 ] as const;
 
 export const DEFAULT_LOCALE = 'en';
+
+/** The browser-side path to the page's v2 route. The limit is a tenant setting, not part of the cache key. */
+export function v2ApiPath(
+  tenantId: string | undefined,
+  callString: string,
+  limit?: number,
+): string {
+  let path = `/api/v2-search?tenant_id=${encodeURIComponent(tenantId ?? '')}`;
+  if (limit !== undefined && Number.isInteger(limit) && limit > 0) {
+    path += `&limit=${limit}`;
+  }
+  if (callString) path += `&${callString}`;
+  return path;
+}
 
 /** The upstream URL: the forwarded parameters, then `tenant_id` and `locale` (always both). */
 export function buildV2Url(

@@ -19,6 +19,7 @@ import {
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import { resultsUrlFor } from './landing';
+import { v2ApiPath } from './v2-request';
 import { seedMatches, v2CallString, type V2Seed } from './v2-seed';
 
 import {
@@ -66,12 +67,10 @@ export function useV2Url() {
 async function fetchV2(
   tenantId: string | undefined,
   callString: string,
+  limit?: number,
   signal?: AbortSignal,
 ): Promise<V2Response> {
-  const res = await fetch(
-    `/api/v2-search?tenant_id=${encodeURIComponent(tenantId ?? '')}&${callString}`,
-    { signal },
-  );
+  const res = await fetch(v2ApiPath(tenantId, callString, limit), { signal });
   if (!res.ok) throw new Error(`v2 search ${res.status}`);
   return (await res.json()) as V2Response;
 }
@@ -94,7 +93,8 @@ export function V2SeedProvider({
 
 export function useV2Search() {
   const { params, query: urlQuery } = useV2Url();
-  const { tenantId, featureFlags } = useAppConfig();
+  const { tenantId, featureFlags, search } = useAppConfig();
+  const limit = search.resultsLimit;
   // The tenant's switch: with it off no v2 call runs, and `query` is empty, so every caller shows v1.
   const v2On = featureFlags.enableV2Api;
   const query = v2On ? urlQuery : '';
@@ -109,7 +109,7 @@ export function useV2Search() {
     enabled: Boolean(query && tenantId),
     placeholderData: keepPreviousData,
     staleTime: 60_000,
-    queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
+    queryFn: ({ signal }) => fetchV2(tenantId, callString, limit, signal),
   });
   // The query client outlives requests on the server, so a server render uses the seed, never an
   // older cache entry. On the client the two are the same until the first refetch.
@@ -138,7 +138,8 @@ export function useV2Facets() {
  */
 export function useV2Prefetch() {
   const { params } = useV2Url();
-  const { tenantId } = useAppConfig();
+  const { tenantId, search } = useAppConfig();
+  const limit = search.resultsLimit;
   const queryClient = useQueryClient();
   return useCallback(
     async (changes: V2Changes) => {
@@ -147,11 +148,11 @@ export function useV2Prefetch() {
         .fetchQuery({
           queryKey: ['v2-search', tenantId, callString],
           staleTime: 60_000,
-          queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
+          queryFn: ({ signal }) => fetchV2(tenantId, callString, limit, signal),
         })
         .catch(() => undefined);
     },
-    [params, queryClient, tenantId],
+    [params, queryClient, tenantId, limit],
   );
 }
 
