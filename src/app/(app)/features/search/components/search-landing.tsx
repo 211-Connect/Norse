@@ -94,18 +94,15 @@ export function SearchLanding() {
           focusWhenReady('/', '[data-testid="search-trigger"]');
         }}
         onEscape={onEscape}
+        innerScroll
       >
         <div
-          className="flex flex-col gap-4 pt-6 max-sm:pt-0"
+          className="flex min-h-0 flex-1 flex-col gap-4 pt-6 max-sm:pt-0"
           data-testid="landing-popup"
         >
-          {/* Phone: this block (crisis chips + search box) stays pinned while the options scroll.
-            The card has 3.5rem top padding (room for Quick exit), and Chrome pins a sticky block
-            inside that padding: top-0 pinned it 3.5rem low, over the loading line and the question
-            title (Lucas 2026-11-19). -top-[4.75rem] pins it at the card's top edge; pt-[4.75rem] keeps the room. */}
-          <div
-            className="max-sm:sticky max-sm:-top-[4.75rem] max-sm:z-20 max-sm:-mt-[4.75rem] max-sm:bg-white max-sm:pt-[4.75rem] max-sm:pb-2"
-            data-testid="landing-header"
+          {/* Crisis chips and the search box (or its compact Edit row) and the place row. This block
+            never scrolls: the questions below it do (GuideShell innerScroll, guide-scroll). */}
+          <div className="relative z-20 shrink-0" data-testid="landing-header"
           >
             <EmergencyLine />
             {compact && (

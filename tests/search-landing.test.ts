@@ -263,7 +263,7 @@ test('the /find location boxes lift their suggestion list above the pinned heade
   const header = read('features/search/components/search-landing.tsx').match(
     /className="([^"]*)"\s*data-testid="landing-header"/,
   )?.[1];
-  assert.match(header ?? '', /max-sm:z-20/);
+  assert.match(header ?? '', /z-20/);
   assert.match(
     read('shared/components/search/search-guide.tsx'),
     /<LocationSearchBar\s+inputId=\{LOCATION_INPUT_ID\}\s+listClassName="z-30 /,

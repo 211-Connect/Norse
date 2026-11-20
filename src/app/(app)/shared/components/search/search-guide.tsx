@@ -82,6 +82,11 @@ import { SearchNeedInput } from './search-need-form';
 /** `asked` holds this id once the location step is done or put off. */
 const LOCATION_STEP = 'location';
 
+/** The card scrolls as a whole (the default). */
+const CARD_SCROLL_CLASS = 'overflow-y-auto overscroll-contain scroll-pb-24';
+/** `innerScroll`: the card itself never scrolls; a child with `min-h-0 flex-1 overflow-y-auto` does. */
+const CARD_INNER_SCROLL_CLASS = 'overflow-hidden';
+
 /**
  * The floating card. The header stays clear of it. Non-modal, so Quick exit and the nav still work.
  */
@@ -91,6 +96,7 @@ export function GuideShell({
   focusId,
   onClose,
   onEscape,
+  innerScroll = false,
 }: {
   children: ReactNode;
   dataStep: string;
@@ -98,6 +104,11 @@ export function GuideShell({
   onClose: () => void;
   /** Return true to keep the card open on Escape (the landing page's edit mode uses it). */
   onEscape?: () => boolean;
+  /**
+   * The card keeps its header and bottom bar in place: it does not scroll, and the page marks one
+   * child as the scroll region. The default scrolls the whole card.
+   */
+  innerScroll?: boolean;
 }) {
   const [top, setTop] = useState(0);
   useLockPageScroll();
@@ -128,7 +139,10 @@ export function GuideShell({
           id={SEARCH_DIALOG_ID}
           data-testid={SEARCH_DIALOG_ID}
           data-step={dataStep}
-          className="fixed top-[calc(var(--guide-top)+24px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-48px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 overflow-y-auto overscroll-contain scroll-pb-24 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.75rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none"
+          className={cn(
+            'fixed top-[calc(var(--guide-top)+24px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-48px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.75rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none',
+            innerScroll ? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS,
+          )}
           style={
             {
               // Below xl the floating Quick exit holds the bottom edge.
@@ -191,10 +205,32 @@ function PageShell({
       aria-label="Questions about your search"
       data-testid="landing-guide"
       data-step={dataStep}
-      className="flex flex-col gap-4"
+      className="flex min-h-0 flex-1 flex-col gap-4"
     >
       {children}
     </section>
+  );
+}
+
+/**
+ * On the landing page the questions scroll in this region while the bottom bar stays below it.
+ * In the dialog the whole card scrolls, so the children go straight in.
+ */
+function GuideRegion({
+  onPage,
+  children,
+}: {
+  onPage: boolean;
+  children: ReactNode;
+}) {
+  if (!onPage) return <>{children}</>;
+  return (
+    <div
+      className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain"
+      data-testid="guide-scroll"
+    >
+      {children}
+    </div>
   );
 }
 
@@ -522,6 +558,7 @@ export function SearchGuideFromUrl({
       dataStep={showLocation ? 'location' : question ? 'question' : 'loading'}
       onClose={closeGuide}
     >
+      <GuideRegion onPage={onPage}>
       <div
         className={cn('flex flex-col items-start gap-1', !onPage && 'pr-10')}
       >
@@ -757,14 +794,19 @@ export function SearchGuideFromUrl({
         </p>
       )}
 
+      </GuideRegion>
+
       {showBottomBar({ waiting, showBar, isPending, placeSaving }) && (
         <div
           className={cn(
             'flex min-h-11 flex-wrap items-center justify-between gap-3',
+            // On the page the bar is the card's last row, outside the scroll region: it needs no sticky.
+            onPage
+              ? 'shrink-0 -mx-5 border-t bg-white px-5 pt-3 max-sm:flex-nowrap max-sm:gap-2'
+              : 'sticky -bottom-5 z-10 -mx-5 -mb-5 border-t bg-white px-5 py-3 max-sm:flex-nowrap max-sm:gap-2 max-sm:-bottom-[calc(1.25rem+var(--exit-room))] max-sm:-mb-[calc(1.25rem+var(--exit-room))] max-sm:pb-[calc(0.75rem+var(--exit-room))]',
             // Both placements sit in the scrolling guide dialog (p-5). The actions stay in view: on a
             // 390x700 phone "Show results now" sat 211 px below the fold (UX pass 2026-11-16).
             // -bottom-5 covers the dialog's own bottom padding, so no content shows under the row.
-            'sticky -bottom-5 z-10 -mx-5 -mb-5 border-t bg-white px-5 py-3 max-sm:flex-nowrap max-sm:gap-2 max-sm:-bottom-[calc(1.25rem+var(--exit-room))] max-sm:-mb-[calc(1.25rem+var(--exit-room))] max-sm:pb-[calc(0.75rem+var(--exit-room))]',
           )}
         >
           {canSkipQuestion && (

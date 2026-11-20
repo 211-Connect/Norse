@@ -106,3 +106,32 @@ test('D: the bottom bar hides while waiting, loading or saving a place', () => {
   assert.equal(showBottomBar({ ...on, placeSaving: true }), false);
   assert.match(read(GUIDE), /showBottomBar\(\{/);
 });
+
+// ---- C. Fixed header and bottom bar, only the middle scrolls ----
+
+test('C: /find asks the card for inner scrolling; the card then hides overflow instead of scrolling', () => {
+  assert.match(read('features/search/components/search-landing.tsx'), /<GuideShell[\s\S]*?\n\s+innerScroll\n/);
+  const guide = read(GUIDE);
+  const outer = guide.match(/const CARD_SCROLL_CLASS =\s*'([^']*)'/)?.[1] ?? '';
+  const inner = guide.match(/const CARD_INNER_SCROLL_CLASS =\s*'([^']*)'/)?.[1] ?? '';
+  assert.match(outer, /overflow-y-auto/);
+  assert.match(inner, /overflow-hidden/);
+  assert.doesNotMatch(inner, /overflow-y-auto/);
+  assert.match(guide, /innerScroll \? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS/);
+});
+
+test('C: on the page the questions scroll in their own region and the bottom bar stays below it', () => {
+  const guide = read(GUIDE);
+  assert.match(guide, /data-testid="guide-scroll"/);
+  const region = guide.match(/className="([^"]*)"\s+data-testid="guide-scroll"/)?.[1] ?? '';
+  assert.match(region, /overflow-y-auto/);
+  assert.match(region, /min-h-0 flex-1/);
+  assert.match(guide, /onPage\s*\?\s*'shrink-0/);
+});
+
+test('C: the landing header no longer pins itself with the sticky hack', () => {
+  const landing = read('features/search/components/search-landing.tsx');
+  assert.doesNotMatch(landing, /max-sm:sticky/);
+  assert.match(landing, /data-testid="landing-popup"/);
+  assert.match(landing, /min-h-0 flex-1 flex-col gap-4/);
+});
