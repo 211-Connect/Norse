@@ -84,6 +84,7 @@ export function Autocomplete({
   loading = false,
   listboxClassName,
   placement = 'auto',
+  waitForOptions = false,
 }: AutocompleteProps) {
   const { t } = useTranslation('common');
   const labelId = useId();
@@ -102,6 +103,8 @@ export function Autocomplete({
     onClear,
     onDecommit,
     onEscape,
+    loading,
+    waitForOptions,
   });
   const { open, activeIndex, inputText, listboxId, refs } = autocomplete;
 

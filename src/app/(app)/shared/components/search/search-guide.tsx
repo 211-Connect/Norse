@@ -46,6 +46,15 @@ import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-locati
 import { searchGuideOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
 import {
+  MIN_PLACE_LOADING_MS,
+  showBottomBar,
+} from '@/app/(app)/features/search/v2/guide-rules';
+import {
+  CLEAR_LOCATION_CHANGES,
+  isPickedPlace,
+} from '@/app/(app)/features/search/v2/landing';
+import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
+import {
   emergencyPopupMode,
   isUrgencyAnswered,
   otherChanges,
@@ -64,6 +73,7 @@ import { cn } from '../../lib/utils';
 import {
   searchCoordinatesAtom,
   searchLocationAtom,
+  searchRegionAtom,
   userCoordinatesAtom,
 } from '../../store/search';
 import { LocationSearchBar } from './location-search-bar';
@@ -309,9 +319,14 @@ export function SearchGuideFromUrl({
   const askedAtStart = useRef(asked.length);
   const searchLocation = useAtomValue(searchLocationAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
+  const searchRegion = useAtomValue(searchRegionAtom);
   const setFlagged = useSetAtom(flaggedAtom);
   const requireLocation = useFlag('requireUserLocation');
   const [locationError, setLocationError] = useState(false);
+  // A place was just picked: the card shows its loading state for a moment before it moves on.
+  const [placeSaving, setPlaceSaving] = useState(false);
+  const placeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(placeTimer.current), []);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   // The emergency comes only from the emergency question (Decision 54).
@@ -361,6 +376,8 @@ export function SearchGuideFromUrl({
   const hotlines = hotlinesOf(emergencyQ);
   const soft = isSoftEmergency(emergencyQ);
   const isPending = isFetching || isWriting;
+  // `placeSaving` (a picked place is being saved) looks like loading, so the card does not jump.
+  const busy = isPending || placeSaving;
   const { picks, toggle, clear } = useAnswerPicks(question?.id);
   const [showAll, setShowAll] = useState(false);
   useEffect(() => setShowAll(false), [question?.id]);
@@ -395,21 +412,34 @@ export function SearchGuideFromUrl({
     headingRef.current?.focus({ preventScroll: true });
   }, [stepKey]);
 
-  // Picking a place moves on by itself and writes the place into the URL.
+  // Picking a place moves on by itself and writes the place into the URL. Only a real pick counts
+  // (a point or an area, or Everywhere): typed letters, or Enter before the lookup is back, write
+  // nothing (live walk 2026-11-20: Enter on "Syracuse" saved the raw text and jumped ahead).
   const lastLocation = useRef(searchLocation);
   useEffect(() => {
     if (lastLocation.current === searchLocation) return;
     lastLocation.current = searchLocation;
     if (!showLocation || !searchLocation) return;
+    const everywhere = isEverywhereLocation(searchLocation);
+    if (!everywhere && !isPickedPlace(searchCoordinates, searchRegion)) return;
     setLocationError(false);
     const coords = Array.isArray(searchCoordinates)
       ? searchCoordinates.join(',')
       : String(searchCoordinates ?? '');
-    write({
-      location: searchLocation,
-      coords: coords || null,
-      asked: [...asked, LOCATION_STEP],
-    });
+    const changes = everywhere
+      ? { ...CLEAR_LOCATION_CHANGES, asked: [...asked, LOCATION_STEP] }
+      : {
+          location: searchLocation,
+          coords: coords || null,
+          region: searchRegion || null,
+          asked: [...asked, LOCATION_STEP],
+        };
+    setPlaceSaving(true);
+    clearTimeout(placeTimer.current);
+    placeTimer.current = setTimeout(() => {
+      write(changes);
+      setPlaceSaving(false);
+    }, MIN_PLACE_LOADING_MS);
   }, [searchLocation]);
 
   if (!query || finished) return null;
@@ -526,11 +556,11 @@ export function SearchGuideFromUrl({
         role="status"
         className={cn(
           'text-muted-foreground flex items-center gap-2 text-sm',
-          !(isPending || waiting) || error ? 'sr-only' : '',
+          !(busy || waiting) || error ? 'sr-only' : '',
         )}
         data-testid="guide-loading"
       >
-        {(isPending || waiting) && !error && (
+        {(busy || waiting) && !error && (
           <>
             <Loader2
               className="size-4 motion-safe:animate-spin"
@@ -580,7 +610,7 @@ export function SearchGuideFromUrl({
 
       {data && (showLocation || (card && !isEmergency)) && (
         <div className="relative" data-testid="guide-step-body">
-          {data && isPending && (
+          {data && busy && (
             <div className="absolute inset-0 z-10 bg-white">
               <GuideSkeleton />
             </div>
@@ -588,10 +618,10 @@ export function SearchGuideFromUrl({
           <div
             className={cn(
               'flex flex-col gap-4',
-              data && isPending && 'invisible',
+              data && busy && 'invisible',
             )}
             // The old question cannot be clicked or tabbed to while the next one loads.
-            inert={data && isPending ? true : undefined}
+            inert={data && busy ? true : undefined}
           >
             {showLocation && (
               <div className="flex flex-col gap-3">
@@ -610,6 +640,8 @@ export function SearchGuideFromUrl({
                   listClassName="z-30 rounded-md border border-gray-300 shadow-lg"
                   myLocationInline
                   anchorList="input"
+                  commitAfterLoad
+                  rankEverywhere
                   className="w-full"
                 />
                 {locationError && (
@@ -725,7 +757,7 @@ export function SearchGuideFromUrl({
         </p>
       )}
 
-      {!waiting && showBar && (
+      {showBottomBar({ waiting, showBar, isPending, placeSaving }) && (
         <div
           className={cn(
             'flex min-h-11 flex-wrap items-center justify-between gap-3',

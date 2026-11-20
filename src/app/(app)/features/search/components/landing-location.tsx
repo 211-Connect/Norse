@@ -87,6 +87,8 @@ export function LandingLocation() {
             listClassName="z-30 rounded-md border border-gray-300 shadow-lg"
             myLocationInline
             anchorList="input"
+            commitAfterLoad
+            rankEverywhere
           />
         </div>
         <button

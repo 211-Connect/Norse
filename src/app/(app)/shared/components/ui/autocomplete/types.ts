@@ -72,4 +72,7 @@ export type AutocompleteProps = {
   /** `auto` (default): the list may flip above the input. `below`: it always stays under the
    *  input and scrolls inside itself. */
   placement?: 'auto' | 'below';
+  /** Enter and Tab wait for `loading` to end before committing (the list stays open), then
+   *  commit the option that would have been picked. Default: commit at once. */
+  waitForOptions?: boolean;
 };

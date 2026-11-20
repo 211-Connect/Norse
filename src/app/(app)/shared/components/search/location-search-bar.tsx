@@ -5,7 +5,7 @@ import { MapPin } from 'lucide-react';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLocations } from '../../hooks/api/use-locations';
+import { firstPlaceIndex, useLocations } from '../../hooks/api/use-locations';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useDebounce } from '../../hooks/use-debounce';
 import { LOCATION_SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
@@ -44,6 +44,10 @@ type BaseProps = {
    * the input (same left edge and width) and keeps it below the input, scrolling inside itself.
    */
   anchorList?: 'form' | 'input';
+  /** Enter and Tab wait for the place lookup to finish, then commit the first match (v2 pages). */
+  commitAfterLoad?: boolean;
+  /** Integrated mode: "Everywhere" goes after the matches unless the text starts like it (v2 pages). */
+  rankEverywhere?: boolean;
 };
 
 // Integrated mode - uses global atoms and context
@@ -74,6 +78,8 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     placeholder,
     myLocationInline = false,
     anchorList = 'form',
+    commitAfterLoad = false,
+    rankEverywhere = false,
   } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
@@ -134,6 +140,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     options,
     additionalLocations,
     isFetching,
+    everywhereIsFirst,
   } = useLocations(
     isTyping
       ? debouncedSearchLocation
@@ -141,6 +148,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         ? ''
         : prevSearchLocation,
     isStandalone, // Exclude additional locations in standalone mode
+    { rankEverywhere: rankEverywhere && !isStandalone },
   );
 
   // While actively searching and awaiting API results, suppress stale geocoded
@@ -178,7 +186,9 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         ? 0
         : globalCoords?.length === 2
           ? undefined
-          : 1;
+          : rankEverywhere
+            ? firstPlaceIndex(everywhereIsFirst)
+            : 1;
 
   // Use context only if available (for main search integration)
   const context = useContext(MainSearchLayoutContext);
@@ -382,6 +392,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           isStandalone || anchorToInput ? undefined : 'search-form-inputs'
         }
         placement={anchorToInput ? 'below' : 'auto'}
+        waitForOptions={commitAfterLoad}
       />
       {validationError && (
         <p
