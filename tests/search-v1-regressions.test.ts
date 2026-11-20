@@ -34,3 +34,33 @@ test('the info-block phone dials in v1 and shows text only in v2', () => {
   const s = read('search-card-components/phone.tsx');
   assert.match(s, /getPhoneHref\(result\.phone, \{ noDial: isV2 \}\)/);
 });
+
+// Print + Share on the v2 results page: the same v1 components, fed by the v2 cards (bridge).
+import {
+  v2Results,
+} from '../src/app/(app)/features/search/v2/v2-results';
+
+test('v2 page: Print gets the ids of the v2 cards the page shows', () => {
+  const data = {
+    search: {
+      hits: {
+        total: 2,
+        hits: [
+          { _id: 'a', _source: { service_at_location_id: 'sal-a', name: 'A' } },
+          { _id: 'b', _source: { service_at_location_id: 'sal-b', name: 'B' } },
+        ],
+      },
+    },
+  } as never;
+  const { results } = v2Results(data, [])!;
+  const ids = results.map((r) => r.id || r._id).filter(Boolean);
+  assert.deepEqual(ids, ['sal-a', 'sal-b']);
+});
+
+test('v2 page uses the one v1 results-section (no second print/share copy)', () => {
+  const s = readFileSync(
+    'src/app/(app)/features/search/components/v2-results-bridge.tsx',
+    'utf8',
+  );
+  assert.doesNotMatch(s, /DirectoryPrintControl|ShareButton/);
+});
