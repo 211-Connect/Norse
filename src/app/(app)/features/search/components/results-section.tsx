@@ -186,7 +186,7 @@ export function ResultsSection({
       aria-labelledby={SEARCH_RESULTS_HEADING_ID}
       className={cn(
         // max-md:pb-24 keeps the phone's bottom bar off the last card and the help item.
-        'flex w-full flex-col gap-3 overflow-y-auto p-2.5 max-md:pb-24 lg:max-w-100 xl:max-w-137.5',
+        'bg-muted/40 flex w-full flex-col gap-3 overflow-y-auto p-2.5 max-md:pb-24 lg:max-w-100 xl:max-w-137.5 print:bg-transparent',
         className,
       )}
     >

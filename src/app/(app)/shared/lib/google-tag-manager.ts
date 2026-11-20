@@ -29,11 +29,15 @@ export interface SearchEvent {
   place?: string | null;
   postcode?: string | null;
   region?: string | null;
+  /** Area search region id, e.g. `county:53033`. `region` is the cookie's state name. */
+  region_id?: string | null;
 }
 
 export interface SearchLocationContext {
   place?: string | null;
   postcode?: string | null;
+  /** Area search region id; null for a radius search. */
+  regionId?: string | null;
 }
 
 interface NorseSearchEvent {
@@ -45,6 +49,7 @@ interface NorseSearchEvent {
   results_count: number | null;
   zip: string | null;
   city: string | null;
+  region_id: string | null;
   timestamp: string;
 }
 
@@ -96,6 +101,7 @@ const buildNorseSearchEvent = (
     results_count: typeof total === 'number' ? total : null,
     zip: normalizeStringValue(locationContext?.postcode),
     city: normalizeStringValue(locationContext?.place),
+    region_id: normalizeStringValue(locationContext?.regionId),
     timestamp: new Date().toISOString(),
   };
 };
@@ -215,6 +221,7 @@ export const createResultsEvent = (
         place: cookies[USER_PREF_PLACE] ?? null,
         postcode: cookies[USER_PREF_POSTCODE] ?? null,
         region: cookies[USER_PREF_REGION] ?? null,
+        region_id: locationContext?.regionId ?? null,
       };
       const searchEvent = buildNorseSearchEvent(
         query,
@@ -264,6 +271,7 @@ export const createResultsEvent = (
         place: cookies[USER_PREF_PLACE] ?? null,
         postcode: cookies[USER_PREF_POSTCODE] ?? null,
         region: cookies[USER_PREF_REGION] ?? null,
+        region_id: locationContext?.regionId ?? null,
       };
       const searchEvent = buildNorseSearchEvent(
         query,

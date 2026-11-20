@@ -168,7 +168,7 @@ export function HeroSection() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#a9d3dc] via-[#8fb3bd] to-[#20433f]" />
 
       <div
-        className="bg-primary flex w-full max-w-[38rem] flex-col gap-3 rounded-lg p-5"
+        className="bg-primary flex w-full max-w-[38rem] flex-col gap-3 rounded-lg p-5 shadow-xl ring-1 shadow-black/20 ring-white/10"
         role="search"
       >
         <h2 className="text-3xl font-semibold text-white md:text-4xl">

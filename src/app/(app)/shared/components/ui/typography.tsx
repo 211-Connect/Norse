@@ -31,13 +31,13 @@ const typographyVariants = cva(
       {
         variant: 'heading',
         size: 'md',
-        className: 'text-xl font-semibold',
+        className: 'text-xl leading-snug font-semibold tracking-tight',
       },
       // Heading sm: 16px, 500 (Medium)
       {
         variant: 'heading',
         size: 'sm',
-        className: 'text-base font-medium',
+        className: 'text-base leading-snug font-medium',
       },
       // Heading xs: 14px, 500 (Medium)
       {
