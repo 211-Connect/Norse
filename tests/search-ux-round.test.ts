@@ -48,7 +48,12 @@ test('A: the location bar and the button take the new opt-in props', () => {
 });
 
 test('A: placement "below" has no flip middleware, "auto" keeps it', () => {
-  assert.deepEqual(listMiddlewareNames('auto'), ['offset', 'flip', 'shift', 'size']);
+  assert.deepEqual(listMiddlewareNames('auto'), [
+    'offset',
+    'flip',
+    'shift',
+    'size',
+  ]);
   assert.deepEqual(listMiddlewareNames('below'), ['offset', 'shift', 'size']);
   const src = read('shared/components/ui/autocomplete/autocomplete.tsx');
   assert.match(src, /listMiddlewareNames\(placement\)/);
@@ -60,7 +65,10 @@ test('B: Enter waits for the options only when asked to and while loading', () =
   assert.equal(enterAction({ waitForOptions: true, loading: true }), 'wait');
   assert.equal(enterAction({ waitForOptions: true, loading: false }), 'commit');
   assert.equal(enterAction({ waitForOptions: false, loading: true }), 'commit');
-  assert.equal(enterAction({ waitForOptions: false, loading: false }), 'commit');
+  assert.equal(
+    enterAction({ waitForOptions: false, loading: false }),
+    'commit',
+  );
 });
 
 test('B: Everywhere is first for an empty box, a prefix of the word, or no match', () => {
@@ -98,7 +106,12 @@ test('B: the guide advances only on a real pick, after a minimum loading time', 
 // ---- D. Loading hides the bottom buttons ----
 
 test('D: the bottom bar hides while waiting, loading or saving a place', () => {
-  const on = { waiting: false, showBar: true, isPending: false, placeSaving: false };
+  const on = {
+    waiting: false,
+    showBar: true,
+    isPending: false,
+    placeSaving: false,
+  };
   assert.equal(showBottomBar(on), true);
   assert.equal(showBottomBar({ ...on, waiting: true }), false);
   assert.equal(showBottomBar({ ...on, showBar: false }), false);
@@ -110,20 +123,28 @@ test('D: the bottom bar hides while waiting, loading or saving a place', () => {
 // ---- C. Fixed header and bottom bar, only the middle scrolls ----
 
 test('C: /find asks the card for inner scrolling; the card then hides overflow instead of scrolling', () => {
-  assert.match(read('features/search/components/search-landing.tsx'), /<GuideShell[\s\S]*?\n\s+innerScroll\n/);
+  assert.match(
+    read('features/search/components/search-landing.tsx'),
+    /<GuideShell[\s\S]*?\n\s+innerScroll\n/,
+  );
   const guide = read(GUIDE);
   const outer = guide.match(/const CARD_SCROLL_CLASS =\s*'([^']*)'/)?.[1] ?? '';
-  const inner = guide.match(/const CARD_INNER_SCROLL_CLASS =\s*'([^']*)'/)?.[1] ?? '';
+  const inner =
+    guide.match(/const CARD_INNER_SCROLL_CLASS =\s*'([^']*)'/)?.[1] ?? '';
   assert.match(outer, /overflow-y-auto/);
   assert.match(inner, /overflow-hidden/);
   assert.doesNotMatch(inner, /overflow-y-auto/);
-  assert.match(guide, /innerScroll \? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS/);
+  assert.match(
+    guide,
+    /innerScroll \? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS/,
+  );
 });
 
 test('C: on the page the questions scroll in their own region and the bottom bar stays below it', () => {
   const guide = read(GUIDE);
   assert.match(guide, /data-testid="guide-scroll"/);
-  const region = guide.match(/className="([^"]*)"\s+data-testid="guide-scroll"/)?.[1] ?? '';
+  const region =
+    guide.match(/className="([^"]*)"\s+data-testid="guide-scroll"/)?.[1] ?? '';
   assert.match(region, /overflow-y-auto/);
   assert.match(region, /min-h-0 flex-1/);
   assert.match(guide, /onPage\s*\?\s*'shrink-0/);
@@ -139,15 +160,24 @@ test('C: the landing header no longer pins itself with the sticky hack', () => {
 // ---- E. Results page, desktop: only the results list scrolls ----
 
 test('E: the search page fits the viewport on md and up; the footer steps aside there', () => {
-  assert.match(read('[locale]/(rest)/search/page.tsx'), /<PageWrapper[\s\S]*?\n\s+fitViewport\n/);
+  assert.match(
+    read('[locale]/(rest)/search/page.tsx'),
+    /<PageWrapper[\s\S]*?\n\s+fitViewport\n/,
+  );
   const wrapper = read('shared/components/page-wrapper.tsx');
   assert.match(wrapper, /fitViewport\?: boolean/);
   assert.match(wrapper, /md:h-dvh md:overflow-hidden/);
   assert.match(wrapper, /fitViewport && 'md:hidden'/);
   const shell = read('features/search/components/search-page-shell.tsx');
   assert.match(shell, /h-full min-h-0 w-full flex-col/);
-  assert.match(read('features/search/components/filter/filter-panel.tsx'), /md:overflow-y-auto/);
-  assert.match(read('features/search/components/results-section.tsx'), /md:min-h-0/);
+  assert.match(
+    read('features/search/components/filter/filter-panel.tsx'),
+    /md:overflow-y-auto/,
+  );
+  assert.match(
+    read('features/search/components/results-section.tsx'),
+    /md:min-h-0/,
+  );
 });
 
 // ---- F. Top bar: Quick exit color ----

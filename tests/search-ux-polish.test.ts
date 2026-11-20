@@ -143,7 +143,7 @@ test('landing wait: one status line, no skeleton and no buttons before the first
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   assert.match(guide, /const waiting = \(!data && !error\) \|\| finished;/);
   assert.doesNotMatch(guide, /\{!data && !error && <GuideSkeleton \/>\}/);
-  assert.match(guide, /\{!waiting && showBar && \(/);
+  assert.match(guide, /showBottomBar\(\{\s*waiting,\s*showBar,/);
   assert.match(
     guide,
     /\{data && \(showLocation \|\| \(card && !isEmergency\)\) && \(/,
@@ -153,9 +153,9 @@ test('landing wait: one status line, no skeleton and no buttons before the first
 // UX pass 2026-11-16: on a 390x700 phone the actions sat 211 px below the fold of the dialog.
 test('guide actions: the row sticks to the bottom of the dialog and stays one row on a phone', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
-  const row = guide.slice(guide.indexOf('{!waiting && showBar && ('));
-  assert.match(row.slice(0, 600), /sticky -bottom-5/);
-  assert.match(row.slice(0, 600), /max-sm:flex-nowrap/);
+  const row = guide.slice(guide.indexOf('showBottomBar({'));
+  assert.match(row.slice(0, 1200), /sticky -bottom-5/);
+  assert.match(row.slice(0, 1200), /max-sm:flex-nowrap/);
   assert.match(row, /Skip question/);
   assert.match(row, /'Show results now'/);
   assert.doesNotMatch(row, /Skip this question|Show results now \(/);
@@ -234,13 +234,13 @@ test('safe answer: no hotline box while the old emergency question is still in t
 test('bottom bar: Continue replaces Skip and Show results now while options are picked; no Continue below the list', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   assert.equal(guide.match(/data-testid="guide-continue"/g)?.length, 1);
-  const bar = guide.slice(guide.indexOf('{!waiting && showBar && ('));
+  const bar = guide.slice(guide.indexOf('showBottomBar({'));
   assert.ok(bar.includes('data-testid="guide-continue"'));
   assert.match(bar, /\{canSkipQuestion && \(/);
   assert.match(bar, /picks\.length === 0 && \(/);
   assert.ok(
     guide.indexOf('data-testid="guide-continue"') >
-      guide.indexOf('{!waiting && showBar && ('),
+      guide.indexOf('showBottomBar({'),
   );
 });
 
@@ -253,35 +253,27 @@ test('crisis line: the first search shows the two small buttons, no large 988 bu
   assert.match(html, /always-on-988-link/);
 });
 
-test('phone: the landing header block (chips and search box) is sticky', () => {
+// UX round 2026-11-20: the header block never scrolls, so it needs no sticky. The card (innerScroll) keeps
+// it and the bottom bar in place and only the guide's scroll region moves.
+test('phone: the landing header block (chips and search box) stays put without a sticky hack', () => {
   const landing = read(`${APP}features/search/components/search-landing.tsx`);
-  assert.match(
-    landing,
-    /max-sm:sticky[^"]*data-testid|data-testid="landing-header"/,
-  );
-  assert.match(landing, /max-sm:sticky max-sm:-top-\[4\.75rem\]/);
-});
-
-// Regression (Lucas 2026-11-19, bugs A and B): the phone card has pt-14 (room for Quick exit) and
-// Chrome pins a sticky block inside the scroller's padding. With top-0 the pinned header sat 56 px
-// low, over the 'Looking at your search' line and the question title, so the spinner was hidden
-// and the top of the option list could not be scrolled into view. The sticky offset must cancel
-// the card's top padding exactly.
-test('phone: the pinned landing header offset cancels the card top padding (spinner and list stay visible)', () => {
-  const landing = read(`${APP}features/search/components/search-landing.tsx`);
-  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
-  const esc = (v: string) => v.replace(/[\\[\].]/g, '\\$&');
-  const pad = guide.match(
-    /max-sm:rounded-none max-sm:pt-(\[[\d.]+rem\]|\d+)/,
-  )?.[1];
-  assert.ok(pad, 'GuideShell keeps a phone top padding class');
   const header =
     landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ??
     '';
-  assert.match(header, new RegExp(`max-sm:-top-${esc(pad)}(\\s|$)`));
-  assert.match(header, new RegExp(`max-sm:-mt-${esc(pad)}(\\s|$)`));
-  assert.match(header, new RegExp(`max-sm:pt-${esc(pad)}(\\s|$)`));
-  assert.doesNotMatch(header, /max-sm:top-0/);
+  assert.match(header, /shrink-0/);
+  assert.doesNotMatch(landing, /max-sm:sticky/);
+});
+
+// The phone card keeps its top padding (room for Back and Quick exit); the header block sits under it
+// with no negative margin or offset to cancel it.
+test('phone: the card keeps its top padding and the landing header does not fight it', () => {
+  const landing = read(`${APP}features/search/components/search-landing.tsx`);
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  assert.match(guide, /max-sm:rounded-none max-sm:pt-\[4\.75rem\]/);
+  const header =
+    landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ??
+    '';
+  assert.doesNotMatch(header, /max-sm:-top-|max-sm:-mt-|max-sm:pt-/);
 });
 
 // Lucas 2026-11-19: phone search layer has a top bar (Back top left, Quick exit top right, 44 px each,
@@ -306,8 +298,7 @@ test('phone layer top bar: Back closes top left, Quick exit top right, divider, 
 test('desktop guard: every full-screen / no-header rule in the layer is max-sm only', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   const cls =
-    guide.match(/className="fixed top-\[calc\(var\(--guide-top\)[^"]*"/)?.[0] ??
-    '';
+    guide.match(/'fixed top-\[calc\(var\(--guide-top\)[^']*'/)?.[0] ?? '';
   assert.ok(cls, 'dialog class found');
   for (const token of [
     'top-0',

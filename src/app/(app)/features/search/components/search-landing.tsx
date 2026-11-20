@@ -102,8 +102,7 @@ export function SearchLanding() {
         >
           {/* Crisis chips and the search box (or its compact Edit row) and the place row. This block
             never scrolls: the questions below it do (GuideShell innerScroll, guide-scroll). */}
-          <div className="relative z-20 shrink-0" data-testid="landing-header"
-          >
+          <div className="relative z-20 shrink-0" data-testid="landing-header">
             <EmergencyLine />
             {compact && (
               <button

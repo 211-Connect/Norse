@@ -58,6 +58,7 @@ import {
   emergencyPopupMode,
   isUrgencyAnswered,
   otherChanges,
+  type V2Changes,
   visibleOptions,
   withEmergencyAnswers,
 } from '@/app/(app)/features/search/v2/v2-contract';
@@ -462,7 +463,7 @@ export function SearchGuideFromUrl({
     const coords = Array.isArray(searchCoordinates)
       ? searchCoordinates.join(',')
       : String(searchCoordinates ?? '');
-    const changes = everywhere
+    const changes: V2Changes = everywhere
       ? { ...CLEAR_LOCATION_CHANGES, asked: [...asked, LOCATION_STEP] }
       : {
           location: searchLocation,
@@ -559,241 +560,243 @@ export function SearchGuideFromUrl({
       onClose={closeGuide}
     >
       <GuideRegion onPage={onPage}>
-      <div
-        className={cn('flex flex-col items-start gap-1', !onPage && 'pr-10')}
-      >
-        {!onPage && (
-          <>
-            <button
-              type="button"
-              className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
-              data-testid="guide-back-to-search"
-              onClick={backToSearch}
-            >
-              <ArrowLeft className="size-4" aria-hidden="true" />
-              Back to search
-            </button>
-            <p className="text-muted-foreground text-sm">
-              Your search:{' '}
-              <span className="text-foreground font-medium">
-                &ldquo;{query}&rdquo;
-              </span>
-            </p>
-          </>
-        )}
-      </div>
-
-      {error && (
-        <p role="alert" className="font-semibold text-red-700">
-          We could not load the next question. Your results are ready.
-        </p>
-      )}
-      {/* One calm status line for the whole wait; the skeleton keeps the card's room. */}
-      <p
-        role="status"
-        className={cn(
-          'text-muted-foreground flex items-center gap-2 text-sm',
-          !(busy || waiting) || error ? 'sr-only' : '',
-        )}
-        data-testid="guide-loading"
-      >
-        {(busy || waiting) && !error && (
-          <>
-            <Loader2
-              className="size-4 motion-safe:animate-spin"
-              aria-hidden="true"
-            />
-            Looking at your search…
-          </>
-        )}
-      </p>
-
-      {hotline && !isEmergency && (
-        <EmergencyBox hotlines={hotlines} soft={soft} />
-      )}
-
-      {emergencyQ && popupMode && (
-        <EmergencyPopup
-          key={query}
-          mode={popupMode}
-          question={withEmergencyAnswers(emergencyQ)}
-          hotlines={hotlines}
-          busy={isPending}
-          onAnswer={(value) => {
-            const q = withEmergencyAnswers(emergencyQ);
-            writeAnswer(q, [value]);
-          }}
-          onContinue={() => {
-            setDismissed(query);
-            if (onPage) toResults();
-          }}
-        />
-      )}
-
-      {card && isEmergency && question && !popupMode && (
-        <>
-          <h2 ref={headingRef} tabIndex={-1} className="sr-only">
-            {card.text}
-          </h2>
-          <EmergencyBox
-            question={soft ? card : undefined}
-            hotlines={hotlines}
-            soft={soft}
-            onAnswer={(option) => answerQuestion([option.label])}
-            onSkip={soft ? skipEmergency : undefined}
-          />
-        </>
-      )}
-
-      {data && (showLocation || (card && !isEmergency)) && (
-        <div className="relative" data-testid="guide-step-body">
-          {data && busy && (
-            <div className="absolute inset-0 z-10 bg-white">
-              <GuideSkeleton />
-            </div>
+        <div
+          className={cn('flex flex-col items-start gap-1', !onPage && 'pr-10')}
+        >
+          {!onPage && (
+            <>
+              <button
+                type="button"
+                className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
+                data-testid="guide-back-to-search"
+                onClick={backToSearch}
+              >
+                <ArrowLeft className="size-4" aria-hidden="true" />
+                Back to search
+              </button>
+              <p className="text-muted-foreground text-sm">
+                Your search:{' '}
+                <span className="text-foreground font-medium">
+                  &ldquo;{query}&rdquo;
+                </span>
+              </p>
+            </>
           )}
-          <div
-            className={cn(
-              'flex flex-col gap-4',
-              data && busy && 'invisible',
-            )}
-            // The old question cannot be clicked or tabbed to while the next one loads.
-            inert={data && busy ? true : undefined}
-          >
-            {showLocation && (
-              <div className="flex flex-col gap-3">
-                <h2
-                  ref={headingRef}
-                  tabIndex={-1}
-                  className="text-2xl font-semibold outline-none"
-                >
-                  Where should we look?
-                </h2>
-                {requireLocation && (
-                  <p>We need your location to show services you can use.</p>
-                )}
-                <LocationSearchBar
-                  inputId={LOCATION_INPUT_ID}
-                  listClassName="z-30 rounded-md border border-gray-300 shadow-lg"
-                  myLocationInline
-                  anchorList="input"
-                  commitAfterLoad
-                  rankEverywhere
-                  className="w-full"
-                />
-                {locationError && (
-                  <p
-                    role="alert"
-                    className="border-red-700 text-red-700 rounded-lg border bg-red-50 p-3 font-semibold"
-                  >
-                    Add your location to continue. We can only show services
-                    where you are.
-                  </p>
-                )}
+        </div>
+
+        {error && (
+          <p role="alert" className="font-semibold text-red-700">
+            We could not load the next question. Your results are ready.
+          </p>
+        )}
+        {/* One calm status line for the whole wait; the skeleton keeps the card's room. */}
+        <p
+          role="status"
+          className={cn(
+            'text-muted-foreground flex items-center gap-2 text-sm',
+            !(busy || waiting) || error ? 'sr-only' : '',
+          )}
+          data-testid="guide-loading"
+        >
+          {(busy || waiting) && !error && (
+            <>
+              <Loader2
+                className="size-4 motion-safe:animate-spin"
+                aria-hidden="true"
+              />
+              Looking at your search…
+            </>
+          )}
+        </p>
+
+        {hotline && !isEmergency && (
+          <EmergencyBox hotlines={hotlines} soft={soft} />
+        )}
+
+        {emergencyQ && popupMode && (
+          <EmergencyPopup
+            key={query}
+            mode={popupMode}
+            question={withEmergencyAnswers(emergencyQ)}
+            hotlines={hotlines}
+            busy={isPending}
+            onAnswer={(value) => {
+              const q = withEmergencyAnswers(emergencyQ);
+              writeAnswer(q, [value]);
+            }}
+            onContinue={() => {
+              setDismissed(query);
+              if (onPage) toResults();
+            }}
+          />
+        )}
+
+        {card && isEmergency && question && !popupMode && (
+          <>
+            <h2 ref={headingRef} tabIndex={-1} className="sr-only">
+              {card.text}
+            </h2>
+            <EmergencyBox
+              question={soft ? card : undefined}
+              hotlines={hotlines}
+              soft={soft}
+              onAnswer={(option) => answerQuestion([option.label])}
+              onSkip={soft ? skipEmergency : undefined}
+            />
+          </>
+        )}
+
+        {data && (showLocation || (card && !isEmergency)) && (
+          <div className="relative" data-testid="guide-step-body">
+            {data && busy && (
+              <div className="absolute inset-0 z-10 bg-white">
+                <GuideSkeleton />
               </div>
             )}
-
-            {card && !isEmergency && style && question && (
-              <div className="flex flex-col gap-3" aria-busy={isPending}>
-                <div className="flex items-start gap-2">
-                  {canGoBack && (
-                    <button
-                      type="button"
-                      aria-label="Previous question"
-                      className="text-primary hover:bg-primary/10 -ml-2 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full"
-                      data-testid="guide-back"
-                      onClick={goBack}
-                    >
-                      <ArrowLeft className="size-5" aria-hidden="true" />
-                    </button>
+            <div
+              className={cn('flex flex-col gap-4', data && busy && 'invisible')}
+              // The old question cannot be clicked or tabbed to while the next one loads.
+              inert={data && busy ? true : undefined}
+            >
+              {showLocation && (
+                <div className="flex flex-col gap-3">
+                  <h2
+                    ref={headingRef}
+                    tabIndex={-1}
+                    className="text-2xl font-semibold outline-none"
+                  >
+                    Where should we look?
+                  </h2>
+                  {requireLocation && (
+                    <p>We need your location to show services you can use.</p>
                   )}
-                  <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-x-2">
-                    <div className="min-w-0 flex-1">
-                      <h2
-                        ref={headingRef}
-                        id="guide-question"
-                        aria-describedby={card.multi ? 'guide-hint' : undefined}
-                        tabIndex={-1}
-                        className="text-2xl font-semibold outline-none"
+                  <LocationSearchBar
+                    inputId={LOCATION_INPUT_ID}
+                    listClassName="z-30 rounded-md border border-gray-300 shadow-lg"
+                    myLocationInline
+                    anchorList="input"
+                    commitAfterLoad
+                    rankEverywhere
+                    className="w-full"
+                  />
+                  {locationError && (
+                    <p
+                      role="alert"
+                      className="border-red-700 text-red-700 rounded-lg border bg-red-50 p-3 font-semibold"
+                    >
+                      Add your location to continue. We can only show services
+                      where you are.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {card && !isEmergency && style && question && (
+                <div className="flex flex-col gap-3" aria-busy={isPending}>
+                  <div className="flex items-start gap-2">
+                    {canGoBack && (
+                      <button
+                        type="button"
+                        aria-label="Previous question"
+                        className="text-primary hover:bg-primary/10 -ml-2 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full"
+                        data-testid="guide-back"
+                        onClick={goBack}
                       >
-                        {card.text}
-                      </h2>
-                      {card.multi && (
-                        <p id="guide-hint" className="text-muted-foreground">
-                          Pick all that fit.
-                        </p>
-                      )}
+                        <ArrowLeft className="size-5" aria-hidden="true" />
+                      </button>
+                    )}
+                    <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-x-2">
+                      <div className="min-w-0 flex-1">
+                        <h2
+                          ref={headingRef}
+                          id="guide-question"
+                          aria-describedby={
+                            card.multi ? 'guide-hint' : undefined
+                          }
+                          tabIndex={-1}
+                          className="text-2xl font-semibold outline-none"
+                        >
+                          {card.text}
+                        </h2>
+                        {card.multi && (
+                          <p id="guide-hint" className="text-muted-foreground">
+                            Pick all that fit.
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  role="group"
-                  aria-labelledby="guide-question"
-                  className="flex flex-col gap-2"
-                >
-                  {shownAnswers.map((option) => {
-                    const on = picks.includes(option.label);
-                    return (
-                      <OptionCard
-                        key={option.label}
-                        description={option.description}
-                        className={cn(style.button, on && PICKED)}
-                      >
-                        <button
-                          type="button"
-                          disabled={isPending}
-                          aria-pressed={card.multi ? on : undefined}
-                          className={cn(
-                            'group flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg bg-transparent py-2 pr-12 pl-4 text-left font-medium disabled:opacity-60',
-                          )}
-                          onClick={() =>
-                            card.multi
-                              ? toggle(option.label)
-                              : answerQuestion([option.label])
-                          }
+                  <div
+                    role="group"
+                    aria-labelledby="guide-question"
+                    className="flex flex-col gap-2"
+                  >
+                    {shownAnswers.map((option) => {
+                      const on = picks.includes(option.label);
+                      return (
+                        <OptionCard
+                          key={option.label}
+                          description={option.description}
+                          className={cn(style.button, on && PICKED)}
                         >
-                          {card.multi && <PickMark on={on} />}
-                          <span className="flex flex-1 flex-col">
-                            {option.label}
-                            <OptionCount count={option.keeps} />
-                          </span>
-                        </button>
-                      </OptionCard>
-                    );
-                  })}
-                  {hiddenCount > 0 && (
-                    <button
-                      type="button"
-                      className="text-primary min-h-11 cursor-pointer self-start px-1 font-semibold underline"
-                      data-testid="show-more-options"
-                      onClick={() => setShowAll(true)}
-                    >
-                      Show more ({hiddenCount})
-                    </button>
-                  )}
-                  {question.allow_other && (
-                    <OtherBox
-                      key={question.id}
-                      placeholder="Other: type your own"
-                      onSubmit={submitOther}
-                    />
-                  )}
-                  <p className="sr-only" role="status">
-                    {picks.length > 0 ? `${picks.length} picked.` : ''}
-                  </p>
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            aria-pressed={card.multi ? on : undefined}
+                            className={cn(
+                              'group flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg bg-transparent py-2 pr-12 pl-4 text-left font-medium disabled:opacity-60',
+                            )}
+                            onClick={() =>
+                              card.multi
+                                ? toggle(option.label)
+                                : answerQuestion([option.label])
+                            }
+                          >
+                            {card.multi && <PickMark on={on} />}
+                            <span className="flex flex-1 flex-col">
+                              {option.label}
+                              <OptionCount count={option.keeps} />
+                            </span>
+                          </button>
+                        </OptionCard>
+                      );
+                    })}
+                    {hiddenCount > 0 && (
+                      <button
+                        type="button"
+                        className="text-primary min-h-11 cursor-pointer self-start px-1 font-semibold underline"
+                        data-testid="show-more-options"
+                        onClick={() => setShowAll(true)}
+                      >
+                        Show more ({hiddenCount})
+                      </button>
+                    )}
+                    {question.allow_other && (
+                      <OtherBox
+                        key={question.id}
+                        placeholder="Other: type your own"
+                        onSubmit={submitOther}
+                      />
+                    )}
+                    <p className="sr-only" role="status">
+                      {picks.length > 0 ? `${picks.length} picked.` : ''}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {data && (
-        <p className="sr-only" role="status" data-testid="guide-results-count">
-          {resultCount(totalOf(data))} found so far.
-        </p>
-      )}
-
+        {data && (
+          <p
+            className="sr-only"
+            role="status"
+            data-testid="guide-results-count"
+          >
+            {resultCount(totalOf(data))} found so far.
+          </p>
+        )}
       </GuideRegion>
 
       {showBottomBar({ waiting, showBar, isPending, placeSaving }) && (
@@ -801,12 +804,12 @@ export function SearchGuideFromUrl({
           className={cn(
             'flex min-h-11 flex-wrap items-center justify-between gap-3',
             // On the page the bar is the card's last row, outside the scroll region: it needs no sticky.
+            // In the scrolling dialog (p-5) it sticks to the bottom so the actions stay in view (a
+            // 390x700 phone had "Show results now" 211 px below the fold, UX pass 2026-11-16);
+            // -bottom-5 covers the dialog's own bottom padding.
             onPage
               ? 'shrink-0 -mx-5 border-t bg-white px-5 pt-3 max-sm:flex-nowrap max-sm:gap-2'
               : 'sticky -bottom-5 z-10 -mx-5 -mb-5 border-t bg-white px-5 py-3 max-sm:flex-nowrap max-sm:gap-2 max-sm:-bottom-[calc(1.25rem+var(--exit-room))] max-sm:-mb-[calc(1.25rem+var(--exit-room))] max-sm:pb-[calc(0.75rem+var(--exit-room))]',
-            // Both placements sit in the scrolling guide dialog (p-5). The actions stay in view: on a
-            // 390x700 phone "Show results now" sat 211 px below the fold (UX pass 2026-11-16).
-            // -bottom-5 covers the dialog's own bottom padding, so no content shows under the row.
           )}
         >
           {canSkipQuestion && (

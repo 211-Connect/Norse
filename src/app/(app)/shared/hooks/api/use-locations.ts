@@ -76,7 +76,8 @@ export function useLocations(
 
   const everywhereLabel = t('search.everywhere', 'Everywhere');
   const everywhereIsFirst =
-    !rankEverywhere || everywhereFirst(searchTerm, data.length, everywhereLabel);
+    !rankEverywhere ||
+    everywhereFirst(searchTerm, data.length, everywhereLabel);
 
   const options = useMemo(() => {
     const everywhere = excludeEverywhere

@@ -114,9 +114,12 @@ export function Autocomplete({
     // `fixed` lets a list anchored to an outside element escape the input's
     // own layout box. A `below` list also uses it: it must not be clipped by a card that
     // scrolls or hides overflow.
-    strategy: positionBelowElementId || placement === 'below' ? 'fixed' : 'absolute',
+    strategy:
+      positionBelowElementId || placement === 'below' ? 'fixed' : 'absolute',
     whileElementsMounted: autoUpdate,
-    middleware: listMiddlewareNames(placement).map((name) => middlewareByName[name]()),
+    middleware: listMiddlewareNames(placement).map((name) =>
+      middlewareByName[name](),
+    ),
   });
 
   // A `below` list never flips, so with little room under the input, bring the input to the
