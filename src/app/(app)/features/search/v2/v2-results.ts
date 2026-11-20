@@ -87,3 +87,15 @@ export function v2Results(
     totalResults: totalOf(data),
   };
 }
+
+/** The note for a weak match with no cards: the tenant's own text first, as the v1 no-results card does. */
+export function weakMatchText(
+  fallbackText: string | undefined,
+  contactNumber: string | undefined,
+): string {
+  const text = fallbackText?.trim();
+  return (
+    text ||
+    `No results found for your search. Need help? Call ${contactNumber ?? '211'}.`
+  );
+}

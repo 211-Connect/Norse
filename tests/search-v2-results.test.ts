@@ -4,6 +4,7 @@ import test from 'node:test';
 import type { ResultType } from '../src/app/(app)/shared/store/results';
 import {
   hitToResult,
+  weakMatchText,
   v2Results,
 } from '../src/app/(app)/features/search/v2/v2-results';
 import type { V2Response } from '../src/app/(app)/features/search/v2/v2-contract';
@@ -110,4 +111,22 @@ test('a v2-only hit gets translated facets from the response facet list', () => 
 test('a hit with no facets has no facets key', () => {
   const out = hitToResult({ _id: 'a', _source: { name: 'A' } });
   assert.equal('facets' in out, false);
+});
+
+test('weakMatchText: the tenant text wins', () => {
+  assert.equal(weakMatchText('  Call us!  ', '555'), 'Call us!');
+});
+
+test('weakMatchText: empty or blank text falls back', () => {
+  const fallback = 'No results found for your search. Need help? Call 555.';
+  assert.equal(weakMatchText('', '555'), fallback);
+  assert.equal(weakMatchText('   ', '555'), fallback);
+  assert.equal(weakMatchText(undefined, '555'), fallback);
+});
+
+test('weakMatchText: the fallback uses 211 without a number', () => {
+  assert.equal(
+    weakMatchText(undefined, undefined),
+    'No results found for your search. Need help? Call 211.',
+  );
 });
