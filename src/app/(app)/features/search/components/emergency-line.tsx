@@ -1,7 +1,7 @@
 import { Phone } from 'lucide-react';
 
 import { DialButton } from './no-dial';
-import { DEFAULT_HOTLINES } from './search-follow-up';
+import { DEFAULT_HOTLINES } from './emergency-box';
 
 /** The numbers come from the shared default hotlines (911 and 988), never a per-tenant list. */
 const EMERGENCY_NUMBER =

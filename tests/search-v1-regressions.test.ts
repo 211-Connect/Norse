@@ -22,18 +22,17 @@ test('action-buttons: v1 keeps the ReferralButton + tel: Call link; only v2 drop
   assert.match(s, /referralType="call_referral"/);
 });
 
-test('no-results-card: query label shows for everyone; v1 keeps the LocalizedLink tel:', () => {
+test('no-results-card: query label shows for everyone; the number goes through the one DialButton path', () => {
   const s = read('no-results-card.tsx');
   assert.match(s, /<CardDescription>/);
   assert.match(
     s,
     /searchParams\?\.get\('query_label'\) \|\| searchParams\?\.get\('query'\)/,
   );
-  assert.match(s, /isV2 \? \(/);
-  assert.match(
-    s,
-    /<LocalizedLink\s+href=\{`tel:\$\{appConfig\.contact\.number\}`\}/,
-  );
+  assert.match(s, /<DialButton/);
+  assert.doesNotMatch(s, /useIsV2|LocalizedLink/);
+  // `text` replaces the footer message (the v2 weak-match note).
+  assert.match(s, /text: textOverride/);
 });
 
 test('the info-block phone dials in v1 and shows text only in v2', () => {

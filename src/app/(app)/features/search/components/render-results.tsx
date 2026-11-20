@@ -1,11 +1,10 @@
 'use client';
 
-import { Check, Phone } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { useSearchResults } from '../context/search-results-context';
 import { labelOf } from '../sune-demo/sune.mjs';
@@ -22,7 +21,6 @@ import {
 import { CardLayoutRenderer } from './card-layout-renderer';
 import { NoResultsCard } from './no-results-card';
 import { weakMatchText } from '../v2/v2-results';
-import { DialButton } from './no-dial';
 
 type RenderResultsProps = {
   cardLayout: SearchCardLayoutConfig;
@@ -92,25 +90,11 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
           {area}
         </p>
       )}
-      {results.length === 0 && weak && (
-        <div
-          role="status"
-          className="bg-muted flex flex-col items-start gap-2 rounded-lg border p-3 text-sm"
-          data-testid="weak-match-note"
-        >
-          <p>{weakMatchText(noResultsText, contactNumber)}</p>
-          {contactNumber && (
-            <DialButton
-              number={contactNumber}
-              testId="weak-match-call"
-              className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
-            >
-              <Phone className="size-4" /> Call {contactNumber}
-            </DialButton>
-          )}
-        </div>
+      {results.length === 0 && (
+        <NoResultsCard
+          text={weak ? weakMatchText(noResultsText, contactNumber) : undefined}
+        />
       )}
-      {results.length === 0 && !weak && <NoResultsCard />}
       {noMatch && (
         <p
           role="status"
@@ -157,12 +141,14 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
                     data-testid="matched-needs"
                   >
                     {matched.map((code) => (
-                      <li
-                        key={code}
-                        className="bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
-                      >
-                        <Check className="size-3" aria-hidden="true" />
-                        {needLabel(code)}
+                      <li key={code}>
+                        <Badge
+                          variant="default"
+                          className="text-primary gap-1 rounded-full text-xs font-medium"
+                        >
+                          <Check className="size-3" aria-hidden="true" />
+                          {needLabel(code)}
+                        </Badge>
                       </li>
                     ))}
                   </ul>

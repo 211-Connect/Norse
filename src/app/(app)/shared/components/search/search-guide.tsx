@@ -1,6 +1,5 @@
 'use client';
 
-import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowLeft, Loader2, X } from 'lucide-react';
 import {
@@ -14,8 +13,8 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { EmergencyBox } from '@/app/(app)/features/search/components/emergency-box';
 import {
-  EmergencyBox,
   EmergencyPopup,
   emergencyPopupDismissedAtom,
   flaggedAtom,
@@ -42,6 +41,15 @@ import {
   useV2Search,
   useV2Url,
 } from '@/app/(app)/features/search/v2/use-v2-search';
+import { Button } from '@/app/(app)/shared/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogPortal,
+  DialogTitle,
+} from '@/app/(app)/shared/components/ui/dialog';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 import { searchGuideOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
@@ -129,72 +137,71 @@ export function GuideShell({
   }, []);
 
   return (
-    <DialogPrimitive.Root
-      modal={false}
-      open
-      onOpenChange={(open) => !open && onClose()}
-    >
-      <DialogPrimitive.Portal>
+    <Dialog modal={false} open onOpenChange={(open) => !open && onClose()}>
+      <DialogPortal>
         <div
           aria-hidden="true"
           className="fixed inset-x-0 bottom-0 z-40 bg-black/40 max-sm:hidden"
           style={{ top }}
         />
-        <DialogPrimitive.Content
-          id={SEARCH_DIALOG_ID}
-          data-testid={SEARCH_DIALOG_ID}
-          data-step={dataStep}
-          className={cn(
-            'fixed top-[calc(var(--guide-top)+12px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-24px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.25rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none',
-            innerScroll ? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS,
-          )}
-          style={
-            {
-              // Below xl the floating Quick exit holds the bottom edge.
-              // Below sm the card fills the screen: no header, no page behind.
-              '--guide-top': `${top}px`,
-            } as CSSProperties
-          }
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            if (focusId) document.getElementById(focusId)?.focus();
-          }}
-          onCloseAutoFocus={(event) => event.preventDefault()}
-          // The header (menu button, nav) and the menu panel it opens are not "outside" the
-          // questions: using them keeps /find open (Lucas, 2026-11-20).
-          onInteractOutside={(event) => {
-            if (keepsGuideOpen(event.target)) event.preventDefault();
-          }}
-          onEscapeKeyDown={(event) => {
-            if (onEscape?.()) event.preventDefault();
-          }}
-        >
-          <DialogPrimitive.Title className="sr-only">
-            Find help
-          </DialogPrimitive.Title>
-          <DialogPrimitive.Description className="sr-only">
-            One question at a time. You can see your results at any step.
-          </DialogPrimitive.Description>
-          {/* Phone top bar: Back (top left, closes the layer) and the floating Quick exit (top
+      </DialogPortal>
+      {/* The page stays usable behind it (modal off), so no overlay and no centered-card classes. */}
+      <DialogContent
+        bare
+        overlay={false}
+        withClose={false}
+        aria-modal="false"
+        id={SEARCH_DIALOG_ID}
+        data-testid={SEARCH_DIALOG_ID}
+        data-step={dataStep}
+        className={cn(
+          'fixed top-[calc(var(--guide-top)+12px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-24px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.25rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none',
+          innerScroll ? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS,
+        )}
+        style={
+          {
+            // Below xl the floating Quick exit holds the bottom edge.
+            // Below sm the card fills the screen: no header, no page behind.
+            '--guide-top': `${top}px`,
+          } as CSSProperties
+        }
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          if (focusId) document.getElementById(focusId)?.focus();
+        }}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        // The header (menu button, nav) and the menu panel it opens are not "outside" the
+        // questions: using them keeps /find open (Lucas, 2026-11-20).
+        onInteractOutside={(event) => {
+          if (keepsGuideOpen(event.target)) event.preventDefault();
+        }}
+        onEscapeKeyDown={(event) => {
+          if (onEscape?.()) event.preventDefault();
+        }}
+      >
+        <DialogTitle className="sr-only">Find help</DialogTitle>
+        <DialogDescription className="sr-only">
+          One question at a time. You can see your results at any step.
+        </DialogDescription>
+        {/* Phone top bar: Back (top left, closes the layer) and the floating Quick exit (top
               right, quick-exit-button.tsx), a divider under both so the 911/988 chips stay apart. */}
-          <div
-            aria-hidden="true"
-            data-testid="guide-top-bar"
-            className="fixed inset-x-0 top-0 z-[55] h-[3.25rem] border-b border-gray-200 bg-white sm:hidden"
-          />
-          <DialogPrimitive.Close
-            data-testid="guide-close"
-            className="absolute top-4 right-4 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] max-sm:fixed max-sm:top-2 max-sm:right-auto max-sm:left-2 max-sm:z-[56] max-sm:h-11 max-sm:w-auto max-sm:min-w-11 max-sm:gap-1 max-sm:px-3 max-sm:text-sm max-sm:font-semibold"
-          >
-            <X className="size-5 max-sm:hidden" aria-hidden="true" />
-            <ArrowLeft className="size-5 sm:hidden" aria-hidden="true" />
-            <span className="sr-only max-sm:hidden">Close</span>
-            <span className="sm:hidden">Back</span>
-          </DialogPrimitive.Close>
-          {children}
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+        <div
+          aria-hidden="true"
+          data-testid="guide-top-bar"
+          className="fixed inset-x-0 top-0 z-[55] h-[3.25rem] border-b border-gray-200 bg-white sm:hidden"
+        />
+        <DialogClose
+          data-testid="guide-close"
+          className="absolute top-4 right-4 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] max-sm:fixed max-sm:top-2 max-sm:right-auto max-sm:left-2 max-sm:z-[56] max-sm:h-11 max-sm:w-auto max-sm:min-w-11 max-sm:gap-1 max-sm:px-3 max-sm:text-sm max-sm:font-semibold"
+        >
+          <X className="size-5 max-sm:hidden" aria-hidden="true" />
+          <ArrowLeft className="size-5 sm:hidden" aria-hidden="true" />
+          <span className="sr-only max-sm:hidden">Close</span>
+          <span className="sm:hidden">Back</span>
+        </DialogClose>
+        {children}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -600,15 +607,16 @@ export function SearchGuideFromUrl({
         >
           {!onPage && (
             <>
-              <button
+              <Button
+                variant="link"
                 type="button"
-                className="text-primary -ml-1 flex min-h-11 cursor-pointer items-center gap-1 px-1 text-sm font-semibold"
+                className="-ml-1 h-auto min-h-11 gap-1 px-1 text-sm font-semibold no-underline"
                 data-testid="guide-back-to-search"
                 onClick={backToSearch}
               >
                 <ArrowLeft className="size-4" aria-hidden="true" />
                 Back to search
-              </button>
+              </Button>
               <p className="text-muted-foreground text-sm">
                 Your search:{' '}
                 <span className="text-foreground font-medium">
@@ -730,15 +738,17 @@ export function SearchGuideFromUrl({
                 <div className="flex flex-col gap-3" aria-busy={isPending}>
                   <div className="flex items-start gap-2">
                     {canGoBack && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         type="button"
                         aria-label="Previous question"
-                        className="text-primary hover:bg-primary/10 -ml-2 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full"
+                        className="text-primary hover:bg-primary/10 -ml-2 size-9 shrink-0 rounded-full"
                         data-testid="guide-back"
                         onClick={goBack}
                       >
                         <ArrowLeft className="size-5" aria-hidden="true" />
-                      </button>
+                      </Button>
                     )}
                     <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-x-2">
                       <div className="min-w-0 flex-1">
@@ -797,14 +807,15 @@ export function SearchGuideFromUrl({
                       );
                     })}
                     {hiddenCount > 0 && (
-                      <button
+                      <Button
+                        variant="link"
                         type="button"
-                        className="text-primary min-h-11 cursor-pointer self-start px-1 font-semibold underline"
+                        className="h-auto min-h-11 self-start px-1 text-base font-semibold underline"
                         data-testid="show-more-options"
                         onClick={() => setShowAll(true)}
                       >
                         Show more ({hiddenCount})
-                      </button>
+                      </Button>
                     )}
                     {question.allow_other && (
                       <OtherBox
@@ -848,44 +859,46 @@ export function SearchGuideFromUrl({
           )}
         >
           {canSkipQuestion && (
-            <button
+            <Button
+              variant="outline"
               type="button"
               disabled={isPending}
-              className="border-control-border min-h-11 shrink-0 cursor-pointer rounded-lg border bg-white px-5 font-semibold disabled:opacity-60 max-sm:px-4"
+              className="border-control-border h-auto min-h-11 shrink-0 rounded-lg bg-white px-5 text-base font-semibold max-sm:px-4"
               data-testid="guide-skip-question"
               onClick={skipQuestion}
             >
               Skip question
-            </button>
+            </Button>
           )}
           {canDeferLocation && (
-            <button
+            <Button
+              variant="highlight"
               type="button"
-              className="border-primary text-primary min-h-11 cursor-pointer rounded-lg border bg-white px-5 font-semibold"
+              className="h-auto min-h-11 rounded-lg bg-white px-5 text-base font-semibold"
               data-testid="guide-location-not-now"
               onClick={notNow}
             >
               Not now
-            </button>
+            </Button>
           )}
           {picks.length > 0 && question && (
             // One Continue, in the bar: it takes the place of Skip question and Show results now
             // while at least one option is picked (Lucas 2026-11-19).
-            <button
+            <Button
               type="button"
               disabled={isPending}
-              className="bg-primary text-primary-foreground min-h-11 w-full cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60"
+              className="h-auto min-h-11 w-full rounded-lg px-5 text-base font-semibold"
               data-testid="guide-continue"
               onClick={() => answerQuestion(picks)}
             >
               Continue
-            </button>
+            </Button>
           )}
           {(canSkip || onPage) && picks.length === 0 && (
-            <button
+            <Button
               type="button"
               disabled={isWriting}
-              className="bg-primary text-primary-foreground ml-auto min-h-11 cursor-pointer rounded-lg px-5 font-semibold disabled:opacity-60 max-sm:px-3"
+              className="ml-auto h-auto min-h-11 rounded-lg px-5 text-base font-semibold max-sm:px-3"
               data-testid="guide-see-results"
               onClick={seeResults}
             >
@@ -894,7 +907,7 @@ export function SearchGuideFromUrl({
                 : data
                   ? `Skip to results (${totalOf(data)})`
                   : 'Skip to results'}
-            </button>
+            </Button>
           )}
         </div>
       )}

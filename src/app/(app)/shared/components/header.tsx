@@ -26,9 +26,9 @@ import {
   MAIN_CONTENT_ID,
   NEW_TAB_WARNING,
 } from '../lib/constants';
-import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { QUICK_EXIT_CLASSNAME } from './quick-exit-button';
+import { SafeExitLink } from './safe-exit-link';
 import { dialogsAtom } from '../store/dialogs';
 import { usePrintableDirectoryAccess } from '../hooks/use-printable-directory-capability';
 import { shouldShowPrintableDirectoriesLink } from '../utils/canAccessPrintableDirectories';
@@ -304,29 +304,13 @@ export function Header() {
         ) : null,
         appConfig.header.safeExit?.enabled ? (
           <li key={SAFE_EXIT_KEY}>
-            <Link
-              target={appConfig.header.safeExit.target}
-              href={appConfig.header.safeExit?.url ?? '#'}
-              onClick={() => {
-                trackEvent(AnalyticsEvent.SafeExitClick, AnalyticsTools.Umami);
-              }}
-              aria-label={
-                appConfig.header.safeExit.target === '_blank'
-                  ? `${appConfig.header.safeExit?.text}${NEW_TAB_WARNING}`
-                  : appConfig.header.safeExit?.text
-              }
+            <SafeExitLink
               className={cn(
                 buttonVariants({ variant: 'outline' }),
                 'flex items-center gap-1',
                 v2 && QUICK_EXIT_CLASSNAME,
               )}
-            >
-              {appConfig.header.safeExit?.text}
-              <LogOut className="size-4" aria-hidden="true" />
-              {appConfig.header.safeExit.target === '_blank' && (
-                <span className="sr-only">{NEW_TAB_WARNING}</span>
-              )}
-            </Link>
+            />
           </li>
         ) : null,
       ].filter(Boolean),

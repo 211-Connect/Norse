@@ -10,6 +10,7 @@ import {
   AnalyticsTools,
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
+import { useNoDial } from '@/app/(app)/shared/hooks/use-no-dial';
 import {
   formatPhoneNumber,
   getPhoneHref,
@@ -20,6 +21,7 @@ import { Datum } from '../datum';
 
 export function ContactsComponent({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');
+  const noDial = useNoDial();
 
   const sortedContacts = useMemo(() => {
     if (!resource.contacts || resource.contacts.length === 0) {
@@ -80,7 +82,7 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
                         ? `${formatPhoneNumber(phone.number)} (${phone.description})`
                         : formatPhoneNumber(phone.number)
                     }
-                    url={getPhoneHref(phone.number)}
+                    url={getPhoneHref(phone.number, { noDial })}
                     onClick={() => {
                       const resourceId = resource.id;
                       trackEvent(

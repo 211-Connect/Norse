@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { useSearchResults } from '../context/search-results-context';
 import { sortLabel, sortOptionValues } from '../utils/sort-options';
@@ -65,7 +66,11 @@ export function SortSelect() {
       >
         <SelectTrigger
           id={SORT_SELECT_TRIGGER_ID}
-          className="h-8 w-auto min-w-[180px] gap-2 bg-white"
+          className={cn(
+            'h-8 bg-white',
+            // v2 labels are longer: the trigger grows with them. v1 keeps its fixed width.
+            isV2 ? 'w-auto min-w-[180px] gap-2' : 'w-[180px]',
+          )}
         >
           {/* Explicit children: Radix only fills SelectValue from the selected
               item after mount, which leaves the SSR trigger empty. */}

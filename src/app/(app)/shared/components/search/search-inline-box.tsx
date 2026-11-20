@@ -9,7 +9,10 @@ import { useNavigateAiSearch } from '@/app/(app)/features/search/hooks';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 
 import { useAppConfig } from '../../hooks/use-app-config';
-import { useDismissOutside } from '../../hooks/use-dismiss-outside';
+import {
+  POINTER_OR_SCROLL_EVENTS,
+  useOnPointerDownOutside,
+} from '../../hooks/use-on-pointer-down-outside';
 import { LOCATION_INPUT_ID, SEARCH_INPUT_ID } from '../../lib/constants';
 import { cn } from '../../lib/utils';
 import {
@@ -73,9 +76,11 @@ export function SearchInlineBox({
       document.getElementById(LOCATION_INPUT_ID)?.focus(),
     );
   };
-  useDismissOutside(locationRef, editingLocation, () =>
-    setEditingLocation(false),
-  );
+  useOnPointerDownOutside(locationRef, () => setEditingLocation(false), {
+    active: editingLocation,
+    events: POINTER_OR_SCROLL_EVENTS,
+    keepSelector: '[data-dismiss-keep]',
+  });
 
   const setCleared = useSetAtom(searchClearedAtom);
 
