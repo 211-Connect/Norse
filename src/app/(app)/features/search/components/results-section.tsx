@@ -213,6 +213,12 @@ export function ResultsSection({
         <div className="flex items-center justify-between">
           <ResultTotal />
           <div className="flex flex-wrap justify-end gap-2.5">
+            {resultsCount > 0 && (
+              <DirectoryPrintControl
+                loadData={loadPrintableData}
+                renderDocument={renderPdfDocument}
+              />
+            )}
             {/* When editing a source, allow saving a query that matches
                 nothing yet — the user may be narrowing it on purpose. */}
             {(resultsCount > 0 || directoryContext?.source) && (
@@ -223,6 +229,7 @@ export function ResultsSection({
                 disabled={isDirectoryContextLoading}
               />
             )}
+            <ShareButton title={shareTitle} body={shareBody} />
           </div>
         </div>
         {showSort && <SortSelect />}

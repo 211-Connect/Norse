@@ -30,11 +30,22 @@ export function formatPhoneNumber(raw: string | null | undefined): string {
 }
 
 /**
- * Provider phone numbers never dial (Lucas, 2026-11-18, for good): no `tel:` link for a service
- * number, so cards and resource pages show the number as text. The 911, 988, 211 and sms help lines
- * do not use this function; they dial through `DialButton` (features/search/components/no-dial.tsx).
- * An empty string means "no link".
+ * `tel:` URI for a phone number. Extensions use a pause (`,`) rather than
+ * RFC 3966 `;ext=`, because phone dialers dial the pause and ignore `;ext=`.
+ * `noDial` (v2 results only, Lucas 2026-11-18) returns '' ("no link"): the number shows as text.
  */
-export function getPhoneHref(_raw?: string | null): string {
-  return '';
+export function getPhoneHref(
+  raw: string | null | undefined,
+  { noDial = false }: { noDial?: boolean } = {},
+): string {
+  if (noDial || !raw) {
+    return '';
+  }
+
+  const phone = parse(raw);
+  if (!phone) {
+    return `tel:${raw.trim()}`;
+  }
+
+  return `tel:${phone.number}${phone.ext ? `,${phone.ext}` : ''}`;
 }

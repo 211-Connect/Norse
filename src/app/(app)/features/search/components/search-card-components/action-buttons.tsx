@@ -16,9 +16,10 @@ import {
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { formatPhoneNumber } from '@/app/(app)/shared/utils/phone';
+import { getPhoneHref } from '@/app/(app)/shared/utils/phone';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
+import { useIsV2 } from '../v2-results-bridge';
 import { SearchCardComponentProps } from './types';
 import { useResourceCardEntry } from './use-resource-card-entry';
 
@@ -27,6 +28,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   const appConfig = useAppConfig();
   const searchCoords = useAtomValue(searchCoordinatesAtom);
   const entry = useResourceCardEntry();
+  const isV2 = useIsV2();
   const viewDetailsText =
     appConfig.search.texts?.viewDetailsText || t('call_to_action.view_details');
   const viewDetailsButtonVariant =
@@ -35,8 +37,27 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   return (
     <div className="flex flex-col gap-2 print:hidden">
       <div className="grid w-full grid-cols-1 gap-2 lg:grid-cols-3">
-        {result.phone ? null : (
-          // The card's info block already shows a provider number as text (Lucas, 2026-11-18: it never dials).
+        {result.phone && !isV2 ? (
+          <ReferralButton
+            asChild
+            className="w-full gap-1 overflow-hidden"
+            size="sm"
+            referralType="call_referral"
+            resourceId={result.id}
+            resourceData={result}
+            variant="highlight"
+          >
+            <Link
+              href={getPhoneHref(result.phone)}
+              aria-label={`${t('call_to_action.call')} ${result.name}`}
+              prefetch={false}
+            >
+              <Phone className="size-4" />{' '}
+              <span className="truncate"> {t('call_to_action.call')} </span>
+            </Link>
+          </ReferralButton>
+        ) : result.phone ? null : (
+          // v2 only: the card's info block already shows a provider number as text (Lucas, 2026-11-18).
           <ReferralButton
             className="w-full gap-1 overflow-hidden"
             size="sm"
