@@ -7,7 +7,12 @@ import {
   getPhoneHref,
 } from '../src/app/(app)/shared/utils/phone';
 
-test('switch on (default): provider phone numbers never produce a tel: link', () => {
+test('v1 (default): provider phone numbers dial through tel: (v1 tenants unchanged)', () => {
+  assert.equal(getPhoneHref('(253) 403-4437'), 'tel:+12534034437');
+  assert.equal(getPhoneHref('253-403-4437;ext=2'), 'tel:+12534034437,2');
+});
+
+test('switch on, v2 tenant: provider phone numbers never produce a tel: link', () => {
   for (const raw of [
     '(253) 403-4437',
     '253-403-4437;ext=2',
@@ -17,10 +22,9 @@ test('switch on (default): provider phone numbers never produce a tel: link', ()
     '211',
     'garbage',
   ]) {
-    assert.equal(getPhoneHref(raw), '', raw);
+    assert.equal(getPhoneHref(raw, { noDial: NO_DIAL }), '', raw);
   }
-  assert.equal(getPhoneHref(null), '');
-  assert.equal(getPhoneHref(undefined), '');
+  assert.equal(getPhoneHref(null, { noDial: NO_DIAL }), '');
 });
 
 test('v2 (noDial): provider phone numbers never produce a tel: link', () => {

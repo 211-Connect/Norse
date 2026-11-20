@@ -2,6 +2,9 @@
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
+import { useNoDial } from '@/app/(app)/shared/hooks/use-no-dial';
+import { getPhoneHref } from '@/app/(app)/shared/utils/phone';
+
 import { NO_DIAL } from './no-dial-flag';
 
 /** The no-dial switch; see `no-dial-flag.ts`. ON until the turn-on PR. */
@@ -28,14 +31,15 @@ export function DialButton({
   ariaLabel?: string;
   testId?: string;
 }) {
+  const noDial = useNoDial();
   const [shown, setShown] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  if (!PROTOTYPE_NO_DIAL) {
+  if (!noDial) {
     return (
       <a
-        href={`tel:${number}`}
+        href={getPhoneHref(number) || `tel:${number}`}
         className={className}
         aria-label={ariaLabel}
         data-testid={testId}

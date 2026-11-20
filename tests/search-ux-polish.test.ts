@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
+import { appConfigContext } from '../src/app/(app)/shared/context/app-config-context';
 import { buildSearchUrl } from '../src/app/(app)/features/search/utils/buildSearchUrl';
 import { EmergencyLine } from '../src/app/(app)/features/search/components/emergency-line';
 import {
@@ -21,6 +22,14 @@ import {
 import { suggestionPickChanges } from '../src/app/(app)/features/search/v2/landing';
 import { nextV2Params } from '../src/app/(app)/features/search/v2/v2-contract';
 
+// A v2 tenant (`enableV2Api` on): the only tenants for which the no-dial switch applies.
+const asV2Tenant = (el: ReturnType<typeof createElement>) =>
+  createElement(
+    appConfigContext.Provider,
+    { value: { featureFlags: { enableV2Api: true } } as never },
+    el,
+  );
+
 const read = (path: string) => readFileSync(path, 'utf8');
 const APP = 'src/app/(app)/';
 
@@ -35,14 +44,18 @@ test('no-dial: the switch is on and the notice names the number', () => {
 
 test('no-dial: every emergency control renders as a button with no tel: or sms: href', () => {
   const html = [
-    renderToStaticMarkup(createElement(EmergencyLine)),
-    renderToStaticMarkup(createElement(HotlineNumbers, {})),
-    renderToStaticMarkup(createElement(HotlineNumbers, { soft: true })),
+    renderToStaticMarkup(asV2Tenant(createElement(EmergencyLine))),
+    renderToStaticMarkup(asV2Tenant(createElement(HotlineNumbers, {}))),
     renderToStaticMarkup(
-      createElement(EmergencyBox, { hotlines: DEFAULT_HOTLINES }),
+      asV2Tenant(createElement(HotlineNumbers, { soft: true })),
     ),
     renderToStaticMarkup(
-      createElement(DialButton, { number: '211', children: 'Call 211' }),
+      asV2Tenant(createElement(EmergencyBox, { hotlines: DEFAULT_HOTLINES })),
+    ),
+    renderToStaticMarkup(
+      asV2Tenant(
+        createElement(DialButton, { number: '211', children: 'Call 211' }),
+      ),
     ),
   ].join('\n');
   assert.doesNotMatch(html, /href="(tel|sms):/i);
@@ -275,7 +288,7 @@ test('crisis line: the first search shows the two small buttons, no large 988 bu
   const form = read(`${APP}shared/components/search/search-need-form.tsx`);
   assert.match(form, /<EmergencyLine \/>/);
   assert.doesNotMatch(form, /SearchCrisisButton|in a crisis/);
-  const html = renderToStaticMarkup(createElement(EmergencyLine));
+  const html = renderToStaticMarkup(asV2Tenant(createElement(EmergencyLine)));
   assert.match(html, /always-on-911-link/);
   assert.match(html, /always-on-988-link/);
 });

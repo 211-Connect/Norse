@@ -49,14 +49,11 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { Link } from '@/app/(app)/shared/components/link';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { useDismissOutside } from '@/app/(app)/shared/hooks/use-dismiss-outside';
+import { SafeExitLink } from '@/app/(app)/shared/components/safe-exit-link';
 import {
-  AnalyticsEvent,
-  AnalyticsTools,
-  trackEvent,
-} from '@/app/(app)/shared/lib/analytics';
-import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
+  POINTER_OR_SCROLL_EVENTS,
+  useOnPointerDownOutside,
+} from '@/app/(app)/shared/hooks/use-on-pointer-down-outside';
 import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -516,7 +513,11 @@ export function SearchResultsHelp() {
   const addBoxRef = useRef<HTMLDivElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   // Clicking away hides the box and keeps what was typed.
-  useDismissOutside(addBoxRef, adding, () => setAdding(false));
+  useOnPointerDownOutside(addBoxRef, () => setAdding(false), {
+    active: adding,
+    events: POINTER_OR_SCROLL_EVENTS,
+    keepSelector: '[data-dismiss-keep]',
+  });
 
   useEffect(() => {
     setShown(false);
@@ -1129,26 +1130,12 @@ const POPUP_BUTTON =
   'flex min-h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-lg font-semibold no-underline focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none disabled:opacity-60';
 
 function PopupQuickExit() {
-  const safeExit = useAppConfig().header.safeExit;
-  if (!SHOW_QUICK_EXIT_ON_EMERGENCY || !safeExit?.enabled) return null;
+  if (!SHOW_QUICK_EXIT_ON_EMERGENCY) return null;
   return (
-    <Link
-      target={safeExit.target}
-      href={safeExit.url ?? '#'}
-      onClick={() => {
-        trackEvent(AnalyticsEvent.SafeExitClick, AnalyticsTools.Umami);
-      }}
-      aria-label={
-        safeExit.target === '_blank'
-          ? `${safeExit.text}${NEW_TAB_WARNING}`
-          : safeExit.text
-      }
+    <SafeExitLink
       className="fixed top-4 right-4 flex min-h-11 items-center gap-1 rounded-lg bg-white px-4 text-sm font-semibold text-red-800 no-underline shadow-lg focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none"
-      data-testid="emergency-popup-quick-exit"
-    >
-      {safeExit.text}
-      <LogOut className="size-4" aria-hidden="true" />
-    </Link>
+      testId="emergency-popup-quick-exit"
+    />
   );
 }
 
