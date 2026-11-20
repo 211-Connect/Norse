@@ -7,6 +7,13 @@ const ONE_DAY = 24 * ONE_HOUR;
  * @type {import('next').NextConfig}
  **/
 const nextConfig = {
+  devIndicators: false,
+  // Prototype: lets a person open the dev server through an ngrok link.
+  allowedDevOrigins: ['*.ngrok-free.app'],
+  // Prototype: a worktree whose node_modules is a symlink to a sibling worktree sets TURBOPACK_ROOT to the parent folder.
+  ...(process.env.TURBOPACK_ROOT
+    ? { turbopack: { root: process.env.TURBOPACK_ROOT } }
+    : {}),
   async headers() {
     const isProduction = process.env.NODE_ENV === 'production';
 

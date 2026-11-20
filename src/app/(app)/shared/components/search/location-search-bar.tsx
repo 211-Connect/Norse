@@ -5,7 +5,7 @@ import { MapPin } from 'lucide-react';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLocations } from '../../hooks/api/use-locations';
+import { firstPlaceIndex, useLocations } from '../../hooks/api/use-locations';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useDebounce } from '../../hooks/use-debounce';
 import { LOCATION_SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
@@ -35,6 +35,19 @@ type BaseProps = {
   inputId?: string;
   showIcon?: boolean;
   placeholder?: string;
+  /** Extra classes for the suggestion list. */
+  listClassName?: string;
+  /** Integrated mode: "Use my location" sits in the row, right of the input (v2 pages). */
+  myLocationInline?: boolean;
+  /**
+   * Integrated mode: `form` (default) anchors the list to the search form; `input` anchors it to
+   * the input (same left edge and width) and keeps it below the input, scrolling inside itself.
+   */
+  anchorList?: 'form' | 'input';
+  /** Enter and Tab wait for the place lookup to finish, then commit the first match (v2 pages). */
+  commitAfterLoad?: boolean;
+  /** Integrated mode: "Everywhere" goes after the matches unless the text starts like it (v2 pages). */
+  rankEverywhere?: boolean;
 };
 
 // Integrated mode - uses global atoms and context
@@ -63,9 +76,14 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     inputId,
     showIcon = true,
     placeholder,
+    myLocationInline = false,
+    anchorList = 'form',
+    commitAfterLoad = false,
+    rankEverywhere = false,
   } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
+  const clearOnlyEmpties = rankEverywhere && !isStandalone;
 
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
@@ -123,6 +141,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     options,
     additionalLocations,
     isFetching,
+    everywhereIsFirst,
   } = useLocations(
     isTyping
       ? debouncedSearchLocation
@@ -130,6 +149,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         ? ''
         : prevSearchLocation,
     isStandalone, // Exclude additional locations in standalone mode
+    { rankEverywhere: rankEverywhere && !isStandalone },
   );
 
   // While actively searching and awaiting API results, suppress stale geocoded
@@ -160,14 +180,20 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   // auto-select with, so it always defaults to index 0.
   //
   // A committed "Everywhere" is a valid value, so nothing replaces it.
+  // v2 (rankEverywhere): a person typing a new place gets the top match on Enter, even when an
+  // older place's coordinates are still set (live walk 2026-11-20).
   const autoSelectIndex =
     !isTyping && isEverywhere(searchLocation)
       ? undefined
-      : isStandalone
-        ? 0
-        : globalCoords?.length === 2
-          ? undefined
-          : 1;
+      : rankEverywhere && isTyping
+        ? firstPlaceIndex(everywhereIsFirst)
+        : isStandalone
+          ? 0
+          : globalCoords?.length === 2
+            ? undefined
+            : rankEverywhere
+              ? firstPlaceIndex(everywhereIsFirst)
+              : 1;
 
   // Use context only if available (for main search integration)
   const context = useContext(MainSearchLayoutContext);
@@ -274,15 +300,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [setSearch, isStandalone],
   );
 
-  const handleClear = useCallback(() => {
-    handleCommit(everywhereLabel);
-    if (isStandalone) {
-      setLocalPrevSearchLocation('');
-    } else {
-      setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
-    }
-  }, [isStandalone, setSearch, handleCommit, everywhereLabel]);
-
   // Called by Autocomplete when the committed block is burst-cleared by a
   // keypress. `nextValue` is the triggering character, or '' for Backspace/Delete.
   // Unlike handleClear, this does NOT route through "Everywhere" — it leaves
@@ -309,15 +326,54 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [isStandalone, props, setSearch],
   );
 
+  const handleClear = useCallback(() => {
+    // v2 (rankEverywhere): the x only empties the box for a new place. It never means "no
+    // location" (Everywhere) and never moves the questions on (Lucas, 2026-11-20).
+    if (clearOnlyEmpties) {
+      handleDecommit('');
+      return;
+    }
+    handleCommit(everywhereLabel);
+    if (isStandalone) {
+      setLocalPrevSearchLocation('');
+    } else {
+      setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
+    }
+  }, [
+    isStandalone,
+    setSearch,
+    handleCommit,
+    everywhereLabel,
+    clearOnlyEmpties,
+    handleDecommit,
+  ]);
+
+  const inline = !isStandalone && myLocationInline;
+  // The text in the box right now: what the person types, or the committed place.
+  const shownText = isTyping
+    ? isStandalone
+      ? searchLocation
+      : prevSearchLocation
+    : searchLocation;
+  // Inline (v2): "Use my location" steps aside once the person types, and comes back when the box
+  // is empty (Lucas, 2026-11-20).
+  const showInlineMyLocation = inline && !shownText.trim();
+  const anchorToInput = !isStandalone && anchorList === 'input';
+
   return (
     <div
       className={cn(
-        'location-box flex flex-col',
-        isStandalone ? 'gap-2' : 'gap-4',
+        'location-box',
+        inline ? 'flex flex-row flex-wrap items-start gap-2' : 'flex flex-col',
+        !inline && (isStandalone ? 'gap-2' : 'gap-4'),
       )}
     >
       <Autocomplete
-        className={cn(className, !isStandalone && 'search-box')}
+        className={cn(
+          className,
+          !isStandalone && 'search-box',
+          inline && 'min-w-0 flex-1',
+        )}
         wrapperTestId="location-field"
         readerLabel={t('search.location_input_label')}
         inputProps={{
@@ -350,18 +406,40 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
             : searchLocation
         }
         clearButtonLabel={t('call_to_action.remove')}
+        // v2: no "Remove" tooltip under the x (it read as "remove the location").
+        clearButtonTooltip={!clearOnlyEmpties}
         autoSelectIndex={autoSelectIndex}
         autoSelectOnBlurIndex={autoSelectIndex}
         loading={isPendingResults}
         // Standalone fields live in dialogs, where the list floats over the
         // dialog's other content.
-        listboxClassName={isStandalone ? FLOATING_LISTBOX_CLASSNAME : undefined}
-        positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
+        listboxClassName={cn(
+          isStandalone ? FLOATING_LISTBOX_CLASSNAME : undefined,
+          props.listClassName,
+        )}
+        positionBelowElementId={
+          isStandalone || anchorToInput ? undefined : 'search-form-inputs'
+        }
+        placement={anchorToInput ? 'below' : 'auto'}
+        waitForOptions={commitAfterLoad}
       />
       {validationError && (
-        <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
+        <p
+          className={cn(
+            'min-h-4 px-3 text-xs text-red-500',
+            inline && 'order-last basis-full',
+          )}
+        >
+          {validationError}
+        </p>
       )}
-      {!isStandalone && (
+      {showInlineMyLocation && (
+        <div className="shrink-0">
+          {/* Same height as the input (h-[34px]: py-2, text-xs line, 1 px borders). */}
+          <UseMyLocationButton className="h-[34px] min-h-0 py-0 whitespace-nowrap" />
+        </div>
+      )}
+      {!isStandalone && !inline && (
         <div>
           <UseMyLocationButton />
         </div>

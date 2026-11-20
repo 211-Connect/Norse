@@ -8,12 +8,15 @@ import { Image } from '@/app/(app)/shared/components/image';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { cn } from '@/app/(app)/shared/lib/utils';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
 type TourPositionPreference = 'above' | 'below';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 hero.
+  const v2 = appConfig.featureFlags.enableV2Api;
   const { setCurrentStep, setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
@@ -164,20 +167,40 @@ export function HeroSection() {
   };
 
   return (
-    <div className="relative flex h-screen max-h-64 flex-col items-center justify-center gap-2 p-2 md:max-h-96">
-      <Image
-        fill
-        src={appConfig.heroUrl ?? ''}
-        priority
-        alt=""
-        style={{ objectFit: 'cover', zIndex: -1, objectPosition: 'center' }}
-      />
+    <div
+      className={cn(
+        'relative flex h-screen flex-col items-center justify-center gap-2 p-2',
+        v2 ? 'max-h-80 md:max-h-[28rem]' : 'max-h-64 md:max-h-96',
+      )}
+    >
+      {v2 ? (
+        // Prototype: stands in for the tenant's hero photo.
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#a9d3dc] via-[#8fb3bd] to-[#20433f]" />
+      ) : (
+        <Image
+          fill
+          src={appConfig.heroUrl ?? ''}
+          priority
+          alt=""
+          style={{ objectFit: 'cover', zIndex: -1, objectPosition: 'center' }}
+        />
+      )}
 
       <div
-        className="bg-primary animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-[31rem] flex-col gap-2 rounded-lg p-3 shadow-xl ring-1 shadow-black/20 ring-white/10 duration-500 ease-out sm:p-4"
+        className={cn(
+          'bg-primary flex w-full flex-col rounded-lg shadow-xl ring-1 shadow-black/20 ring-white/10',
+          v2
+            ? 'max-w-[38rem] gap-3 p-5'
+            : 'animate-in fade-in slide-in-from-bottom-2 max-w-[31rem] gap-2 p-3 duration-500 ease-out sm:p-4',
+        )}
         role="search"
       >
-        <h2 className="text-2xl font-semibold tracking-tight text-white">
+        <h2
+          className={cn(
+            'font-semibold text-white',
+            v2 ? 'text-3xl md:text-4xl' : 'text-2xl tracking-tight',
+          )}
+        >
           {appConfig.search.texts?.title ||
             t('search.hero_title', { ns: 'common' })}
         </h2>

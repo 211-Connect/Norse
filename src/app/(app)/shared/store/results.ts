@@ -32,3 +32,6 @@ export type ResultType = {
 // Search results themselves are request data, not client state: they live in
 // `SearchResultsProvider` (features/search/context/search-results-context.tsx).
 export const filtersOpenAtom = atom(false);
+
+/** Prototype: which view a phone shows. Wider screens show the list and the map together. */
+export const resultsViewAtom = atom<'list' | 'map'>('list');

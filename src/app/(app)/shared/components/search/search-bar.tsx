@@ -21,25 +21,34 @@ interface SearchBarProps {
   onQueryInputChange?: () => void;
 }
 
-export function SearchBar({
-  focusByDefault = false,
-  inputId,
-  hideOptions = false,
-  onQueryInputChange,
-}: SearchBarProps) {
+/**
+ * The suggestion options for what is typed, as the search bar builds them: tenant suggestions,
+ * topics, taxonomies and (with `enableOrganizationSearch`) organization rows, in the tenant's group
+ * headings, with the tenant's badge flags. One builder for the v1 search bar and the v2 need box.
+ */
+export function useSearchBarOptions(
+  searchTerm: string,
+  { maxWords }: { maxWords?: number } = {},
+): { options: AutocompleteOption[]; isLoading: boolean } {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
-  const searchTerm = useAtomValue(searchTermAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, SEARCH_DEBOUNCE_DELAY);
-  const { setSearch } = useMainSearchLayoutContext();
+  // `maxWords`: a longer text is a sentence, not a name to complete: no request, no options.
+  const isSentence =
+    maxWords !== undefined && searchTerm.trim().split(/\s+/).length > maxWords;
+  const askedTerm =
+    maxWords !== undefined &&
+    debouncedSearchTerm.trim().split(/\s+/).length > maxWords
+      ? ''
+      : debouncedSearchTerm;
   const {
     taxonomies: taxonomiesDisplay,
     organizations: organizationsDisplay,
     isFetching: isFetchingSuggestions,
-  } = useSearchSuggestions(debouncedSearchTerm);
+  } = useSearchSuggestions(askedTerm);
   // Covers the debounce window too, not just the request itself.
   const isLoadingSuggestions =
-    !hideOptions &&
+    !isSentence &&
     searchTerm.trim().length > 0 &&
     (searchTerm !== debouncedSearchTerm || isFetchingSuggestions);
 
@@ -52,6 +61,7 @@ export function SearchBar({
   const topics = appConfig.topics;
 
   const options = useMemo((): AutocompleteOption[] => {
+    if (isSentence) return [];
     const suggestionHeaders = appConfig.search.texts?.suggestionHeaders;
     const suggestionsGroup =
       suggestionHeaders?.suggestions || t('search.suggestions');
@@ -149,7 +159,25 @@ export function SearchBar({
     t,
     searchTerm,
     showTaxonomyBadge,
+    isSentence,
   ]);
+
+  return { options, isLoading: isLoadingSuggestions };
+}
+
+export function SearchBar({
+  focusByDefault = false,
+  inputId,
+  hideOptions = false,
+  onQueryInputChange,
+}: SearchBarProps) {
+  const appConfig = useAppConfig();
+  const { t } = useTranslation('common');
+  const searchTerm = useAtomValue(searchTermAtom);
+  const { setSearch } = useMainSearchLayoutContext();
+  const { options, isLoading } = useSearchBarOptions(searchTerm);
+  // Covers the debounce window too, not just the request itself.
+  const isLoadingSuggestions = !hideOptions && isLoading;
 
   const setSearchTerm = useCallback(
     (value: string, option?: AutocompleteOption) => {

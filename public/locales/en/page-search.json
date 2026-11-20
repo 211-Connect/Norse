@@ -33,6 +33,12 @@
       "distance": "Nearest First",
       "name": "Resource Name",
       "organization": "Provider Name"
+    },
+    "v2_options": {
+      "relevance": "Most Relevant",
+      "distance": "Nearest First",
+      "name": "Alphabetical by provider name",
+      "organization": "Alphabetical by organization"
     }
   },
   "ai_broadened_results_alert": "We showed broader results because your request may need more detail. You can refine using topics or suggestions.",

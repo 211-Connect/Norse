@@ -65,7 +65,9 @@
     "ai_show_more_categories": "Show more categories",
     "ai_validation_select_or_skip": "Select at least one option or skip.",
     "ai_option_results_count_one": "{{count}} related resource",
-    "ai_option_results_count_other": "{{count}} related resources"
+    "ai_option_results_count_other": "{{count}} related resources",
+    "v2_option_services_count_one": "{{count}} service offers this",
+    "v2_option_services_count_other": "{{count}} services offer this"
   },
   "call_to_action": {
     "call": "Call",

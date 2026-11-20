@@ -192,6 +192,19 @@ test('the loop guard and an empty query are never classified', () => {
   assert.equal(resolve('query=&query_type=text', AI).value, 'ready');
 });
 
+test('a URL that carries v2 answers is never classified or redirected (needs, urgency, asked)', () => {
+  for (const answers of ['needs=N-FOD-01', 'urgency=U-2', 'asked=need_area']) {
+    const snapshot = resolve(`query=food&query_type=hybrid&${answers}`, AI);
+    assert.equal(snapshot.value, 'ready', answers);
+    assert.equal(snapshot.hasTag('page:redirect'), false, answers);
+  }
+  // No answers: the gate still classifies.
+  assert.equal(
+    resolve('query=food&query_type=hybrid', AI).value,
+    'needs_prediction',
+  );
+});
+
 test('a direct prediction redirects to the canonical AI URL', () => {
   const snapshot = predicted(
     'query=food&query_type=text&location=Seattle&coords=-122.3,47.6&page=4',

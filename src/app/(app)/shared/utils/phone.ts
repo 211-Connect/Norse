@@ -32,9 +32,13 @@ export function formatPhoneNumber(raw: string | null | undefined): string {
 /**
  * `tel:` URI for a phone number. Extensions use a pause (`,`) rather than
  * RFC 3966 `;ext=`, because phone dialers dial the pause and ignore `;ext=`.
+ * `noDial` (v2 results only, Lucas 2026-11-18) returns '' ("no link"): the number shows as text.
  */
-export function getPhoneHref(raw: string | null | undefined): string {
-  if (!raw) {
+export function getPhoneHref(
+  raw: string | null | undefined,
+  { noDial = false }: { noDial?: boolean } = {},
+): string {
+  if (noDial || !raw) {
     return '';
   }
 

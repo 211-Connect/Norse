@@ -5,6 +5,8 @@ import { cache } from 'react';
 
 import { SearchPageShell } from '@/app/(app)/features/search/components/search-page-shell';
 import { SearchResultsProvider } from '@/app/(app)/features/search/context/search-results-context';
+import { isV2Enabled } from '@/app/(app)/features/search/v2/enabled';
+import { V2ResultsBridge } from '@/app/(app)/features/search/components/v2-results-bridge';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -227,6 +229,17 @@ export default async function SearchPage({
     appConfig,
   } = await getPageData(locale, searchParamsResult);
   const aiSearchAlert = envelope.a;
+  const shell = (v2: boolean) => {
+    const page = (
+      <SearchPageShell
+        legacyAiClarifyState={legacyAiClarifyState ?? undefined}
+        searchIntent={intent}
+        cardLayout={cardLayout}
+        aiSearchAlert={aiSearchAlert}
+      />
+    );
+    return v2 ? <V2ResultsBridge>{page}</V2ResultsBridge> : page;
+  };
   const listTotal = appConfig.search.showAllResultsOnMap
     ? Math.min(totalResults, MAP_PINS_LIMIT)
     : totalResults;
@@ -236,6 +249,7 @@ export default async function SearchPage({
   }
   return (
     <PageWrapper
+      fitViewport
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       search={{
@@ -264,12 +278,8 @@ export default async function SearchPage({
           region: searchQuery.region ?? null,
         }}
       >
-        <SearchPageShell
-          legacyAiClarifyState={legacyAiClarifyState ?? undefined}
-          searchIntent={intent}
-          cardLayout={cardLayout}
-          aiSearchAlert={aiSearchAlert}
-        />
+        {/* The tenant's v2 switch: off renders the v1 page, with no v2 call. */}
+        {shell(isV2Enabled(appConfig))}
       </SearchResultsProvider>
     </PageWrapper>
   );

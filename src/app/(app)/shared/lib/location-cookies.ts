@@ -1,4 +1,4 @@
-import { deleteCookie, setCookie } from 'cookies-next/client';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next/client';
 
 import { GeocodeResult } from '@/types/resource';
 
@@ -51,5 +51,28 @@ export function setLocationCookies(address: string, result: GeocodeResult) {
     setCookie(USER_PREF_REGION_ID, result.region_id, COOKIE_OPTIONS);
   } else {
     deleteCookie(USER_PREF_REGION_ID, COOKIE_OPTIONS);
+  }
+}
+
+export type LocationCookieSnapshot = Partial<
+  Record<(typeof LOCATION_COOKIE_KEYS)[number], string>
+>;
+
+/** The saved location cookies as they are now, to put back with restoreLocationCookies. */
+export function snapshotLocationCookies(): LocationCookieSnapshot {
+  const snapshot: LocationCookieSnapshot = {};
+  for (const key of LOCATION_COOKIE_KEYS) {
+    const value = getCookie(key, COOKIE_OPTIONS);
+    if (typeof value === 'string') snapshot[key] = value;
+  }
+  return snapshot;
+}
+
+/** Puts back the location cookies from a snapshot; a key missing from it is cleared. */
+export function restoreLocationCookies(snapshot: LocationCookieSnapshot) {
+  for (const key of LOCATION_COOKIE_KEYS) {
+    const value = snapshot[key];
+    if (value === undefined) deleteCookie(key, COOKIE_OPTIONS);
+    else setCookie(key, value, COOKIE_OPTIONS);
   }
 }

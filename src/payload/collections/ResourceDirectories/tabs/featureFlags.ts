@@ -55,6 +55,16 @@ export const featureFlags: Tab = {
       },
     },
     {
+      name: 'enableV2Api',
+      type: 'checkbox',
+      label: 'Enable v2 search API',
+      defaultValue: false,
+      access: {
+        create: superAdminAccess,
+        update: superAdminAccess,
+      },
+    },
+    {
       name: 'showOrganizationLocationBadge',
       type: 'checkbox',
       defaultValue: false,

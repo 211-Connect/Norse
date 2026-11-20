@@ -2,7 +2,7 @@
 
 import { type TFunction } from 'i18next';
 import { useAtomValue } from 'jotai';
-import { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
@@ -15,11 +15,13 @@ import {
   Coords,
   cn,
   distanceBetweenCoordsInMiles,
+  formatAddressForDisplay,
 } from '@/app/(app)/shared/lib/utils';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { useSearchResults } from '../context/search-results-context';
+import { useV2Pins } from '../v2/use-v2-pins';
 import {
   type PinSite,
   type SearchPin,
@@ -94,9 +96,13 @@ const toMarker = (
   };
 };
 
-export function MapContainer() {
+/** The height of the pinned search bar and refine row on a phone. */
+const PHONE_PINNED_HEIGHT = 104;
+
+export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
   const appConfig = useAppConfig();
   const [headerHeight, setHeaderHeight] = useState(0);
+  const mapRef = useRef<HTMLDivElement>(null);
 
   const { t, i18n } = useTranslation('page-search');
   const { results, totalResults, pinsQuery, region } = useSearchResults();
@@ -108,6 +114,8 @@ export function MapContainer() {
     isWholeSearchOnPage ? null : pinsQuery,
   );
   const coords = useAtomValue(userCoordinatesAtom);
+  // The map shows every located match of the search (`/v2/search/pins`), not only the list's page.
+  const { pins: v2Pins } = useV2Pins();
 
   useEffect(() => {
     const header = document.getElementById(HEADER_ID);
@@ -116,13 +124,47 @@ export function MapContainer() {
     }
   }, []);
 
+  // On a phone the map fills the screen under the pinned rows.
+  useEffect(() => {
+    if (!phoneView || !headerHeight || !mapRef.current) return;
+    const { top } = mapRef.current.getBoundingClientRect();
+    window.scrollTo(0, Math.max(top + window.scrollY - PHONE_PINNED_HEIGHT, 0));
+  }, [phoneView, headerHeight]);
+
   const pagePins = useMemo(() => results.map(toPin), [results]);
 
-  // Memoize to prevent unecessary map re-renders
-  const pageMarkers = useMemo(
-    () => pagePins.map((pin) => toMarker([pin], coords, t)),
-    [coords, pagePins, t],
-  );
+  // Memoize to prevent unecessary map re-renders. The v2 pins (`/v2/search/pins`) cover every
+  // located match of the search; without them the map shows the list's current page.
+  const pageMarkers = useMemo(() => {
+    if (v2Pins?.length) {
+      const byId = new Map(results.map((r) => [r._id, r]));
+      return v2Pins.map((pin) => {
+        const hit = byId.get(pin.id);
+        const distance =
+          (coords?.length ?? 0) === 2
+            ? distanceBetweenCoordsInMiles(coords as Coords, pin.coordinates)
+            : undefined;
+        const name = pin.name ?? hit?.name ?? '';
+        const linkId = pin.service_at_location_id ?? hit?.id ?? pin.id;
+        return {
+          id: pin.id,
+          coordinates: pin.coordinates,
+          label: name,
+          popup: (
+            <MapPopup
+              distance={distance}
+              id={linkId}
+              name={name}
+              address={
+                formatAddressForDisplay(pin.physical_address) || hit?.address
+              }
+            />
+          ),
+        };
+      });
+    }
+    return pagePins.map((pin) => toMarker([pin], coords, t));
+  }, [coords, pagePins, results, t, v2Pins]);
 
   // With the flag on, the page's results are circles from the first render;
   // the rest of the search joins them once its pins arrive.
@@ -161,9 +203,16 @@ export function MapContainer() {
 
   return (
     <div
+      ref={mapRef}
+      data-testid="results-map"
       className={cn(
-        'order-last h-[320px] w-full p-[10px] lg:sticky lg:top-[105px] lg:h-[var(--search-map-height)] lg:flex-1',
+        'order-last h-[320px] w-full p-[10px] lg:sticky lg:top-[105px] lg:flex-1',
+        // The tenant's v2 switch: off keeps the v1 map height.
+        appConfig.featureFlags.enableV2Api
+          ? 'md:h-auto md:min-h-0 md:self-stretch'
+          : 'lg:h-[var(--search-map-height)]',
         appConfig.newLayout?.enabled && 'xl:top-[144px]',
+        phoneView && 'max-md:h-[calc(100dvh-6.5rem)]',
       )}
       style={
         {

@@ -14,11 +14,12 @@ import { setLocationCookies } from '../../lib/location-cookies';
 import { MapService } from '../../services/map-service';
 import { deviceAtom } from '../../store/device';
 import { searchAtom } from '../../store/search';
+import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 
 const log = createLogger('use-my-location-button');
 
-export function UseMyLocationButton() {
+export function UseMyLocationButton({ className }: { className?: string }) {
   const appConfig = useAppConfig();
 
   const { i18n, t } = useTranslation('common');
@@ -99,12 +100,21 @@ export function UseMyLocationButton() {
   return (
     <Button
       onClick={getUserLocation}
-      className="text-primary hover:bg-primary hover:text-primary-foreground flex h-auto gap-1 text-left whitespace-normal"
+      className={cn(
+        'text-primary hover:bg-primary hover:text-primary-foreground flex h-auto gap-1 text-left whitespace-normal',
+        className,
+      )}
+      aria-label={className ? t('search.use_my_location') : undefined}
       variant="ghost"
       type="button"
     >
       <Locate className="size-4" aria-hidden="true" />
-      {t('search.use_my_location')}
+      {className ? (
+        // Inline in a row (v2 pages): the icon alone fits a 390 px phone.
+        <span className="max-sm:sr-only">{t('search.use_my_location')}</span>
+      ) : (
+        t('search.use_my_location')
+      )}
     </Button>
   );
 }

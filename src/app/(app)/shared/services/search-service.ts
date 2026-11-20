@@ -46,6 +46,11 @@ export type FindResourcesQuery = {
   sort?: SortOption;
   widgetId?: string;
   age?: number;
+  /** v2 prototype: confirmed needs (boost only), passed needs, urgency, "Other" text. */
+  needs?: string[];
+  passedNeeds?: string[];
+  urgency?: string;
+  other?: string;
 };
 
 type SearchResult = {
@@ -176,6 +181,12 @@ async function findResourcesOrigin({
       ...(query.sort && { sort: query.sort }),
       page,
       limit,
+      ...(query.needs?.length && { needs: query.needs.join(',') }),
+      ...(query.passedNeeds?.length && {
+        passed_needs: query.passedNeeds.join(','),
+      }),
+      ...(query.urgency && { urgency: query.urgency }),
+      ...(query.other?.trim() && { other: query.other.trim() }),
     });
 
     data = await fetchWrapper(`${API_URL}/search?${searchString}`, {

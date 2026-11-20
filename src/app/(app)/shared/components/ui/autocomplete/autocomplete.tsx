@@ -3,13 +3,14 @@
 import {
   autoUpdate,
   flip,
+  type Middleware,
   offset,
   shift,
   size,
   useFloating,
 } from '@floating-ui/react';
 import { Loader2Icon, XIcon } from 'lucide-react';
-import { useCallback, useEffect, useId } from 'react';
+import { useCallback, useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -23,6 +24,12 @@ import {
   TooltipTrigger,
 } from '../tooltip';
 import { AutocompleteListbox } from './autocomplete-listbox';
+import {
+  belowListMaxHeight,
+  LIST_IN_SCROLLER_RESERVE_PX,
+  listMiddlewareNames,
+  MIN_LIST_SPACE_PX,
+} from './placement';
 import { AutocompleteProps } from './types';
 import { useAutocomplete } from './use-autocomplete';
 
@@ -34,6 +41,47 @@ export const FLOATING_LISTBOX_CLASSNAME =
 const LIST_OFFSET_PX = 8;
 /** Space kept free between the list and the viewport edge. */
 const VIEWPORT_PADDING_PX = 8;
+
+const middlewareByName: Record<string, () => Middleware> = {
+  offset: () => offset(LIST_OFFSET_PX),
+  flip: () => flip({ padding: VIEWPORT_PADDING_PX }),
+  shift: () => shift({ padding: VIEWPORT_PADDING_PX }),
+  size: () =>
+    size({
+      padding: VIEWPORT_PADDING_PX,
+      apply({ rects, availableHeight, elements }) {
+        Object.assign(elements.floating.style, {
+          width: `${rects.reference.width}px`,
+          maxHeight: `${Math.max(0, availableHeight)}px`,
+        });
+      },
+    }),
+};
+
+/**
+ * The lowest the scroll region around `element` can reach on screen, or null with no scroll
+ * region. A card that grows up to a max height (the /find questions card) counts at its full
+ * height, minus what sits under the region (its bottom buttons), so a list in the region never
+ * makes the card itself scroll.
+ */
+function scrollRegionMaxBottom(element: HTMLElement): number | null {
+  let scroller: HTMLElement | null = element.parentElement;
+  while (
+    scroller &&
+    !/auto|scroll/.test(getComputedStyle(scroller).overflowY)
+  ) {
+    scroller = scroller.parentElement;
+  }
+  if (!scroller) return null;
+  const scrollerBottom = scroller.getBoundingClientRect().bottom;
+  for (let el: HTMLElement | null = scroller; el; el = el.parentElement) {
+    const maxHeight = getComputedStyle(el).maxHeight;
+    if (!maxHeight.endsWith('px')) continue;
+    const box = el.getBoundingClientRect();
+    return box.top + parseFloat(maxHeight) - (box.bottom - scrollerBottom);
+  }
+  return scrollerBottom;
+}
 
 /**
  * Text input with a suggestion list (WAI-ARIA combobox). Behavior lives in
@@ -58,6 +106,7 @@ export function Autocomplete({
   autoSelectOnBlurIndex,
   defaultOpen,
   clearButtonLabel = 'Clear',
+  clearButtonTooltip = true,
   positionBelowElementId,
   wrapperTestId,
   blockMode,
@@ -65,6 +114,8 @@ export function Autocomplete({
   onEscape,
   loading = false,
   listboxClassName,
+  placement = 'auto',
+  waitForOptions = false,
 }: AutocompleteProps) {
   const { t } = useTranslation('common');
   const labelId = useId();
@@ -83,6 +134,8 @@ export function Autocomplete({
     onClear,
     onDecommit,
     onEscape,
+    loading,
+    waitForOptions,
   });
   const { open, activeIndex, inputText, listboxId, refs } = autocomplete;
 
@@ -90,24 +143,56 @@ export function Autocomplete({
     open,
     placement: 'bottom-start',
     // `fixed` lets a list anchored to an outside element escape the input's
-    // own layout box.
-    strategy: positionBelowElementId ? 'fixed' : 'absolute',
+    // own layout box. A `below` list also uses it: it must not be clipped by a card that
+    // scrolls or hides overflow.
+    strategy:
+      positionBelowElementId || placement === 'below' ? 'fixed' : 'absolute',
     whileElementsMounted: autoUpdate,
-    middleware: [
-      offset(LIST_OFFSET_PX),
-      flip({ padding: VIEWPORT_PADDING_PX }),
-      shift({ padding: VIEWPORT_PADDING_PX }),
-      size({
-        padding: VIEWPORT_PADDING_PX,
-        apply({ rects, availableHeight, elements }) {
-          Object.assign(elements.floating.style, {
-            width: `${rects.reference.width}px`,
-            maxHeight: `${Math.max(0, availableHeight)}px`,
-          });
-        },
-      }),
-    ],
+    middleware: listMiddlewareNames(placement).map((name) =>
+      middlewareByName[name](),
+    ),
   });
+
+  // A `below` list never flips, so with little room under the input, bring the input to the
+  // top of its scroller when the list opens.
+  useEffect(() => {
+    if (!open || placement !== 'below') return;
+    const input = refs.inputRef.current;
+    if (!input) return;
+    const space = window.innerHeight - input.getBoundingClientRect().bottom;
+    if (space < MIN_LIST_SPACE_PX) input.scrollIntoView({ block: 'start' });
+  }, [open, placement, refs.inputRef]);
+
+  // A `below` list sits in the flow under the input: a card around it grows with it instead of
+  // cutting it off (live walk 2026-11-20: "Syracuse" needed scrolling inside a short list).
+  const inFlowList = placement === 'below' && !positionBelowElementId;
+  const [belowMaxHeight, setBelowMaxHeight] = useState<number>();
+  useEffect(() => {
+    if (!open || !inFlowList) return;
+    const measure = () => {
+      const input = refs.inputRef.current;
+      if (!input) return;
+      const visible = window.visualViewport?.height ?? window.innerHeight;
+      const inputBottom = input.getBoundingClientRect().bottom;
+      const scrollBottom = scrollRegionMaxBottom(input);
+      setBelowMaxHeight(
+        scrollBottom == null
+          ? belowListMaxHeight(visible, inputBottom)
+          : belowListMaxHeight(
+              Math.min(visible, scrollBottom),
+              inputBottom,
+              LIST_IN_SCROLLER_RESERVE_PX,
+            ),
+      );
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    window.visualViewport?.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+      window.visualViewport?.removeEventListener('resize', measure);
+    };
+  }, [open, inFlowList, refs.inputRef]);
 
   useEffect(() => {
     if (positionBelowElementId) {
@@ -130,9 +215,10 @@ export function Autocomplete({
   const setListboxElement = useCallback(
     (element: HTMLDivElement | null) => {
       refs.listboxRef.current = element;
-      floatingRefs.setFloating(element);
+      // An in-flow list is not positioned by Floating UI (its `size` step would set the height).
+      floatingRefs.setFloating(inFlowList ? null : element);
     },
-    [refs.listboxRef, floatingRefs],
+    [refs.listboxRef, floatingRefs, inFlowList],
   );
 
   const hasText = inputText.length > 0;
@@ -150,9 +236,30 @@ export function Autocomplete({
         ? t('autocomplete.loading')
         : t('autocomplete.no_results');
 
+  const listbox = (
+    <AutocompleteListbox
+      id={listboxId}
+      ref={setListboxElement}
+      groups={autocomplete.groups}
+      activeIndex={activeIndex}
+      highlightText={autocomplete.typedText}
+      optionId={autocomplete.optionId}
+      loading={loading}
+      loadingLabel={t('autocomplete.loading')}
+      className={cn(listboxClassName, inFlowList && 'relative basis-full')}
+      style={inFlowList ? { maxHeight: belowMaxHeight } : floatingStyles}
+      {...autocomplete.listHandlers}
+    />
+  );
+
   return (
     <div
-      className={cn('relative flex items-center', className)}
+      className={cn(
+        'relative flex items-center',
+        // An in-flow list goes on its own line under the input.
+        inFlowList && 'flex-wrap',
+        className,
+      )}
       ref={refs.wrapperRef}
       data-testid={wrapperTestId}
     >
@@ -213,7 +320,21 @@ export function Autocomplete({
           />
         )}
 
-        {hasText && (
+        {hasText && !clearButtonTooltip && (
+          <Button
+            ref={refs.clearButtonRef}
+            size="icon"
+            variant="ghost"
+            className="absolute top-0 right-0 h-full hover:bg-transparent hover:bg-none"
+            onClick={autocomplete.clear}
+            aria-label={clearButtonLabel}
+            data-testid="search-clear-btn"
+            type="button"
+          >
+            <XIcon className="h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        )}
+        {hasText && clearButtonTooltip && (
           <TooltipProvider>
             <Tooltip delayDuration={100}>
               <TooltipTrigger asChild autoFocus={false}>
@@ -237,22 +358,9 @@ export function Autocomplete({
           </TooltipProvider>
         )}
 
-        {isListVisible && (
-          <AutocompleteListbox
-            id={listboxId}
-            ref={setListboxElement}
-            groups={autocomplete.groups}
-            activeIndex={activeIndex}
-            highlightText={autocomplete.typedText}
-            optionId={autocomplete.optionId}
-            loading={loading}
-            loadingLabel={t('autocomplete.loading')}
-            className={listboxClassName}
-            style={floatingStyles}
-            {...autocomplete.listHandlers}
-          />
-        )}
+        {isListVisible && !inFlowList && listbox}
       </div>
+      {isListVisible && inFlowList && listbox}
     </div>
   );
 }

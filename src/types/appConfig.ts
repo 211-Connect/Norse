@@ -69,6 +69,8 @@ export type AppConfig = {
   featureFlags: {
     enablePrintableDirectories: boolean;
     enableOrganizationSearch: boolean;
+    /** Super-admin only, default off: the tenant's site uses the v2 search page and API. */
+    enableV2Api: boolean;
     requireUserLocation: boolean;
     showAgeFilter: boolean;
     showFeedbackButtonGlobal: boolean;

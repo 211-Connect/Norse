@@ -19,10 +19,14 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
+import { DialButton } from './no-dial';
+import { useIsV2 } from './v2-results-bridge';
+
 export function NoResultsCard() {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
+  const isV2 = useIsV2();
 
   const text =
     appConfig.search.texts?.noResultsFallbackText ||
@@ -51,14 +55,23 @@ export function NoResultsCard() {
       <CardFooter className="flex flex-col items-center justify-center gap-2 text-center">
         <p className="font-semibold">{text}</p>
 
-        {appConfig?.contact?.number && (
-          <LocalizedLink
-            href={`tel:${appConfig.contact.number}`}
-            className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
-          >
-            <Phone className="size-4" /> {appConfig.contact.number}
-          </LocalizedLink>
-        )}
+        {appConfig?.contact?.number &&
+          (isV2 ? (
+            // v2 only: the no-dial switch decides whether the number dials.
+            <DialButton
+              number={appConfig.contact.number}
+              className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
+            >
+              <Phone className="size-4" /> {appConfig.contact.number}
+            </DialButton>
+          ) : (
+            <LocalizedLink
+              href={`tel:${appConfig.contact.number}`}
+              className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
+            >
+              <Phone className="size-4" /> {appConfig.contact.number}
+            </LocalizedLink>
+          ))}
       </CardFooter>
     </Card>
   );

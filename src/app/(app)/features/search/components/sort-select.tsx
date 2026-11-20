@@ -13,17 +13,11 @@ import {
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { SortOption } from '@/app/(app)/shared/utils/getSortOption';
 
 import { useSearchResults } from '../context/search-results-context';
+import { sortLabel, sortOptionValues } from '../utils/sort-options';
 import { sortHref } from '../utils/sortHref';
-
-const SORT_LABEL: Record<SortOption, string> = {
-  relevance: 'Most Relevant',
-  name: 'Resource Name',
-  organization: 'Provider Name',
-  distance: 'Nearest First',
-};
+import { useV2Search } from '../v2/use-v2-search';
 
 const SORT_SELECT_TRIGGER_ID = 'sort-select';
 const SORT_SELECT_CONTENT_ID = 'sort-select-content';
@@ -44,16 +38,15 @@ export function SortSelect() {
     router.push(sortHref(pathname, searchParams, value));
   };
 
-  const sortOptions = [
-    { value: 'relevance', label: SORT_LABEL.relevance },
-    { value: 'name', label: SORT_LABEL.name },
-    ...(showServiceName
-      ? [{ value: 'organization', label: SORT_LABEL.organization }]
-      : []),
-    ...(hasSearchCoordinates
-      ? [{ value: 'distance', label: SORT_LABEL.distance }]
-      : []),
-  ];
+  const { query } = useV2Search();
+  const isV2 = Boolean(query);
+  // v2 labels live under `sort.v2_options`; v1 keeps `sort.options`.
+  const labelKey = isV2 ? 'sort.v2_options' : 'sort.options';
+  const sortOptions = sortOptionValues({
+    isV2,
+    showServiceName,
+    hasCoordinates: hasSearchCoordinates,
+  }).map((value) => ({ value, label: sortLabel(value, isV2) }));
 
   return (
     <div className="flex items-center gap-2">
@@ -72,18 +65,18 @@ export function SortSelect() {
       >
         <SelectTrigger
           id={SORT_SELECT_TRIGGER_ID}
-          className="h-8 w-[180px] bg-white"
+          className="h-8 w-auto min-w-[180px] gap-2 bg-white"
         >
           {/* Explicit children: Radix only fills SelectValue from the selected
               item after mount, which leaves the SSR trigger empty. */}
           <SelectValue>
-            {t(`sort.options.${currentSort}`, SORT_LABEL[currentSort])}
+            {t(`${labelKey}.${currentSort}`, sortLabel(currentSort, isV2))}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {sortOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-              {t(`sort.options.${option.value}`, option.label)}
+              {t(`${labelKey}.${option.value}`, option.label)}
             </SelectItem>
           ))}
         </SelectContent>
