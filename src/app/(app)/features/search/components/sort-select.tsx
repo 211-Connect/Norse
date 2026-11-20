@@ -13,19 +13,11 @@ import {
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { SortOption } from '@/app/(app)/shared/utils/getSortOption';
 
 import { useSearchResults } from '../context/search-results-context';
-import { sortOptionValues } from '../utils/sort-options';
+import { sortLabel, sortOptionValues } from '../utils/sort-options';
 import { sortHref } from '../utils/sortHref';
 import { useV2Search } from '../v2/use-v2-search';
-
-const SORT_LABEL: Record<SortOption, string> = {
-  relevance: 'Most Relevant',
-  name: 'Resource Name',
-  organization: 'Provider Name',
-  distance: 'Nearest First',
-};
 
 const SORT_SELECT_TRIGGER_ID = 'sort-select';
 const SORT_SELECT_CONTENT_ID = 'sort-select-content';
@@ -47,11 +39,14 @@ export function SortSelect() {
   };
 
   const { query } = useV2Search();
+  const isV2 = Boolean(query);
+  // v2 labels live under `sort.v2_options`; v1 keeps `sort.options`.
+  const labelKey = isV2 ? 'sort.v2_options' : 'sort.options';
   const sortOptions = sortOptionValues({
-    isV2: Boolean(query),
+    isV2,
     showServiceName,
     hasCoordinates: hasSearchCoordinates,
-  }).map((value) => ({ value, label: SORT_LABEL[value] }));
+  }).map((value) => ({ value, label: sortLabel(value, isV2) }));
 
   return (
     <div className="flex items-center gap-2">
@@ -75,13 +70,13 @@ export function SortSelect() {
           {/* Explicit children: Radix only fills SelectValue from the selected
               item after mount, which leaves the SSR trigger empty. */}
           <SelectValue>
-            {t(`sort.options.${currentSort}`, SORT_LABEL[currentSort])}
+            {t(`${labelKey}.${currentSort}`, sortLabel(currentSort, isV2))}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {sortOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-              {t(`sort.options.${option.value}`, option.label)}
+              {t(`${labelKey}.${option.value}`, option.label)}
             </SelectItem>
           ))}
         </SelectContent>

@@ -1,10 +1,12 @@
 // v2 results always show the sort dropdown (David 2026-11-18, Lucas 2026-11-19). v1 Hybrid/AI keeps it hidden.
-// Order on v2: Most Relevant, Nearest First (coordinates only), Provider Name (service-name tenants), Resource Name.
+// Order on v2: Most Relevant, Nearest First (coordinates only), organization (service-name tenants), name.
+// v2 labels say what they sort by (Lucas 2026-11-20); v1 keeps Resource Name / Provider Name.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
   showsSort,
+  sortLabel,
   sortOptionValues,
 } from '../src/app/(app)/features/search/utils/sort-options';
 import { buildV2Url } from '../src/app/(app)/features/search/v2/v2-request';
@@ -60,4 +62,13 @@ test('the sort reaches the /v2/search call and its cache key', () => {
     'name',
   );
   assert.match(v2CallString(params), /sort=name/);
+});
+
+test('v2 sort labels say what they sort by; v1 labels are unchanged', () => {
+  assert.equal(sortLabel('name', true), 'Alphabetical by provider name');
+  assert.equal(sortLabel('organization', true), 'Alphabetical by organization');
+  assert.equal(sortLabel('relevance', true), 'Most Relevant');
+  assert.equal(sortLabel('distance', true), 'Nearest First');
+  assert.equal(sortLabel('name', false), 'Resource Name');
+  assert.equal(sortLabel('organization', false), 'Provider Name');
 });

@@ -13,8 +13,8 @@ export const showsSort = ({
 }): boolean => isV2 || queryType !== 'hybrid';
 
 /**
- * The options, in order. v2: Most Relevant, Nearest First (only with coordinates), Provider Name (only when
- * the tenant shows service names), Resource Name. v1 keeps its order.
+ * The options, in order. v2: Most Relevant, Nearest First (only with coordinates), organization (only when
+ * the tenant shows service names), name. v1 keeps its order.
  */
 export const sortOptionValues = ({
   isV2,
@@ -32,3 +32,22 @@ export const sortOptionValues = ({
     ? [...relevance, ...distance, ...organization, 'name']
     : [...relevance, 'name', ...organization, ...distance];
 };
+
+const V1_SORT_LABEL: Record<SortOption, string> = {
+  relevance: 'Most Relevant',
+  name: 'Resource Name',
+  organization: 'Provider Name',
+  distance: 'Nearest First',
+};
+
+/** v2 labels say what they sort by (Lucas 2026-11-20): `name` is the service's provider name. */
+export const V2_SORT_LABEL = {
+  relevance: 'Most Relevant',
+  distance: 'Nearest First',
+  name: 'Alphabetical by provider name',
+  organization: 'Alphabetical by organization',
+} as const;
+
+export function sortLabel(value: SortOption, isV2: boolean): string {
+  return isV2 ? V2_SORT_LABEL[value] : V1_SORT_LABEL[value];
+}

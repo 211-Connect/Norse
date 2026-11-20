@@ -6,6 +6,7 @@ import {
 } from '../src/app/(app)/features/search/sune-demo/sune.mjs';
 // Round 17: run with `npx tsx prototype/stub-backend.mjs`. `/v2/search` and `/search` share one real classify + rules pass.
 import { readParams, v2Search } from './v2-search.ts';
+import { upstreamV2Url } from './v2-upstream.ts';
 const svc = (s, i) => {
   const id = s.id;
   const lat = 48.72 + (i % 7) * 0.01,
@@ -307,30 +308,14 @@ http
         );
       }
       if (process.env.V2_UPSTREAM && (p === '/v2/search' || p === '/search')) {
-        // Send only v2 parameters. Tenant and language go in the URL (PR #331), no headers; the live tenant
-        // replaces the stub tenant the page sent.
-        // `taxonomy` from the page holds N- need codes, which v2 reads as `needs` (it filters on `taxonomy`).
-        const v2 = readParams(u.searchParams);
-        const up = new URL('/v2/search', process.env.V2_UPSTREAM);
-        up.searchParams.set('tenant_id', process.env.V2_TENANT);
-        up.searchParams.set('locale', u.searchParams.get('locale') || 'en');
-        up.searchParams.set('query', v2.query);
-        if (v2.needs.length) up.searchParams.set('needs', v2.needs.join(','));
-        if (v2.passedNeeds.length)
-          up.searchParams.set('passed_needs', v2.passedNeeds.join(','));
-        if (v2.urgency) up.searchParams.set('urgency', v2.urgency);
-        if (v2.clarify === 'never') up.searchParams.set('clarify', 'never');
-        for (const k of ['page', 'limit', 'coords'])
-          if (u.searchParams.get(k))
-            up.searchParams.set(k, u.searchParams.get(k));
-        if (process.env.V2_COORDS && !up.searchParams.get('coords'))
-          up.searchParams.set('coords', process.env.V2_COORDS);
-        // Lucas 2026-11-18 (4A): the relevance cut is OFF in the demo for now (it costs 3-9 extra ES calls, about
-        // +1 s a search). Without it a search returns the whole area. V2_CUTOFF=on turns it on.
-        up.searchParams.set(
-          'relevance_cutoff',
-          process.env.V2_CUTOFF === 'on' ? 'on' : 'off',
-        );
+        // The URL building (tenant, locale, needs, coords, the relevance cut, and every other v2 parameter
+        // such as sort) is in `v2-upstream.ts`.
+        const up = upstreamV2Url(u.searchParams, {
+          upstream: process.env.V2_UPSTREAM,
+          tenant: process.env.V2_TENANT,
+          coords: process.env.V2_COORDS,
+          cutoff: process.env.V2_CUTOFF,
+        });
         return void fetch(up)
           .then(async (r) => {
             let text = await r.text();
