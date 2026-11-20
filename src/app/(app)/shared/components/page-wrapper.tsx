@@ -80,7 +80,7 @@ export const PageWrapper = ({
           Skip to content
         </a>
         {fitViewport ? (
-          <div className="flex min-h-0 flex-1 flex-col max-md:contents md:h-dvh md:overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col max-md:contents md:h-dvh md:flex-none md:overflow-hidden">
             {page}
           </div>
         ) : (

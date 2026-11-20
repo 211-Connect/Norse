@@ -179,16 +179,20 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   // auto-select with, so it always defaults to index 0.
   //
   // A committed "Everywhere" is a valid value, so nothing replaces it.
+  // v2 (rankEverywhere): a person typing a new place gets the top match on Enter, even when an
+  // older place's coordinates are still set (live walk 2026-11-20).
   const autoSelectIndex =
     !isTyping && isEverywhere(searchLocation)
       ? undefined
-      : isStandalone
-        ? 0
-        : globalCoords?.length === 2
-          ? undefined
-          : rankEverywhere
-            ? firstPlaceIndex(everywhereIsFirst)
-            : 1;
+      : rankEverywhere && isTyping
+        ? firstPlaceIndex(everywhereIsFirst)
+        : isStandalone
+          ? 0
+          : globalCoords?.length === 2
+            ? undefined
+            : rankEverywhere
+              ? firstPlaceIndex(everywhereIsFirst)
+              : 1;
 
   // Use context only if available (for main search integration)
   const context = useContext(MainSearchLayoutContext);

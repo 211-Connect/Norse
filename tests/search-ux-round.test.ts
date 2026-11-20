@@ -10,9 +10,11 @@ import {
   firstPlaceIndex,
 } from '../src/app/(app)/shared/hooks/api/use-locations';
 import {
+  hasSavedLocation,
   MIN_PLACE_LOADING_MS,
   showBottomBar,
 } from '../src/app/(app)/features/search/v2/guide-rules';
+import { EVERYWHERE_LOCATION } from '../src/app/(app)/shared/lib/search-utils';
 import { listMiddlewareNames } from '../src/app/(app)/shared/components/ui/autocomplete/placement';
 
 const SRC = new URL('../src/app/(app)/', import.meta.url);
@@ -166,7 +168,7 @@ test('E: the search page fits the viewport on md and up; the footer steps aside 
   );
   const wrapper = read('shared/components/page-wrapper.tsx');
   assert.match(wrapper, /fitViewport\?: boolean/);
-  assert.match(wrapper, /md:h-dvh md:overflow-hidden/);
+  assert.match(wrapper, /md:h-dvh md:flex-none md:overflow-hidden/);
   assert.match(wrapper, /fitViewport && 'md:hidden'/);
   const shell = read('features/search/components/search-page-shell.tsx');
   assert.match(shell, /h-full min-h-0 w-full flex-col/);
@@ -197,4 +199,68 @@ test('Item 8: the place row has Change but no Clear button', () => {
   assert.doesNotMatch(src, /landing-location-clear/);
   assert.doesNotMatch(src, /clearLocationCookies/);
   assert.match(src, /landing-location-change/);
+});
+
+// ---- Live walk 2026-11-20: typed text with no pick must not count as a place ----
+
+test('B: only a picked place, Everywhere or a URL place counts as a saved location', () => {
+  const base = {
+    urlLocation: null,
+    urlCoords: null,
+    searchCoordinates: [],
+    searchRegion: '',
+  };
+  assert.equal(
+    hasSavedLocation({ ...base, searchLocation: 'Rochester' }),
+    false,
+  );
+  assert.equal(hasSavedLocation({ ...base, searchLocation: '' }), false);
+  assert.equal(
+    hasSavedLocation({
+      ...base,
+      searchLocation: 'Rochester, New York',
+      searchCoordinates: [-77.6, 43.2],
+    }),
+    true,
+  );
+  assert.equal(
+    hasSavedLocation({
+      ...base,
+      searchLocation: 'Monroe County',
+      searchRegion: 'r1',
+    }),
+    true,
+  );
+  assert.equal(
+    hasSavedLocation({ ...base, searchLocation: EVERYWHERE_LOCATION }),
+    true,
+  );
+  assert.equal(
+    hasSavedLocation({ ...base, searchLocation: '', urlLocation: 'Syracuse' }),
+    true,
+  );
+  assert.equal(
+    hasSavedLocation({ ...base, searchLocation: '', urlCoords: '-76,43' }),
+    true,
+  );
+});
+
+test('B: the guide uses hasSavedLocation, and a typed place auto-picks the top match even with old coords', () => {
+  assert.match(read(GUIDE), /hasSavedLocation\(/);
+  assert.match(
+    read('shared/components/search/location-search-bar.tsx'),
+    /rankEverywhere && isTyping\s*\?\s*firstPlaceIndex\(everywhereIsFirst\)/,
+  );
+});
+
+test('B: a pick is saved even though the picked place hides the step in the same render', () => {
+  const src = read(GUIDE);
+  // The step stays on screen (with its loading state) while the pick is saved.
+  assert.match(src, /const showLocation =\s*placeSaving \|\|/);
+  // The pick effect reads the step as it was before the pick, not after.
+  assert.match(
+    src,
+    /if \(!wasShowingLocation\.current \|\| !searchLocation\) return;/,
+  );
+  assert.match(src, /wasShowingLocation\.current = showLocation;/);
 });

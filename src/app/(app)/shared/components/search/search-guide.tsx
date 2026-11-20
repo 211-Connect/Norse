@@ -46,6 +46,7 @@ import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-locati
 import { searchGuideOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
 import {
+  hasSavedLocation,
   MIN_PLACE_LOADING_MS,
   showBottomBar,
 } from '@/app/(app)/features/search/v2/guide-rules';
@@ -384,19 +385,26 @@ export function SearchGuideFromUrl({
   const v2 = nextQuestionOf(data, askedForNext);
   // A place already saved for this visit counts: the results page uses it, so asking for it again
   // with the same place filled in is a wasted step (Lucas UX pass, 2026-11-16).
-  const hasLocation = Boolean(
-    params.get('location') || params.get('coords') || searchLocation,
-  );
+  const hasLocation = hasSavedLocation({
+    urlLocation: params.get('location'),
+    urlCoords: params.get('coords'),
+    searchLocation,
+    searchCoordinates,
+    searchRegion,
+  });
   const locationDone = hasLocation || asked.includes(LOCATION_STEP);
   const used = asked.length;
   // The emergency question never waits behind the location step. On the landing page, an engine
   // with no question at all sends the person straight to the results, so no location step either.
   const hasQuestions = (data?.clarification.questions.length ?? 0) > 0;
+  // While a picked place is saved (placeSaving), the step stays, with its loading state: the picked
+  // place already counts as saved, which would hide the step at once (live walk 2026-11-20).
   const showLocation =
-    !locationDone &&
-    v2?.type !== 'emergency' &&
-    used < MAX_GUIDED &&
-    (!onPage || hasQuestions || used > 0);
+    placeSaving ||
+    (!locationDone &&
+      v2?.type !== 'emergency' &&
+      used < MAX_GUIDED &&
+      (!onPage || hasQuestions || used > 0));
   const question =
     v2?.type === 'emergency' || (!showLocation && used < MAX_GUIDED)
       ? v2
@@ -453,10 +461,13 @@ export function SearchGuideFromUrl({
   // (a point or an area, or Everywhere): typed letters, or Enter before the lookup is back, write
   // nothing (live walk 2026-11-20: Enter on "Syracuse" saved the raw text and jumped ahead).
   const lastLocation = useRef(searchLocation);
+  // The step as the person saw it before this render: a pick also makes the place count as saved,
+  // so `showLocation` is already false in the render that carries the pick.
+  const wasShowingLocation = useRef(showLocation);
   useEffect(() => {
     if (lastLocation.current === searchLocation) return;
     lastLocation.current = searchLocation;
-    if (!showLocation || !searchLocation) return;
+    if (!wasShowingLocation.current || !searchLocation) return;
     const everywhere = isEverywhereLocation(searchLocation);
     if (!everywhere && !isPickedPlace(searchCoordinates, searchRegion)) return;
     setLocationError(false);
@@ -478,6 +489,10 @@ export function SearchGuideFromUrl({
       setPlaceSaving(false);
     }, MIN_PLACE_LOADING_MS);
   }, [searchLocation]);
+  // Runs after the pick effect above, so that effect still sees the previous render's step.
+  useEffect(() => {
+    wasShowingLocation.current = showLocation;
+  });
 
   if (!query || finished) return null;
 
