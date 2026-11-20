@@ -3,6 +3,7 @@
  * tests can import it. The page itself is `search-landing.tsx`; its questions are the guide's
  * (`SearchGuideFromUrl` with `placement="page"`).
  */
+import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 import type { SearchEngine } from '@/types/appConfig';
 
 import {
@@ -11,6 +12,7 @@ import {
   serializeSearchUrl,
   UNSTATED,
 } from '../intent';
+import type { V2Changes } from './v2-contract';
 
 /** The landing page route. The results page stays at its own route. */
 export const LANDING_PATH = '/find';
@@ -78,18 +80,37 @@ export function landingStep(state: {
   return 'results';
 }
 
-/**
- * Prototype (Lucas 2026-11-19): a search typed in the results page's top search bar goes to the
- * landing page when its text differs from the current query, so the guided questions come first.
- * The same text again (or only a new place) stays on the results page.
- */
-export function opensLandingFromBar(
-  typed: string,
-  currentQuery: string | null | undefined,
-): boolean {
-  const next = typed.trim().toLowerCase();
-  if (!next) return false;
-  return next !== (currentQuery ?? '').trim().toLowerCase();
+/** The results page path, with or without a locale prefix: `/search`, `/en/search`, `/es/search/`. */
+export function isResultsPath(pathname: string | null | undefined): boolean {
+  return /^(\/[a-z]{2}(-[A-Za-z]{2})?)?\/search\/?$/.test(pathname ?? '');
+}
+
+/** The place text the landing page shows, or null when there is none (empty, or Everywhere). */
+export function landingLocationLabel(
+  location: string | null | undefined,
+): string | null {
+  const text = (location ?? '').trim();
+  if (!text || isEverywhereLocation(text)) return null;
+  return text;
+}
+
+/** The URL changes that clear the place. The search text and answers stay. */
+export const CLEAR_LOCATION_CHANGES: V2Changes = {
+  location: null,
+  coords: null,
+  region: null,
+  area_match: null,
+  distance: null,
+};
+
+/** The URL changes for a place the person picked. */
+export function locationChanges(
+  location: string,
+  coords: number[] | string | null | undefined,
+  region: string | null | undefined,
+): V2Changes {
+  const text = Array.isArray(coords) ? coords.join(',') : (coords ?? '');
+  return { location, coords: text || null, region: region || null };
 }
 
 /**

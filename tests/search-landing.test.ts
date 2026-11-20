@@ -1,6 +1,7 @@
 // Prototype: the landing page before the results page (Lucas, 2026-11-13). The pure rules:
 // which links skip it, what URL the results page gets, and which step the landing page shows.
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 import {
@@ -8,7 +9,10 @@ import {
   landingStep,
   resultsUrlFor,
   toLandingUrl,
-  opensLandingFromBar,
+  isResultsPath,
+  landingLocationLabel,
+  locationChanges,
+  CLEAR_LOCATION_CHANGES,
 } from '../src/app/(app)/features/search/v2/landing';
 import {
   answerChanges,
@@ -154,12 +158,76 @@ test('a typed search always asks: toLandingUrl adds refine=1 to a query without 
   );
 });
 
-// Prototype (Lucas 2026-11-19): a new query typed in the results page's top search bar goes to
-// /find, so the guided questions come first. The same query (or a new place only) stays on /search.
-test('top search bar: a new query opens /find, the same query stays on the results page', () => {
-  assert.equal(opensLandingFromBar('rent', 'food'), true);
-  assert.equal(opensLandingFromBar('food', null), true);
-  assert.equal(opensLandingFromBar('food', 'food'), false);
-  assert.equal(opensLandingFromBar('  Food ', 'food'), false);
-  assert.equal(opensLandingFromBar('', 'food'), false);
+// Lucas 2026-11-20: a search typed on /search stays on /search.
+test('isResultsPath: the results page, with or without a locale prefix', () => {
+  for (const yes of ['/search', '/search/', '/en/search', '/es/search/']) {
+    assert.equal(isResultsPath(yes), true, yes);
+  }
+  for (const no of ['/', '/find', '/en/find', '/resource/x', '/searching']) {
+    assert.equal(isResultsPath(no), false, no);
+  }
+  assert.equal(isResultsPath(null), false);
+  assert.equal(isResultsPath(undefined), false);
+});
+
+const SRC = new URL('../src/app/(app)/', import.meta.url);
+const read = (path: string) => readFileSync(new URL(path, SRC), 'utf8');
+
+test('search typed on /search stays there: no landing from the inline box, the hook checks the path', () => {
+  const box = read('shared/components/search/search-inline-box.tsx');
+  assert.doesNotMatch(box, /landing:/);
+  assert.doesNotMatch(box, /opensLandingFromBar/);
+  assert.match(
+    read('features/search/hooks/useNavigateAiSearch.ts'),
+    /isResultsPath\(/,
+  );
+});
+
+test('landingLocationLabel: text, or null for empty and Everywhere', () => {
+  assert.equal(landingLocationLabel(''), null);
+  assert.equal(landingLocationLabel('  '), null);
+  assert.equal(landingLocationLabel(null), null);
+  assert.equal(landingLocationLabel('Everywhere'), null);
+  assert.equal(landingLocationLabel('everywhere'), null);
+  assert.equal(
+    landingLocationLabel(' Rochester, New York '),
+    'Rochester, New York',
+  );
+});
+
+test('CLEAR_LOCATION_CHANGES leaves the query and no location keys', () => {
+  const next = nextV2Params(
+    new URLSearchParams(
+      'query=food&location=X&coords=1,2&region=r1&distance=10&area_match=a',
+    ),
+    CLEAR_LOCATION_CHANGES,
+  );
+  assert.equal(next.get('query'), 'food');
+  for (const key of [
+    'location',
+    'coords',
+    'region',
+    'distance',
+    'area_match',
+  ]) {
+    assert.equal(next.has(key), false, key);
+  }
+});
+
+test('locationChanges: location, coords as lon,lat, region or null', () => {
+  assert.deepEqual(locationChanges('Rochester', [-77.6, 43.1], ''), {
+    location: 'Rochester',
+    coords: '-77.6,43.1',
+    region: null,
+  });
+  assert.equal(locationChanges('X', [], 'r1').coords, null);
+  assert.equal(locationChanges('X', '1,2', 'r1').coords, '1,2');
+  assert.equal(locationChanges('X', '1,2', 'r1').region, 'r1');
+});
+
+test('the landing page renders the location row', () => {
+  assert.match(
+    read('features/search/components/search-landing.tsx'),
+    /<LandingLocation/,
+  );
 });

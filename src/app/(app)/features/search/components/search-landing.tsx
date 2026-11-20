@@ -13,6 +13,7 @@ import { SEARCH_INPUT_ID } from '@/app/(app)/shared/lib/constants';
 
 import { useV2Navigate, useV2Prefetch, useV2Url } from '../v2/use-v2-search';
 import { EmergencyLine } from './emergency-line';
+import { LandingLocation } from './landing-location';
 
 /**
  * Prototype: the landing page, before the results page (Lucas, 2026-11-13). The person says what
@@ -160,6 +161,7 @@ export function SearchLanding() {
               </p>
             )}
           </form>
+          <LandingLocation />
         </div>
         {query && !editing ? (
           <SearchGuideFromUrl placement="page" />

@@ -4,10 +4,10 @@ import {
   trackSearchEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { withPrintableDirectoryContext } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
-import { toLandingUrl } from '../v2/landing';
+import { isResultsPath, toLandingUrl } from '../v2/landing';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
@@ -30,6 +30,7 @@ export const useNavigateAiSearch = ({
   const appConfig = useAppConfig();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const search = useAtomValue(searchAtom);
   const distance = useAtomValue(searchDistanceAtom);
   const setSearchEntry = useSetAtom(searchEntryAtom);
@@ -46,7 +47,7 @@ export const useNavigateAiSearch = ({
       taxonomies?: string[];
       /** Prototype (round 17): v2 slots to add, such as `refine=1` for the guided questions. */
       extraParams?: Record<string, string>;
-      /** Prototype: open the landing page (its questions come before the results) instead of the results. */
+      /** Prototype: open the landing page (its questions come before the results) instead of the results. Ignored on the results page (Lucas 2026-11-20). */
       landing?: boolean;
       locationPayload: Promise<SearchLocationPayload>;
     }) => {
@@ -74,7 +75,10 @@ export const useNavigateAiSearch = ({
       const withExtra = extra
         ? `${built}${built.includes('?') ? '&' : '?'}${extra}`
         : built;
-      const url = landing ? toLandingUrl(withExtra) : withExtra;
+      const url =
+        landing && !isResultsPath(pathname)
+          ? toLandingUrl(withExtra)
+          : withExtra;
 
       persistSearchDistancePreference(distance);
       startTransition(() => {
@@ -116,6 +120,7 @@ export const useNavigateAiSearch = ({
       search.searchRegion,
       search.searchDistance,
       searchParams,
+      pathname,
       appConfig.search.searchEngine,
       appConfig.sessionId,
       appConfig.tenantId,
