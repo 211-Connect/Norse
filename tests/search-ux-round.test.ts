@@ -149,3 +149,22 @@ test('E: the search page fits the viewport on md and up; the footer steps aside 
   assert.match(read('features/search/components/filter/filter-panel.tsx'), /md:overflow-y-auto/);
   assert.match(read('features/search/components/results-section.tsx'), /md:min-h-0/);
 });
+
+// ---- F. Top bar: Quick exit color ----
+
+test('F: the header Quick exit and the floating one share one red class constant', () => {
+  const button = read('shared/components/quick-exit-button.tsx');
+  assert.match(button, /export const QUICK_EXIT_CLASSNAME =/);
+  assert.match(button, /bg-red-700/);
+  assert.match(button, /cn\([\s\S]*QUICK_EXIT_CLASSNAME/);
+  assert.match(read('shared/components/header.tsx'), /QUICK_EXIT_CLASSNAME/);
+});
+
+// ---- Item 8: place row on question screens ----
+
+test('Item 8: the place row has Change but no Clear button', () => {
+  const src = read(LANDING_LOCATION);
+  assert.doesNotMatch(src, /landing-location-clear/);
+  assert.doesNotMatch(src, /clearLocationCookies/);
+  assert.match(src, /landing-location-change/);
+});

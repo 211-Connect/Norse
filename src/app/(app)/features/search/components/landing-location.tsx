@@ -1,14 +1,12 @@
 'use client';
 
-import { useAtomValue, useSetAtom } from 'jotai';
-import { MapPin, X } from 'lucide-react';
+import { useAtomValue } from 'jotai';
+import { MapPin } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { LocationSearchBar } from '@/app/(app)/shared/components/search/location-search-bar';
-import { clearLocationCookies } from '@/app/(app)/shared/lib/location-cookies';
 import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 import {
-  searchAtom,
   searchCoordinatesAtom,
   searchLocationAtom,
   searchRegionAtom,
@@ -27,14 +25,13 @@ const BUTTON =
   'text-primary flex min-h-11 min-w-11 cursor-pointer items-center justify-center px-2 text-sm font-semibold';
 
 /**
- * Prototype: the landing page shows the place the search uses, with Change and Clear. With no
+ * Prototype: the landing page shows the place the search uses, with Change. With no
  * place it renders nothing: the guide's own location step asks when it needs one.
  */
 export function LandingLocation() {
   const searchLocation = useAtomValue(searchLocationAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const searchRegion = useAtomValue(searchRegionAtom);
-  const setSearch = useSetAtom(searchAtom);
   const { write } = useV2Navigate();
   const [changing, setChanging] = useState(false);
   const label = landingLocationLabel(searchLocation);
@@ -59,18 +56,6 @@ export function LandingLocation() {
   useEffect(() => {
     if (changing) document.getElementById(INPUT_ID)?.focus();
   }, [changing]);
-
-  const clear = () => {
-    clearLocationCookies();
-    setSearch((prev) => ({
-      ...prev,
-      searchLocation: '',
-      prevSearchLocation: '',
-      searchCoordinates: [],
-      searchRegion: '',
-    }));
-    write(CLEAR_LOCATION_CHANGES, 'replace');
-  };
 
   if (!label && !changing) return null;
 
@@ -119,15 +104,6 @@ export function LandingLocation() {
         onClick={() => setChanging(true)}
       >
         Change
-      </button>
-      <button
-        type="button"
-        className={BUTTON}
-        aria-label="Clear location"
-        data-testid="landing-location-clear"
-        onClick={clear}
-      >
-        <X className="size-4" aria-hidden="true" />
       </button>
     </div>
   );
