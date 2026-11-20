@@ -216,8 +216,35 @@ export async function buildAppConfig(
     locale as TypedLocale,
   );
 
+  // English fallback for texts a non-English locale leaves empty.
+  const englishResourceDirectory =
+    resourceDirectory && locale !== 'en'
+      ? await findResourceDirectoryByHost(host, 'en')
+      : null;
+
+  return buildAppConfigFromResourceDirectory(
+    resourceDirectory,
+    englishResourceDirectory,
+    locale,
+  );
+}
+
+/**
+ * The app config for already-loaded resource directories (depth 1, so the
+ * tenant and media are populated). No database access: the CMS save hooks
+ * call it with documents read inside the save's transaction
+ * (`pushPublicAppConfigToCache`), so what they publish matches the website.
+ */
+export function buildAppConfigFromResourceDirectory(
+  resourceDirectory: ResourceDirectory | null,
+  englishResourceDirectory: ResourceDirectory | null,
+  locale: string,
+): CachedAppConfig {
+  // [longitude, latitude], like the stored centers and the map libraries.
+  // This was latitude first, which put directories with no center at
+  // latitude -98.58.
   let map: AppConfig['search']['map'] = {
-    center: [39.8283459, -98.5794797], // Center of USA
+    center: [-98.5794797, 39.8283459], // Center of USA
     zoom: 7,
   };
 
@@ -312,12 +339,6 @@ export async function buildAppConfig(
   }
 
   const i18n = getTenantI18n(resourceDirectory);
-
-  // Fetch English resource directory for fallback if not English locale
-  let englishResourceDirectory: ResourceDirectory | null = null;
-  if (locale !== 'en') {
-    englishResourceDirectory = await findResourceDirectoryByHost(host, 'en');
-  }
 
   try {
     const parsedCenter = JSON.parse(resourceDirectory.search.map.center);
