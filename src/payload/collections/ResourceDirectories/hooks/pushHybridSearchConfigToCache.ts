@@ -1,7 +1,10 @@
 import { CollectionAfterChangeHook } from 'payload';
 
 import { createLogger } from '@/lib/logger';
-import { pushHybridSearchConfigToCache } from '@/payload/collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
+import {
+  HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY,
+  pushHybridSearchConfigToCache,
+} from '@/payload/collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
 import { ResourceDirectory } from '@/payload/payload-types';
 
 const log = createLogger('pushHybridSearchConfigToCacheFromResourceDirectory');
@@ -19,9 +22,10 @@ export const pushHybridSearchConfigToCacheFromResourceDirectory: CollectionAfter
     return doc;
   }
 
-  await pushHybridSearchConfigToCache(tenantId, req, {
+  const ok = await pushHybridSearchConfigToCache(tenantId, req, {
     resourceDirectory: doc,
   });
+  if (!ok) req.context[HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY] = true;
 
   return doc;
 };
