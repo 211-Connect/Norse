@@ -95,17 +95,6 @@ export const seedMatches = (
   seed!.tenantId === tenantId &&
   seed!.callString === callString;
 
-/**
- * Q4: the landing (questions) shows for no query, or for `refine=1`. A query with no `refine`
- * is the results view.
- */
-export function showsResultsView(
-  params: Pick<URLSearchParams, 'get'>,
-): boolean {
-  const query = (params.get('query') ?? '').trim();
-  return Boolean(query) && params.get('refine') !== '1';
-}
-
 /** The draft v2 parameters, in the order the call sends them. */
 const CALL_KEYS = [
   'query',

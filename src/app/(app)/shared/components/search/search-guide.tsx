@@ -46,7 +46,9 @@ import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-locati
 import { searchGuideOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
 import {
+  canGoBackFrom,
   hasSavedLocation,
+  keepsGuideOpen,
   MIN_PLACE_LOADING_MS,
   showBottomBar,
 } from '@/app/(app)/features/search/v2/guide-rules';
@@ -157,6 +159,11 @@ export function GuideShell({
             if (focusId) document.getElementById(focusId)?.focus();
           }}
           onCloseAutoFocus={(event) => event.preventDefault()}
+          // The header (menu button, nav) and the menu panel it opens are not "outside" the
+          // questions: using them keeps /find open (Lucas, 2026-11-20).
+          onInteractOutside={(event) => {
+            if (keepsGuideOpen(event.target)) event.preventDefault();
+          }}
           onEscapeKeyDown={(event) => {
             if (onEscape?.()) event.preventDefault();
           }}
@@ -172,7 +179,7 @@ export function GuideShell({
           <div
             aria-hidden="true"
             data-testid="guide-top-bar"
-            className="fixed inset-x-0 top-0 z-[55] h-[3.75rem] border-b bg-white sm:hidden"
+            className="fixed inset-x-0 top-0 z-[55] h-[3.75rem] border-b border-gray-200 bg-white sm:hidden"
           />
           <DialogPrimitive.Close
             data-testid="guide-close"
@@ -503,7 +510,14 @@ export function SearchGuideFromUrl({
   const lastBackIdx = asked.findLastIndex(
     (id, i) => id !== emergencyId && i >= askedAtStart.current,
   );
-  const canGoBack = onPage && lastBackIdx >= 0;
+  const canGoBack = canGoBackFrom({
+    onPage,
+    // A dismissed crisis popup counts as the step before (askedForNext adds it).
+    asked: askedForNext,
+    lastBackIdx,
+    locationStep: LOCATION_STEP,
+    emergencyId,
+  });
   const goBack = () => window.history.go(-(asked.length - lastBackIdx));
   // Skip this question: no pick. Needs offered and not picked are passed; an urgency question
   // reads as not known. The next question comes.

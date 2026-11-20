@@ -5,21 +5,11 @@ import { Metadata } from 'next/types';
 
 import { HomePageBody } from '@/app/(app)/features/home/components/home-page-body';
 import { SearchLanding } from '@/app/(app)/features/search/components/search-landing';
-import { SeoResults } from '@/app/(app)/features/search/components/seo-results';
 import {
   liftQueryString,
   serializeSearchUrl,
 } from '@/app/(app)/features/search/intent';
-import {
-  isDirectResultsLink,
-  resultsUrlFor,
-} from '@/app/(app)/features/search/v2/landing';
-import { V2SeedProvider } from '@/app/(app)/features/search/v2/use-v2-search';
-import {
-  showsResultsView,
-  v2CallString,
-} from '@/app/(app)/features/search/v2/v2-seed';
-import { fetchV2Server } from '@/app/(app)/features/search/v2/v2-server';
+import { isDirectResultsLink } from '@/app/(app)/features/search/v2/landing';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
@@ -76,6 +66,14 @@ export default async function FindPage({
     redirect(serializeSearchUrl(intent, envelope));
   }
 
+  // /find never shows results (Lucas, 2026-11-20): a typed query opens the questions over the landing
+  // page, and results live on /search only. `refine=1` is what opens them.
+  if (search.get('query')?.trim() && !search.has('refine')) {
+    const withRefine = new URLSearchParams(search);
+    withRefine.set('refine', '1');
+    redirect(`/find?${withRefine}`);
+  }
+
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
   const appConfig = await getAppConfigWithoutHost(locale);
@@ -86,52 +84,6 @@ export default async function FindPage({
     appConfig.i18n.defaultLocale,
   );
   const first = (key: string) => search.get(key) ?? undefined;
-
-  // Q4 (v2-search--seo-urls): a plain search URL shows results, server-rendered, the same for a
-  // bot and a person. The questions come with `refine=1`. If the call fails, the page renders
-  // the landing as before.
-  if (showsResultsView(search)) {
-    const call = new URLSearchParams(search);
-    call.set('locale', locale);
-    const data = await fetchV2Server(call, appConfig.tenantId);
-    if (data) {
-      const withRefine = new URLSearchParams(search);
-      withRefine.set('refine', '1');
-      return (
-        <PageWrapper
-          cookies={cookieList}
-          translationData={{ i18nNamespaces, locale, resources }}
-          search={{
-            query: first('query'),
-            queryLabel: first('query_label'),
-            location: first('location'),
-            coords: first('coords'),
-            distance: first('distance'),
-          }}
-          nonce={nonce}
-        >
-          <V2SeedProvider
-            seed={{
-              tenantId: appConfig.tenantId,
-              callString: v2CallString(search),
-              data,
-              fetchedAt: Date.now(),
-            }}
-          >
-            <SeoResults
-              data={data}
-              query={(first('query_label') ?? first('query') ?? '').trim()}
-              refineHref={`/find?${withRefine}`}
-              allResultsHref={resultsUrlFor(
-                search.toString(),
-                appConfig.search.searchEngine,
-              )}
-            />
-          </V2SeedProvider>
-        </PageWrapper>
-      );
-    }
-  }
 
   return (
     <PageWrapper

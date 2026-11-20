@@ -46,6 +46,9 @@ import {
   SheetTrigger,
 } from './ui/sheet';
 
+/** The key of the Quick exit item in the header list. */
+export const SAFE_EXIT_KEY = 'item-safe-exit-8';
+
 export function Header() {
   const appConfig = useAppConfig();
   const { t, i18n } = useTranslation('common');
@@ -298,7 +301,7 @@ export function Header() {
           </li>
         ) : null,
         appConfig.header.safeExit?.enabled ? (
-          <li key="item-safe-exit-8">
+          <li key={SAFE_EXIT_KEY}>
             <Link
               target={appConfig.header.safeExit.target}
               href={appConfig.header.safeExit?.url ?? '#'}
@@ -343,15 +346,22 @@ export function Header() {
     ],
   );
 
+  // Below xl the floating Quick exit (quick-exit-button.tsx) is always on screen, also over the
+  // open menu, so the menu does not list Quick exit a second time.
+  const mobileSitemap = sitemap.filter(
+    (item) => (item as { key?: string } | null)?.key !== SAFE_EXIT_KEY,
+  );
+
   return (
     <header
       id={HEADER_ID}
       className={cn(
-        'z-[3] px-3 print:hidden',
+        // The top bar has a light gray outline on every width (Lucas, 2026-11-20).
+        'z-[3] border-b border-gray-200 px-3 print:hidden',
         appConfig.header?.position === 'sticky' && 'sticky top-0',
         newLayoutEnabled
           ? 'py-[18px] lg:p-8'
-          : 'border-b bg-white/95 shadow-xs backdrop-blur supports-[backdrop-filter]:bg-white/85',
+          : 'bg-white/95 shadow-xs backdrop-blur supports-[backdrop-filter]:bg-white/85',
       )}
     >
       <div
@@ -406,7 +416,8 @@ export function Header() {
                 aria-hidden="true"
               />
             </SheetTrigger>
-            <SheetContent side="left">
+            {/* The menu opens on the side of its button, the right (Lucas, 2026-11-20). */}
+            <SheetContent side="right">
               <SheetHeader>
                 <SheetTitle>
                   <Link
@@ -434,7 +445,7 @@ export function Header() {
                   Skip to content
                 </a>
                 <ul className="flex flex-col items-stretch gap-2 pt-4 [&>li>a]:h-11 [&>li>a]:w-full [&>li>a]:justify-start [&>li>a]:px-4 [&>li>a]:text-sm [&>li>a[aria-current=page]]:border-primary [&>li>a[aria-current=page]]:bg-primary/5 [&>li>button]:h-11 [&>li>button]:w-full [&>li>button]:justify-start [&>li>button]:px-4 [&>li>button]:text-sm">
-                  {sitemap}
+                  {mobileSitemap}
                 </ul>
               </nav>
             </SheetContent>

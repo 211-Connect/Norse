@@ -83,6 +83,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
+  const clearOnlyEmpties = rankEverywhere && !isStandalone;
 
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
@@ -299,15 +300,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [setSearch, isStandalone],
   );
 
-  const handleClear = useCallback(() => {
-    handleCommit(everywhereLabel);
-    if (isStandalone) {
-      setLocalPrevSearchLocation('');
-    } else {
-      setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
-    }
-  }, [isStandalone, setSearch, handleCommit, everywhereLabel]);
-
   // Called by Autocomplete when the committed block is burst-cleared by a
   // keypress. `nextValue` is the triggering character, or '' for Backspace/Delete.
   // Unlike handleClear, this does NOT route through "Everywhere" — it leaves
@@ -334,7 +326,38 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [isStandalone, props, setSearch],
   );
 
+  const handleClear = useCallback(() => {
+    // v2 (rankEverywhere): the x only empties the box for a new place. It never means "no
+    // location" (Everywhere) and never moves the questions on (Lucas, 2026-11-20).
+    if (clearOnlyEmpties) {
+      handleDecommit('');
+      return;
+    }
+    handleCommit(everywhereLabel);
+    if (isStandalone) {
+      setLocalPrevSearchLocation('');
+    } else {
+      setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
+    }
+  }, [
+    isStandalone,
+    setSearch,
+    handleCommit,
+    everywhereLabel,
+    clearOnlyEmpties,
+    handleDecommit,
+  ]);
+
   const inline = !isStandalone && myLocationInline;
+  // The text in the box right now: what the person types, or the committed place.
+  const shownText = isTyping
+    ? isStandalone
+      ? searchLocation
+      : prevSearchLocation
+    : searchLocation;
+  // Inline (v2): "Use my location" steps aside once the person types, and comes back when the box
+  // is empty (Lucas, 2026-11-20).
+  const showInlineMyLocation = inline && !shownText.trim();
   const anchorToInput = !isStandalone && anchorList === 'input';
 
   return (
@@ -383,6 +406,8 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
             : searchLocation
         }
         clearButtonLabel={t('call_to_action.remove')}
+        // v2: no "Remove" tooltip under the x (it read as "remove the location").
+        clearButtonTooltip={!clearOnlyEmpties}
         autoSelectIndex={autoSelectIndex}
         autoSelectOnBlurIndex={autoSelectIndex}
         loading={isPendingResults}
@@ -408,9 +433,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           {validationError}
         </p>
       )}
-      {inline && (
+      {showInlineMyLocation && (
         <div className="shrink-0">
-          <UseMyLocationButton className="min-h-11 whitespace-nowrap" />
+          {/* Same height as the input (h-[34px]: py-2, text-xs line, 1 px borders). */}
+          <UseMyLocationButton className="h-[34px] min-h-0 py-0 whitespace-nowrap" />
         </div>
       )}
       {!isStandalone && !inline && (

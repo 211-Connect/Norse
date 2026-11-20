@@ -48,3 +48,40 @@ export function hasSavedLocation({
     isPickedPlace(searchCoordinates, searchRegion)
   );
 }
+
+/**
+ * Clicks and focus that stay with the questions card on /find: the header (menu button, nav, logo)
+ * and the menu panel it opens (another dialog, or its overlay). Lucas 2026-11-20: opening the menu
+ * closed the questions and left /find.
+ */
+export const KEEPS_GUIDE_OPEN_SELECTOR =
+  'header, [role="dialog"], [data-slot="sheet-overlay"]';
+
+export function keepsGuideOpen(target: EventTarget | null): boolean {
+  const element = target as { closest?: (selector: string) => unknown } | null;
+  if (!element || typeof element.closest !== 'function') return false;
+  return Boolean(element.closest(KEEPS_GUIDE_OPEN_SELECTOR));
+}
+
+/**
+ * Back shows on a question only when the step before it was another question: never right after
+ * the location question or the crisis (emergency) question (Lucas, 2026-11-20). `lastBackIdx` is
+ * the answer Back would undo (-1: none).
+ */
+export function canGoBackFrom({
+  onPage,
+  asked,
+  lastBackIdx,
+  locationStep,
+  emergencyId,
+}: {
+  onPage: boolean;
+  asked: string[];
+  lastBackIdx: number;
+  locationStep: string;
+  emergencyId: string;
+}): boolean {
+  if (!onPage || lastBackIdx < 0) return false;
+  const previous = asked[asked.length - 1];
+  return previous !== locationStep && previous !== emergencyId;
+}

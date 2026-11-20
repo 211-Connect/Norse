@@ -47,6 +47,8 @@ export type AutocompleteProps = {
   autoSelectOnBlurIndex?: number;
   defaultOpen?: boolean;
   clearButtonLabel?: string;
+  /** Show the label as a tooltip under the clear (x) button. Default true. */
+  clearButtonTooltip?: boolean;
   /** Anchor the list's position (and width) to a different element than the
    *  input, by DOM id — e.g. a wrapper spanning several combined inputs, so
    *  the list opens below the whole group. */

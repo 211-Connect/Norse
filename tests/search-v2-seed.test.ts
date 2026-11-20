@@ -7,7 +7,6 @@ import {
   seedMatches,
   seedTotal,
   shortText,
-  showsResultsView,
   v2CallString,
 } from '../src/app/(app)/features/search/v2/v2-seed';
 
@@ -78,14 +77,6 @@ test('seedMatches needs the same tenant and call string', () => {
   assert.equal(seedMatches(seed, 't', 'query=b'), false);
   assert.equal(seedMatches(seed, 'u', 'query=a'), false);
   assert.equal(seedMatches(null, 't', 'query=a'), false);
-});
-
-test('showsResultsView: a query without refine=1 is the results view (Q4 = A)', () => {
-  const p = (s: string) => new URLSearchParams(s);
-  assert.equal(showsResultsView(p('query=food')), true);
-  assert.equal(showsResultsView(p('query=food&refine=1')), false);
-  assert.equal(showsResultsView(p('')), false);
-  assert.equal(showsResultsView(p('query=%20')), false);
 });
 
 test('v2CallString keeps only call keys, drops N-X, in a stable order', () => {

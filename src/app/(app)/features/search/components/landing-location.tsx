@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { LocationSearchBar } from '@/app/(app)/shared/components/search/location-search-bar';
 import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
+import { cn } from '@/app/(app)/shared/lib/utils';
 import {
   searchCoordinatesAtom,
   searchLocationAtom,
@@ -62,7 +63,9 @@ export function LandingLocation() {
   if (changing) {
     return (
       <div
-        className="flex w-full items-center gap-2 pt-2"
+        // Top-aligned: the place list opens in the flow under the box, and Cancel stays on the
+        // box's line (its 44 px tap area centered on the 34 px box).
+        className="flex w-full items-start gap-2 pt-2"
         data-testid="landing-location"
       >
         <div className="min-w-0 flex-1">
@@ -78,7 +81,7 @@ export function LandingLocation() {
         </div>
         <button
           type="button"
-          className={BUTTON}
+          className={cn(BUTTON, '-mt-[5px]')}
           onClick={() => setChanging(false)}
         >
           Cancel

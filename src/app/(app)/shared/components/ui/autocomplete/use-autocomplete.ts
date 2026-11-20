@@ -369,8 +369,11 @@ export function useAutocomplete({
       keepOpenOnBlurRef.current ||
       Boolean(nextFocus && listboxRef.current?.contains(nextFocus));
 
+    // An empty box picks nothing on blur: after the x, the old list may still be there
+    // (live walk 2026-11-20: leaving an emptied box put the old place back).
     if (
       autoSelectOnBlurIndex != null &&
+      inputText.trim() !== '' &&
       !selectedOption &&
       !isInteractingWithList &&
       !mustWait() &&
