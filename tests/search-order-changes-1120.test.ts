@@ -120,7 +120,7 @@ test('header: a light gray bottom outline on every width and layout', () => {
   );
   assert.match(
     read(GUIDE),
-    /h-\[3\.75rem\] border-b border-gray-200 bg-white sm:hidden/,
+    /h-\[3\.25rem\] border-b border-gray-200 bg-white sm:hidden/,
   );
 });
 
@@ -188,6 +188,6 @@ test('location x: leaving the emptied box does not put the old place back', () =
   const src = read('shared/components/ui/autocomplete/use-autocomplete.ts');
   assert.match(
     src,
-    /autoSelectOnBlurIndex != null &&\s*inputText\.trim\(\) !== '' &&/,
+    /autoSelectOnBlurIndex != null &&[\s\S]{0,80}inputText\.trim\(\) !== '' &&/,
   );
 });

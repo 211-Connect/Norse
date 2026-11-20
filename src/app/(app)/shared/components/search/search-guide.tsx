@@ -144,7 +144,7 @@ export function GuideShell({
           data-testid={SEARCH_DIALOG_ID}
           data-step={dataStep}
           className={cn(
-            'fixed top-[calc(var(--guide-top)+24px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-48px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.75rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none',
+            'fixed top-[calc(var(--guide-top)+12px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-24px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.25rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none',
             innerScroll ? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS,
           )}
           style={
@@ -179,11 +179,11 @@ export function GuideShell({
           <div
             aria-hidden="true"
             data-testid="guide-top-bar"
-            className="fixed inset-x-0 top-0 z-[55] h-[3.75rem] border-b border-gray-200 bg-white sm:hidden"
+            className="fixed inset-x-0 top-0 z-[55] h-[3.25rem] border-b border-gray-200 bg-white sm:hidden"
           />
           <DialogPrimitive.Close
             data-testid="guide-close"
-            className="absolute top-3 right-3 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] max-sm:fixed max-sm:top-2 max-sm:right-auto max-sm:left-2 max-sm:z-[56] max-sm:h-11 max-sm:w-auto max-sm:min-w-11 max-sm:gap-1 max-sm:px-3 max-sm:text-sm max-sm:font-semibold"
+            className="absolute top-4 right-4 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] max-sm:fixed max-sm:top-2 max-sm:right-auto max-sm:left-2 max-sm:z-[56] max-sm:h-11 max-sm:w-auto max-sm:min-w-11 max-sm:gap-1 max-sm:px-3 max-sm:text-sm max-sm:font-semibold"
           >
             <X className="size-5 max-sm:hidden" aria-hidden="true" />
             <ArrowLeft className="size-5 sm:hidden" aria-hidden="true" />
