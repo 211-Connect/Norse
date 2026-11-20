@@ -22,7 +22,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   ArrowUp,
@@ -30,7 +29,6 @@ import {
   ChevronDown,
   GripVertical,
   Info,
-  LogOut,
   Phone,
   Plus,
   X,
@@ -48,8 +46,17 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Link } from '@/app/(app)/shared/components/link';
 import { SafeExitLink } from '@/app/(app)/shared/components/safe-exit-link';
+import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { Button } from '@/app/(app)/shared/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/app/(app)/shared/components/ui/dialog';
 import {
   POINTER_OR_SCROLL_EVENTS,
   useOnPointerDownOutside,
@@ -59,6 +66,7 @@ import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { DialButton } from './no-dial';
+import { EmergencyBox, HotlineNumbers, PinnedNumbers } from './emergency-box';
 
 import {
   applyAnswers,
@@ -101,7 +109,7 @@ import {
   withEmergencyAnswers,
 } from '../v2/v2-contract';
 
-type Answer = {
+export type Answer = {
   label: string;
   add: string[];
   remove?: string[];
@@ -109,7 +117,7 @@ type Answer = {
   value?: string;
   description?: string;
 };
-type Question = {
+export type Question = {
   id: string;
   type?: keyof typeof QUESTION_STYLES;
   text: string;
@@ -220,18 +228,10 @@ function useSuneSearch() {
   };
 }
 
-const TAG =
-  'bg-card border-primary flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm';
-const ADD_PILL =
-  'bg-primary/10 text-primary border-primary/50 flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-dashed px-3 py-1.5 text-sm font-medium';
-
 /** Terms a person could not find. A stand-in for a real report to our system. */
 export const flaggedAtom = atom<string[]>([]);
 /** Corrections kept for review. A stand-in: one person's correction never changes the shared mapping. */
 export const suggestionsAtom = atom<string[]>([]);
-
-const ROW_BUTTON =
-  'hover:bg-primary/5 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg';
 
 type Ranked = { key: string; label: string; description?: string };
 
@@ -273,16 +273,18 @@ function RankRow({
     >
       {ranked && (
         <>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             ref={setActivatorNodeRef}
             type="button"
             {...attributes}
             onKeyDown={handlers?.onKeyDown}
             aria-label={`Rank ${item.label}, now number ${at + 1}`}
-            className="text-muted-foreground flex h-9 w-6 shrink-0 cursor-grab items-center justify-center rounded-lg"
+            className="text-muted-foreground h-9 w-6 shrink-0 cursor-grab rounded-lg"
           >
             <GripVertical className="size-4" aria-hidden="true" />
-          </button>
+          </Button>
           <span
             aria-hidden="true"
             className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
@@ -299,14 +301,16 @@ function RankRow({
           </span>
         )}
       </span>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         type="button"
         aria-label={`Remove ${item.label}`}
-        className={ROW_BUTTON}
+        className="shrink-0 rounded-lg"
         onClick={onRemove}
       >
         <X className="size-4" aria-hidden="true" />
-      </button>
+      </Button>
     </li>
   );
 }
@@ -470,16 +474,17 @@ function RankStep({
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-muted-foreground">Removed:</span>
           {removed.map((kind) => (
-            <button
+            <Button
+              variant="outline"
               key={kind.key}
               type="button"
               aria-label={`Put back ${kind.label}`}
-              className={ADD_PILL}
+              className="border-primary/50 bg-primary/10 text-primary h-auto shrink-0 gap-1 rounded-lg border-dashed px-3 py-1.5 text-sm font-medium"
               onClick={() => putBack(kind)}
             >
               <Plus className="size-3.5" aria-hidden="true" />
               {kind.label}
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -642,7 +647,7 @@ export function SearchResultsHelp() {
   };
 
   return (
-    <DialogPrimitive.Root
+    <Dialog
       modal={false}
       open={open}
       onOpenChange={(next) => {
@@ -651,7 +656,7 @@ export function SearchResultsHelp() {
         setThanks('');
       }}
     >
-      <DialogPrimitive.Trigger
+      <DialogTrigger
         className={cn(
           // Below xl the floating Quick exit holds the bottom edge.
           'fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg max-xl:bottom-20 print:hidden',
@@ -666,200 +671,213 @@ export function SearchResultsHelp() {
         data-testid="search-results-help"
       >
         Not getting the results you expected?
-      </DialogPrimitive.Trigger>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Content
-          className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl max-xl:bottom-20 max-xl:max-h-[calc(100dvh-6rem)] md:left-auto md:w-96"
-          data-testid="search-results-help-panel"
-          // On a phone the opener is the list item, so focus goes back to it.
-          onCloseAutoFocus={(event) => {
-            const item = document.getElementById(HELP_ITEM_ID);
-            if (item && item.offsetParent) {
-              event.preventDefault();
-              item.focus();
-            }
-          }}
-          onEscapeKeyDown={(event) => {
-            // Escape cancels a keyboard drag or the Add box, not the whole panel.
-            if (adding || dragging.current) event.preventDefault();
-          }}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              {phase !== 'done' && (
-                <p className="text-muted-foreground text-xs">
-                  Step {phase === 'tags' ? 1 : 2} of 2
-                </p>
-              )}
-              <DialogPrimitive.Title
-                ref={titleRef}
-                tabIndex={-1}
-                className="text-lg font-semibold outline-none"
-              >
-                {TITLES[phase]}
-              </DialogPrimitive.Title>
-            </div>
-            <DialogPrimitive.Close
+      </DialogTrigger>
+      <DialogContent
+        bare
+        overlay={false}
+        withClose={false}
+        aria-modal="false"
+        className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl max-xl:bottom-20 max-xl:max-h-[calc(100dvh-6rem)] md:left-auto md:w-96"
+        data-testid="search-results-help-panel"
+        // On a phone the opener is the list item, so focus goes back to it.
+        onCloseAutoFocus={(event) => {
+          const item = document.getElementById(HELP_ITEM_ID);
+          if (item && item.offsetParent) {
+            event.preventDefault();
+            item.focus();
+          }
+        }}
+        onEscapeKeyDown={(event) => {
+          // Escape cancels a keyboard drag or the Add box, not the whole panel.
+          if (adding || dragging.current) event.preventDefault();
+        }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            {phase !== 'done' && (
+              <p className="text-muted-foreground text-xs">
+                Step {phase === 'tags' ? 1 : 2} of 2
+              </p>
+            )}
+            <DialogTitle
+              ref={titleRef}
+              tabIndex={-1}
+              className="text-lg font-semibold outline-none"
+            >
+              {TITLES[phase]}
+            </DialogTitle>
+          </div>
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Close"
-              className="flex size-8 cursor-pointer items-center justify-center"
+              className="size-8"
             >
               <X className="size-5" aria-hidden="true" />
-            </DialogPrimitive.Close>
-          </div>
-          <DialogPrimitive.Description className="text-muted-foreground text-sm">
-            {DESCRIPTIONS[phase]}
-          </DialogPrimitive.Description>
-          {phase === 'rank' && (
-            <RankStep
-              kinds={kinds}
-              removed={removed}
-              onChange={reorder}
+            </Button>
+          </DialogClose>
+        </div>
+        <DialogDescription>{DESCRIPTIONS[phase]}</DialogDescription>
+        {phase === 'rank' && (
+          <RankStep
+            kinds={kinds}
+            removed={removed}
+            onChange={reorder}
+            onDragging={onDragging}
+            onMissing={reportMissing}
+          />
+        )}
+        {phase === 'tags' && (
+          <>
+            <RankList
+              items={needs.map((code) => ({
+                key: code,
+                label: labelOf(code),
+              }))}
+              label="Your needs, ranked"
+              listRef={needListRef}
               onDragging={onDragging}
-              onMissing={reportMissing}
+              onRemove={removeNeed}
+              onReorder={(next) =>
+                update([...next.map((item) => item.key), ...others])
+              }
+              testId="search-need-list"
             />
-          )}
-          {phase === 'tags' && (
-            <>
-              <RankList
-                items={needs.map((code) => ({
-                  key: code,
-                  label: labelOf(code),
-                }))}
-                label="Your needs, ranked"
-                listRef={needListRef}
-                onDragging={onDragging}
-                onRemove={removeNeed}
-                onReorder={(next) =>
-                  update([...next.map((item) => item.key), ...others])
-                }
-                testId="search-need-list"
-              />
-              <div
-                className="flex flex-wrap items-center gap-2"
-                data-testid="search-situation-tags"
-              >
-                {others.map((code: string) => (
-                  <span key={code} className={TAG}>
-                    {labelOf(code)}
-                    <button
-                      type="button"
-                      aria-label={`Remove ${labelOf(code)}`}
-                      className="-my-1 -mr-1.5 flex size-6 cursor-pointer items-center justify-center"
-                      onClick={() => removeTrait(code)}
-                    >
-                      <X className="size-3.5" aria-hidden="true" />
-                    </button>
-                  </span>
-                ))}
-                <button
-                  ref={addButtonRef}
-                  type="button"
-                  data-dismiss-keep
-                  aria-expanded={adding}
-                  aria-label="Add a need"
-                  className={ADD_PILL}
-                  onClick={() => setAdding((prev) => !prev)}
+            <div
+              className="flex flex-wrap items-center gap-2"
+              data-testid="search-situation-tags"
+            >
+              {others.map((code: string) => (
+                <Badge
+                  key={code}
+                  variant="outline"
+                  className="bg-card border-primary shrink-0 gap-1.5 rounded-lg px-3 py-1.5"
                 >
-                  <Plus className="size-3.5" aria-hidden="true" />
-                  Add
-                </button>
-              </div>
-              {adding && (
-                <div className="flex flex-col gap-1" ref={addBoxRef}>
-                  <input
-                    autoFocus
-                    aria-label="Add a need"
-                    value={draft}
-                    placeholder="Start typing, then pick one"
-                    onChange={(event) => setDraft(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        event.preventDefault();
-                        if (matches[0]) addTerm(matches[0].code);
-                        else if (typed) flagMissing();
-                      }
-                      if (event.key === 'Escape') closeAdd();
-                    }}
-                    className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
-                  />
-                  <p className="sr-only" role="status">
-                    {typed ? `${matches.length} matches` : ''}
-                  </p>
-                  {typed && (
-                    <ul className="bg-card rounded-lg border">
-                      {matches.map((term) => (
-                        <li key={term.code}>
-                          <button
-                            type="button"
-                            className="hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm"
-                            onClick={() => addTerm(term.code)}
-                          >
-                            {term.label}
-                          </button>
-                        </li>
-                      ))}
-                      <li className={cn(matches.length > 0 && 'border-t')}>
-                        <button
-                          type="button"
-                          className="text-primary hover:bg-primary/5 w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-medium"
-                          onClick={flagMissing}
-                        >
-                          Don&apos;t see your option?
-                        </button>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-          <p
-            className="text-muted-foreground text-sm empty:hidden"
-            role="status"
-          >
-            {thanks}
-          </p>
-          {phase === 'done' && (
-            <DialogPrimitive.Close className="bg-primary text-primary-foreground cursor-pointer self-end rounded-lg px-4 py-2 text-sm font-semibold">
-              Close
-            </DialogPrimitive.Close>
-          )}
-          {phase !== 'done' && (
-            <div className="flex items-center justify-between gap-2">
-              {phase === 'rank' ? (
-                <button
-                  type="button"
-                  className="text-primary cursor-pointer px-1 py-2 text-sm font-medium"
-                  onClick={() => {
-                    setThanks('');
-                    setPhase('tags');
-                  }}
-                >
-                  Back
-                </button>
-              ) : (
-                <span />
-              )}
-              <button
+                  {labelOf(code)}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    aria-label={`Remove ${labelOf(code)}`}
+                    className="-my-1 -mr-1.5 size-6"
+                    onClick={() => removeTrait(code)}
+                  >
+                    <X className="size-3.5" aria-hidden="true" />
+                  </Button>
+                </Badge>
+              ))}
+              <Button
+                variant="outline"
+                ref={addButtonRef}
                 type="button"
-                data-testid="search-help-looks-good"
-                className="bg-primary text-primary-foreground cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold"
+                data-dismiss-keep
+                aria-expanded={adding}
+                aria-label="Add a need"
+                className="border-primary/50 bg-primary/10 text-primary h-auto shrink-0 gap-1 rounded-lg border-dashed px-3 py-1.5 text-sm font-medium"
+                onClick={() => setAdding((prev) => !prev)}
+              >
+                <Plus className="size-3.5" aria-hidden="true" />
+                Add
+              </Button>
+            </div>
+            {adding && (
+              <div className="flex flex-col gap-1" ref={addBoxRef}>
+                <input
+                  autoFocus
+                  aria-label="Add a need"
+                  value={draft}
+                  placeholder="Start typing, then pick one"
+                  onChange={(event) => setDraft(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      if (matches[0]) addTerm(matches[0].code);
+                      else if (typed) flagMissing();
+                    }
+                    if (event.key === 'Escape') closeAdd();
+                  }}
+                  className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
+                />
+                <p className="sr-only" role="status">
+                  {typed ? `${matches.length} matches` : ''}
+                </p>
+                {typed && (
+                  <ul className="bg-card rounded-lg border">
+                    {matches.map((term) => (
+                      <li key={term.code}>
+                        <Button
+                          variant="ghost"
+                          type="button"
+                          className="h-auto w-full justify-start rounded-lg px-3 py-2 text-left text-sm font-normal"
+                          onClick={() => addTerm(term.code)}
+                        >
+                          {term.label}
+                        </Button>
+                      </li>
+                    ))}
+                    <li className={cn(matches.length > 0 && 'border-t')}>
+                      <Button
+                        variant="ghost"
+                        type="button"
+                        className="text-primary h-auto w-full justify-start rounded-lg px-3 py-2 text-left text-sm font-medium"
+                        onClick={flagMissing}
+                      >
+                        Don&apos;t see your option?
+                      </Button>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            )}
+          </>
+        )}
+        <p className="text-muted-foreground text-sm empty:hidden" role="status">
+          {thanks}
+        </p>
+        {phase === 'done' && (
+          <DialogClose asChild>
+            <Button className="h-auto self-end rounded-lg px-4 py-2 text-sm font-semibold">
+              Close
+            </Button>
+          </DialogClose>
+        )}
+        {phase !== 'done' && (
+          <div className="flex items-center justify-between gap-2">
+            {phase === 'rank' ? (
+              <Button
+                variant="link"
+                type="button"
+                className="h-auto px-1 py-2 text-sm font-medium no-underline"
                 onClick={() => {
-                  if (phase === 'tags') {
-                    setThanks('');
-                    setPhase('rank');
-                  } else {
-                    finish();
-                  }
+                  setThanks('');
+                  setPhase('tags');
                 }}
               >
-                Looks good
-              </button>
-            </div>
-          )}
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+                Back
+              </Button>
+            ) : (
+              <span />
+            )}
+            <Button
+              type="button"
+              data-testid="search-help-looks-good"
+              className="h-auto rounded-lg px-4 py-2 text-sm font-semibold"
+              onClick={() => {
+                if (phase === 'tags') {
+                  setThanks('');
+                  setPhase('rank');
+                } else {
+                  finish();
+                }
+              }}
+            >
+              Looks good
+            </Button>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -869,15 +887,15 @@ export function ResultsHelpItem() {
   const setOpen = useSetAtom(resultsHelpOpenAtom);
   if (!label.trim()) return null;
   return (
-    <button
+    <Button
       id={HELP_ITEM_ID}
       type="button"
-      className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white md:hidden print:hidden"
+      className="h-auto min-h-11 w-full rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-800 md:hidden print:hidden"
       data-testid="results-help-item"
       onClick={() => setOpen(true)}
     >
       Not getting the results you expected?
-    </button>
+    </Button>
   );
 }
 
@@ -917,14 +935,15 @@ export function OtherBox({
         className="border-control-border focus-visible:ring-primary focus:border-primary min-h-12 w-full rounded-lg border bg-white py-2 pr-12 pl-4 text-base outline-none focus:outline-none focus-visible:ring-2"
         data-testid="other-box"
       />
-      <button
+      <Button
+        size="icon"
         type="button"
         aria-label="Send your answer"
-        className="bg-primary text-primary-foreground absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1.5 after:content-['']"
+        className="absolute top-2 right-2 size-8 rounded-lg after:absolute after:-inset-1.5 after:content-['']"
         onClick={send}
       >
         <ArrowUp className="size-4" aria-hidden="true" />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -957,11 +976,12 @@ function AddMoreLine({
       data-testid="search-refine-question"
       data-question="done"
     >
-      <button
+      <Button
+        variant="link"
         type="button"
         aria-expanded={open}
         aria-controls="add-more-box"
-        className="text-primary flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 text-left text-sm font-semibold"
+        className="h-auto min-h-11 w-full justify-between gap-2 text-left text-sm font-semibold no-underline"
         onClick={() => setOpen((v) => !v)}
       >
         Add more about your situation
@@ -969,7 +989,7 @@ function AddMoreLine({
           className={cn('size-4 shrink-0', open && 'rotate-180')}
           aria-hidden="true"
         />
-      </button>
+      </Button>
       <div id="add-more-box" hidden={!open} className="pb-3">
         {open && (
           <OtherBox
@@ -1034,19 +1054,21 @@ export function InfoToggle({
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         type="button"
         aria-label={label}
         aria-expanded={open}
         data-testid={testId}
         className={cn(
-          'text-muted-foreground hover:text-foreground flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full',
+          'text-muted-foreground hover:text-foreground size-11 shrink-0 rounded-full',
           className,
         )}
         onClick={() => setOpen((v) => !v)}
       >
         <Info className="size-6" aria-hidden="true" />
-      </button>
+      </Button>
       {open && (
         <p
           className={cn(
@@ -1127,7 +1149,7 @@ export const popupHotlines = (hotlines: V2Hotline[]) =>
   );
 
 const POPUP_BUTTON =
-  'flex min-h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-lg font-semibold no-underline focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none disabled:opacity-60';
+  'flex h-auto min-h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-lg font-semibold no-underline focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none disabled:opacity-60';
 
 function PopupQuickExit() {
   if (!SHOW_QUICK_EXIT_ON_EMERGENCY) return null;
@@ -1176,251 +1198,95 @@ export function EmergencyPopup({
       ?.focus();
   }, [mode]);
   return (
-    <DialogPrimitive.Root open modal>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Content
-          ref={contentRef}
-          data-testid="emergency-popup"
-          data-mode={mode}
-          aria-busy={busy}
-          className="fixed inset-0 z-[70] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-red-800 p-6 pt-20 text-white outline-none"
-          onEscapeKeyDown={(event) => event.preventDefault()}
-          onInteractOutside={(event) => event.preventDefault()}
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            contentRef.current
-              ?.querySelector<HTMLElement>('[data-popup-first]')
-              ?.focus();
-          }}
+    <Dialog open modal>
+      <DialogContent
+        bare
+        overlay={false}
+        withClose={false}
+        ref={contentRef}
+        data-testid="emergency-popup"
+        data-mode={mode}
+        aria-busy={busy}
+        className="fixed inset-0 z-[70] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-red-800 p-6 pt-20 text-white outline-none"
+        onEscapeKeyDown={(event) => event.preventDefault()}
+        onInteractOutside={(event) => event.preventDefault()}
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          contentRef.current
+            ?.querySelector<HTMLElement>('[data-popup-first]')
+            ?.focus();
+        }}
+      >
+        <DialogTitle className="max-w-md text-center text-3xl leading-tight font-bold tracking-normal">
+          {mode === 'ask'
+            ? 'Are you in danger right now?'
+            : 'Call for help now'}
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          {mode === 'ask'
+            ? 'Choose the answer that fits. Your answer changes the search.'
+            : 'Call 911 or 988, or continue to the results.'}
+        </DialogDescription>
+        <div
+          className="flex w-full max-w-md flex-col gap-3"
+          data-testid="emergency-popup-actions"
         >
-          <DialogPrimitive.Title className="max-w-md text-center text-3xl font-bold">
-            {mode === 'ask'
-              ? 'Are you in danger right now?'
-              : 'Call for help now'}
-          </DialogPrimitive.Title>
-          <DialogPrimitive.Description className="sr-only">
-            {mode === 'ask'
-              ? 'Choose the answer that fits. Your answer changes the search.'
-              : 'Call 911 or 988, or continue to the results.'}
-          </DialogPrimitive.Description>
-          <div
-            className="flex w-full max-w-md flex-col gap-3"
-            data-testid="emergency-popup-actions"
-          >
-            {mode === 'ask' &&
-              question.options.map((option, i) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  disabled={busy}
-                  data-popup-first={i === 0 ? '' : undefined}
-                  data-testid={`emergency-answer-${option.value}`}
+          {mode === 'ask' &&
+            question.options.map((option, i) => (
+              <Button
+                key={option.value}
+                type="button"
+                disabled={busy}
+                data-popup-first={i === 0 ? '' : undefined}
+                data-testid={`emergency-answer-${option.value}`}
+                className={cn(
+                  POPUP_BUTTON,
+                  i === 0
+                    ? 'bg-white text-red-800 hover:bg-white/90'
+                    : 'border-2 border-white bg-transparent text-white hover:bg-white/10',
+                )}
+                onClick={() => onAnswer(option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          {mode === 'danger' && (
+            <>
+              {popupHotlines(hotlines).map((line, i) => (
+                <DialButton
+                  key={line.number}
+                  number={line.number}
+                  ariaLabel={`Call ${line.number}, ${line.label}`}
+                  testId={`emergency-call-${line.number}`}
                   className={cn(
                     POPUP_BUTTON,
+                    'text-2xl',
                     i === 0
                       ? 'bg-white text-red-800'
                       : 'border-2 border-white bg-transparent text-white',
                   )}
-                  onClick={() => onAnswer(option.value)}
                 >
-                  {option.label}
-                </button>
+                  <Phone className="size-6" aria-hidden="true" />
+                  Call {line.number}
+                </DialButton>
               ))}
-            {mode === 'danger' && (
-              <>
-                {popupHotlines(hotlines).map((line, i) => (
-                  <DialButton
-                    key={line.number}
-                    number={line.number}
-                    ariaLabel={`Call ${line.number}, ${line.label}`}
-                    testId={`emergency-call-${line.number}`}
-                    className={cn(
-                      POPUP_BUTTON,
-                      'text-2xl',
-                      i === 0
-                        ? 'bg-white text-red-800'
-                        : 'border-2 border-white bg-transparent text-white',
-                    )}
-                  >
-                    <Phone className="size-6" aria-hidden="true" />
-                    Call {line.number}
-                  </DialButton>
-                ))}
-                <button
-                  type="button"
-                  className={cn(
-                    POPUP_BUTTON,
-                    'mt-4 border border-white bg-transparent text-base text-white underline',
-                  )}
-                  data-testid="emergency-popup-continue"
-                  onClick={onContinue}
-                >
-                  Continue to results
-                </button>
-              </>
-            )}
-          </div>
-          <PopupQuickExit />
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
-  );
-}
-
-export { DEFAULT_HOTLINES };
-
-/** The numbers a person can call. They come with the emergency question (`hotlines[]`). */
-export function HotlineNumbers({
-  hotlines = DEFAULT_HOTLINES,
-  soft = false,
-}: {
-  hotlines?: V2Hotline[];
-  soft?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-3" data-testid="search-hotline">
-      <p className={cn('font-semibold', soft ? 'text-base' : 'text-lg')}>
-        You can talk to someone right now.
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {hotlines.map((line, i) => (
-          <DialButton
-            key={line.number}
-            number={line.number}
-            ariaLabel={`Call ${line.number}, ${line.label}`}
-            className={cn(
-              'flex min-h-11 items-center gap-2 rounded-lg px-4 font-semibold no-underline',
-              i === 0
-                ? soft
-                  ? 'bg-orange-700 text-white'
-                  : 'bg-red-700 text-white'
-                : soft
-                  ? 'border border-orange-700 bg-white text-orange-900'
-                  : 'border border-red-700 bg-white text-red-700',
-            )}
-          >
-            {i === 0 && <Phone className="size-4" aria-hidden="true" />}
-            Call {line.number}
-          </DialButton>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/**
- * The emergency card: the question, the hotline numbers and the answers (urgency answers only;
- * none for a caller U-0), in the page like every other question and with no popup (Lucas,
- * 2026-11-13). `soft` is the calmer orange card (importance below critical). Without a question
- * it is the numbers alone, so a skip never takes the numbers away. It is the one live region.
- */
-export function EmergencyBox({
-  question,
-  hotlines,
-  soft = false,
-  onAnswer,
-  onSkip,
-  headingId = 'emergency-question',
-  announce = true,
-}: {
-  question?: Question;
-  hotlines?: V2Hotline[];
-  soft?: boolean;
-  onAnswer?: (answer: Answer) => void;
-  onSkip?: () => void;
-  headingId?: string;
-  /** False while the popup holds the one announcement, so the card behind it is not a second alert. */
-  announce?: boolean;
-}) {
-  return (
-    <section
-      aria-label="Emergency help"
-      className={cn(
-        'flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
-        soft ? 'border-orange-400 bg-orange-50' : 'border-red-700 bg-red-50',
-      )}
-      data-testid="search-emergency"
-      data-soft={soft}
-      role={announce ? (soft ? 'status' : 'alert') : undefined}
-    >
-      {question && (
-        <h2
-          id={headingId}
-          tabIndex={-1}
-          className={cn(
-            'text-base font-semibold outline-none md:text-xl',
-            soft ? 'text-orange-900' : 'text-red-700',
-          )}
-        >
-          {question.text}
-        </h2>
-      )}
-      <HotlineNumbers hotlines={hotlines} soft={soft} />
-      {question && (question.answers.length > 0 || onSkip) && (
-        <div
-          role="group"
-          aria-labelledby={headingId}
-          className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
-        >
-          {question.answers.map((option) => (
-            <button
-              key={option.label}
-              type="button"
-              className={cn(
-                'flex min-h-11 cursor-pointer items-center rounded-lg border bg-white px-3 py-2 text-left text-sm font-medium',
-                soft
-                  ? 'border-orange-400 text-orange-900'
-                  : 'border-red-700 text-red-700',
-              )}
-              onClick={() => onAnswer?.(option)}
-            >
-              {option.label}
-            </button>
-          ))}
-          {onSkip && (
-            <button
-              type="button"
-              className={cn(
-                'col-span-2 min-h-11 cursor-pointer justify-self-start px-1 text-left text-sm underline',
-                soft ? 'text-orange-900' : 'text-red-700',
-              )}
-              data-testid="emergency-skip"
-              onClick={onSkip}
-            >
-              Skip to results
-            </button>
+              <Button
+                type="button"
+                className={cn(
+                  POPUP_BUTTON,
+                  'mt-4 border border-white bg-transparent text-base text-white underline hover:bg-white/10',
+                )}
+                data-testid="emergency-popup-continue"
+                onClick={onContinue}
+              >
+                Continue to results
+              </Button>
+            </>
           )}
         </div>
-      )}
-    </section>
-  );
-}
-
-/** The numbers in one thin row, for the pinned block on a phone. */
-function PinnedNumbers({
-  hotlines = DEFAULT_HOTLINES,
-}: {
-  hotlines?: V2Hotline[];
-}) {
-  return (
-    <div className="flex gap-2" data-testid="search-hotline-pinned">
-      {hotlines.map((line, i) => (
-        <DialButton
-          key={line.number}
-          number={line.number}
-          ariaLabel={`Call ${line.number}, ${line.label}`}
-          className={cn(
-            'flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold no-underline',
-            i === 0
-              ? 'bg-red-700 text-white'
-              : 'border border-red-700 bg-white text-red-700',
-          )}
-        >
-          {i === 0 && <Phone className="size-4" aria-hidden="true" />}
-          Call {line.number}
-        </DialButton>
-      ))}
-    </div>
+        <PopupQuickExit />
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -1717,14 +1583,15 @@ export function SearchRefineQuestion() {
           <div className={PINNED}>
             <PinnedNumbers hotlines={hotlines} />
             {soft && (
-              <button
+              <Button
+                variant="link"
                 type="button"
-                className="min-h-11 cursor-pointer text-left text-sm font-semibold text-red-700 underline"
+                className="h-auto min-h-11 justify-start text-left text-sm font-semibold whitespace-normal text-red-700 underline"
                 data-testid="pinned-emergency-question"
                 onClick={() => window.scrollTo({ top: 0 })}
               >
                 {question.text}
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -1766,10 +1633,11 @@ export function SearchRefineQuestion() {
           data-question={question.id}
           data-testid="search-refine-question"
         >
-          <button
+          <Button
+            variant="ghost"
             type="button"
             aria-expanded={!collapsed}
-            className="flex min-h-11 cursor-pointer items-center justify-between gap-2 text-left md:hidden"
+            className="h-auto min-h-11 justify-between gap-2 px-0 text-left font-normal whitespace-normal hover:bg-transparent md:hidden"
             onClick={pin.toggle}
           >
             <span className={cn('text-sm font-semibold', style.label)}>
@@ -1782,7 +1650,7 @@ export function SearchRefineQuestion() {
                 aria-hidden="true"
               />
             </span>
-          </button>
+          </Button>
           {cardTitle && (
             <p
               className={cn(
@@ -1856,14 +1724,15 @@ export function SearchRefineQuestion() {
                 );
               })}
               {hiddenCount > 0 && (
-                <button
+                <Button
+                  variant="link"
                   type="button"
-                  className="text-primary min-h-11 cursor-pointer justify-self-start px-1 text-sm font-semibold underline"
+                  className="h-auto min-h-11 justify-self-start px-1 text-sm font-semibold underline"
                   data-testid="show-more-options"
                   onClick={() => setShowAll(true)}
                 >
                   Show more ({hiddenCount})
-                </button>
+                </Button>
               )}
               {(!v2 || v2.allow_other) && (
                 <OtherBox
@@ -1878,24 +1747,25 @@ export function SearchRefineQuestion() {
                 {picks.length > 0 ? `${picks.length} picked.` : ''}
               </p>
               {v2 && picks.length === 0 && (
-                <button
+                <Button
+                  variant="link"
                   type="button"
-                  className="text-muted-foreground min-h-11 cursor-pointer justify-self-start px-1 text-sm underline"
+                  className="text-muted-foreground h-auto min-h-11 justify-self-start px-1 text-sm underline"
                   onClick={() => answer()}
                 >
                   Skip
-                </button>
+                </Button>
               )}
               {picks.length > 0 && (
-                <button
+                <Button
                   type="button"
                   disabled={isPending}
-                  className="bg-primary text-primary-foreground col-span-2 min-h-11 cursor-pointer rounded-lg px-5 text-sm font-semibold disabled:opacity-60"
+                  className="col-span-2 h-auto min-h-11 rounded-lg px-5 text-sm font-semibold"
                   data-testid="refine-continue"
                   onClick={() => answer(picks)}
                 >
                   Continue
-                </button>
+                </Button>
               )}
             </div>
             <p className="text-sm empty:hidden" role="status">

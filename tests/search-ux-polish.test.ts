@@ -18,7 +18,7 @@ import {
   DEFAULT_HOTLINES,
   EmergencyBox,
   HotlineNumbers,
-} from '../src/app/(app)/features/search/components/search-follow-up';
+} from '../src/app/(app)/features/search/components/emergency-box';
 import { suggestionPickChanges } from '../src/app/(app)/features/search/v2/landing';
 import { nextV2Params } from '../src/app/(app)/features/search/v2/v2-contract';
 
@@ -234,7 +234,8 @@ test('emergency popup: popup only, three urgency answers, Quick exit inside the 
   );
   assert.match(card, /export const SHOW_QUICK_EXIT_ON_EMERGENCY = true;/);
   assert.match(card, /fixed inset-0 z-\[70\][^"]*bg-red-800/);
-  assert.match(card, /<DialogPrimitive.Root open modal>/);
+  assert.match(card, /<Dialog open modal>/);
+  assert.doesNotMatch(card, /DialogPrimitive/);
   assert.match(card, /<PopupQuickExit \/>/);
   assert.match(guide, /<EmergencyPopup/);
   // No card under the red popup: the box keeps a question only for the soft band.
@@ -321,7 +322,7 @@ test('phone: the card keeps its top padding and the landing header does not figh
 test('phone layer top bar: Back closes top left, Quick exit top right, divider, 44 px hit areas', () => {
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
   const exit = read(`${APP}shared/components/quick-exit-button.tsx`);
-  const close = guide.slice(guide.indexOf('<DialogPrimitive.Close'));
+  const close = guide.slice(guide.indexOf('<DialogClose'));
   assert.match(close.slice(0, 700), /max-sm:left-2/);
   assert.match(close.slice(0, 700), /max-sm:h-11/);
   assert.match(close.slice(0, 900), /Back/);

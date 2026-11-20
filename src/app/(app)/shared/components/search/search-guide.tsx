@@ -13,8 +13,8 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { EmergencyBox } from '@/app/(app)/features/search/components/emergency-box';
 import {
-  EmergencyBox,
   EmergencyPopup,
   emergencyPopupDismissedAtom,
   flaggedAtom,
@@ -152,54 +152,54 @@ export function GuideShell({
         withClose={false}
         aria-modal="false"
         id={SEARCH_DIALOG_ID}
-          data-testid={SEARCH_DIALOG_ID}
-          data-step={dataStep}
-          className={cn(
-            'fixed top-[calc(var(--guide-top)+12px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-24px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.25rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none',
-            innerScroll ? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS,
-          )}
-          style={
-            {
-              // Below xl the floating Quick exit holds the bottom edge.
-              // Below sm the card fills the screen: no header, no page behind.
-              '--guide-top': `${top}px`,
-            } as CSSProperties
-          }
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            if (focusId) document.getElementById(focusId)?.focus();
-          }}
-          onCloseAutoFocus={(event) => event.preventDefault()}
-          // The header (menu button, nav) and the menu panel it opens are not "outside" the
-          // questions: using them keeps /find open (Lucas, 2026-11-20).
-          onInteractOutside={(event) => {
-            if (keepsGuideOpen(event.target)) event.preventDefault();
-          }}
-          onEscapeKeyDown={(event) => {
-            if (onEscape?.()) event.preventDefault();
-          }}
-        >
-          <DialogTitle className="sr-only">Find help</DialogTitle>
-          <DialogDescription className="sr-only">
-            One question at a time. You can see your results at any step.
-          </DialogDescription>
-          {/* Phone top bar: Back (top left, closes the layer) and the floating Quick exit (top
+        data-testid={SEARCH_DIALOG_ID}
+        data-step={dataStep}
+        className={cn(
+          'fixed top-[calc(var(--guide-top)+12px)] left-1/2 z-50 flex max-h-[calc(100dvh-var(--guide-top)-24px-var(--exit-room,0px))] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 flex-col gap-4 rounded-2xl bg-white p-5 shadow-2xl max-xl:[--exit-room:3.5rem] max-sm:[--exit-room:0px] max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none max-sm:pt-[4.25rem] max-sm:pb-[calc(1.25rem+var(--exit-room))] max-sm:shadow-none',
+          innerScroll ? CARD_INNER_SCROLL_CLASS : CARD_SCROLL_CLASS,
+        )}
+        style={
+          {
+            // Below xl the floating Quick exit holds the bottom edge.
+            // Below sm the card fills the screen: no header, no page behind.
+            '--guide-top': `${top}px`,
+          } as CSSProperties
+        }
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          if (focusId) document.getElementById(focusId)?.focus();
+        }}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        // The header (menu button, nav) and the menu panel it opens are not "outside" the
+        // questions: using them keeps /find open (Lucas, 2026-11-20).
+        onInteractOutside={(event) => {
+          if (keepsGuideOpen(event.target)) event.preventDefault();
+        }}
+        onEscapeKeyDown={(event) => {
+          if (onEscape?.()) event.preventDefault();
+        }}
+      >
+        <DialogTitle className="sr-only">Find help</DialogTitle>
+        <DialogDescription className="sr-only">
+          One question at a time. You can see your results at any step.
+        </DialogDescription>
+        {/* Phone top bar: Back (top left, closes the layer) and the floating Quick exit (top
               right, quick-exit-button.tsx), a divider under both so the 911/988 chips stay apart. */}
-          <div
-            aria-hidden="true"
-            data-testid="guide-top-bar"
-            className="fixed inset-x-0 top-0 z-[55] h-[3.25rem] border-b border-gray-200 bg-white sm:hidden"
-          />
-          <DialogClose
-            data-testid="guide-close"
-            className="absolute top-4 right-4 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] max-sm:fixed max-sm:top-2 max-sm:right-auto max-sm:left-2 max-sm:z-[56] max-sm:h-11 max-sm:w-auto max-sm:min-w-11 max-sm:gap-1 max-sm:px-3 max-sm:text-sm max-sm:font-semibold"
-          >
-            <X className="size-5 max-sm:hidden" aria-hidden="true" />
-            <ArrowLeft className="size-5 sm:hidden" aria-hidden="true" />
-            <span className="sr-only max-sm:hidden">Close</span>
-            <span className="sm:hidden">Back</span>
-          </DialogClose>
-          {children}
+        <div
+          aria-hidden="true"
+          data-testid="guide-top-bar"
+          className="fixed inset-x-0 top-0 z-[55] h-[3.25rem] border-b border-gray-200 bg-white sm:hidden"
+        />
+        <DialogClose
+          data-testid="guide-close"
+          className="absolute top-4 right-4 flex size-9 cursor-pointer items-center justify-center rounded-lg after:absolute after:-inset-1 after:content-[''] max-sm:fixed max-sm:top-2 max-sm:right-auto max-sm:left-2 max-sm:z-[56] max-sm:h-11 max-sm:w-auto max-sm:min-w-11 max-sm:gap-1 max-sm:px-3 max-sm:text-sm max-sm:font-semibold"
+        >
+          <X className="size-5 max-sm:hidden" aria-hidden="true" />
+          <ArrowLeft className="size-5 sm:hidden" aria-hidden="true" />
+          <span className="sr-only max-sm:hidden">Close</span>
+          <span className="sm:hidden">Back</span>
+        </DialogClose>
+        {children}
       </DialogContent>
     </Dialog>
   );
@@ -607,7 +607,8 @@ export function SearchGuideFromUrl({
         >
           {!onPage && (
             <>
-              <Button variant="link"
+              <Button
+                variant="link"
                 type="button"
                 className="-ml-1 h-auto min-h-11 gap-1 px-1 text-sm font-semibold no-underline"
                 data-testid="guide-back-to-search"
@@ -737,7 +738,9 @@ export function SearchGuideFromUrl({
                 <div className="flex flex-col gap-3" aria-busy={isPending}>
                   <div className="flex items-start gap-2">
                     {canGoBack && (
-                      <Button variant="ghost" size="icon"
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         type="button"
                         aria-label="Previous question"
                         className="text-primary hover:bg-primary/10 -ml-2 size-9 shrink-0 rounded-full"
@@ -804,7 +807,8 @@ export function SearchGuideFromUrl({
                       );
                     })}
                     {hiddenCount > 0 && (
-                      <Button variant="link"
+                      <Button
+                        variant="link"
                         type="button"
                         className="h-auto min-h-11 self-start px-1 text-base font-semibold underline"
                         data-testid="show-more-options"
@@ -855,7 +859,8 @@ export function SearchGuideFromUrl({
           )}
         >
           {canSkipQuestion && (
-            <Button variant="outline"
+            <Button
+              variant="outline"
               type="button"
               disabled={isPending}
               className="border-control-border h-auto min-h-11 shrink-0 rounded-lg bg-white px-5 text-base font-semibold max-sm:px-4"
@@ -866,7 +871,8 @@ export function SearchGuideFromUrl({
             </Button>
           )}
           {canDeferLocation && (
-            <Button variant="highlight"
+            <Button
+              variant="highlight"
               type="button"
               className="h-auto min-h-11 rounded-lg bg-white px-5 text-base font-semibold"
               data-testid="guide-location-not-now"
