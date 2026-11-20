@@ -21,11 +21,7 @@ type Options = {
 export function useOnPointerDownOutside(
   ref: React.RefObject<HTMLElement | null>,
   handler: (event: PointerEvent) => void,
-  {
-    active = true,
-    events = POINTER_DOWN_EVENTS,
-    keepSelector,
-  }: Options = {},
+  { active = true, events = POINTER_DOWN_EVENTS, keepSelector }: Options = {},
 ) {
   const eventKey = events.join(',');
   useEffect(() => {
