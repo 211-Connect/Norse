@@ -74,7 +74,7 @@ const appConfig = {
     showHomePageTour: false,
     showPrintButton: true,
     showSearchAndResourceServiceName: true,
-    showSuggestionListTaxonomyBadge: false,
+    showSuggestionListTaxonomyBadge: process.env.STUB_BADGE === '1',
     showOrganizationLocationBadge: false,
     showUseMyLocationButtonOnDesktop: true,
     turnResourceCardTaxonomiesIntoLinks: false,
@@ -116,10 +116,14 @@ const appConfig = {
     searchEngine: 'ai_classification',
     resultsLimit: 25,
     pinnedResourcesMode: 'ignore',
-    texts: {
-      title: 'How can we help?',
-      queryInputPlaceholder: 'Describe how you need help',
-    },
+    showAllResultsOnMap: process.env.STUB_SHOW_ALL_MAP === '1',
+    texts:
+      process.env.STUB_BLANK_TEXTS === '1'
+        ? {}
+        : {
+            title: 'How can we help?',
+            queryInputPlaceholder: 'Describe how you need help',
+          },
   },
   badges: [],
   suggestions: [
