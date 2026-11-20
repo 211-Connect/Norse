@@ -80,3 +80,34 @@ test('v2Results with no hits is an empty list, not the v1 list', () => {
   assert.deepEqual(out.results, []);
   assert.equal(out.totalResults, 0);
 });
+
+test('a v2-only hit gets translated facets from the response facet list', () => {
+  const data = {
+    search: {
+      hits: {
+        total: 1,
+        hits: [
+          { _id: 'a', _source: { name: 'A', facets: { lang: ['Spanish'] } } },
+        ],
+      },
+    },
+    facets: [
+      {
+        key: 'lang',
+        name: { en: 'Language', locale: 'Idioma' },
+        values: [],
+      },
+    ],
+  } as unknown as V2Response;
+  const out = v2Results(data, [], 'es');
+  const facets = (out?.results[0] as any).facets;
+  assert.equal(facets.length, 1);
+  assert.equal(facets[0].taxonomyName, 'Idioma');
+  assert.equal(facets[0].taxonomyNameEn, 'Language');
+  assert.equal(facets[0].termName, 'Spanish');
+});
+
+test('a hit with no facets has no facets key', () => {
+  const out = hitToResult({ _id: 'a', _source: { name: 'A' } });
+  assert.equal('facets' in out, false);
+});
