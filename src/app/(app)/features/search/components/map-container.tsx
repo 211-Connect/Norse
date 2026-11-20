@@ -206,7 +206,7 @@ export function MapContainer({ phoneView = false }: { phoneView?: boolean }) {
       ref={mapRef}
       data-testid="results-map"
       className={cn(
-        'order-last h-[320px] w-full p-[10px] lg:sticky lg:top-[105px] lg:h-[var(--search-map-height)] lg:flex-1',
+        'order-last h-[320px] w-full p-[10px] lg:sticky lg:top-[105px] md:min-h-0 md:h-auto md:self-stretch lg:flex-1',
         appConfig.newLayout?.enabled && 'xl:top-[144px]',
         phoneView && 'max-md:h-[calc(100dvh-6.5rem)]',
       )}

@@ -44,7 +44,7 @@ export function SearchPageShell({
   }, []);
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex h-full min-h-0 w-full flex-col">
       <div className="flex min-h-0 w-full flex-1 flex-col md:flex-row">
         <FilterPanel
           legacyAiClarifyState={legacyAiClarifyState}

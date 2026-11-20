@@ -135,3 +135,17 @@ test('C: the landing header no longer pins itself with the sticky hack', () => {
   assert.match(landing, /data-testid="landing-popup"/);
   assert.match(landing, /min-h-0 flex-1 flex-col gap-4/);
 });
+
+// ---- E. Results page, desktop: only the results list scrolls ----
+
+test('E: the search page fits the viewport on md and up; the footer steps aside there', () => {
+  assert.match(read('[locale]/(rest)/search/page.tsx'), /<PageWrapper[\s\S]*?\n\s+fitViewport\n/);
+  const wrapper = read('shared/components/page-wrapper.tsx');
+  assert.match(wrapper, /fitViewport\?: boolean/);
+  assert.match(wrapper, /md:h-dvh md:overflow-hidden/);
+  assert.match(wrapper, /fitViewport && 'md:hidden'/);
+  const shell = read('features/search/components/search-page-shell.tsx');
+  assert.match(shell, /h-full min-h-0 w-full flex-col/);
+  assert.match(read('features/search/components/filter/filter-panel.tsx'), /md:overflow-y-auto/);
+  assert.match(read('features/search/components/results-section.tsx'), /md:min-h-0/);
+});

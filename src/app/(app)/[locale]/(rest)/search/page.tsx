@@ -237,6 +237,7 @@ export default async function SearchPage({
   }
   return (
     <PageWrapper
+      fitViewport
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       search={{
