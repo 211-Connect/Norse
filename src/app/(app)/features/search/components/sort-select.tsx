@@ -65,7 +65,7 @@ export function SortSelect() {
       >
         <SelectTrigger
           id={SORT_SELECT_TRIGGER_ID}
-          className="h-8 w-[180px] bg-white"
+          className="h-8 w-auto min-w-[180px] gap-2 bg-white"
         >
           {/* Explicit children: Radix only fills SelectValue from the selected
               item after mount, which leaves the SSR trigger empty. */}

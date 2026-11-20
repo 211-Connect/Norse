@@ -42,6 +42,13 @@ export function upstreamV2Url(
     up.searchParams.set('coords', env.coords);
   // Lucas 2026-11-18 (4A): the relevance cut is OFF in the demo for now (it costs 3-9 extra ES calls, about
   // +1 s a search). Without it a search returns the whole area. V2_CUTOFF=on turns it on.
-  up.searchParams.set('relevance_cutoff', env.cutoff === 'on' ? 'on' : 'off');
+  // A sort other than relevance needs the cut (Lucas 2026-11-19: sorts order what survived the cut): without
+  // it, A-Z put '1-800-Pothole' first for 'food pantry' (live walk 2026-11-20).
+  const sort = page.get('sort');
+  const sorted = Boolean(sort) && sort !== 'relevance';
+  up.searchParams.set(
+    'relevance_cutoff',
+    env.cutoff === 'on' || sorted ? 'on' : 'off',
+  );
   return up;
 }

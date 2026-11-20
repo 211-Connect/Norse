@@ -16,6 +16,7 @@ import {
 
 import {
   CLEAR_LOCATION_CHANGES,
+  isPickedPlace,
   landingLocationLabel,
   locationChanges,
 } from '../v2/landing';
@@ -47,7 +48,9 @@ export function LandingLocation() {
     if (isEverywhereLocation(searchLocation)) {
       write(CLEAR_LOCATION_CHANGES);
       setChanging(false);
-    } else if (searchLocation.trim()) {
+    } else if (isPickedPlace(searchCoordinates, searchRegion)) {
+      // Typing over the old place also changes searchLocation (LocationSearchBar's decommit writes the
+      // typed letters with no coordinates), so only a real pick, with a point or an area, is written.
       write(locationChanges(searchLocation, searchCoordinates, searchRegion));
       setChanging(false);
     }

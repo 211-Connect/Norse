@@ -127,3 +127,15 @@ export function toLandingUrl(resultsUrl: string): string {
   }
   return `${LANDING_PATH}${resultsUrl.slice(at)}`;
 }
+
+/**
+ * A place the location box committed: it has a point or an area. Typed letters (the box's decommit)
+ * have neither, so they are not a pick (live walk 2026-11-20: the first letter closed the box).
+ */
+export function isPickedPlace(
+  coords: number[] | string | null | undefined,
+  region: string | null | undefined,
+): boolean {
+  const point = Array.isArray(coords) ? coords.length > 0 : Boolean(coords);
+  return point || Boolean(region);
+}

@@ -12,6 +12,7 @@ import {
   isResultsPath,
   landingLocationLabel,
   locationChanges,
+  isPickedPlace,
   CLEAR_LOCATION_CHANGES,
 } from '../src/app/(app)/features/search/v2/landing';
 import {
@@ -230,4 +231,28 @@ test('the landing page renders the location row', () => {
     read('features/search/components/search-landing.tsx'),
     /<LandingLocation/,
   );
+});
+
+// Regression (live walk 2026-11-20): typing over the shown place on /find wrote the first letter as the
+// location, because the box writes typed letters to searchLocation with no coordinates.
+test('isPickedPlace: only a place with a point or an area is a pick', () => {
+  assert.equal(isPickedPlace([], ''), false);
+  assert.equal(isPickedPlace(undefined, null), false);
+  assert.equal(isPickedPlace('', ''), false);
+  assert.equal(isPickedPlace([-77.6, 43.1], ''), true);
+  assert.equal(isPickedPlace([], 'region-1'), true);
+});
+
+test('the /find location row writes only a picked place', () => {
+  const src = read('features/search/components/landing-location.tsx');
+  assert.match(src, /isPickedPlace\(searchCoordinates, searchRegion\)/);
+  assert.doesNotMatch(src, /else if \(searchLocation\.trim\(\)\)/);
+});
+
+// Regression (David 2026-11-19, live walk 2026-11-20): on /find the location box had no
+// MainSearchLayoutContext, so typing a place never geocoded (only "Everywhere" was offered).
+test('the landing page provides the search layout context to its location boxes', () => {
+  const src = read('features/search/components/search-landing.tsx');
+  assert.match(src, /<MainSearchLayoutContextProvider>/);
+  assert.match(src, /<\/MainSearchLayoutContextProvider>/);
 });

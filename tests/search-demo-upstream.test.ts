@@ -59,6 +59,17 @@ test('relevance_cutoff is off unless the env says on; the page cannot set it', (
   );
 });
 
+// Regression (live walk 2026-11-20): with the cut off, sort=name put '1-800-Pothole' first for 'food pantry'.
+test('a sort other than relevance turns the relevance cut on', () => {
+  for (const sort of ['name', 'organization', 'distance'])
+    assert.equal(
+      up(`query=food&sort=${sort}`).get('relevance_cutoff'),
+      'on',
+      sort,
+    );
+  assert.equal(up('query=food&sort=relevance').get('relevance_cutoff'), 'off');
+});
+
 test('needs, passed_needs, urgency and clarify keep the stub rules', () => {
   const p = up(
     'query=food&needs=N-FOD,N-HOU&passed_needs=N-X&urgency=U-3&clarify=never',

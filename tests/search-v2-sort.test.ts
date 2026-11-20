@@ -72,3 +72,15 @@ test('v2 sort labels say what they sort by; v1 labels are unchanged', () => {
   assert.equal(sortLabel('name', false), 'Resource Name');
   assert.equal(sortLabel('organization', false), 'Provider Name');
 });
+
+// Regression (live walk 2026-11-20): a fixed 180 px trigger cut 'Alphabetical by provider name' to
+// 'Alphabetical by provic…'. The trigger grows with its label.
+test('the sort trigger is not a fixed width, so the long v2 labels show in full', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(
+    'src/app/(app)/features/search/components/sort-select.tsx',
+    'utf8',
+  );
+  assert.doesNotMatch(src, /\sw-\[180px\]/);
+  assert.match(src, /w-auto min-w-\[180px\]/);
+});
