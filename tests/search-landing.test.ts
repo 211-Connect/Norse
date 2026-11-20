@@ -266,11 +266,11 @@ test('the /find location boxes lift their suggestion list above the pinned heade
   assert.match(header ?? '', /max-sm:z-20/);
   assert.match(
     read('shared/components/search/search-guide.tsx'),
-    /<LocationSearchBar\s+inputId=\{LOCATION_INPUT_ID\}\s+listClassName="z-30"/,
+    /<LocationSearchBar\s+inputId=\{LOCATION_INPUT_ID\}\s+listClassName="z-30 /,
   );
   assert.match(
     read('features/search/components/landing-location.tsx'),
-    /listClassName="z-30"/,
+    /listClassName="z-30 /,
   );
   assert.match(
     read('shared/components/search/location-search-bar.tsx'),

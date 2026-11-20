@@ -602,14 +602,14 @@ export function SearchGuideFromUrl({
                 >
                   Where should we look?
                 </h2>
-                <p>
-                  {requireLocation
-                    ? 'We need your location to show services you can use.'
-                    : 'Adding your location greatly improves your results.'}
-                </p>
+                {requireLocation && (
+                  <p>We need your location to show services you can use.</p>
+                )}
                 <LocationSearchBar
                   inputId={LOCATION_INPUT_ID}
-                  listClassName="z-30"
+                  listClassName="z-30 rounded-md border border-gray-300 shadow-lg"
+                  myLocationInline
+                  anchorList="input"
                   className="w-full"
                 />
                 {locationError && (

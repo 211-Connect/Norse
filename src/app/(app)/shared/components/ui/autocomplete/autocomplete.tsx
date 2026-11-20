@@ -3,6 +3,7 @@
 import {
   autoUpdate,
   flip,
+  type Middleware,
   offset,
   shift,
   size,
@@ -23,6 +24,7 @@ import {
   TooltipTrigger,
 } from '../tooltip';
 import { AutocompleteListbox } from './autocomplete-listbox';
+import { listMiddlewareNames, MIN_LIST_SPACE_PX } from './placement';
 import { AutocompleteProps } from './types';
 import { useAutocomplete } from './use-autocomplete';
 
@@ -34,6 +36,22 @@ export const FLOATING_LISTBOX_CLASSNAME =
 const LIST_OFFSET_PX = 8;
 /** Space kept free between the list and the viewport edge. */
 const VIEWPORT_PADDING_PX = 8;
+
+const middlewareByName: Record<string, () => Middleware> = {
+  offset: () => offset(LIST_OFFSET_PX),
+  flip: () => flip({ padding: VIEWPORT_PADDING_PX }),
+  shift: () => shift({ padding: VIEWPORT_PADDING_PX }),
+  size: () =>
+    size({
+      padding: VIEWPORT_PADDING_PX,
+      apply({ rects, availableHeight, elements }) {
+        Object.assign(elements.floating.style, {
+          width: `${rects.reference.width}px`,
+          maxHeight: `${Math.max(0, availableHeight)}px`,
+        });
+      },
+    }),
+};
 
 /**
  * Text input with a suggestion list (WAI-ARIA combobox). Behavior lives in
@@ -65,6 +83,7 @@ export function Autocomplete({
   onEscape,
   loading = false,
   listboxClassName,
+  placement = 'auto',
 }: AutocompleteProps) {
   const { t } = useTranslation('common');
   const labelId = useId();
@@ -90,24 +109,22 @@ export function Autocomplete({
     open,
     placement: 'bottom-start',
     // `fixed` lets a list anchored to an outside element escape the input's
-    // own layout box.
-    strategy: positionBelowElementId ? 'fixed' : 'absolute',
+    // own layout box. A `below` list also uses it: it must not be clipped by a card that
+    // scrolls or hides overflow.
+    strategy: positionBelowElementId || placement === 'below' ? 'fixed' : 'absolute',
     whileElementsMounted: autoUpdate,
-    middleware: [
-      offset(LIST_OFFSET_PX),
-      flip({ padding: VIEWPORT_PADDING_PX }),
-      shift({ padding: VIEWPORT_PADDING_PX }),
-      size({
-        padding: VIEWPORT_PADDING_PX,
-        apply({ rects, availableHeight, elements }) {
-          Object.assign(elements.floating.style, {
-            width: `${rects.reference.width}px`,
-            maxHeight: `${Math.max(0, availableHeight)}px`,
-          });
-        },
-      }),
-    ],
+    middleware: listMiddlewareNames(placement).map((name) => middlewareByName[name]()),
   });
+
+  // A `below` list never flips, so with little room under the input, bring the input to the
+  // top of its scroller when the list opens.
+  useEffect(() => {
+    if (!open || placement !== 'below') return;
+    const input = refs.inputRef.current;
+    if (!input) return;
+    const space = window.innerHeight - input.getBoundingClientRect().bottom;
+    if (space < MIN_LIST_SPACE_PX) input.scrollIntoView({ block: 'start' });
+  }, [open, placement, refs.inputRef]);
 
   useEffect(() => {
     if (positionBelowElementId) {

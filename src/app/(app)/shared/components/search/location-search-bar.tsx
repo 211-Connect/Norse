@@ -35,11 +35,15 @@ type BaseProps = {
   inputId?: string;
   showIcon?: boolean;
   placeholder?: string;
-  /**
-   * Extra classes for the suggestion list. The /find page pins its header (z-20) over a scroller, and
-   * a list flipped above the input slid under it (live walk 2026-11-20); it passes `z-30`.
-   */
+  /** Extra classes for the suggestion list. */
   listClassName?: string;
+  /** Integrated mode: "Use my location" sits in the row, right of the input (v2 pages). */
+  myLocationInline?: boolean;
+  /**
+   * Integrated mode: `form` (default) anchors the list to the search form; `input` anchors it to
+   * the input (same left edge and width) and keeps it below the input, scrolling inside itself.
+   */
+  anchorList?: 'form' | 'input';
 };
 
 // Integrated mode - uses global atoms and context
@@ -68,6 +72,8 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     inputId,
     showIcon = true,
     placeholder,
+    myLocationInline = false,
+    anchorList = 'form',
   } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
@@ -314,15 +320,23 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [isStandalone, props, setSearch],
   );
 
+  const inline = !isStandalone && myLocationInline;
+  const anchorToInput = !isStandalone && anchorList === 'input';
+
   return (
     <div
       className={cn(
-        'location-box flex flex-col',
-        isStandalone ? 'gap-2' : 'gap-4',
+        'location-box',
+        inline ? 'flex flex-row flex-wrap items-start gap-2' : 'flex flex-col',
+        !inline && (isStandalone ? 'gap-2' : 'gap-4'),
       )}
     >
       <Autocomplete
-        className={cn(className, !isStandalone && 'search-box')}
+        className={cn(
+          className,
+          !isStandalone && 'search-box',
+          inline && 'min-w-0 flex-1',
+        )}
         wrapperTestId="location-field"
         readerLabel={t('search.location_input_label')}
         inputProps={{
@@ -364,12 +378,27 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           isStandalone ? FLOATING_LISTBOX_CLASSNAME : undefined,
           props.listClassName,
         )}
-        positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
+        positionBelowElementId={
+          isStandalone || anchorToInput ? undefined : 'search-form-inputs'
+        }
+        placement={anchorToInput ? 'below' : 'auto'}
       />
       {validationError && (
-        <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
+        <p
+          className={cn(
+            'min-h-4 px-3 text-xs text-red-500',
+            inline && 'order-last basis-full',
+          )}
+        >
+          {validationError}
+        </p>
       )}
-      {!isStandalone && (
+      {inline && (
+        <div className="shrink-0">
+          <UseMyLocationButton className="min-h-11 whitespace-nowrap" />
+        </div>
+      )}
+      {!isStandalone && !inline && (
         <div>
           <UseMyLocationButton />
         </div>

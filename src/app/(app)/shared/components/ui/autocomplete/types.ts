@@ -69,4 +69,7 @@ export type AutocompleteProps = {
   /** Extra classes for the list, e.g. a shadow where it floats over other
    *  content such as a dialog. */
   listboxClassName?: string;
+  /** `auto` (default): the list may flip above the input. `below`: it always stays under the
+   *  input and scrolls inside itself. */
+  placement?: 'auto' | 'below';
 };

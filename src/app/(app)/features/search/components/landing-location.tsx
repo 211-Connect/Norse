@@ -84,7 +84,9 @@ export function LandingLocation() {
           <LocationSearchBar
             inputId={INPUT_ID}
             className="w-full"
-            listClassName="z-30"
+            listClassName="z-30 rounded-md border border-gray-300 shadow-lg"
+            myLocationInline
+            anchorList="input"
           />
         </div>
         <button
