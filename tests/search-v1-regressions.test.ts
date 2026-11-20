@@ -25,9 +25,15 @@ test('action-buttons: v1 keeps the ReferralButton + tel: Call link; only v2 drop
 test('no-results-card: query label shows for everyone; v1 keeps the LocalizedLink tel:', () => {
   const s = read('no-results-card.tsx');
   assert.match(s, /<CardDescription>/);
-  assert.match(s, /searchParams\?\.get\('query_label'\) \|\| searchParams\?\.get\('query'\)/);
+  assert.match(
+    s,
+    /searchParams\?\.get\('query_label'\) \|\| searchParams\?\.get\('query'\)/,
+  );
   assert.match(s, /isV2 \? \(/);
-  assert.match(s, /<LocalizedLink\s+href=\{`tel:\$\{appConfig\.contact\.number\}`\}/);
+  assert.match(
+    s,
+    /<LocalizedLink\s+href=\{`tel:\$\{appConfig\.contact\.number\}`\}/,
+  );
 });
 
 test('the info-block phone dials in v1 and shows text only in v2', () => {
@@ -36,9 +42,7 @@ test('the info-block phone dials in v1 and shows text only in v2', () => {
 });
 
 // Print + Share on the v2 results page: the same v1 components, fed by the v2 cards (bridge).
-import {
-  v2Results,
-} from '../src/app/(app)/features/search/v2/v2-results';
+import { v2Results } from '../src/app/(app)/features/search/v2/v2-results';
 
 test('v2 page: Print gets the ids of the v2 cards the page shows', () => {
   const data = {

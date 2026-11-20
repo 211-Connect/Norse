@@ -114,10 +114,7 @@ test('/find menu: panel on the right, Quick exit listed once', () => {
 // ---- Header outline ----
 
 test('header: a light gray bottom outline on every width and layout', () => {
-  assert.match(
-    read(HEADER),
-    /v2 && 'border-b border-gray-200'/,
-  );
+  assert.match(read(HEADER), /v2 && 'border-b border-gray-200'/);
   assert.match(
     read(GUIDE),
     /h-\[3\.25rem\] border-b border-gray-200 bg-white sm:hidden/,

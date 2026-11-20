@@ -15,7 +15,12 @@ test('v1: provider phone numbers dial through tel: (restored, every tenant)', ()
 });
 
 test('v2 (noDial): provider phone numbers never produce a tel: link', () => {
-  for (const raw of ['(253) 403-4437', '253-403-4437;ext=2', '911', 'garbage']) {
+  for (const raw of [
+    '(253) 403-4437',
+    '253-403-4437;ext=2',
+    '911',
+    'garbage',
+  ]) {
     assert.equal(getPhoneHref(raw, { noDial: true }), '', raw);
   }
 });
