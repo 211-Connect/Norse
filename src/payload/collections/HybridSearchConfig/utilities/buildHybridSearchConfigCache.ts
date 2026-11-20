@@ -30,6 +30,8 @@ export function buildHybridSearchConfigCache(
   const enableOrganizationSearch =
     resourceDirectory.featureFlags?.enableOrganizationSearch ?? false;
 
+  const enableV2Api = resourceDirectory.featureFlags?.enableV2Api ?? false;
+
   return {
     tenant_id: tenantId,
     vector_score_weight: hybridSearchConfig?.vectorScoreWeight ?? null,
@@ -47,6 +49,7 @@ export function buildHybridSearchConfigCache(
     taxonomy_num_candidates: hybridSearchConfig?.taxonomyNumCandidates ?? null,
     pinned_resources_mode: pinnedResourcesMode,
     enable_organization_search: enableOrganizationSearch,
+    enable_v2_api: enableV2Api,
     // Defaults for area searches (GET /search `region`) when the caller sends none.
     area_match: searchSettings?.areaMatchMode ?? 'located_or_serving',
     unlocated_in_area_search:

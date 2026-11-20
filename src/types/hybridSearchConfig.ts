@@ -16,6 +16,7 @@ export type HybridSearchConfigCache = {
   taxonomy_num_candidates: number | null;
   pinned_resources_mode: 'ignore' | 'boost' | 'top';
   enable_organization_search: boolean;
+  enable_v2_api: boolean;
   area_match: AreaMatch;
   unlocated_in_area_search: Unlocated;
 };
