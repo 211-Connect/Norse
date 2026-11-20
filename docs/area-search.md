@@ -87,6 +87,36 @@ search map                useRegionArea(region) → /api/region-area → GET /re
   for every tenant) and in the browser for a day. On failure the map frames
   the results as before.
 
+## Analytics
+
+`buildSearchLocationPayload` (`shared/lib/search-location-meta.ts`) builds the
+location part of the Umami `search_text` / `search_taxonomy` /
+`search_hybrid` and `search_zero_results` events. It takes the region: the
+`searchRegion` atom when the search is submitted, and the URL's `region` (what
+the server searched) for the results events.
+
+| Property           | Area search            | Radius search | No location |
+| ------------------ | ---------------------- | ------------- | ----------- |
+| `searchMode`       | `area`                 | `radius`      | empty       |
+| `searchRegionId`   | e.g. `county:53033`    | empty         | empty       |
+| `searchRegionType` | `state` / `county` / `place` / `zip` | empty | empty |
+
+`searchCity`, `searchZipCode` and `searchCounty` are reverse-geocoded from
+`coords`. For an area search `coords` is one point inside the area, so only
+the levels the area fixes are kept: a state search sends none of the three
+(and skips the reverse geocode), a county search only the county, a place
+search the city and county, and a ZIP search takes its ZIP from the id. This
+keeps a state search from being counted in the "Searches by county" and
+"Searches by zip code" widgets under whichever county holds its centre.
+
+GTM (`google-tag-manager.ts`): `search` and `norse_search` carry `region_id`.
+`search` also keeps `region`, which is the `user-pref-region` cookie (Mapbox
+state name), not the region id.
+
+Not done yet, in Norse-API: the search CSV export fills empty
+city/ZIP/county from `searchCoordinates`, which brings the centre point's
+values back for area searches, and no widget groups by `searchRegionId`.
+
 ## Printable directories
 
 The default location stores `defaultQueryConfig.regionId` when the picked

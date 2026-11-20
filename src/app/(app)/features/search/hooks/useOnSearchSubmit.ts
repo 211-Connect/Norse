@@ -8,6 +8,7 @@ import {
 } from '@/app/(app)/features/search/resolver';
 import {
   searchCoordinatesAtom,
+  searchRegionAtom,
   userCoordinatesAtom,
 } from '@/app/(app)/shared/store/search';
 import { useAtomValue } from 'jotai';
@@ -54,6 +55,7 @@ export const useOnSearchSubmit = ({
   });
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
+  const searchRegion = useAtomValue(searchRegionAtom);
   const navigateAiSearch = useNavigateAiSearch({
     setDialogOpen,
     startTransition,
@@ -116,6 +118,7 @@ export const useOnSearchSubmit = ({
           searchCoordinates,
           userCoordinates,
           appConfig.tenantId,
+          searchRegion,
         );
         navigateClassicSearch(locationPayload);
         return;
@@ -141,6 +144,7 @@ export const useOnSearchSubmit = ({
           searchCoordinates,
           userCoordinates,
           appConfig.tenantId,
+          searchRegion,
         );
         navigateClassicSearch(locationPayload);
         return;
@@ -153,6 +157,7 @@ export const useOnSearchSubmit = ({
           searchCoordinates,
           userCoordinates,
           appConfig.tenantId,
+          searchRegion,
         );
         navigateAiSearch({
           taxonomies: predictResponse?.hsis_taxonomies,
@@ -181,6 +186,7 @@ export const useOnSearchSubmit = ({
       search.queryType,
       search.organizationId,
       searchCoordinates,
+      searchRegion,
       setSearch,
       setDialogOpen,
       setClarifyValidationError,
