@@ -6,16 +6,16 @@ import { forwardRef } from 'react';
 import { cn } from '../../lib/utils';
 
 const buttonVariants = cva(
-  'relative cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'relative cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow hover:bg-primary/90',
+          'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow',
         destructive:
           'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
-          'border border-input bg-background shadow-sm hover:bg-primary/5 hover:text-accent-foreground',
+          'border border-input bg-background shadow-xs hover:border-primary/40 hover:bg-primary/5 hover:text-accent-foreground',
         highlight:
           'border border-input border-primary bg-background shadow-sm hover:bg-primary/5 hover:text-accent-foreground text-primary',
         secondary:

@@ -20,8 +20,12 @@ export function HomeSection({
     <section className={cn('container z-2 mx-auto py-8', className)}>
       {title && (
         <div className="mb-6">
-          <h2 className="text-center text-3xl font-bold">{title}</h2>
-          {showSeparator && <Separator className="mt-3" />}
+          <h2 className="text-center text-3xl font-bold tracking-tight">
+            {title}
+          </h2>
+          {showSeparator && (
+            <Separator className="bg-primary mx-auto mt-3 h-1 w-12 rounded-sm" />
+          )}
         </div>
       )}
 

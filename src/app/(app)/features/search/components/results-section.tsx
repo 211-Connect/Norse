@@ -176,7 +176,7 @@ export function ResultsSection({
     <section
       id="search-container"
       aria-labelledby={SEARCH_RESULTS_HEADING_ID}
-      className="flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5"
+      className="bg-muted/40 flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5 print:bg-transparent"
     >
       <h2
         id={SEARCH_RESULTS_HEADING_ID}

@@ -347,7 +347,9 @@ export function Header() {
       className={cn(
         'z-[3] px-3 print:hidden',
         appConfig.header?.position === 'sticky' && 'sticky top-0',
-        newLayoutEnabled ? 'py-[18px] lg:p-8' : 'border-b bg-white',
+        newLayoutEnabled
+          ? 'py-[18px] lg:p-8'
+          : 'border-b bg-white/95 shadow-xs backdrop-blur supports-[backdrop-filter]:bg-white/85',
       )}
     >
       <div
@@ -383,7 +385,7 @@ export function Header() {
           aria-label="Primary"
           className="z-[1] ml-auto hidden w-fit justify-end xl:flex"
         >
-          <ul className="flex items-center gap-6 overflow-x-auto px-1 py-2 sm:px-2">
+          <ul className="flex items-center gap-3 overflow-x-auto px-1 py-2 sm:px-2 [&_a[aria-current=page]]:border-primary [&_a[aria-current=page]]:bg-primary/5">
             {sitemap}
           </ul>
         </nav>
@@ -429,7 +431,7 @@ export function Header() {
                 >
                   Skip to content
                 </a>
-                <ul className="flex flex-col items-start gap-2 pt-4">
+                <ul className="flex flex-col items-stretch gap-2 pt-4 [&>li>a]:h-11 [&>li>a]:w-full [&>li>a]:justify-start [&>li>a]:px-4 [&>li>a]:text-sm [&>li>a[aria-current=page]]:border-primary [&>li>a[aria-current=page]]:bg-primary/5 [&>li>button]:h-11 [&>li>button]:w-full [&>li>button]:justify-start [&>li>button]:px-4 [&>li>button]:text-sm">
                   {sitemap}
                 </ul>
               </nav>

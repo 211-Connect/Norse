@@ -16,12 +16,14 @@ export function Footer() {
   const brand = appConfig.footer.copyright || appConfig.brand.name;
 
   return (
-    <footer className="px-3 pt-12 pb-3">
+    <footer className="mt-12 border-t px-3 py-5 print:mt-6">
       {appConfig.footer?.disclaimer && (
-        <p className="mb-3 text-sm">{parseHtml(appConfig.footer.disclaimer)}</p>
+        <p className="text-muted-foreground mb-4 max-w-prose text-sm">
+          {parseHtml(appConfig.footer.disclaimer)}
+        </p>
       )}
-      <div className="flex flex-col items-center gap-3 text-xs font-medium sm:flex-row">
-        <p>
+      <div className="flex flex-col items-center gap-x-6 gap-y-2 text-xs font-medium sm:flex-row">
+        <p className="text-muted-foreground">
           {t('footer.copyright', {
             text: `${new Date().getFullYear()}${brand ? ` ${brand}` : ''}`,
           })}
