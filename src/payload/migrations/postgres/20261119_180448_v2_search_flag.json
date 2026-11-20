@@ -13256,7 +13256,7 @@
     "public.enum_rds_search_search_settings_search_engine": {
       "name": "enum_rds_search_search_settings_search_engine",
       "schema": "public",
-      "values": ["classic", "hybrid", "ai_classification", "v2"]
+      "values": ["classic", "hybrid", "ai_classification"]
     },
     "public.pinned_mode": {
       "name": "pinned_mode",
@@ -13461,7 +13461,7 @@
     "public.enum__rds_v_version_search_search_settings_search_engine": {
       "name": "enum__rds_v_version_search_search_settings_search_engine",
       "schema": "public",
-      "values": ["classic", "hybrid", "ai_classification", "v2"]
+      "values": ["classic", "hybrid", "ai_classification"]
     },
     "public.enum_oc_schemas_custom_attributes_link_entity": {
       "name": "enum_oc_schemas_custom_attributes_link_entity",
