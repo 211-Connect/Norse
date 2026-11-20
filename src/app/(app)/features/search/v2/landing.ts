@@ -164,3 +164,25 @@ export function restorePlace<T extends object>(
     searchLocationValidationError: '',
   };
 }
+
+/**
+ * A click on any suggestion (a tenant suggestion, a topic, a taxonomy or an organization row) is a
+ * finished search: the text fills the box and the results page opens with no questions (Lucas,
+ * 2026-11-20, replaces the 2026-11-06 "pick only fills the box" rule). An organization row also
+ * scopes the search to that organization, as the v1 bar does. The old answers go with the old text.
+ */
+export function suggestionPickChanges(option: {
+  value: string;
+  organizationId?: string;
+}): V2Changes {
+  return {
+    query: option.value,
+    query_label: null,
+    asked: null,
+    refine: null,
+    needs: null,
+    passed_needs: null,
+    urgency: null,
+    organization_id: option.organizationId || null,
+  };
+}

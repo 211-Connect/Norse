@@ -18,7 +18,7 @@ import {
   EmergencyBox,
   HotlineNumbers,
 } from '../src/app/(app)/features/search/components/search-follow-up';
-import { pickNeedSuggestions } from '../src/app/(app)/shared/components/search/need-suggestions';
+import { suggestionPickChanges } from '../src/app/(app)/features/search/v2/landing';
 import { nextV2Params } from '../src/app/(app)/features/search/v2/v2-contract';
 
 const read = (path: string) => readFileSync(path, 'utf8');
@@ -53,16 +53,43 @@ test('no-dial: every emergency control renders as a button with no tel: or sms: 
   assert.match(html, /911/);
 });
 
-// Item 3: suggestions.
-test('suggestions: short phrases match, sentences and exact text do not, no duplicates', () => {
-  const local = ['Food Banks', 'Getting Enough Food', 'Rent Help'];
-  assert.deepEqual(
-    pickNeedSuggestions('food', local, ['food banks', 'Food Pantry']),
-    ['Food Banks', 'Getting Enough Food', 'Food Pantry'],
+// Item 3: suggestions are the v1 bar's own options in the v1 list; a pick opens the results.
+test('suggestions: the need box reuses the v1 options and list, with no list of its own', () => {
+  const box = read(`${APP}shared/components/search/need-box.tsx`);
+  const bar = read(`${APP}shared/components/search/search-bar.tsx`);
+  assert.match(box, /useSearchBarOptions/);
+  assert.match(box, /AutocompleteListbox/);
+  assert.match(box, /groupAutocompleteOptions/);
+  assert.doesNotMatch(box, /<ul|<li|useSearchSuggestions/);
+  assert.match(bar, /export function useSearchBarOptions/);
+  assert.match(bar, /enableOrganizationSearch/);
+  assert.match(bar, /const \{ options, isLoading \} = useSearchBarOptions/);
+});
+
+test('suggestion pick: any row opens the results with no questions; an organization row scopes it', () => {
+  assert.deepEqual(suggestionPickChanges({ value: 'Food Banks' }), {
+    query: 'Food Banks',
+    query_label: null,
+    asked: null,
+    refine: null,
+    needs: null,
+    passed_needs: null,
+    urgency: null,
+    organization_id: null,
+  });
+  assert.equal(
+    suggestionPickChanges({ value: 'Mercy House', organizationId: 'org-1' })
+      .organization_id,
+    'org-1',
   );
-  assert.deepEqual(pickNeedSuggestions('food banks', local), []);
-  assert.deepEqual(pickNeedSuggestions('I need food for my kids', local), []);
-  assert.deepEqual(pickNeedSuggestions('  ', local), []);
+  const nextParams = nextV2Params(
+    new URLSearchParams('query=food&refine=1&asked=q1&organization_id=old'),
+    suggestionPickChanges({ value: 'Rent Help' }),
+  );
+  assert.equal(nextParams.get('query'), 'Rent Help');
+  assert.equal(nextParams.get('refine'), null);
+  assert.equal(nextParams.get('asked'), null);
+  assert.equal(nextParams.get('organization_id'), null);
 });
 
 // Item 4: the progress label is gone, with every reference to it.
@@ -269,7 +296,7 @@ test('phone: the landing header block (chips and search box) stays put without a
 test('phone: the card keeps its top padding and the landing header does not fight it', () => {
   const landing = read(`${APP}features/search/components/search-landing.tsx`);
   const guide = read(`${APP}shared/components/search/search-guide.tsx`);
-  assert.match(guide, /max-sm:rounded-none max-sm:pt-\[4\.75rem\]/);
+  assert.match(guide, /max-sm:rounded-none max-sm:pt-\[4\.25rem\]/);
   const header =
     landing.match(/className="([^"]*)"\s*data-testid="landing-header"/)?.[1] ??
     '';
@@ -289,7 +316,7 @@ test('phone layer top bar: Back closes top left, Quick exit top right, divider, 
     guide,
     /data-testid="guide-top-bar"[^>]*|border-b bg-white sm:hidden/,
   );
-  assert.match(guide, /max-sm:pt-\[4\.75rem\]/);
+  assert.match(guide, /max-sm:pt-\[4\.25rem\]/);
   assert.match(exit, /max-sm:top-2 max-sm:right-2/);
   assert.doesNotMatch(exit, /max-sm:left-2/);
   assert.match(exit, /min-h-11/);
@@ -307,7 +334,7 @@ test('desktop guard: every full-screen / no-header rule in the layer is max-sm o
     'w-full',
     'rounded-none',
     'translate-x-0',
-    'pt-[4.75rem]',
+    'pt-[4.25rem]',
   ]) {
     assert.ok(
       cls

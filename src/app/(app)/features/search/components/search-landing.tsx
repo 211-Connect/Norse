@@ -12,6 +12,7 @@ import {
 } from '@/app/(app)/shared/components/search/search-guide';
 import { SEARCH_INPUT_ID } from '@/app/(app)/shared/lib/constants';
 
+import { suggestionPickChanges } from '../v2/landing';
 import { useV2Navigate, useV2Prefetch, useV2Url } from '../v2/use-v2-search';
 import { EmergencyLine } from './emergency-line';
 import { LandingLocation } from './landing-location';
@@ -24,7 +25,7 @@ import { LandingLocation } from './landing-location';
  */
 export function SearchLanding() {
   const { query } = useV2Url();
-  const { write, isPending: isWriting } = useV2Navigate();
+  const { write, toResults, isPending: isWriting } = useV2Navigate();
   const prefetch = useV2Prefetch();
   // Lucas 2026-11-16: after Enter nothing moves until the answer is known. The box stays as it is,
   // with a spinner, while the search loads; then the page shows a question or the results.
@@ -97,7 +98,7 @@ export function SearchLanding() {
         innerScroll
       >
         <div
-          className="flex min-h-0 flex-1 flex-col gap-4 pt-6 max-sm:pt-0"
+          className="flex min-h-0 flex-1 flex-col gap-4"
           data-testid="landing-popup"
         >
           {/* Crisis chips and the search box (or its compact Edit row) and the place row. This block
@@ -152,6 +153,7 @@ export function SearchLanding() {
                   setText(value);
                   setEmptyError(false);
                 }}
+                onPick={(option) => toResults(suggestionPickChanges(option))}
                 testId="landing-input"
                 submitTestId="landing-submit"
               />
