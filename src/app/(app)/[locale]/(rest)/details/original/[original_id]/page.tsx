@@ -1,12 +1,15 @@
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
-import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Metadata } from 'next/types';
 
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { FetchError } from '@/app/(app)/shared/lib/fetchError';
+import {
+  isNorseApiNotFound,
+  redirectIfRekeyed,
+} from '@/app/(app)/shared/lib/rekeyedRedirect';
 import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { protectPage } from '@/lib/arcjet-page';
@@ -36,7 +39,7 @@ export const generateMetadata = async ({ params }) => {
     try {
       await getResourceByOriginalId(original_id, locale, appConfig.tenantId);
     } catch (err) {
-      if (err instanceof FetchError && err.response.status === 404) {
+      if (isNorseApiNotFound(err)) {
         log.warn(
           { originalId: original_id, locale },
           'Resource not found for metadata generation',
@@ -93,15 +96,10 @@ export default async function OriginalDetailsPage({ params }) {
         appConfig.tenantId,
       );
     } catch (err) {
-      if (err instanceof FetchError && err.response.status === 404) {
+      // A re-keyed id: 308 to the record's new URL (ISS-2514).
+      redirectIfRekeyed(err, locale);
+      if (isNorseApiNotFound(err)) {
         notFoundFlag = true;
-
-        if (err.response.data?.redirect) {
-          permanentRedirect(
-            `/${locale}${err.response.data.redirect}`,
-            RedirectType.replace,
-          );
-        }
       }
     }
   }
