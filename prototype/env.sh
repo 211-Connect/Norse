@@ -1,4 +1,3 @@
 export NORSE_ROLE=app PAYLOAD_CMS_URL=http://localhost:4100 PAYLOAD_API_ROUTE_SECRET=prototype-local API_URL=http://localhost:4100 NEXT_PUBLIC_MAPLIBRE_STYLE_URL=http://localhost:4100/style.json NEXT_TELEMETRY_DISABLED=1 PORT=3100 NEXTAUTH_SECRET=prototype-local AUTH_SECRET=prototype-local NEXTAUTH_URL=http://localhost:3100 PAYLOAD_SECRET=prototype-local INTERNAL_API_KEY=prototype-local
 
 export NEXT_PUBLIC_DEMO_V2_PEEK=true
-export NEXT_PUBLIC_PROTOTYPE_NO_DIAL=true

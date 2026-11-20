@@ -2,18 +2,10 @@
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
-import { noDialEnabled } from './no-dial-flag';
+import { NO_DIAL } from './no-dial-flag';
 
-/**
- * Prototype safety switch (Lucas, 2026-11-14): while true, no 911, 988 or help-line control dials
- * or texts. Each one is a plain button that shows a short test-mode notice. Off by default
- * (production renders the normal `tel:` link); on when NEXT_PUBLIC_PROTOTYPE_NO_DIAL=true
- * (local prototype, demos).
- */
-// Next.js inlines NEXT_PUBLIC_* only for a literal `process.env.NAME` read.
-export const PROTOTYPE_NO_DIAL = noDialEnabled(
-  process.env.NEXT_PUBLIC_PROTOTYPE_NO_DIAL,
-);
+/** The no-dial switch; see `no-dial-flag.ts`. ON until the turn-on PR. */
+export const PROTOTYPE_NO_DIAL = NO_DIAL;
 
 /** The notice text for one number. Pure, so the tests can read it. */
 export const noDialNotice = (number: string) =>
