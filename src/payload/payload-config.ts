@@ -16,6 +16,11 @@ import {
   WidgetSlug,
 } from './components/analytics/widgetInfo';
 import { HybridSearchConfig } from './collections/HybridSearchConfig';
+import {
+  LandingPageSlugs,
+  LandingPageTopics,
+  LandingPages,
+} from './collections/LandingPages';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { TenantMedia } from './collections/TenantMedia';
@@ -89,6 +94,9 @@ const config = buildConfig({
     HybridSearchConfig,
     TranslationUsage,
     TranslationUsageAlerts,
+    LandingPageTopics,
+    LandingPages,
+    LandingPageSlugs,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs].map(
@@ -527,6 +535,9 @@ const config = buildConfig({
     multiTenantPlugin<Config>({
       collections: {
         [TenantMedia.slug]: true,
+        [LandingPageTopics.slug]: true,
+        [LandingPages.slug]: true,
+        [LandingPageSlugs.slug]: true,
         [ResourceDirectories.slug]: {
           isGlobal: true,
         },

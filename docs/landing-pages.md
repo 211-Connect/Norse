@@ -97,7 +97,13 @@ automatically. "Re-copy from source" updates the search on request.
 
 The name and slug are localized. The `translate` job fills them for every
 tenant locale from the source name, and the admin can edit them. Slugs are
-ASCII, transliterated where needed.
+lower-case ASCII: accents are dropped (`alimentación` → `alimentacion`). A
+name in a non-Latin script (Chinese, Arabic, Russian…) has no ASCII slug, so
+that locale uses the default locale's slug; the page is still in that
+language. Slugs are checked against reserved first segments (route folders
+and locale codes, `RESERVED_TOPIC_SLUGS` in
+`features/landing-pages/lib/slugs.ts`); `tests/landing-pages-slugs.test.ts`
+fails when a new route folder is missing from that list.
 
 ## URLs
 
@@ -135,15 +141,19 @@ ASCII, transliterated where needed.
 
 Every collection is scoped to one Resource Directory.
 
-- **`landing-page-topics`**: localized `name` and `slug`; localized overrides
+- **`landing-page-topics`** (table `lp_topics`): localized `name` and `slug`; localized overrides
   for SEO title, meta description, H1 and intro; the copied search; `source`.
-- **`landing-pages`**: one row per region × topic. Topic relation; `regionId`
-  with the region's name, type, state and `countyId` copied in; `status`
-  (`live`, `off`, `retired`); `redirectTarget`; `resultCount`, `countedAt`;
-  localized overrides for title, description, H1, intro and slug. Unique on
-  Resource Directory + region + topic.
-- **`landing-page-slugs`**: Resource Directory, locale, path, page, `current`.
-  Rows are never deleted.
+- **`landing-pages`** (table `lp_pages`): one row per region × topic. Topic
+  relation; `regionId` (`state:WA`, `county:53053`, `place:5370000`) with the
+  region's name, type, state and `countyId` copied in; the untranslated
+  `placeSlug`; `status` (`live`, `off`, `retired`); `redirect` (a target
+  page, or a site path such as a `/search` URL); `resultCount`, `countedAt`;
+  localized overrides for title, description, H1 and intro. Unique on
+  Resource Directory + topic + region.
+- **`landing-page-slugs`** (table `lp_slugs`): Resource Directory, locale,
+  path (`topic-slug/place-slug`), page, `current`. Unique on Resource
+  Directory + locale + path. Exactly one row per page and locale is current;
+  rows are never deleted.
 
 Topics and pages keep Payload versions (no drafts), which gives a dated change
 history to compare with Search Console data. Tenant admins edit topics and
@@ -155,8 +165,15 @@ The public app (`NORSE_ROLE=app`) has no Postgres. It reads through
 
 - resolve a path for a tenant and locale to a page or a redirect,
 - list live pages with their slugs in every locale (for the sitemaps),
-- the **config version**, a number the generation job bumps. Page and sitemap
-  caches include it in their keys.
+- the **version**: the latest `updatedAt` among the tenant's topics, pages
+  and slugs, so any change (the generation job, an admin edit) moves it.
+  Page and sitemap caches include it in their keys.
+
+The CMS side is `src/payload/services/landingPages.ts`, the bridge
+`src/lib/cms/landing-pages.ts`, the routes
+`/api/internal/landing-pages/{resolve,sitemap,version}`. Path resolution
+itself (`features/landing-pages/lib/resolve.ts`) is pure and tested against
+a fake store in `tests/landing-pages-resolve.test.ts`.
 
 ## Generating pages
 
@@ -168,7 +185,7 @@ unchanged K", and on confirmation queues the generation job:
 - every selected state gets its state page for each topic;
 - removed pairs → `retired`, with a redirect target (see below);
 - unchanged pairs are left alone; running the job twice changes nothing;
-- when it finishes, it bumps the config version.
+- its writes move the version, so cached pages and sitemaps refresh.
 
 Every generated page is live. A page's result count never changes its status;
 an admin can turn any page `off`.
@@ -261,10 +278,10 @@ landing pages lead to the rest.
 
 | Value | Where | Key | TTL |
 | --- | --- | --- | --- |
-| Resolved page config | Redis + memory | tenant, locale, path, config version | memory 1 min; Redis until the version changes |
+| Resolved page config | Redis + memory | tenant, locale, path, version | memory 1 min; Redis until the version changes |
 | Landing-page search results | Redis | `search_results:…` (shared builder) | 24 h, refreshed by the warm-up job |
 | Landing-page map pins | Redis | `search_pins:…` | 24 h, refreshed by the warm-up job |
-| XML and HTML sitemaps | Redis | tenant, locale, config version | 24 h backstop |
+| XML and HTML sitemaps | Redis | tenant, locale, version | 24 h backstop |
 | Region lists for the picker | Redis | state, type | 1 day |
 
 The HTML of a page is not cached by a CDN, because a page served from the CDN

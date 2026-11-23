@@ -75,6 +75,9 @@ export interface Config {
     'hybrid-search-config': HybridSearchConfig;
     'translation-usage': TranslationUsage;
     'translation-usage-alerts': TranslationUsageAlert;
+    'landing-page-topics': LandingPageTopic;
+    'landing-pages': LandingPage;
+    'landing-page-slugs': LandingPageSlug;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -91,6 +94,9 @@ export interface Config {
     'hybrid-search-config': HybridSearchConfigSelect<false> | HybridSearchConfigSelect<true>;
     'translation-usage': TranslationUsageSelect<false> | TranslationUsageSelect<true>;
     'translation-usage-alerts': TranslationUsageAlertsSelect<false> | TranslationUsageAlertsSelect<true>;
+    'landing-page-topics': LandingPageTopicsSelect<false> | LandingPageTopicsSelect<true>;
+    'landing-pages': LandingPagesSelect<false> | LandingPagesSelect<true>;
+    'landing-page-slugs': LandingPageSlugsSelect<false> | LandingPageSlugsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -1287,6 +1293,150 @@ export interface TranslationUsageAlert {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-topics".
+ */
+export interface LandingPageTopic {
+  id: number;
+  tenant?: (string | null) | Tenant;
+  /**
+   * What the topic is called on its pages, in the words people search with.
+   */
+  name: string;
+  /**
+   * The first part of the page address, e.g. food-pantries in /food-pantries/tacoma-wa.
+   */
+  slug?: string | null;
+  /**
+   * The search behind every page of this topic, copied from its source.
+   */
+  search: {
+    queryType: 'taxonomy' | 'text';
+    /**
+     * Comma-separated taxonomy codes, or the text to search for.
+     */
+    query: string;
+  };
+  /**
+   * Where the search was copied from.
+   */
+  source: {
+    kind: 'subtopic' | 'suggestion' | 'custom';
+    /**
+     * Id of the subtopic or suggestion in the Resource Directory.
+     */
+    ref?: string | null;
+    /**
+     * Its name when the search was copied.
+     */
+    label?: string | null;
+  };
+  /**
+   * Overrides the Resource Directory templates for every page of this topic. Leave empty to use the templates.
+   */
+  copy?: {
+    /**
+     * SEO title: the blue link in Google results. About 60 characters.
+     */
+    title?: string | null;
+    /**
+     * Meta description: the grey text under the link. About 155 characters. It changes how many people click, not the ranking.
+     */
+    description?: string | null;
+    /**
+     * The main heading on the page.
+     */
+    h1?: string | null;
+    /**
+     * A short paragraph above the results.
+     */
+    intro?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-pages".
+ */
+export interface LandingPage {
+  id: number;
+  tenant?: (string | null) | Tenant;
+  /**
+   * Topic and place, for lists.
+   */
+  label?: string | null;
+  topic: number | LandingPageTopic;
+  /**
+   * Live: in Google and the sitemaps. Off: switched off by an admin. Retired: removed from the selection; its address redirects.
+   */
+  status: 'live' | 'off' | 'retired';
+  regionId: string;
+  regionType: 'state' | 'county' | 'place';
+  regionName: string;
+  regionState: string;
+  countyId?: string | null;
+  /**
+   * The second part of the address, e.g. tacoma-wa. The same in every locale.
+   */
+  placeSlug: string;
+  /**
+   * Where visitors and search engines go while this page is not live.
+   */
+  redirect?: {
+    page?: (number | null) | LandingPage;
+    /**
+     * Used when no page is selected, e.g. /search?…
+     */
+    path?: string | null;
+  };
+  /**
+   * Results found by the last nightly count.
+   */
+  resultCount?: number | null;
+  countedAt?: string | null;
+  /**
+   * Overrides the topic and the Resource Directory templates for this page only.
+   */
+  copy?: {
+    /**
+     * SEO title: the blue link in Google results. About 60 characters.
+     */
+    title?: string | null;
+    /**
+     * Meta description: the grey text under the link. About 155 characters. It changes how many people click, not the ranking.
+     */
+    description?: string | null;
+    /**
+     * The main heading on the page.
+     */
+    h1?: string | null;
+    /**
+     * A short paragraph above the results.
+     */
+    intro?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-slugs".
+ */
+export interface LandingPageSlug {
+  id: number;
+  tenant?: (string | null) | Tenant;
+  locale: string;
+  /**
+   * topic-slug/place-slug
+   */
+  path: string;
+  current?: boolean | null;
+  page: number | LandingPage;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1441,6 +1591,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'translation-usage-alerts';
         value: number | TranslationUsageAlert;
+      } | null)
+    | ({
+        relationTo: 'landing-page-topics';
+        value: number | LandingPageTopic;
+      } | null)
+    | ({
+        relationTo: 'landing-pages';
+        value: number | LandingPage;
+      } | null)
+    | ({
+        relationTo: 'landing-page-slugs';
+        value: number | LandingPageSlug;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2146,6 +2308,85 @@ export interface TranslationUsageAlertsSelect<T extends boolean = true> {
   month?: T;
   billedCharacters?: T;
   thresholdUsd?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-topics_select".
+ */
+export interface LandingPageTopicsSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  slug?: T;
+  search?:
+    | T
+    | {
+        queryType?: T;
+        query?: T;
+      };
+  source?:
+    | T
+    | {
+        kind?: T;
+        ref?: T;
+        label?: T;
+      };
+  copy?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        h1?: T;
+        intro?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-pages_select".
+ */
+export interface LandingPagesSelect<T extends boolean = true> {
+  tenant?: T;
+  label?: T;
+  topic?: T;
+  status?: T;
+  regionId?: T;
+  regionType?: T;
+  regionName?: T;
+  regionState?: T;
+  countyId?: T;
+  placeSlug?: T;
+  redirect?:
+    | T
+    | {
+        page?: T;
+        path?: T;
+      };
+  resultCount?: T;
+  countedAt?: T;
+  copy?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        h1?: T;
+        intro?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-slugs_select".
+ */
+export interface LandingPageSlugsSelect<T extends boolean = true> {
+  tenant?: T;
+  locale?: T;
+  path?: T;
+  current?: T;
+  page?: T;
   updatedAt?: T;
   createdAt?: T;
 }
