@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { resolveV2HostTenant } from '@/app/(app)/features/search/v2/v2-host-tenant';
 import { buildV2Headers } from '@/app/(app)/features/search/v2/v2-request';
 import {
   buildPinsUrl,
@@ -35,11 +36,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid locale' }, { status: 400 });
   }
 
-  const appConfig = await getAppConfigWithoutHost(locale);
-
-  if (isV2 && !appConfig.featureFlags.enableV2Api) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  // The same host-tenant check as `/api/v2-search` (enableV2Api on, locale offered), one function.
+  if (isV2) {
+    const host = await resolveV2HostTenant(locale, {
+      getConfig: getAppConfigWithoutHost,
+      isValidLocale,
+    });
+    if (!host.ok) {
+      return NextResponse.json({ error: host.error }, { status: host.status });
+    }
   }
+
+  const appConfig = await getAppConfigWithoutHost(locale);
 
   if (
     !appConfig.search.showAllResultsOnMap ||
