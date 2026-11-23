@@ -60,9 +60,13 @@ export const PageWrapper = ({
       >
         {children}
       </main>
-      <div className={cn(fit && 'md:hidden')}>
+      {fit ? (
+        <div className="md:hidden">
+          <Footer />
+        </div>
+      ) : (
         <Footer />
-      </div>
+      )}
     </>
   );
 

@@ -93,3 +93,14 @@ test('render-results: the card wrapper element exists only with the v2 switch on
   assert.match(s, /return v2 \? \(\s*<div[\s\S]*?data-search-result/);
   assert.match(s, /<Fragment key=\{result\._id\}>\{card\}<\/Fragment>/);
 });
+
+test('page-wrapper: the footer has a wrapper element only on the v2 fit-viewport pages', () => {
+  const s = readFileSync(
+    'src/app/(app)/shared/components/page-wrapper.tsx',
+    'utf8',
+  );
+  assert.match(
+    s,
+    /\{fit \? \(\s*<div className="md:hidden">\s*<Footer \/>\s*<\/div>\s*\) : \(\s*<Footer \/>\s*\)\}/,
+  );
+});
