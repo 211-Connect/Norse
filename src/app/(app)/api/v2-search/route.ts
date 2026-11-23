@@ -35,10 +35,13 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const upstream = await fetch(buildV2Url(API_URL, incoming, host.tenantId, host.search), {
-    headers: buildV2Headers(await getTenantApiKey(host.tenantId)),
-    cache: 'no-store',
-  }).catch(() => null);
+  const upstream = await fetch(
+    buildV2Url(API_URL, incoming, host.tenantId, host.search),
+    {
+      headers: buildV2Headers(await getTenantApiKey(host.tenantId)),
+      cache: 'no-store',
+    },
+  ).catch(() => null);
   const { status, body } = await relayV2Response(upstream);
   return NextResponse.json(body, { status });
 }

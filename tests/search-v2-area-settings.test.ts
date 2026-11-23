@@ -102,3 +102,19 @@ test('the v2 routes pass the settings on (the seam: route to URL builder)', () =
   const pins = readFileSync('src/app/(app)/api/search-pins/route.ts', 'utf8');
   assert.match(pins, /appConfig\.search/);
 });
+
+test('pins: a caller value wins, and one setting alone is sent alone', () => {
+  const page = new URLSearchParams('region=state:WA&area_match=located');
+  const pins = new URL(
+    buildPinsUrl('http://api', page, 't1', { unlocatedInAreaSearch: 'none' }),
+  );
+  assert.equal(pins.searchParams.get('area_match'), 'located');
+  assert.equal(pins.searchParams.get('unlocated'), 'none');
+  const only = new URL(
+    buildPinsUrl('http://api', new URLSearchParams('region=state:WA'), 't1', {
+      areaMatch: 'serving',
+    }),
+  );
+  assert.equal(only.searchParams.get('area_match'), 'serving');
+  assert.equal(only.searchParams.has('unlocated'), false);
+});
