@@ -1,8 +1,8 @@
 # Technical SEO on existing pages
 
 What Norse tells search engines about the pages it already serves. Today that is which URL is a resource page's
-own (its canonical). Landing pages (ISS-2296) and their sitemap, hreflang and cache policy are ISS-2299, not this
-doc.
+own (its canonical). Landing pages, their sitemaps, hreflang and caching are in
+[landing-pages.md](landing-pages.md).
 
 ## Resource detail pages (`/[locale]/search/[id]`, ISS-2678)
 
