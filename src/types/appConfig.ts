@@ -47,6 +47,14 @@ export type AppConfig = {
    * When true, this branded domain is served with a noindex directive.
    */
   noindex?: boolean;
+  /**
+   * The host canonical tags, hreflang links and sitemap URLs name
+   * (`tenants.seo.canonicalHost`, else the first trusted domain); null when
+   * the tenant has no domain.
+   */
+  canonicalHost?: string | null;
+  /** `tenants.seo.sitemap`: whether this host serves its sitemaps. */
+  sitemap?: boolean;
   brand: {
     name: string;
     logoUrl?: string;

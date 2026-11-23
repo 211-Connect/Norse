@@ -437,11 +437,26 @@ export interface Tenant {
   services: {
     resourceDirectory?: boolean | null;
   };
+  /**
+   * Search-engine settings for this site’s host. What landing pages exist is set on the Resource Directory (Landing Pages).
+   */
   seo?: {
     /**
      * Keeps this site out of Google and other search results — useful while it's still being built, not yet ready to launch, or kept behind a login, so it isn't found before you intend it to be. Applies to your live site; staging and preview are always kept private. This asks reputable search engines not to list your pages; separately, and always on, our built-in protections keep your directory from being harvested by automated scrapers — so your information reaches real people using it fairly, not outside businesses repackaging it in their own products.
      */
     noindex?: boolean | null;
+    /**
+     * Serves /sitemap.xml and the /sitemap page listing every landing page. Only applies while landing pages are on and the site is not hidden.
+     */
+    sitemap?: boolean | null;
+    /**
+     * The host search engines should list, used in canonical tags, language links and sitemaps. Empty: the first trusted domain.
+     */
+    canonicalHost?: string | null;
+    /**
+     * The Google Search Console property for this host, as Search Console names it (sc-domain:… or https://…/). Read by the search analytics import.
+     */
+    searchConsoleProperty?: string | null;
   };
   auth: {
     realmId: string;
@@ -1701,6 +1716,9 @@ export interface TenantsSelect<T extends boolean = true> {
     | T
     | {
         noindex?: T;
+        sitemap?: T;
+        canonicalHost?: T;
+        searchConsoleProperty?: T;
       };
   auth?:
     | T

@@ -26,7 +26,7 @@ const log = createLogger('resource-page');
 const i18nNamespaces = ['page-resource', 'page-list', 'common'];
 
 /**
- * The page's canonical URL (ISS-2678): the record's own id on the tenant's primary (first trusted) domain, so an
+ * The page's canonical URL (ISS-2678): the record's own id on the tenant's canonical host (`seo.canonicalHost`, else the first trusted domain), so an
  * `_id` or cross-tenant fallback lookup, or a second domain, never declares itself the canonical page. Falls back
  * to the request's host when the tenant cannot be read.
  */
@@ -36,10 +36,9 @@ async function canonicalFor(
   resourceId: string,
 ) {
   const { host, protocol } = await getHost();
-  let trustedDomains: string[] = [];
+  let tenant: Awaited<ReturnType<typeof getTenantByHost>> = null;
   try {
-    const tenant = await getTenantByHost(parseHost(host));
-    trustedDomains = (tenant?.trustedDomains ?? []).map(({ domain }) => domain);
+    tenant = await getTenantByHost(parseHost(host));
   } catch (err) {
     log.warn(
       { err, host },
@@ -47,7 +46,7 @@ async function canonicalFor(
     );
   }
   return resourceCanonicalUrl({
-    ...canonicalOrigin({ trustedDomains, host, protocol }),
+    ...canonicalOrigin({ tenant, host, protocol }),
     locale,
     defaultLocale,
     id: resourceId,

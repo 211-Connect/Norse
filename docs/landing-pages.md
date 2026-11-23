@@ -35,15 +35,16 @@ matching `/search` URLs (ISS-2671), and resource pages in the sitemap
 
 Settings are split by who edits them and what they apply to.
 
-**Tenant → SEO tab** (super-admin and support): settings for a host.
+**Tenant → SEO** (the `seo` group; super-admin and support): settings for a
+host.
 
 | Field | Meaning |
 | --- | --- |
 | `seo.noindex` | Keeps the host out of search engines. When it is on, the host serves no landing pages and no sitemaps. |
-| Sitemap switch | Whether the host serves `/sitemap.xml` and `/sitemap`. |
-| Canonical host | The host used in canonical tags, hreflang links and sitemap URLs. Defaults to `trustedDomains[0]`. |
-| Search Console property | The property the analytics import reads. |
-| Crawler policy | Bot catalog overrides (ISS-2674). |
+| `seo.sitemap` | Whether the host serves `/sitemap.xml` and `/sitemap`. On by default. |
+| `seo.canonicalHost` | The host used in canonical tags, hreflang links and sitemap URLs. Must be one of the trusted domains; empty means the first trusted domain. Read through `tenantCanonicalHost` (`src/utils/canonicalHost.ts`) and `appConfig.canonicalHost`. |
+| `seo.searchConsoleProperty` | The Search Console property (`sc-domain:…` or `https://…/`) the analytics import reads. Ownership is verified by the deployment-wide `GOOGLE_SITE_VERIFICATION` token, so there is no per-tenant token. |
+| Crawler policy | Bot catalog overrides (ISS-2674), to be added to this group. |
 
 **Resource Directory → Landing Pages tab**: content, edited by tenant admins.
 Every field is hidden until a super-admin turns on

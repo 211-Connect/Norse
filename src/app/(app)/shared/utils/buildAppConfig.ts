@@ -1,4 +1,5 @@
 import { DEFAULT_AREA_MATCH, DEFAULT_UNLOCATED } from '@/types/areaSearch';
+import { tenantCanonicalHost } from '@/utils/canonicalHost';
 import { TypedLocale } from 'payload';
 
 import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
@@ -600,6 +601,8 @@ export async function buildAppConfig(
           : DEFAULT_SEARCH_CARD_LAYOUT,
     },
     noindex: getTenant(resourceDirectory)?.seo?.noindex ?? false,
+    canonicalHost: tenantCanonicalHost(getTenant(resourceDirectory)),
+    sitemap: getTenant(resourceDirectory)?.seo?.sitemap ?? true,
     badges:
       resourceDirectory.badges?.list
         ?.filter((badge) => badge.filter)

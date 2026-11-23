@@ -1,4 +1,5 @@
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
+import { tenantCanonicalHost } from '@/utils/canonicalHost';
 
 /**
  * The resource page's own URL, for `<link rel="canonical">` (ISS-2678). In v1 every page's canonical points to
@@ -27,32 +28,22 @@ export function resourceCanonicalUrl({
 }
 
 /** A trusted-domain entry as an admin may type it (`https://Search.WA211.org/`), as a bare lower-case host. */
-function bareHost(domain: string): string {
-  return domain
-    .trim()
-    .toLowerCase()
-    .replace(/^[a-z]+:\/\//, '')
-    .replace(/[/?#].*$/, '')
-    .replace(/:\d+$/, '');
-}
-
 /**
- * The origin a canonical URL names: the tenant's first trusted domain (Norse's primary domain elsewhere too),
- * not whichever host the request came in on, so a tenant with several domains has one canonical. Only the first
- * `x-forwarded-proto` value counts, since a chain of proxies can append more.
+ * The origin a canonical URL names: the tenant's canonical host (`seo.canonicalHost`, else its first trusted
+ * domain), not whichever host the request came in on, so a tenant with several domains has one canonical. Only
+ * the first `x-forwarded-proto` value counts, since a chain of proxies can append more.
  */
 export function canonicalOrigin({
-  trustedDomains,
+  tenant,
   host,
   protocol,
 }: {
-  trustedDomains: string[];
+  tenant: Parameters<typeof tenantCanonicalHost>[0];
   host: string;
   protocol: string;
 }): { host: string; protocol: string } {
-  const primary = trustedDomains.map(bareHost).find(Boolean);
   return {
-    host: primary ?? host,
+    host: tenantCanonicalHost(tenant) ?? host,
     protocol: protocol.split(',')[0]?.trim() || 'https',
   };
 }
