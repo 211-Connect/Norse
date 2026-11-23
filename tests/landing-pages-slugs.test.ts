@@ -60,6 +60,11 @@ describe('slugify', () => {
     assert.equal(slugify('  Rent & Utilities!  '), 'rent-utilities');
   });
 
+  test('letters without a decomposable accent', () => {
+    assert.equal(slugify('Các điểm phát thực phẩm'), 'cac-diem-phat-thuc-pham');
+    assert.equal(slugify('Łódź Straße'), 'lodz-strasse');
+  });
+
   test('non-Latin text gives an empty slug', () => {
     assert.equal(slugify('食物'), '');
   });

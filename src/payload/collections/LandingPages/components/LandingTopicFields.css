@@ -14,3 +14,7 @@
   border-left: 3px solid var(--theme-warning-500);
   background: var(--theme-warning-50, var(--theme-elevation-50));
 }
+
+.landing-topic-note .btn {
+  margin: 0;
+}

@@ -130,3 +130,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.landing-topics__custom > .btn,
+.landing-topics__panel > .btn {
+  justify-self: start;
+  width: auto;
+  margin: 0;
+}

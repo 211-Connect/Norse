@@ -37,7 +37,8 @@ type Suggestion = {
 /** The parts of a Resource Directory (in the default locale) this reads. */
 export type DirectorySources = {
   topics?: { list?: TopicCard[] | null } | null;
-  suggestions?: { suggestions?: Suggestion[] | null } | null;
+  /** The Suggestions tab has no name, so its array sits at the top. */
+  suggestions?: Suggestion[] | null;
 };
 
 export function listTopicSources(directory: DirectorySources): TopicSource[] {
@@ -65,7 +66,7 @@ export function listTopicSources(directory: DirectorySources): TopicSource[] {
       ];
     }),
   );
-  const suggestions = (directory.suggestions?.suggestions ?? []).flatMap(
+  const suggestions = (directory.suggestions ?? []).flatMap(
     (s): TopicSource[] => {
       if (!s.id) return [];
       const query = s.taxonomies?.trim();

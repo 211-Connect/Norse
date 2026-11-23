@@ -19,12 +19,10 @@ const directory = {
       },
     ],
   },
-  suggestions: {
-    suggestions: [
-      { id: 'g1', value: 'Rent help', taxonomies: 'BH-3800.7000' },
-      { id: 'g2', value: 'Empty', taxonomies: '' },
-    ],
-  },
+  suggestions: [
+    { id: 'g1', value: 'Rent help', taxonomies: 'BH-3800.7000' },
+    { id: 'g2', value: 'Empty', taxonomies: '' },
+  ],
 };
 
 describe('listTopicSources', () => {

@@ -47,12 +47,28 @@ export const RESERVED_TOPIC_SLUGS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Lower-case ASCII slug: accents dropped (`alimentación` → `alimentacion`),
+ * Lower-case ASCII slug: accents dropped (`alimentación` → `alimentacion`,
+ * `điểm` → `diem`),
  * apostrophes removed (`Coeur d'Alene` → `coeur-dalene`), every other run of
  * non-alphanumerics a single hyphen. Text in a non-Latin script gives `''`.
  */
+/** Latin letters that NFD does not split into a base letter and an accent. */
+const SPECIAL_LATIN: Readonly<Record<string, string>> = {
+  đ: 'd',
+  ð: 'd',
+  ł: 'l',
+  ø: 'o',
+  ß: 'ss',
+  æ: 'ae',
+  œ: 'oe',
+  þ: 'th',
+  ı: 'i',
+};
+
 export function slugify(input: string): string {
   return input
+    .toLowerCase()
+    .replace(/[đðłøßæœþı]/g, (letter) => SPECIAL_LATIN[letter])
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()

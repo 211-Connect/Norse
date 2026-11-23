@@ -38,7 +38,10 @@ const LandingTopicSlugWarning = () => {
   return (
     <p className="landing-topic-note landing-topic-note--warn">
       This URL is in Google; changing it moves its ranking to the new URL, with
-      a short dip. The old address of each of the {livePages} pages keeps
+      a short dip.{' '}
+      {livePages === 1
+        ? 'The old address of its live page keeps'
+        : `The old addresses of its ${livePages} live pages keep`}{' '}
       working with a 308 redirect after Apply changes.
     </p>
   );
