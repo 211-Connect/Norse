@@ -44,13 +44,17 @@ async function callEndpoint(failHybrid: boolean) {
 
   const svc = apiConfigCacheService as unknown as {
     set: (...a: unknown[]) => Promise<unknown>;
+    setOrThrow: (...a: unknown[]) => Promise<unknown>;
   };
-  const original = svc.set;
-  svc.set = async (key: unknown) => {
+  const original = { set: svc.set, setOrThrow: svc.setOrThrow };
+  const write = async (key: unknown) => {
     if (failHybrid && String(key).startsWith('search_config:')) {
       throw new Error('redis down');
     }
+    return true;
   };
+  svc.set = write;
+  svc.setOrThrow = write;
 
   const tenant = { id: 't1' };
   const resourceDirectory = { id: 'rd1', tenant: 't1' };
@@ -77,7 +81,7 @@ async function callEndpoint(failHybrid: boolean) {
     )(req);
     return { status: response.status, body: await response.json() };
   } finally {
-    svc.set = original;
+    Object.assign(svc, original);
   }
 }
 

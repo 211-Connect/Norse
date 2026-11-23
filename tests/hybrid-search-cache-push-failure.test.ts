@@ -16,20 +16,20 @@ async function load() {
 }
 
 /** Make only the hybrid-search key fail; any other cache write is a no-op. */
-function stubSet(
-  svc: { set: (...a: never[]) => Promise<unknown> },
-  fail: boolean,
-) {
-  const original = svc.set;
+function stubSet(svc: { set: unknown; setOrThrow: unknown }, fail: boolean) {
+  const original = { set: svc.set, setOrThrow: svc.setOrThrow };
   const writes: string[] = [];
-  (svc as { set: unknown }).set = async (key: string) => {
+  const write = async (key: string) => {
     writes.push(key);
     if (fail && key.startsWith(hybridKeyPrefix('t1')))
       throw new Error('redis down');
+    return true;
   };
+  svc.set = write;
+  svc.setOrThrow = write;
   return {
     writes,
-    restore: () => ((svc as { set: unknown }).set = original),
+    restore: () => Object.assign(svc, original),
   };
 }
 
@@ -49,6 +49,31 @@ describe('pushHybridSearchConfigToCache result', () => {
     } finally {
       stub.restore();
     }
+  });
+
+  test('skipped: Redis disabled (no CACHE_REDIS_URI, real service) -> "skipped", not "pushed"', async () => {
+    const { mod } = await load();
+    assert.equal(process.env.CACHE_REDIS_URI, undefined);
+    const req = { payload: {}, context: {} } as never;
+    const result = await mod.pushHybridSearchConfigToCache('t1', req, {
+      hybridSearchConfig: null,
+      resourceDirectory: rd,
+    });
+    assert.equal(result, 'skipped');
+  });
+
+  test('failed: the real set swallows a Redis error; the push uses setOrThrow, which throws', async () => {
+    const { CacheService } = await import('../src/cacheService');
+    const svc = new CacheService();
+    (svc as unknown as { isEnabled: boolean }).isEnabled = true;
+    (svc as unknown as { client: unknown }).client = {
+      status: 'ready',
+      set: async () => {
+        throw new Error('redis down');
+      },
+    };
+    await svc.set('k', 'v');
+    await assert.rejects(svc.setOrThrow('k', 'v'), /redis down/);
   });
 
   test('pushed: set succeeds -> "pushed"', async () => {

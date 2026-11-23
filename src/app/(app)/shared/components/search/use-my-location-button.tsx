@@ -35,10 +35,15 @@ export function UseMyLocationButton() {
 
       if (!adapter) return;
 
+      // The server action returns [] when the geocoder fails, so an empty
+      // result rejects here and shows the error toast.
       const promise = MapService.reverseGeocode(`${lng},${lat}`, {
         locale: i18n.language,
         adapter,
         tenantId: appConfig.tenantId,
+      }).then((data) => {
+        if (!data?.[0]) throw new Error('No reverse geocode result');
+        return data;
       });
 
       toast.promise(promise, {

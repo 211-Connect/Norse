@@ -20,7 +20,8 @@ export const HYBRID_SEARCH_CACHE_PUSH_ALERT = 'hybrid-search-cache-push-failed';
 
 /**
  * `pushed`: the cache now holds the new config. `skipped`: nothing to push (no
- * resource directory), so the cache did NOT change. `failed`: the push threw.
+ * resource directory, or Redis disabled / not connected), so the cache did NOT
+ * change. `failed`: the push threw (a Redis error included).
  */
 export type HybridSearchCachePushResult = 'pushed' | 'skipped' | 'failed';
 
@@ -74,7 +75,18 @@ export const pushHybridSearchConfigToCache = async (
     }
 
     const cacheKey = getHybridSearchConfigKey(tenantId);
-    await apiConfigCacheService.set(cacheKey, JSON.stringify(cache));
+    // setOrThrow: `set` logs and swallows a Redis error, which would read as 'pushed'.
+    const written = await apiConfigCacheService.setOrThrow(
+      cacheKey,
+      JSON.stringify(cache),
+    );
+    if (!written) {
+      log.warn(
+        { tenantId },
+        'Redis disabled or not connected; hybrid search config cache not updated',
+      );
+      return 'skipped';
+    }
 
     log.info({ tenantId }, 'Hybrid search config cache updated');
     return 'pushed';
