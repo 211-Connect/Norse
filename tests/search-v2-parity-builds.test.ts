@@ -90,7 +90,6 @@ const step = {
   locationDone: false,
   isEmergency: false,
   used: 0,
-  maxGuided: 3,
   onPage: false,
   hasQuestions: false,
   requireLocation: false,
@@ -104,11 +103,12 @@ test('with requireUserLocation on, a search with no question still asks for a pl
   );
 });
 
-test('a place already given, the emergency question and the question limit never ask', () => {
+test('a place already given and the emergency question never ask', () => {
   const on = { ...step, onPage: true, requireLocation: true };
   assert.equal(asksLocationStep({ ...on, locationDone: true }), false);
   assert.equal(asksLocationStep({ ...on, isEmergency: true }), false);
-  assert.equal(asksLocationStep({ ...on, used: 3 }), false);
+  // No client-side limit: the API caps before_results questions (contract v2).
+  assert.equal(asksLocationStep({ ...on, used: 3 }), true);
 });
 
 test('tenants without requireUserLocation keep the old rule', () => {

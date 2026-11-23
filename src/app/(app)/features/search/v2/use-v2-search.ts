@@ -33,7 +33,6 @@ import {
   type V2Changes,
   type V2Question,
   type V2Response,
-  MAX_GUIDED,
 } from './v2-contract';
 
 export * from './v2-contract';
@@ -43,8 +42,6 @@ export * from './v2-contract';
  * `GET /v2/search` call (ADR 0039, OpenAPI draft). The URL is the only state: an answer writes
  * `needs`, `passed_needs`, or `urgency`, and the same call runs again.
  */
-
-export { MAX_GUIDED };
 
 const list = (value: string | null) =>
   (value ?? '')

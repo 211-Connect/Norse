@@ -34,7 +34,9 @@ import {
   emergencyQuestionOf,
   hotlinesOf,
   isSoftEmergency,
-  MAX_GUIDED,
+  canonicalType,
+  GUIDE_PLACEMENTS,
+  stringsOf,
   nextQuestionOf,
   totalOf,
   useV2Navigate,
@@ -397,7 +399,8 @@ export function SearchGuideFromUrl({
       : popupMode === 'danger'
         ? asked.filter((id) => id !== emergencyQ.id)
         : asked;
-  const v2 = nextQuestionOf(data, askedForNext);
+  const v2 = nextQuestionOf(data, askedForNext, GUIDE_PLACEMENTS);
+  const strings = stringsOf(data);
   // A place already saved for this visit counts: the results page uses it, so asking for it again
   // with the same place filled in is a wasted step (Lucas UX pass, 2026-11-16).
   const hasLocation = hasSavedLocation({
@@ -418,20 +421,24 @@ export function SearchGuideFromUrl({
     placeSaving ||
     asksLocationStep({
       locationDone,
-      isEmergency: v2?.type === 'emergency',
+      isEmergency: v2 ? canonicalType(v2.type) === 'emergency' : false,
       used,
-      maxGuided: MAX_GUIDED,
       onPage,
       hasQuestions,
       requireLocation,
     });
+  // The API caps the before_results questions (3 per search), so the UI has no limit of its own.
   const question =
-    v2?.type === 'emergency' || (!showLocation && used < MAX_GUIDED)
+    v2 && (canonicalType(v2.type) === 'emergency' || !showLocation)
       ? v2
       : undefined;
-  const card = question ? toCardQuestion(question) : undefined;
-  const style = card ? QUESTION_STYLES[card.type ?? 'narrow'] : undefined;
-  const isEmergency = question?.type === 'emergency';
+  const card = question
+    ? toCardQuestion(question, strings.alsoFitOne)
+    : undefined;
+  const style = card ? QUESTION_STYLES[card.type ?? 'subtle'] : undefined;
+  const isEmergency = question
+    ? canonicalType(question.type) === 'emergency'
+    : false;
   // After a safe answer (urgency U-1 to U-4) the numbers stay in the always-on chips: the red
   // 911/988 box would flash in this card until the next answer arrives (Lucas UX walk 2026-11-19).
   const hotline =
@@ -447,7 +454,7 @@ export function SearchGuideFromUrl({
   const [showAll, setShowAll] = useState(false);
   useEffect(() => setShowAll(false), [question?.id]);
   const { shown: shownAnswers, hidden: hiddenCount } = visibleOptions(
-    { type: question?.type },
+    { placement: question?.placement },
     (card?.answers ?? []).map((a) => ({ ...a, value: a.value ?? a.label })),
     showAll,
   );
@@ -662,6 +669,7 @@ export function SearchGuideFromUrl({
             mode={popupMode}
             question={withEmergencyAnswers(emergencyQ)}
             hotlines={hotlines}
+            title={strings.popupTitle}
             busy={isPending}
             onAnswer={(value) => {
               const q = withEmergencyAnswers(emergencyQ);
@@ -685,6 +693,7 @@ export function SearchGuideFromUrl({
               soft={soft}
               onAnswer={(option) => answerQuestion([option.label])}
               onSkip={soft ? skipEmergency : undefined}
+              skipLabel={strings.skipToResults}
             />
           </>
         )}
@@ -905,8 +914,8 @@ export function SearchGuideFromUrl({
               {onPage
                 ? 'Show results now'
                 : data
-                  ? `Skip to results (${totalOf(data)})`
-                  : 'Skip to results'}
+                  ? `${strings.skipToResults} (${totalOf(data)})`
+                  : strings.skipToResults}
             </Button>
           )}
         </div>

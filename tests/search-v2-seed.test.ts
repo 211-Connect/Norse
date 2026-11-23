@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import type { V2Response } from '../src/app/(app)/features/search/v2/v2-contract';
+import { buildV2Url } from '../src/app/(app)/features/search/v2/v2-request';
 import {
   seedHits,
   seedMatches,
@@ -81,9 +82,18 @@ test('seedMatches needs the same tenant and call string', () => {
 
 test('v2CallString keeps only call keys, drops N-X, in a stable order', () => {
   const p = new URLSearchParams(
-    'refine=1&asked=x&page=2&query=food&needs=N-X,N-FOD-01&locale=en',
+    'refine=1&page=2&query=food&needs=N-X,N-FOD-01&locale=en',
   );
   assert.equal(v2CallString(p), 'query=food&needs=N-FOD-01&page=2');
+});
+
+// Contract v2: the API reads asked= to cap before_results questions, so it is in the call and the key.
+test('v2CallString and buildV2Url carry asked=', () => {
+  const p = new URLSearchParams('query=food&asked=start,spread');
+  assert.equal(v2CallString(p), 'query=food&asked=start%2Cspread');
+  assert.notEqual(v2CallString(p), v2CallString(new URLSearchParams('query=food')));
+  const url = buildV2Url('http://api', p, 't1');
+  assert.match(url, /asked=start%2Cspread/);
 });
 
 test('v2CallString puts facet filters in the key, so a filtered URL is not the unfiltered seed', () => {

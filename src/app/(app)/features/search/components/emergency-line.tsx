@@ -1,13 +1,7 @@
 import { Phone } from 'lucide-react';
 
 import { DialButton } from './dial-button';
-import { DEFAULT_HOTLINES } from './emergency-box';
-
-/** The numbers come from the shared default hotlines (911 and 988), never a per-tenant list. */
-const EMERGENCY_NUMBER =
-  DEFAULT_HOTLINES.find((line) => line.number === '911')?.number ?? '911';
-const CRISIS_NUMBER =
-  DEFAULT_HOTLINES.find((line) => line.number === '988')?.number ?? '988';
+import type { V2Hotline } from '../v2/v2-contract';
 
 /**
  * Small chip. The after: box grows the tap area to 44 px high without making the chip bigger.
@@ -17,37 +11,35 @@ const CHIP =
   'relative inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-xs no-underline after:absolute after:-inset-y-2 after:inset-x-0 after:content-[""] focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none';
 
 /**
- * The always-on emergency line (ADR 0039 Decision 45): two small chips, 911 and the 988 crisis
- * line, directly above a search box, on every search state, also when the danger check fails.
- * It is calm on purpose, because most visitors are not in danger. 911 is the stronger chip
- * (red, bold); 988 is quieter (gray outline). It has no bar and no width of its own: it takes
- * the width of the column it is put in, so it lines up with the search box. Self-contained so
- * the landing page can reuse it above its own search box.
+ * The always-on emergency line (ADR 0039 Decision 45): small chips for the numbers the API sent
+ * with the emergency question (`hotlines[]`), directly above a search box. The UI has no default
+ * list (contract v2): with no numbers it draws nothing. The first number is the stronger chip
+ * (red, bold); the others are quieter (gray outline). It has no bar and no width of its own.
  */
-export function EmergencyLine() {
+export function EmergencyLine({ hotlines = [] }: { hotlines?: V2Hotline[] }) {
+  if (hotlines.length === 0) return null;
   return (
     <section
       aria-label="Emergency"
       className="mb-2 flex flex-wrap items-center gap-1.5 print:hidden"
       data-testid="always-on-911"
     >
-      <DialButton
-        number={EMERGENCY_NUMBER}
-        className={`${CHIP} border-red-700 bg-red-50 font-semibold text-red-700 hover:bg-red-100 focus-visible:ring-red-700`}
-        testId="always-on-911-link"
-      >
-        <Phone className="size-3 shrink-0" aria-hidden="true" />
-        Emergency: call {EMERGENCY_NUMBER}
-      </DialButton>
-      <DialButton
-        number={CRISIS_NUMBER}
-        className={`${CHIP} border-gray-400 bg-white font-medium text-gray-800 hover:bg-gray-50 focus-visible:ring-gray-700`}
-        testId="always-on-988-link"
-      >
-        <Phone className="size-3 shrink-0" aria-hidden="true" />
-        Crisis line: {CRISIS_NUMBER}
-        <span className="sr-only"> (call or text)</span>
-      </DialButton>
+      {hotlines.map((line, i) => (
+        <DialButton
+          key={line.number}
+          number={line.number}
+          ariaLabel={`Call ${line.number}, ${line.label}`}
+          className={`${CHIP} ${
+            i === 0
+              ? 'border-red-700 bg-red-50 font-semibold text-red-700 hover:bg-red-100 focus-visible:ring-red-700'
+              : 'border-gray-400 bg-white font-medium text-gray-800 hover:bg-gray-50 focus-visible:ring-gray-700'
+          }`}
+          testId={`always-on-${line.number}-link`}
+        >
+          <Phone className="size-3 shrink-0" aria-hidden="true" />
+          {line.label}: {line.number}
+        </DialButton>
+      ))}
     </section>
   );
 }

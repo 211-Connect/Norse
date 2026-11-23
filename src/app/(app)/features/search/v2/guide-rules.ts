@@ -88,14 +88,13 @@ export function canGoBackFrom({
 
 /**
  * Whether the guide shows its location step. Only an unanswered step shows, never for the emergency
- * question, never past the question limit. A tenant with requireUserLocation on always asks, also
+ * question. The API caps the before_results questions, so the UI has no limit of its own. A tenant with requireUserLocation on always asks, also
  * when the engine has no question to ask, so no search starts without a place (Lucas 2026-11-20).
  */
 export function asksLocationStep({
   locationDone,
   isEmergency,
   used,
-  maxGuided,
   onPage,
   hasQuestions,
   requireLocation,
@@ -103,7 +102,6 @@ export function asksLocationStep({
   locationDone: boolean;
   isEmergency: boolean;
   used: number;
-  maxGuided: number;
   onPage: boolean;
   hasQuestions: boolean;
   requireLocation: boolean;
@@ -111,7 +109,6 @@ export function asksLocationStep({
   return (
     !locationDone &&
     !isEmergency &&
-    used < maxGuided &&
     (!onPage || hasQuestions || used > 0 || requireLocation)
   );
 }

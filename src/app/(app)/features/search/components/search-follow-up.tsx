@@ -83,12 +83,15 @@ import {
   removedToken,
 } from '../sune-demo/sune.mjs';
 import {
-  DEFAULT_HOTLINES,
   emergencyQuestionOf,
   hotlinesOf,
   isSoftEmergency,
   nextQuestionOf,
+  REFINE_PLACEMENTS,
   styleOf,
+  styleOfQuestion,
+  placementOf,
+  stringsOf,
   useV2Navigate,
   useV2Search,
   useV2Url,
@@ -102,7 +105,6 @@ import {
   countTone,
   emergencyPopupMode,
   isUrgencyAnswered,
-  NO_MATCH_ID,
   optionDescription,
   otherChanges,
   visibleOptions,
@@ -1118,17 +1120,17 @@ export function OptionCard({
   );
 }
 
-/** Colour follows the type of question. */
+/** The look follows the question's `style` (strong, standard, subtle); the emergency question is red. */
 export const QUESTION_STYLES = {
   emergency: {
     card: 'border-red-700 bg-red-50',
     label: 'text-red-700',
-    title: 'Are you safe?',
+    title: '',
     button: 'border-red-700 text-red-700 bg-white',
   },
-  find_need: ORANGE,
-  confirm_urgency: ORANGE,
-  narrow: QUIET,
+  strong: ORANGE,
+  standard: ORANGE,
+  subtle: QUIET,
   none: QUIET,
 };
 
@@ -1172,11 +1174,14 @@ export function EmergencyPopup({
   mode,
   question,
   hotlines,
+  title = stringsOf().popupTitle,
   busy = false,
   onAnswer,
   onContinue,
 }: {
   mode: 'ask' | 'danger';
+  /** `clarification.strings.popup_title` from the API. */
+  title?: string;
   /** The question with the three urgency options (see `withEmergencyAnswers`). */
   question: V2Question;
   hotlines: V2Hotline[];
@@ -1218,9 +1223,7 @@ export function EmergencyPopup({
         }}
       >
         <DialogTitle className="max-w-md text-center text-3xl leading-tight font-bold tracking-normal">
-          {mode === 'ask'
-            ? 'Are you in danger right now?'
-            : 'Call for help now'}
+          {mode === 'ask' ? title : 'Call for help now'}
         </DialogTitle>
         <DialogDescription className="sr-only">
           {mode === 'ask'
@@ -1415,11 +1418,14 @@ export const resultCount = (count: number) =>
   `${count} ${count === 1 ? 'result' : 'results'}`;
 
 /** A v2 question in the shape the cards draw. Option values ride along, so an answer can write them. */
-export function toCardQuestion(q: V2Question): Question & { values: string[] } {
+export function toCardQuestion(
+  q: V2Question,
+  alsoFitOne?: string,
+): Question & { values: string[] } {
   return {
     id: q.id,
     type: styleOf(q),
-    ...cardWording(q),
+    ...cardWording(q, alsoFitOne),
     values: q.options.map((o) => o.value),
     answers: q.options.map((o) => ({
       label: o.label,
@@ -1448,6 +1454,7 @@ export function SearchRefineQuestion() {
   const setFlagged = useSetAtom(flaggedAtom);
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
+  const strings = stringsOf(data);
   // Popup only (Lucas 2026-11-18): the red question is the full-screen popup, never a card.
   const dismissed = useAtomValue(emergencyPopupDismissedAtom) === label;
   const setDismissed = useSetAtom(emergencyPopupDismissedAtom);
@@ -1462,11 +1469,11 @@ export function SearchRefineQuestion() {
       : popupMode === 'danger'
         ? asked.filter((id) => id !== emergencyQ.id)
         : asked;
-  const v2 = nextQuestionOf(data, askedForNext);
+  const v2 = nextQuestionOf(data, askedForNext, REFINE_PLACEMENTS);
   const isPending = isFetching || isWriting;
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = v2
-    ? toCardQuestion(v2)
+    ? toCardQuestion(v2, strings.alsoFitOne)
     : {
         id: 'done',
         text: 'Is there anything else we should know?',
@@ -1477,7 +1484,7 @@ export function SearchRefineQuestion() {
   const [showAll, setShowAll] = useState(false);
   useEffect(() => setShowAll(false), [question.id]);
   const { shown: shownAnswers, hidden: hiddenCount } = visibleOptions(
-    { type: question.type },
+    { placement: v2?.placement },
     question.answers.map((a) => ({ ...a, value: a.value ?? a.label })),
     showAll,
   );
@@ -1552,17 +1559,15 @@ export function SearchRefineQuestion() {
       mode={popupMode}
       question={withEmergencyAnswers(emergencyQ)}
       hotlines={hotlines}
+      title={strings.popupTitle}
       busy={isPending}
       onAnswer={onPopupAnswer}
       onContinue={() => setDismissed(label)}
     />
   );
-  const cardTitle =
-    v2?.id === 'start'
-      ? 'Tell us a bit more'
-      : v2?.id === NO_MATCH_ID
-        ? 'We need a little more'
-        : style.title;
+  // The title of `start` and `no_match` is the question's own `stem` (API string table), shown as
+  // the question text, so the card label is the style's one, never picked from the id.
+  const cardTitle = style.title;
 
   // The emergency question never compacts. Soft: the orange card. Red: only the popup (and, once
   // it is closed, the numbers alone). Scrolled away, a row leads back.
@@ -1577,6 +1582,7 @@ export function SearchRefineQuestion() {
             soft={soft}
             onAnswer={(option) => answer([option.label])}
             onSkip={soft ? skipEmergency : undefined}
+            skipLabel={strings.skipToResults}
           />
         )}
         {pin.pinned && !popup && (
@@ -1808,12 +1814,17 @@ export function SearchClassifierPeek() {
             <p>
               Urgency: {data.intent.urgency.value} ({data.intent.urgency.source}
               , {data.intent.urgency.state}). Emergency question:{' '}
-              {emergencyQuestionOf(data)?.importance ?? 'none'}.
+              {(() => {
+                const e = emergencyQuestionOf(data);
+                return e ? `${placementOf(e)}/${styleOfQuestion(e)}` : 'none';
+              })()}.
             </p>
             <p>
               Questions:{' '}
               {data.clarification.questions
-                .map((q) => `${q.id} (${q.importance})`)
+                .map(
+                  (q) => `${q.id} (${placementOf(q)}/${styleOfQuestion(q)})`,
+                )
                 .join(', ') || 'none'}
             </p>
             <p>

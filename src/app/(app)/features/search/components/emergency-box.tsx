@@ -5,20 +5,22 @@ import { Phone } from 'lucide-react';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
-import { DEFAULT_HOTLINES, type V2Hotline } from '../v2/use-v2-search';
+import { stringsOf, type V2Hotline } from '../v2/use-v2-search';
 import { DialButton } from './dial-button';
 import type { Answer, Question } from './search-follow-up';
 
-export { DEFAULT_HOTLINES };
-
-/** The numbers a person can call. They come with the emergency question (`hotlines[]`). */
+/**
+ * The numbers a person can call. They come only from the emergency question (`hotlines[]`); the
+ * UI has no default list (contract v2), so with none sent nothing is drawn.
+ */
 export function HotlineNumbers({
-  hotlines = DEFAULT_HOTLINES,
+  hotlines = [],
   soft = false,
 }: {
   hotlines?: V2Hotline[];
   soft?: boolean;
 }) {
+  if (hotlines.length === 0) return null;
   return (
     <div className="flex flex-col gap-3" data-testid="search-hotline">
       <p className={cn('font-semibold', soft ? 'text-base' : 'text-lg')}>
@@ -53,7 +55,7 @@ export function HotlineNumbers({
 /**
  * The emergency card: the question, the hotline numbers and the answers (urgency answers only;
  * none for a caller U-0), in the page like every other question and with no popup (Lucas,
- * 2026-11-13). `soft` is the calmer orange card (importance below critical). Without a question
+ * 2026-11-13). `soft` is the calmer orange card (placement before_results, not the popup). Without a question
  * it is the numbers alone, so a skip never takes the numbers away. It is the one live region.
  */
 export function EmergencyBox({
@@ -62,6 +64,7 @@ export function EmergencyBox({
   soft = false,
   onAnswer,
   onSkip,
+  skipLabel = stringsOf().skipToResults,
   headingId = 'emergency-question',
   announce = true,
 }: {
@@ -70,6 +73,8 @@ export function EmergencyBox({
   soft?: boolean;
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
+  /** `clarification.strings.skip_to_results` from the API. */
+  skipLabel?: string;
   headingId?: string;
   /** False while the popup holds the one announcement, so the card behind it is not a second alert. */
   announce?: boolean;
@@ -131,7 +136,7 @@ export function EmergencyBox({
               data-testid="emergency-skip"
               onClick={onSkip}
             >
-              Skip to results
+              {skipLabel}
             </Button>
           )}
         </div>
@@ -142,10 +147,11 @@ export function EmergencyBox({
 
 /** The numbers in one thin row, for the pinned block on a phone. */
 export function PinnedNumbers({
-  hotlines = DEFAULT_HOTLINES,
+  hotlines = [],
 }: {
   hotlines?: V2Hotline[];
 }) {
+  if (hotlines.length === 0) return null;
   return (
     <div className="flex gap-2" data-testid="search-hotline-pinned">
       {hotlines.map((line, i) => (

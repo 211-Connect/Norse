@@ -18,8 +18,16 @@ import {
   optionDescription,
   nextV2Params,
   styleOf,
+  styleOfQuestion,
+  placementOf,
+  canonicalType,
+  stringsOf,
+  nextQuestionOf,
+  GUIDE_PLACEMENTS,
+  REFINE_PLACEMENTS,
   emergencyPopupMode,
   withEmergencyAnswers,
+  type V2Placement,
   type V2Question,
   type V2Response,
 } from '../src/app/(app)/features/search/v2/v2-contract';
@@ -211,15 +219,34 @@ test('withEmergencyAnswers: exactly three options; the engine values win when al
   assert.equal(old.options[0].label, 'Yes, I am in danger');
 });
 
-test('emergencyPopupMode: ask, danger, or none', () => {
-  const crit = { id: 'emergency', importance: 'critical' as const };
-  assert.equal(emergencyPopupMode(crit, null, []), 'ask');
-  assert.equal(emergencyPopupMode(crit, 'U-0', ['emergency']), 'danger');
+test('emergencyPopupMode: by placement; ask, danger, or none', () => {
+  const popup = {
+    id: 'emergency',
+    type: 'emergency' as const,
+    placement: 'popup' as const,
+  };
+  assert.equal(emergencyPopupMode(popup, null, []), 'ask');
+  assert.equal(emergencyPopupMode(popup, 'U-0', ['emergency']), 'danger');
   for (const u of ['U-1', 'U-2', 'U-3', 'U-4'])
-    assert.equal(emergencyPopupMode(crit, u, ['emergency']), null);
-  assert.equal(emergencyPopupMode(crit, null, ['emergency']), null);
+    assert.equal(emergencyPopupMode(popup, u, ['emergency']), null);
+  assert.equal(emergencyPopupMode(popup, null, ['emergency']), null);
+  // Soft band: before_results is never a popup.
   assert.equal(
-    emergencyPopupMode({ id: 'emergency', importance: 'high' }, null, []),
+    emergencyPopupMode(
+      { ...popup, placement: 'before_results', style: 'strong' },
+      null,
+      [],
+    ),
+    null,
+  );
+  // Legacy shape (no placement): critical -> popup, high -> soft.
+  const legacy = { id: 'emergency', type: 'emergency' as const };
+  assert.equal(
+    emergencyPopupMode({ ...legacy, importance: 'critical' }, null, []),
+    'ask',
+  );
+  assert.equal(
+    emergencyPopupMode({ ...legacy, importance: 'high' }, null, []),
     null,
   );
   assert.equal(emergencyPopupMode(undefined, null, []), null);
@@ -236,6 +263,9 @@ test('emergencyQuestionOf reads the emergency only from the questions (Decision 
     clarification: { rules_version: 'r', questions: [question([]), emergency] },
   } as unknown as V2Response;
   assert.equal(emergencyQuestionOf(response)?.importance, 'critical');
+  // A legacy or new type name both count.
+  const newType = { ...emergency, type: 'emergency' as const };
+  assert.equal(canonicalType(newType.type), 'emergency');
   assert.equal(emergencyQuestionOf(undefined), undefined);
 });
 
@@ -247,37 +277,111 @@ test('withoutNX: N-X is never sent in needs= (Decision 43: the route would answe
   assert.equal(withoutNX(null), null);
 });
 
-test('styleOf: the look follows type and importance, never a `level` field', () => {
-  const kinds = [
-    'emergency',
-    'confirm_urgency',
-    'find_need',
-    'narrow',
-  ] as const;
-  const high = ['critical', 'high'] as const;
-  const quiet = ['medium', 'low'] as const;
-  for (const importance of [...high, ...quiet]) {
-    assert.equal(styleOf({ type: 'emergency', importance }), 'emergency');
-  }
-  for (const importance of high) {
-    assert.equal(
-      styleOf({ type: 'confirm_urgency', importance }),
-      'confirm_urgency',
-    );
-    assert.equal(styleOf({ type: 'find_need', importance }), 'find_need');
-    assert.equal(styleOf({ type: 'narrow', importance }), 'find_need');
-  }
-  for (const importance of quiet) {
-    for (const type of kinds.filter((k) => k !== 'emergency')) {
-      assert.equal(styleOf({ type, importance }), 'narrow');
-    }
-  }
+test('placementOf and styleOfQuestion: the API fields win; no importance read', () => {
+  const q = {
+    type: 'need' as const,
+    placement: 'with_results' as const,
+    style: 'subtle' as const,
+    importance: 'critical' as const, // ignored when the new fields are there
+  };
+  assert.equal(placementOf(q), 'with_results');
+  assert.equal(styleOfQuestion(q), 'subtle');
+  assert.equal(
+    placementOf({ type: 'emergency', placement: 'popup' }),
+    'popup',
+  );
+  assert.equal(
+    styleOfQuestion({ type: 'urgency', placement: 'before_results', style: 'standard' }),
+    'standard',
+  );
 });
 
-test('isSoftEmergency: critical is the full red card, anything lower the calmer one', () => {
-  assert.equal(isSoftEmergency({ importance: 'critical' }), false);
-  assert.equal(isSoftEmergency({ importance: 'high' }), true);
+test('placementOf and styleOfQuestion: legacy importance fallback', () => {
+  const at = (type: V2Question['type'], importance: 'critical' | 'high' | 'medium' | 'low') => ({
+    type,
+    importance,
+  });
+  assert.equal(placementOf(at('find_need', 'critical')), 'popup');
+  assert.equal(styleOfQuestion(at('find_need', 'critical')), 'strong');
+  assert.equal(placementOf(at('find_need', 'high')), 'before_results');
+  assert.equal(styleOfQuestion(at('find_need', 'high')), 'standard');
+  assert.equal(placementOf(at('confirm_urgency', 'high')), 'before_results');
+  for (const imp of ['medium', 'low'] as const) {
+    assert.equal(placementOf(at('narrow', imp)), 'with_results');
+    assert.equal(styleOfQuestion(at('narrow', imp)), 'subtle');
+  }
+  // Soft emergency band: high importance on the emergency question.
+  assert.equal(placementOf(at('emergency', 'high')), 'before_results');
+  assert.equal(styleOfQuestion(at('emergency', 'high')), 'strong');
+});
+
+test('canonicalType: legacy names count as the new ones', () => {
+  assert.equal(canonicalType('emergency'), 'emergency');
+  assert.equal(canonicalType('urgency'), 'urgency');
+  assert.equal(canonicalType('confirm_urgency'), 'urgency');
+  assert.equal(canonicalType('need'), 'need');
+  assert.equal(canonicalType('find_need'), 'need');
+  assert.equal(canonicalType('narrow'), 'need');
+});
+
+test('styleOf: red for the emergency type, else the question style', () => {
+  assert.equal(styleOf({ type: 'emergency', style: 'strong' }), 'emergency');
+  assert.equal(styleOf({ type: 'emergency', importance: 'low' }), 'emergency');
+  assert.equal(styleOf({ type: 'need', placement: 'before_results', style: 'strong' }), 'strong');
+  assert.equal(styleOf({ type: 'need', placement: 'before_results', style: 'standard' }), 'standard');
+  assert.equal(styleOf({ type: 'urgency', placement: 'with_results', style: 'subtle' }), 'subtle');
+  assert.equal(styleOf({ type: 'find_need', importance: 'high' }), 'standard');
+  assert.equal(styleOf({ type: 'narrow', importance: 'low' }), 'subtle');
+});
+
+test('isSoftEmergency: soft = placement before_results; the popup is the full red one', () => {
+  const e = { type: 'emergency' as const };
+  assert.equal(isSoftEmergency({ ...e, placement: 'popup' }), false);
+  assert.equal(isSoftEmergency({ ...e, placement: 'before_results' }), true);
+  assert.equal(isSoftEmergency({ ...e, importance: 'critical' }), false);
+  assert.equal(isSoftEmergency({ ...e, importance: 'high' }), true);
   assert.equal(isSoftEmergency(undefined), false);
+});
+
+test('nextQuestionOf routes by placement', () => {
+  const mk = (id: string, placement: V2Placement) =>
+    ({ ...question([]), id, type: 'need', placement }) as V2Question;
+  const response = {
+    clarification: {
+      rules_version: 'r',
+      questions: [mk('a', 'before_results'), mk('b', 'with_results')],
+    },
+  } as unknown as V2Response;
+  assert.equal(nextQuestionOf(response, [], GUIDE_PLACEMENTS)?.id, 'a');
+  assert.equal(nextQuestionOf(response, [], REFINE_PLACEMENTS)?.id, 'b');
+});
+
+test('stringsOf: words come from the API, English only when strings is absent', () => {
+  const withStrings = {
+    clarification: {
+      rules_version: 'r',
+      questions: [],
+      strings: { popup_title: 'P', skip_to_results: 'S', also_fit_one: 'A' },
+    },
+  };
+  assert.deepEqual(stringsOf(withStrings), {
+    popupTitle: 'P',
+    skipToResults: 'S',
+    alsoFitOne: 'A',
+  });
+  assert.equal(stringsOf(undefined).skipToResults, 'Skip to results');
+  assert.equal(stringsOf(undefined).alsoFitOne, 'Does this also fit?');
+});
+
+test('cardWording: the one-need wording comes from the API string', () => {
+  const q = {
+    stem: 'Do any of these also fit?',
+    multi_select: true,
+    options: [{ label: 'a', parameter: 'needs' as const, value: 'a' }],
+  };
+  assert.equal(cardWording(q, 'Passt das auch?').text, 'Passt das auch?');
+  // A contract v2 stem is already the right words.
+  assert.equal(cardWording({ ...q, stem: 'Fits too?' }, 'X').text, 'Fits too?');
 });
 
 test('cardWording: a one-need question is one tap, not "Pick all that fit"', () => {
@@ -417,26 +521,25 @@ test('countTone: null and absent draw nothing, 0 is red', () => {
   assert.equal(countTone(12), 'some');
 });
 
-test('visibleOptions hides None of these and truncates every question type', () => {
+test('visibleOptions: None of these comes only from the flag; a legacy question still drops a fake one', () => {
   const opt = (n: number) => ({ label: `Need ${n}`, value: `N-${n}` });
   const many = Array.from({ length: 9 }, (_, i) => opt(i));
-  const withNone = [...many, { label: 'None of these', value: 'none' }];
-  const first = visibleOptions({ type: 'find_need' }, withNone, false);
+  const fake = { label: 'None of these', value: 'none' };
+  const withNone = [...many, fake];
+  // Legacy shape (no placement): the filter applies.
+  const legacy = visibleOptions({}, withNone, true);
+  assert.equal(legacy.shown.length, 9);
+  // New shape: options are drawn as sent, no value filter.
+  const fresh = visibleOptions({ placement: 'before_results' }, withNone, true);
+  assert.equal(fresh.shown.length, 10);
+  const first = visibleOptions({ placement: 'with_results' }, withNone, false);
   assert.equal(first.shown.length, OPTION_LIMIT);
-  assert.equal(first.hidden, 9 - OPTION_LIMIT);
+  assert.equal(first.hidden, 10 - OPTION_LIMIT);
   assert.equal(
-    visibleOptions({ type: 'narrow' }, withNone, true).shown.length,
-    9,
-  );
-  assert.equal(
-    visibleOptions({ type: 'confirm_urgency' }, many, false).hidden,
-    9 - OPTION_LIMIT,
-  );
-  assert.equal(OPTION_LIMIT, 4);
-  assert.equal(
-    visibleOptions({ type: 'find_need' }, many.slice(0, 3), false).hidden,
+    visibleOptions({ placement: 'popup' }, many.slice(0, 3), false).hidden,
     0,
   );
+  assert.equal(OPTION_LIMIT, 4);
   assert.ok(!isNoneOption({ label: 'Housing', value: 'N-HOU' }));
 });
 

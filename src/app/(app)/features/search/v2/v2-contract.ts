@@ -19,14 +19,27 @@ export type V2Option = {
 
 export type V2Hotline = { label: string; number: string };
 
+/** What a question asks about (contract v2). */
+export type V2QuestionType = 'emergency' | 'urgency' | 'need';
+/** Legacy type names, sent while the API is older than contract v2. */
+export type V2LegacyQuestionType = 'confirm_urgency' | 'find_need' | 'narrow';
+/** Where a question shows: over everything, on the find page, or beside the results. */
+export type V2Placement = 'popup' | 'before_results' | 'with_results';
+/** How loud a question looks. */
+export type V2Style = 'strong' | 'standard' | 'subtle';
+
 export type V2Question = {
   id: string;
-  type: 'emergency' | 'confirm_urgency' | 'find_need' | 'narrow';
-  importance: 'critical' | 'high' | 'medium' | 'low';
+  type: V2QuestionType | V2LegacyQuestionType;
+  /** Absent on a legacy response (API older than contract v2); see `placementOf`. */
+  placement?: V2Placement;
+  style?: V2Style;
+  /** Legacy fields: read only by the fallback in `placementOf` / `styleOfQuestion`. */
+  importance?: 'critical' | 'high' | 'medium' | 'low';
   value?: number;
   priority?: number;
   uncertainty?: number;
-  reason: string;
+  reason?: string;
   step?: number;
   stem: string;
   /** The emergency question can have none: a caller `urgency=U-0` (Decision 50). */
@@ -68,6 +81,13 @@ export type V2ResolvedLocation = {
   unlocated: 'none' | 'virtual' | 'all';
 };
 
+/** The words the API sends beside the questions (contract v2). */
+export type V2Strings = {
+  popup_title?: string;
+  skip_to_results?: string;
+  also_fit_one?: string;
+};
+
 export type V2Response = {
   /** Facet counts for the current filters. v1 shape; absent or `{}` from older servers and stubs. */
   facets?: V2Facet[] | Record<string, never>;
@@ -92,7 +112,12 @@ export type V2Response = {
     }[];
     urgency: { value: string; source: string; state: string };
   };
-  clarification: { rules_version: string; questions: V2Question[] };
+  clarification: {
+    rules_version: string;
+    questions: V2Question[];
+    /** Words from the API string table (request locale). Absent on a legacy response. */
+    strings?: V2Strings;
+  };
   model_version: string | null;
   rules_version: string;
   /** Prototype only: what the local stand-in used. Not part of the contract. */
@@ -108,29 +133,70 @@ export const totalOf = (response: V2Response) => {
   return typeof total === 'number' ? total : (total?.value ?? 0);
 };
 
-/** The emergency lives only in this question; there is no top-level `emergency` (Decision 54). */
-/** The look of a question card. The page chooses it from `type` and `importance`; the API sends no `level`. */
-export type QuestionStyle =
-  'emergency' | 'confirm_urgency' | 'find_need' | 'narrow';
+/** Legacy type names count as the new ones. */
+export const canonicalType = (
+  type: V2Question['type'] | undefined,
+): V2QuestionType =>
+  type === 'emergency'
+    ? 'emergency'
+    : type === 'urgency' || type === 'confirm_urgency'
+      ? 'urgency'
+      : 'need';
+
+type PlacementInput = Pick<V2Question, 'type'> &
+  Partial<Pick<V2Question, 'placement' | 'style' | 'importance'>>;
 
 /**
- * Red for the emergency question; orange for a question that changes the results a lot
- * (`importance` critical or high); quiet for the rest.
+ * The one place that decides where a question shows: the API's `placement` when present.
+ * FALLBACK (remove when dev runs PR 2): without `placement` the old `importance` decides.
+ * critical -> popup, high -> before_results, medium or low -> with_results.
  */
-export const styleOf = (
-  q: Pick<V2Question, 'type' | 'importance'>,
-): QuestionStyle =>
-  q.type === 'emergency'
-    ? 'emergency'
-    : q.importance === 'critical' || q.importance === 'high'
-      ? q.type === 'confirm_urgency'
-        ? 'confirm_urgency'
-        : 'find_need'
-      : 'narrow';
+export function placementOf(q: PlacementInput): V2Placement {
+  if (q.placement) return q.placement;
+  if (q.importance === 'critical') return 'popup';
+  if (q.importance === 'high') return 'before_results';
+  return 'with_results';
+}
 
-/** A critical emergency question is the full red card; a lower importance is the calmer orange card. */
-export const isSoftEmergency = (q?: Pick<V2Question, 'importance'>) =>
-  Boolean(q) && q!.importance !== 'critical';
+/**
+ * The one place that decides how loud a question looks: the API's `style` when present.
+ * FALLBACK (remove when dev runs PR 2): without `style` the old `importance` decides.
+ * critical -> strong, high -> standard (strong for the soft emergency band), else subtle.
+ */
+export function styleOfQuestion(q: PlacementInput): V2Style {
+  if (q.style) return q.style;
+  if (q.importance === 'critical') return 'strong';
+  if (q.importance === 'high') {
+    return canonicalType(q.type) === 'emergency' ? 'strong' : 'standard';
+  }
+  return 'subtle';
+}
+
+/** True for a response from an API older than contract v2 (no `placement` on the question). */
+export const isLegacyQuestion = (q: Pick<V2Question, 'placement'>) =>
+  q.placement === undefined;
+
+/** The look of a question card: red for the emergency question, else the question's `style`. */
+export type QuestionStyle = 'emergency' | V2Style;
+
+/** Red for the emergency question; otherwise strong, standard (orange) or subtle (quiet). */
+export const styleOf = (q: PlacementInput): QuestionStyle =>
+  canonicalType(q.type) === 'emergency' ? 'emergency' : styleOfQuestion(q);
+
+/** The soft emergency band is the calmer orange card, shown before the results (not a popup). */
+export const isSoftEmergency = (q?: PlacementInput) =>
+  Boolean(q) && placementOf(q!) !== 'popup';
+
+/** Words from the API; the English is the legacy fallback for a response with no `strings`. */
+export function stringsOf(response?: Pick<V2Response, 'clarification'>) {
+  const s = response?.clarification?.strings;
+  return {
+    // Legacy fallback (remove when dev runs PR 2): English when the API sends no strings.
+    popupTitle: s?.popup_title || 'Are you in danger right now?',
+    skipToResults: s?.skip_to_results || 'Skip to results',
+    alsoFitOne: s?.also_fit_one || 'Does this also fit?',
+  };
+}
 
 /** The id of the one question a weak match asks (Norse-API ISS-2796). */
 export const NO_MATCH_ID = 'no_match';
@@ -177,7 +243,7 @@ export function withEmergencyAnswers(q: V2Question): V2Question {
  * 2026-11-17), or the question was skipped before (`asked`).
  */
 export function emergencyPopupMode(
-  q: Pick<V2Question, 'id' | 'importance'> | undefined,
+  q: (Pick<V2Question, 'id'> & PlacementInput) | undefined,
   urgency: string | null | undefined,
   asked: readonly string[],
 ): 'ask' | 'danger' | null {
@@ -192,24 +258,17 @@ export const isUrgencyAnswered = (urgency?: string | null) =>
   Boolean(urgency) && urgency !== 'U-0' && urgency !== 'U-X';
 
 export const emergencyQuestionOf = (response?: V2Response) =>
-  response?.clarification.questions.find((q) => q.type === 'emergency');
-
-/**
- * Hotline fallback (Lucas, 2026-11-12): 988 and 911 both show, because the danger may not be
- * self-harm. Used when the emergency question carries no usable `hotlines[]`. Same two numbers as
- * the server's default (Norse-API `DEFAULT_HOTLINES`); labels are one language per tenant.
- */
-export const DEFAULT_HOTLINES: V2Hotline[] = [
-  { label: 'Suicide and Crisis Lifeline', number: '988' },
-  { label: 'Emergency', number: '911' },
-];
+  response?.clarification.questions.find(
+    (q) => canonicalType(q.type) === 'emergency',
+  );
 
 const MAX_HOTLINES = 4;
 
 /**
  * The numbers to show with the emergency question: the tenant's `hotlines[]` from the response
  * (Norse-API PR #332 puts them on the emergency question only), trimmed, entries without a label
- * and number dropped, at most 4. Nothing usable gives the default 988 and 911.
+ * and number dropped, at most 4. Nothing usable gives none: the UI has no default list
+ * (contract v2), so no call buttons show.
  */
 export function hotlinesOf(q?: Pick<V2Question, 'hotlines'>): V2Hotline[] {
   const raw: unknown = q?.hotlines;
@@ -224,7 +283,7 @@ export function hotlinesOf(q?: Pick<V2Question, 'hotlines'>): V2Hotline[] {
       if (kept.length === MAX_HOTLINES) break;
     }
   }
-  return kept.length ? kept : DEFAULT_HOTLINES;
+  return kept;
 }
 
 /** How a result relates to the needs the person picked. */
@@ -361,10 +420,22 @@ export function otherChanges(
 export const nextQuestionOf = (
   response: V2Response | undefined,
   asked: readonly string[],
+  /** Only questions with one of these placements (the guide and the refine card each take theirs). */
+  placements?: readonly V2Placement[],
 ) =>
   response?.clarification.questions.find(
-    (q) => !(q.type === 'emergency' && asked.includes(q.id)),
+    (q) =>
+      !(canonicalType(q.type) === 'emergency' && asked.includes(q.id)) &&
+      (!placements || placements.includes(placementOf(q))),
   );
+
+/** The refine card beside the results takes `with_results` questions. */
+export const REFINE_PLACEMENTS: readonly V2Placement[] = ['with_results'];
+/** The guided find page takes the popup (emergency) and `before_results` questions. */
+export const GUIDE_PLACEMENTS: readonly V2Placement[] = [
+  'popup',
+  'before_results',
+];
 
 /** `needs=` never carries N-X: it means "not yet known" and the route answers 400 (Decision 43). */
 export const withoutNX = (needs: string | null) => {
@@ -375,17 +446,15 @@ export const withoutNX = (needs: string | null) => {
   return kept.length ? kept.join(',') : null;
 };
 
-/** At most this many guided questions before the results (Lucas, round 10). */
-export const MAX_GUIDED = 3;
-
 /**
  * The rules engine asks one area at a time, so a question can offer a single need (live NY run
  * 2026-11-16: 66 of 198 searches). "Pick all that fit" over one checkbox reads wrong, so the page
  * shows it as a one-tap question: not multi-select, and "Do any of these also fit?" becomes
- * "Does this also fit?". Two or more options keep the engine's wording.
+ * `strings.also_fit_one` ("Does this also fit?"). Two or more options keep the engine's wording.
  */
 export function cardWording(
   q: Pick<V2Question, 'stem' | 'multi_select' | 'options'>,
+  alsoFitOne: string = stringsOf().alsoFitOne,
 ): {
   text: string;
   multi: boolean;
@@ -393,8 +462,8 @@ export function cardWording(
   const single = q.options.filter((o) => o.parameter === 'needs').length === 1;
   if (!single) return { text: q.stem, multi: q.multi_select };
   return {
-    text:
-      q.stem === 'Do any of these also fit?' ? 'Does this also fit?' : q.stem,
+    // Legacy stem only (a contract v2 stem is already the right words); the words come from the API.
+    text: q.stem === 'Do any of these also fit?' ? alsoFitOne : q.stem,
     multi: false,
   };
 }
@@ -523,19 +592,25 @@ export function v2FilterPairs(
 /** Show this many options first on every question; "Show more" reveals the rest (Lucas 2026-11-19). */
 export const OPTION_LIMIT = 4;
 
-/** An option that stands for "None of these" is never drawn (Lucas 2026-11-19). The free-text box stays. */
+/** Legacy only: a fake "None of these" option from an older API is never drawn (Lucas 2026-11-19). */
 export const isNoneOption = (o: Pick<V2Option, 'label' | 'value'>) =>
   /^none( of (these|the above))?$/i.test(o.label.trim()) ||
   /^(none|none_of_these|no_match)$/i.test(o.value);
 
-/** The options the page may draw: no "None of these", at most `limit` until the person asks for more. */
+/**
+ * The options the page may draw, at most `limit` until the person asks for more. "None of these"
+ * comes only from the `none_of_these` flag (contract v2). Only a legacy question (no `placement`)
+ * still carries a fake none option, so only then it is filtered out (remove when dev runs PR 2).
+ */
 export function visibleOptions<T extends Pick<V2Option, 'label' | 'value'>>(
-  q: { type?: string },
+  q: Pick<V2Question, 'placement'>,
   options: T[],
   showAll: boolean,
   limit: number = OPTION_LIMIT,
 ): { shown: T[]; hidden: number } {
-  const real = options.filter((o) => !isNoneOption(o));
+  const real = isLegacyQuestion(q)
+    ? options.filter((o) => !isNoneOption(o))
+    : options;
   if (showAll || real.length <= limit) {
     return { shown: real, hidden: 0 };
   }

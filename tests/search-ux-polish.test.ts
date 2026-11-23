@@ -11,7 +11,6 @@ import { buildSearchUrl } from '../src/app/(app)/features/search/utils/buildSear
 import { EmergencyLine } from '../src/app/(app)/features/search/components/emergency-line';
 import { DialButton } from '../src/app/(app)/features/search/components/dial-button';
 import {
-  DEFAULT_HOTLINES,
   EmergencyBox,
   HotlineNumbers,
 } from '../src/app/(app)/features/search/components/emergency-box';
@@ -29,16 +28,25 @@ const asV2Tenant = (el: ReturnType<typeof createElement>) =>
 const read = (path: string) => readFileSync(path, 'utf8');
 const APP = 'src/app/(app)/';
 
+const HOTLINES = [
+  { label: 'Suicide and Crisis Lifeline', number: '988' },
+  { label: 'Emergency', number: '911' },
+];
+
 // Item 8: safety. On a v2 tenant every emergency control dials (no-dial switch removed 2026-11-23).
 test('dialing: every emergency control on a v2 tenant renders a tel: link', () => {
   const html = [
-    renderToStaticMarkup(asV2Tenant(createElement(EmergencyLine))),
-    renderToStaticMarkup(asV2Tenant(createElement(HotlineNumbers, {}))),
     renderToStaticMarkup(
-      asV2Tenant(createElement(HotlineNumbers, { soft: true })),
+      asV2Tenant(createElement(EmergencyLine, { hotlines: HOTLINES })),
     ),
     renderToStaticMarkup(
-      asV2Tenant(createElement(EmergencyBox, { hotlines: DEFAULT_HOTLINES })),
+      asV2Tenant(createElement(HotlineNumbers, { hotlines: HOTLINES })),
+    ),
+    renderToStaticMarkup(
+      asV2Tenant(createElement(HotlineNumbers, { hotlines: HOTLINES, soft: true })),
+    ),
+    renderToStaticMarkup(
+      asV2Tenant(createElement(EmergencyBox, { hotlines: HOTLINES })),
     ),
     renderToStaticMarkup(
       asV2Tenant(
@@ -277,9 +285,35 @@ test('crisis line: the first search shows the two small buttons, no large 988 bu
   const form = read(`${APP}shared/components/search/search-need-form.tsx`);
   assert.match(form, /<EmergencyLine \/>/);
   assert.doesNotMatch(form, /SearchCrisisButton|in a crisis/);
-  const html = renderToStaticMarkup(asV2Tenant(createElement(EmergencyLine)));
+  const html = renderToStaticMarkup(
+    asV2Tenant(createElement(EmergencyLine, { hotlines: HOTLINES })),
+  );
   assert.match(html, /always-on-911-link/);
   assert.match(html, /always-on-988-link/);
+});
+
+// Contract v2: no default list in the UI. No hotlines from the response, no call buttons.
+test('hotlines only from the response: none sent draws nothing', () => {
+  for (const el of [
+    createElement(EmergencyLine),
+    createElement(EmergencyLine, { hotlines: [] }),
+    createElement(HotlineNumbers, {}),
+    createElement(HotlineNumbers, { hotlines: [] }),
+  ]) {
+    const html = renderToStaticMarkup(asV2Tenant(el));
+    assert.equal(html, '');
+  }
+  const box = renderToStaticMarkup(asV2Tenant(createElement(EmergencyBox, {})));
+  assert.doesNotMatch(box, /tel:|911|988/);
+  const one = renderToStaticMarkup(
+    asV2Tenant(
+      createElement(HotlineNumbers, {
+        hotlines: [{ label: 'Care line', number: '555' }],
+      }),
+    ),
+  );
+  assert.match(one, /tel:555/);
+  assert.doesNotMatch(one, /911|988/);
 });
 
 // UX round 2026-11-20: the header block never scrolls, so it needs no sticky. The card (innerScroll) keeps

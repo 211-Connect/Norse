@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
-  DEFAULT_HOTLINES,
   hotlinesOf,
 } from '../src/app/(app)/features/search/v2/v2-contract';
 import {
@@ -28,19 +27,15 @@ test('hotlinesOf: tenant hotlines from the response win, trimmed, at most 4', ()
   ]);
 });
 
-test('hotlinesOf: absent, empty or malformed gives 988 then 911', () => {
+test('hotlinesOf: absent, empty or malformed gives none (no UI default list)', () => {
   for (const q of [
     undefined,
     {},
     { hotlines: [] },
     { hotlines: [{ label: 'x' }] },
   ]) {
-    assert.deepEqual(hotlinesOf(q as never), DEFAULT_HOTLINES);
+    assert.deepEqual(hotlinesOf(q as never), []);
   }
-  assert.deepEqual(
-    DEFAULT_HOTLINES.map((h) => h.number),
-    ['988', '911'],
-  );
 });
 
 test('buildV2Url: tenant_id and locale are in the URL, locale defaults to en', () => {

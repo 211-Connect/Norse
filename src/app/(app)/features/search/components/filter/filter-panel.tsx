@@ -24,7 +24,12 @@ import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { useSearchResults } from '../../context/search-results-context';
-import { useV2Facets } from '../../v2/use-v2-search';
+import {
+  emergencyQuestionOf,
+  hotlinesOf,
+  useV2Facets,
+  useV2Search,
+} from '../../v2/use-v2-search';
 import {
   SearchClassifierPeek,
   SearchRefineQuestion,
@@ -57,6 +62,7 @@ export function FilterPanel({
   // The v2 response carries the facet counts for the current filters; until it has them (or on an
   // older server) the facets of the server-rendered page stay.
   const v2Filters = useV2Facets();
+  const { data: v2Data } = useV2Search();
   const filters = v2Filters ?? serverFilters;
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
@@ -106,7 +112,9 @@ export function FilterPanel({
       id="filter-panel"
     >
       {/* Always on, in every search state, also when the classifier fails (ADR 0039 Decision 45). */}
-      {v2 && <EmergencyLine />}
+      {v2 && (
+        <EmergencyLine hotlines={hotlinesOf(emergencyQuestionOf(v2Data))} />
+      )}
       <div className="flex items-center print:hidden">
         <MainSearchLayout
           className="flex-1"
