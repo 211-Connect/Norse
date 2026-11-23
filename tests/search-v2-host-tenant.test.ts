@@ -85,3 +85,13 @@ test('v2 pins (search-pins route) use the same host-tenant function and never re
   assert.doesNotMatch(src, /get\(['"]tenant_id['"]\)/);
   assert.match(src, /appConfig\.tenantId/);
 });
+
+test('the browser sends the page locale to both v2 routes and keys the cache on it', () => {
+  const read = (f: string) =>
+    readFileSync(`src/app/(app)/features/search/v2/${f}`, 'utf8');
+  const search = read('use-v2-search.ts');
+  const pins = read('use-v2-pins.ts');
+  assert.match(search, /v2ApiPath\(tenantId, callString, limit, locale\)/);
+  assert.equal((search.match(/\['v2-search', tenantId, locale, callString\]/g) ?? []).length, 2);
+  assert.match(pins, /&locale=\$\{encodeURIComponent\(i18n\.language\)\}/);
+});
