@@ -64,6 +64,7 @@ export const populateApiConfigCache: Endpoint = {
       let orchestrationConfigTriggered = 0;
       let analyticsConfigTriggered = 0;
       let hybridSearchConfigTriggered = 0;
+      let hybridSearchConfigFailed = 0;
 
       for (const tenant of tenants) {
         const tenantId = tenant.id;
@@ -141,11 +142,13 @@ export const populateApiConfigCache: Endpoint = {
             })
             .then((result) => result.docs);
 
-          await pushHybridSearchConfigToCache(tenantId, req, {
+          const result = await pushHybridSearchConfigToCache(tenantId, req, {
             hybridSearchConfig: hybridSearchConfig || null,
             resourceDirectory,
           });
-          hybridSearchConfigTriggered++;
+          // Only a real push counts as triggered; a failure is counted apart.
+          if (result === 'pushed') hybridSearchConfigTriggered++;
+          else if (result === 'failed') hybridSearchConfigFailed++;
         }
       }
 
@@ -161,6 +164,7 @@ export const populateApiConfigCache: Endpoint = {
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
           hybridSearchConfigTriggered,
+          hybridSearchConfigFailed,
         },
         'API config cache population completed',
       );
@@ -177,6 +181,7 @@ export const populateApiConfigCache: Endpoint = {
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
           hybridSearchConfigTriggered,
+          hybridSearchConfigFailed,
         },
         { status: 200 },
       );

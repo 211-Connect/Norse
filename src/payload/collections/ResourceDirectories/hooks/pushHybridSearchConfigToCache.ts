@@ -2,7 +2,7 @@ import { CollectionAfterChangeHook } from 'payload';
 
 import { createLogger } from '@/lib/logger';
 import {
-  HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY,
+  markHybridSearchCachePushFailed,
   pushHybridSearchConfigToCache,
 } from '@/payload/collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
 import { ResourceDirectory } from '@/payload/payload-types';
@@ -22,10 +22,10 @@ export const pushHybridSearchConfigToCacheFromResourceDirectory: CollectionAfter
     return doc;
   }
 
-  const ok = await pushHybridSearchConfigToCache(tenantId, req, {
+  const result = await pushHybridSearchConfigToCache(tenantId, req, {
     resourceDirectory: doc,
   });
-  if (!ok) req.context[HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY] = true;
+  if (result === 'failed') markHybridSearchCachePushFailed(req);
 
   return doc;
 };
