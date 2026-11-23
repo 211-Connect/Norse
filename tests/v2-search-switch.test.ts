@@ -47,6 +47,7 @@ test('buildHybridSearchConfigCache carries ai_classification; unset is on', () =
     buildHybridSearchConfigCache('t1', null, { featureFlags } as never);
   assert.equal(build({ enableV2Ai: true })?.ai_classification, 'on');
   assert.equal(build({ enableV2Ai: false })?.ai_classification, 'off');
+  assert.equal(build({ enableV2Ai: null })?.ai_classification, 'on');
   assert.equal(build({})?.ai_classification, 'on');
   assert.equal(build(undefined)?.ai_classification, 'on');
 });
