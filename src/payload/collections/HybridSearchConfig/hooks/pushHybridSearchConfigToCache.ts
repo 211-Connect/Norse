@@ -10,6 +10,15 @@ import { getHybridSearchConfigKey } from '../utilities/getHybridSearchConfigKey'
 const log = createLogger('pushHybridSearchConfigToCache');
 
 /**
+ * Set on `req.context` when the Redis push failed but the save was kept.
+ * Nothing in the admin UI reads it yet (see the PR body); the log tag below
+ * is what an alert can match today.
+ */
+export const HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY =
+  'hybridSearchCachePushFailed';
+export const HYBRID_SEARCH_CACHE_PUSH_ALERT = 'hybrid-search-cache-push-failed';
+
+/**
  * `pushed`: the cache now holds the new config. `skipped`: nothing to push (no
  * resource directory), so the cache did NOT change. `failed`: the push threw.
  */
@@ -70,8 +79,8 @@ export const pushHybridSearchConfigToCache = async (
     log.info({ tenantId }, 'Hybrid search config cache updated');
     return 'pushed';
   } catch (error) {
-    // Never throw here: an afterChange throw rolls back the whole save
-    // (Payload calls killTransaction). Log with an alert tag and report failure.
+    // Never throw here (an afterChange throw would roll back the save). Log
+    // with an alert tag and report the failure to the caller.
     log.error(
       { err: error, tenantId, alert: HYBRID_SEARCH_CACHE_PUSH_ALERT },
       'Error pushing hybrid search config to cache',
@@ -79,15 +88,6 @@ export const pushHybridSearchConfigToCache = async (
     return 'failed';
   }
 };
-
-/**
- * Set on `req.context` when the Redis push failed but the save was kept.
- * Nothing in the admin UI reads it yet (see the PR body); the log tag below
- * is what an alert can match today.
- */
-export const HYBRID_SEARCH_CACHE_PUSH_FAILED_CONTEXT_KEY =
-  'hybridSearchCachePushFailed';
-export const HYBRID_SEARCH_CACHE_PUSH_ALERT = 'hybrid-search-cache-push-failed';
 
 /** Record a failed push on the request. Safe when `req.context` is missing. */
 export const markHybridSearchCachePushFailed = (req: PayloadRequest): void => {

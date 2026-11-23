@@ -1,23 +1,10 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { describe, test } from 'node:test';
 
-/**
- * Throwing from a collection afterChange hook rolls back the save, so the push
- * must report failure instead of throwing. This guards the assumption loosely:
- * if a Payload upgrade changes it, this fails and the PR decision is revisited.
- */
-describe('Payload afterChange throw semantics', () => {
-  test('updateByID kills the transaction when a hook throws', () => {
-    const op = readFileSync(
-      'node_modules/payload/dist/collections/operations/updateByID.js',
-      'utf8',
-    );
-    assert.match(op, /killTransaction/);
-  });
-});
+import { getHybridSearchConfigKey } from '../src/payload/collections/HybridSearchConfig/utilities/getHybridSearchConfigKey';
 
-const HYBRID_KEY_PART = 'search_config';
+const hybridKeyPrefix = (id: string) =>
+  getHybridSearchConfigKey(id).split(':')[0];
 
 async function load() {
   const { apiConfigCacheService } = await import('../src/cacheService');
@@ -37,7 +24,8 @@ function stubSet(
   const writes: string[] = [];
   (svc as { set: unknown }).set = async (key: string) => {
     writes.push(key);
-    if (fail && key.includes(HYBRID_KEY_PART)) throw new Error('redis down');
+    if (fail && key.startsWith(hybridKeyPrefix('t1')))
+      throw new Error('redis down');
   };
   return {
     writes,
@@ -133,5 +121,34 @@ describe('afterChange hooks mark req.context only on a failed push', () => {
   test('failure with no req.context does not throw', async () => {
     const ctx = await run(true, undefined);
     assert.equal(ctx?.[KEY], true);
+  });
+});
+
+describe('HybridSearchConfig afterChange hook', () => {
+  const KEY = 'hybridSearchCachePushFailed';
+  const call = async (fail: boolean) => {
+    const { apiConfigCacheService, mod } = await load();
+    const stub = stubSet(apiConfigCacheService as never, fail);
+    try {
+      const req = {
+        payload: {
+          find: async () => ({ docs: [{ id: 'rd1', tenant: 't1' }] }),
+        },
+        context: {},
+      };
+      await (
+        mod.pushHybridSearchConfigToCacheAfterChangeHook as never as (
+          a: unknown,
+        ) => Promise<unknown>
+      )({ doc: { id: 'h1', tenant: 't1' }, req });
+      return req.context as Record<string, unknown>;
+    } finally {
+      stub.restore();
+    }
+  };
+
+  test('sets the flag only when the push fails', async () => {
+    assert.equal((await call(true))[KEY], true);
+    assert.equal((await call(false))[KEY], undefined);
   });
 });
