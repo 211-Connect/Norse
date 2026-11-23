@@ -3,6 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
@@ -22,13 +23,14 @@ import {
 export function useV2Pins(): { pins: V2Pin[] | undefined; truncated: boolean } {
   const params = useSearchParams()!;
   const { tenantId, featureFlags, search } = useAppConfig();
+  const locale = useTranslation().i18n.language;
   const callString = useMemo(() => pinsCallString(params), [params]);
   const query = featureFlags.enableV2Api
     ? (params.get('query_label') ?? params.get('query') ?? '').trim()
     : '';
 
   const { data } = useQuery({
-    queryKey: ['v2-pins', tenantId, callString],
+    queryKey: ['v2-pins', tenantId, locale, callString],
     enabled: pinsCallEnabled({
       query,
       tenantId,
@@ -39,7 +41,7 @@ export function useV2Pins(): { pins: V2Pin[] | undefined; truncated: boolean } {
     retry: false,
     queryFn: async ({ signal }): Promise<V2PinsResponse> => {
       const res = await fetch(
-        `/api/v2-search/pins?tenant_id=${encodeURIComponent(tenantId ?? '')}&${callString}`,
+        `/api/v2-search/pins?tenant_id=${encodeURIComponent(tenantId ?? '')}&locale=${encodeURIComponent(locale)}&${callString}`,
         { signal },
       );
       if (!res.ok) throw new Error(`v2 pins ${res.status}`);
