@@ -1,5 +1,6 @@
 // Per-tenant emergency hotlines for v2 search (ISS-2499, ADR 0039).
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 import { isValidHotlineNumber } from '../src/payload/collections/ResourceDirectories/fields/hotlineNumber';
@@ -86,4 +87,29 @@ test('search tab has an unlocalized hotlines array with maxRows 4', () => {
   assert.ok(!field.localized);
   const sub = field.fields[0].fields;
   assert.ok(sub.every((f: any) => !f.localized));
+});
+
+// Both sides of the seam (Norse-API `src/v2/rules/questions.ts`: `tenant.hotlines?.length ? tenant.hotlines : DEFAULT_HOTLINES`).
+test('all rows blank gives [] so Norse-API falls back to 988 and 911', () => {
+  assert.deepEqual(
+    buildHybridSearchConfigCache(
+      't1',
+      null,
+      directory([
+        { label: '', number: '988' },
+        { label: 'Emergency', number: '   ' },
+      ]),
+    )?.hotlines,
+    [],
+  );
+});
+
+test('the hotlines migration is registered last, after the v2 flag migration', () => {
+  const index = readFileSync(
+    'src/payload/migrations/postgres/index.ts',
+    'utf8',
+  );
+  const names = [...index.matchAll(/name: '([^']+)'/g)].map((m) => m[1]);
+  assert.equal(names.at(-1), '20261123_120000_v2_search_hotlines');
+  assert.ok(names.indexOf('20261119_180448_v2_search_flag') < names.length - 1);
 });
