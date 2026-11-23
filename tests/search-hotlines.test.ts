@@ -117,6 +117,38 @@ test('the hotlines migration is registered after the v2 flag migration', () => {
   assert.ok(names.indexOf('20261119_180448_v2_search_flag') < names.length - 1);
 });
 
+test('the hotlines migration has a schema snapshot with both array tables', () => {
+  const dir = 'src/payload/migrations/postgres/';
+  const snap = JSON.parse(
+    readFileSync(`${dir}20261123_120000_v2_search_hotlines.json`, 'utf8'),
+  );
+  const prev = JSON.parse(
+    readFileSync(`${dir}20261119_180448_v2_search_flag.json`, 'utf8'),
+  );
+  assert.notEqual(snap.id, prev.id);
+  for (const [table, parent] of [
+    ['rds_search_search_settings_hotlines', 'rds'],
+    ['_rds_v_version_search_search_settings_hotlines', '_rds_v'],
+  ]) {
+    const t = snap.tables[`public.${table}`];
+    assert.ok(t, table);
+    assert.deepEqual(
+      ['label', 'number'].map((c) => [
+        t.columns[c]?.type,
+        t.columns[c]?.notNull,
+      ]),
+      [
+        ['varchar', true],
+        ['varchar', true],
+      ],
+    );
+    assert.equal(t.foreignKeys[`${table}_parent_id_fk`].tableTo, parent);
+  }
+  // Only the two new tables were added to the previous snapshot.
+  const added = Object.keys(snap.tables).filter((k) => !(k in prev.tables));
+  assert.equal(added.length, 2);
+});
+
 test('a blank hotline label is rejected in the admin, not dropped silently', () => {
   for (const blank of ['', '   ', undefined, null]) {
     assert.notEqual(

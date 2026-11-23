@@ -1,7 +1,8 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres';
 
-// Hand-written (no snapshot .json): adds the array table for the Search tab
-// field `searchSettings.hotlines` and its versions table. Additive only.
+// Adds the array table for the Search tab field `searchSettings.hotlines` and its versions table.
+// Additive only. The schema snapshot is the .json with the same name: the previous snapshot plus
+// these two tables, so the next `payload migrate:create` does not re-create them.
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
     CREATE TABLE "rds_search_search_settings_hotlines" (
