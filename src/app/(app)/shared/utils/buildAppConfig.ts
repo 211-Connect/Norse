@@ -11,7 +11,10 @@ import {
 import { AppConfig } from '@/types/appConfig';
 
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
-import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
+import {
+  DEFAULT_SEARCH_CARD_LAYOUT,
+  V2_DEFAULT_SEARCH_CARD_LAYOUT,
+} from '../../features/search/types/card-layout-config';
 import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
 import { applyTemplateTags } from './applyTemplateTags';
 
@@ -599,7 +602,10 @@ export async function buildAppConfig(
                 ? resourceDirectory.search.cardLayout
                 : englishResourceDirectory?.search.cardLayout,
             )
-          : DEFAULT_SEARCH_CARD_LAYOUT,
+          : // The tenant's v2 switch: off keeps the v1 default order.
+            resourceDirectory.featureFlags?.enableV2Api
+            ? V2_DEFAULT_SEARCH_CARD_LAYOUT
+            : DEFAULT_SEARCH_CARD_LAYOUT,
     },
     noindex: getTenant(resourceDirectory)?.seo?.noindex ?? false,
     badges:

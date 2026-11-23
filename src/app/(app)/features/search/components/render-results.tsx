@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Phone } from 'lucide-react';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
@@ -49,6 +49,8 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
   const appConfig = useAppConfig();
   const contactNumber = appConfig?.contact?.number;
   const noResultsText = appConfig?.search?.texts?.noResultsFallbackText;
+  // The tenant's v2 switch: off renders the v1 list, with no wrapper element.
+  const v2 = appConfig?.featureFlags?.enableV2Api === true;
 
   // `matched_needs` comes on each v2 hit (Decision 56). The list keeps the server order.
   const matchedById = useMemo(
@@ -130,14 +132,8 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
         const matched = (matchedById.get(result._id) ?? []).filter((code) =>
           needs.includes(code),
         );
-        return (
-          // Prototype: a marker with no box, so the help button can find the 3rd card.
-          <div
-            key={result._id}
-            className="contents"
-            data-search-result
-            data-needs-group={group ?? undefined}
-          >
+        const card = (
+          <>
             {divider && (
               <h3
                 className="text-muted-foreground border-t pt-3 text-sm font-semibold"
@@ -169,7 +165,20 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
                 )
               }
             />
+          </>
+        );
+        // v2 only: a marker with no box, so the help button can find the 3rd card. The v1 list has no wrapper.
+        return v2 ? (
+          <div
+            key={result._id}
+            className="contents"
+            data-search-result
+            data-needs-group={group ?? undefined}
+          >
+            {card}
           </div>
+        ) : (
+          <Fragment key={result._id}>{card}</Fragment>
         );
       })}
     </>
