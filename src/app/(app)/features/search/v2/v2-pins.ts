@@ -48,6 +48,11 @@ export function pinsCallString(
 
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
 
+import {
+  addAreaSettings,
+  type AreaSettingsSource,
+} from '../utils/area-settings';
+
 import type { SearchPin } from '../utils/map-pins';
 
 export const DEFAULT_LOCALE = 'en';
@@ -57,8 +62,11 @@ export function buildPinsUrl(
   apiUrl: string,
   incoming: Pick<URLSearchParams, 'entries' | 'get'>,
   tenantId: string,
+  /** The tenant's Payload area settings: the pins and the list send the same ones. */
+  areaSettings?: AreaSettingsSource | null,
 ): string {
   const outgoing = new URLSearchParams(pinsCallString(incoming));
+  addAreaSettings(outgoing, areaSettings);
   outgoing.set('tenant_id', tenantId);
   outgoing.set('locale', incoming.get('locale') || DEFAULT_LOCALE);
   return `${apiUrl}/v2/search/pins?${outgoing}`;

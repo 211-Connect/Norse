@@ -13,10 +13,17 @@ export type V2HostConfig = {
   tenantId: string;
   featureFlags: { enableV2Api?: boolean };
   i18n: { locales: readonly string[] };
+  /** The tenant's Payload area settings, sent with an area search (`utils/area-settings`). */
+  search?: { areaMatch?: unknown; unlocatedInAreaSearch?: unknown };
 };
 
 export type V2HostTenant =
-  | { ok: true; tenantId: string; locale: string }
+  | {
+      ok: true;
+      tenantId: string;
+      locale: string;
+      search: V2HostConfig['search'];
+    }
   | { ok: false; status: 400 | 404; error: string };
 
 /**
@@ -45,5 +52,10 @@ export async function resolveV2HostTenant(
   if (!config.i18n.locales.includes(wanted)) {
     return { ok: false, status: 404, error: 'Not found' };
   }
-  return { ok: true, tenantId: config.tenantId, locale: wanted };
+  return {
+    ok: true,
+    tenantId: config.tenantId,
+    locale: wanted,
+    search: config.search,
+  };
 }

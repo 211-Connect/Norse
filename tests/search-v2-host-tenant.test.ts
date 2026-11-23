@@ -25,12 +25,22 @@ const deps = (flag = true, locales?: string[]) => ({
 
 test('host tenant with enableV2Api on: ok, tenant from the host config', async () => {
   const r = await resolveV2HostTenant('es', deps());
-  assert.deepEqual(r, { ok: true, tenantId: HOST_TENANT, locale: 'es' });
+  assert.deepEqual(r, {
+    ok: true,
+    tenantId: HOST_TENANT,
+    locale: 'es',
+    search: undefined,
+  });
 });
 
 test('no locale: English, as buildV2Url defaults', async () => {
   const r = await resolveV2HostTenant(null, deps());
-  assert.deepEqual(r, { ok: true, tenantId: HOST_TENANT, locale: 'en' });
+  assert.deepEqual(r, {
+    ok: true,
+    tenantId: HOST_TENANT,
+    locale: 'en',
+    search: undefined,
+  });
 });
 
 test('enableV2Api off on the host tenant: 404', async () => {

@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const upstream = await fetch(buildV2Url(API_URL, incoming, host.tenantId), {
+  const upstream = await fetch(buildV2Url(API_URL, incoming, host.tenantId, host.search), {
     headers: buildV2Headers(await getTenantApiKey(host.tenantId)),
     cache: 'no-store',
   }).catch(() => null);
