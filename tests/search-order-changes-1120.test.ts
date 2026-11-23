@@ -185,6 +185,6 @@ test('location x: leaving the emptied box does not put the old place back', () =
   const src = read('shared/components/ui/autocomplete/use-autocomplete.ts');
   assert.match(
     src,
-    /autoSelectOnBlurIndex != null &&[\s\S]{0,80}inputText\.trim\(\) !== '' &&/,
+    /autoSelectOnBlurIndex != null &&[\s\S]{0,80}!\(skipBlurPickWhenEmpty && inputText\.trim\(\) === ''\)/,
   );
 });
