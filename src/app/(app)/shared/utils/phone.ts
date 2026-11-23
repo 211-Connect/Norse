@@ -34,9 +34,7 @@ export function formatPhoneNumber(raw: string | null | undefined): string {
  * RFC 3966 `;ext=`, because phone dialers dial the pause and ignore `;ext=`.
  * The one place a phone number becomes a link.
  */
-export function getPhoneHref(
-  raw: string | null | undefined,
-): string {
+export function getPhoneHref(raw: string | null | undefined): string {
   if (!raw) {
     return '';
   }
