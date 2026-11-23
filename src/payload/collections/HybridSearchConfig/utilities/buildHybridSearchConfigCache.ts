@@ -32,6 +32,10 @@ export function buildHybridSearchConfigCache(
 
   const enableV2Api = resourceDirectory.featureFlags?.enableV2Api ?? false;
 
+  // Norse-API reads only exactly 'off' as off; unset stays on (no change on deploy).
+  const aiClassification =
+    resourceDirectory.featureFlags?.enableV2Ai === false ? 'off' : 'on';
+
   return {
     tenant_id: tenantId,
     vector_score_weight: hybridSearchConfig?.vectorScoreWeight ?? null,
@@ -50,6 +54,7 @@ export function buildHybridSearchConfigCache(
     pinned_resources_mode: pinnedResourcesMode,
     enable_organization_search: enableOrganizationSearch,
     enable_v2_api: enableV2Api,
+    ai_classification: aiClassification,
     // Defaults for area searches (GET /search `region`) when the caller sends none.
     area_match: searchSettings?.areaMatchMode ?? 'located_or_serving',
     unlocated_in_area_search:

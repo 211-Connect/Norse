@@ -1070,6 +1070,7 @@ export interface ResourceDirectory {
     showSuggestionListTaxonomyBadge?: boolean | null;
     enableOrganizationSearch?: boolean | null;
     enableV2Api?: boolean | null;
+    enableV2Ai?: boolean | null;
     showOrganizationLocationBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
@@ -2015,6 +2016,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showSuggestionListTaxonomyBadge?: T;
         enableOrganizationSearch?: T;
         enableV2Api?: T;
+        enableV2Ai?: T;
         showOrganizationLocationBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;
