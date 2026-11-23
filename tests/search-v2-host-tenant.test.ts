@@ -92,6 +92,10 @@ test('the browser sends the page locale to both v2 routes and keys the cache on 
   const search = read('use-v2-search.ts');
   const pins = read('use-v2-pins.ts');
   assert.match(search, /v2ApiPath\(tenantId, callString, limit, locale\)/);
-  assert.equal((search.match(/\['v2-search', tenantId, locale, callString\]/g) ?? []).length, 2);
+  assert.equal(
+    (search.match(/\['v2-search', tenantId, locale, callString\]/g) ?? [])
+      .length,
+    2,
+  );
   assert.match(pins, /&locale=\$\{encodeURIComponent\(i18n\.language\)\}/);
 });
