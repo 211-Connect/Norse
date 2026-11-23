@@ -17,7 +17,7 @@ test('results-section: Print and Share are rendered, with no v2 condition', () =
 
 test('action-buttons: v1 keeps the ReferralButton + tel: Call link; only v2 drops it', () => {
   const s = read('search-card-components/action-buttons.tsx');
-  assert.match(s, /result\.phone && !noDial/);
+  assert.doesNotMatch(s, /noDial/);
   assert.match(s, /getPhoneHref\(result\.phone\)/);
   assert.match(s, /referralType="call_referral"/);
 });
@@ -35,9 +35,9 @@ test('no-results-card: query label shows for everyone; the number goes through t
   assert.match(s, /text: textOverride/);
 });
 
-test('the info-block phone dials in v1 and shows text only in v2', () => {
+test('the info-block phone dials in v1 and v2', () => {
   const s = read('search-card-components/phone.tsx');
-  assert.match(s, /getPhoneHref\(result\.phone, \{ noDial \}\)/);
+  assert.match(s, /getPhoneHref\(result\.phone\)/);
 });
 
 // Print + Share on the v2 results page: the same v1 components, fed by the v2 cards (bridge).

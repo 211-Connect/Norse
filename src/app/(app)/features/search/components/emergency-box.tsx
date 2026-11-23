@@ -6,7 +6,7 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { DEFAULT_HOTLINES, type V2Hotline } from '../v2/use-v2-search';
-import { DialButton } from './no-dial';
+import { DialButton } from './dial-button';
 import type { Answer, Question } from './search-follow-up';
 
 export { DEFAULT_HOTLINES };

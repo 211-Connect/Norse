@@ -65,7 +65,7 @@ import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
 import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
-import { DialButton } from './no-dial';
+import { DialButton } from './dial-button';
 import { EmergencyBox, HotlineNumbers, PinnedNumbers } from './emergency-box';
 
 import {

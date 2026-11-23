@@ -18,7 +18,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
-import { DialButton } from './no-dial';
+import { DialButton } from './dial-button';
 
 /** `text` replaces the footer message (the v2 weak-match note, which names the way on). */
 export function NoResultsCard({ text: textOverride }: { text?: string } = {}) {
@@ -55,7 +55,7 @@ export function NoResultsCard({ text: textOverride }: { text?: string } = {}) {
         <p className="font-semibold">{text}</p>
 
         {appConfig?.contact?.number && (
-          // The one phone path: DialButton goes through getPhoneHref and the no-dial switch (v2 only).
+          // The one phone path: DialButton goes through getPhoneHref.
           <DialButton
             number={appConfig.contact.number}
             testId="no-results-call"

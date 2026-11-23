@@ -1,4 +1,4 @@
-// Prototype search UX polish (Lucas, 2026-11-14): no-dial safety, suggestions, the compact bar,
+// Prototype search UX polish (Lucas, 2026-11-14): emergency dialing, suggestions, the compact bar,
 // the dropped progress label, and the results-page new-search fix.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -9,11 +9,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { appConfigContext } from '../src/app/(app)/shared/context/app-config-context';
 import { buildSearchUrl } from '../src/app/(app)/features/search/utils/buildSearchUrl';
 import { EmergencyLine } from '../src/app/(app)/features/search/components/emergency-line';
-import {
-  DialButton,
-  noDialNotice,
-  PROTOTYPE_NO_DIAL,
-} from '../src/app/(app)/features/search/components/no-dial';
+import { DialButton } from '../src/app/(app)/features/search/components/dial-button';
 import {
   DEFAULT_HOTLINES,
   EmergencyBox,
@@ -22,7 +18,7 @@ import {
 import { suggestionPickChanges } from '../src/app/(app)/features/search/v2/landing';
 import { nextV2Params } from '../src/app/(app)/features/search/v2/v2-contract';
 
-// A v2 tenant (`enableV2Api` on): the only tenants for which the no-dial switch applies.
+// A v2 tenant (`enableV2Api` on). Dialing is on for every v2 tenant (Lucas 2026-11-23).
 const asV2Tenant = (el: ReturnType<typeof createElement>) =>
   createElement(
     appConfigContext.Provider,
@@ -33,16 +29,8 @@ const asV2Tenant = (el: ReturnType<typeof createElement>) =>
 const read = (path: string) => readFileSync(path, 'utf8');
 const APP = 'src/app/(app)/';
 
-// Item 8: safety. The switch is on, and no rendered emergency control has a tel: or sms: href.
-test('no-dial: the switch is on and the notice names the number', () => {
-  assert.equal(PROTOTYPE_NO_DIAL, true);
-  assert.equal(
-    noDialNotice('911'),
-    'Test mode: no call placed (would call 911)',
-  );
-});
-
-test('no-dial: every emergency control renders as a button with no tel: or sms: href', () => {
+// Item 8: safety. On a v2 tenant every emergency control dials (no-dial switch removed 2026-11-23).
+test('dialing: every emergency control on a v2 tenant renders a tel: link', () => {
   const html = [
     renderToStaticMarkup(asV2Tenant(createElement(EmergencyLine))),
     renderToStaticMarkup(asV2Tenant(createElement(HotlineNumbers, {}))),
@@ -58,10 +46,10 @@ test('no-dial: every emergency control renders as a button with no tel: or sms: 
       ),
     ),
   ].join('\n');
-  assert.doesNotMatch(html, /href="(tel|sms):/i);
-  assert.doesNotMatch(html, /tel:|sms:/i);
-  assert.match(html, /data-no-dial="true"/);
-  assert.match(html, /<button type="button"/);
+  assert.match(html, /href="tel:911"/);
+  assert.match(html, /href="tel:988"/);
+  assert.match(html, /href="tel:211"/);
+  assert.doesNotMatch(html, /data-no-dial|Test mode/);
   assert.match(html, /988/);
   assert.match(html, /911/);
 });

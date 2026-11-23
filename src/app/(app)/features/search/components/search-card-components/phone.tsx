@@ -13,14 +13,9 @@ import {
   trackEvent,
 } from '../../../../shared/lib/analytics';
 import { Datum } from '../../../resource/components/datum';
-import { useNoDial } from '../../../../shared/hooks/use-no-dial';
-import { useIsV2 } from '../v2-results-bridge';
 import { SearchCardComponentProps } from './types';
 
 export function PhoneComponent({ result }: SearchCardComponentProps) {
-  // Text only while v2 results show AND the tenant is not turned on (`no-dial-flag.ts`).
-  const noDial = useIsV2() && useNoDial();
-
   if (!result.phone) {
     return null;
   }
@@ -31,7 +26,7 @@ export function PhoneComponent({ result }: SearchCardComponentProps) {
       icon={Phone}
       iconColor="text-primary"
       description={formatPhoneNumber(result.phone)}
-      url={getPhoneHref(result.phone, { noDial })}
+      url={getPhoneHref(result.phone)}
       urlTarget="_self"
       shouldParseHtml={false}
       withPadding={false}

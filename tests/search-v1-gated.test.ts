@@ -105,12 +105,7 @@ test('row 16, sort-select.tsx + sort-options.ts: v1 keeps labels, order, hybrid 
   assert.match(s, /isV2 \? 'sort\.v2_options' : 'sort\.options'/);
 });
 
-test('v1 tenants dial and text as before: the no-dial switch needs the v2 flag', () => {
-  const hook = read('shared/hooks/use-no-dial.ts');
-  assert.match(hook, /noDialFor\(useAppConfig\(\)\.featureFlags\)/);
-  assert.match(
-    read('features/search/components/no-dial-flag.ts'),
-    /NO_DIAL &&\s+flags\.enableV2Api === true/,
-  );
-  assert.match(read('shared/components/sms-button.tsx'), /if \(noDial\)/);
+test('v1 and v2 tenants dial and text: no no-dial switch is left (Lucas 2026-11-23)', () => {
+  assert.doesNotMatch(read('shared/components/sms-button.tsx'), /noDial/);
+  assert.doesNotMatch(read('shared/utils/phone.ts'), /noDial/);
 });

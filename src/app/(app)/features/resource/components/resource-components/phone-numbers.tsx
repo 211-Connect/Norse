@@ -4,7 +4,6 @@ import { MessageSquare, Phone, Printer } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useNoDial } from '@/app/(app)/shared/hooks/use-no-dial';
 import {
   formatPhoneNumber,
   getPhoneHref,
@@ -20,8 +19,6 @@ import { Datum } from '../datum';
 
 export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');
-  const noDial = useNoDial();
-
   const mappedPhoneNumbers = useMemo(() => {
     const phoneNumbers = resource.phoneNumbers ?? [];
     return phoneNumbers.map((phone) => {
@@ -61,7 +58,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           labelAs="h3"
           subtitle={description}
           description={formatPhoneNumber(number)}
-          url={getPhoneHref(number, { noDial })}
+          url={getPhoneHref(number)}
           urlAriaLabel={`${label}${description ? ` - ${description}` : ''}: ${formatPhoneNumber(number)}`}
           onClick={() => {
             const resourceId = resource.id;
