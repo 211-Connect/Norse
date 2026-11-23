@@ -35,6 +35,7 @@ type UseAutocompleteParams = Pick<
   | 'blockMode'
   | 'autoSelectIndex'
   | 'autoSelectOnBlurIndex'
+  | 'skipBlurPickWhenEmpty'
   | 'onInputChange'
   | 'onCommit'
   | 'onClear'
@@ -67,6 +68,7 @@ export function useAutocomplete({
   blockMode = false,
   autoSelectIndex,
   autoSelectOnBlurIndex,
+  skipBlurPickWhenEmpty,
   onInputChange,
   onCommit,
   onClear,
@@ -387,7 +389,7 @@ export function useAutocomplete({
     if (
       autoSelectOnBlurIndex != null &&
       !leavingToSkipPick &&
-      inputText.trim() !== '' &&
+      !(skipBlurPickWhenEmpty && inputText.trim() === '') &&
       !selectedOption &&
       !isInteractingWithList &&
       !mustWait() &&

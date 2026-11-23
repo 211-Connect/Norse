@@ -45,6 +45,8 @@ export type AutocompleteProps = {
   /** Option committed when the field loses focus while its value doesn't
    *  match any option. */
   autoSelectOnBlurIndex?: number;
+  /** v2 pages: an emptied box picks nothing on blur. Off keeps the v1 pick. */
+  skipBlurPickWhenEmpty?: boolean;
   defaultOpen?: boolean;
   clearButtonLabel?: string;
   /** Show the label as a tooltip under the clear (x) button. Default true. */
