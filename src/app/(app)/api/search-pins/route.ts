@@ -83,5 +83,7 @@ async function findV2Pins(
     },
   ).catch(() => null);
   if (!upstream?.ok) return null;
-  return toSearchPins(await upstream.json());
+  // A 200 with a body that is not JSON is a failed call, not an empty list.
+  const body = await upstream.json().catch(() => null);
+  return body ? toSearchPins(body) : null;
 }
