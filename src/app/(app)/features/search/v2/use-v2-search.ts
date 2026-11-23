@@ -153,7 +153,8 @@ export function useV2Prefetch() {
         .fetchQuery({
           queryKey: ['v2-search', tenantId, locale, callString],
           staleTime: 60_000,
-          queryFn: ({ signal }) => fetchV2(tenantId, locale, callString, signal),
+          queryFn: ({ signal }) =>
+            fetchV2(tenantId, locale, callString, signal),
         })
         .catch(() => undefined);
     },
