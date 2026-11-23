@@ -1,18 +1,108 @@
 import {
   APIError,
+  type CollectionAfterChangeHook,
+  type CollectionBeforeChangeHook,
   type CollectionBeforeDeleteHook,
   type CollectionConfig,
   type TextFieldSingleValidation,
 } from 'payload';
 
 import { topicSlugProblem } from '@/app/(app)/features/landing-pages/lib/slugs';
+import { createLogger } from '@/lib/logger';
+import { defaultLocale } from '@/payload/i18n/locales';
+import {
+  LANDING_TOPIC_TRANSLATED_FIELDS,
+  type LandingTopicField,
+  autoTopicSlug,
+} from '@/payload/jobs/translateLandingTopic';
 
 import { superAdminOrSupportOrTenantAccess } from '../Users/access/roles';
 import { landingCopyFields } from './copyFields';
 
-const validateTopicSlug: TextFieldSingleValidation = (value) => {
-  if (!value) return true; // filled by the translate job or the editor
-  return topicSlugProblem(value) ?? true;
+const log = createLogger('landing-page-topics');
+
+const tenantIdOf = (tenant: unknown): string | undefined =>
+  typeof tenant === 'object' && tenant
+    ? (tenant as { id: string }).id
+    : (tenant as string | undefined);
+
+/** Well formed, not reserved, and not another topic's slug in this locale. */
+const validateTopicSlug: TextFieldSingleValidation = async (
+  value,
+  { data, id, req },
+) => {
+  if (!value) return true; // filled from the name, or the default locale's
+  const problem = topicSlugProblem(value);
+  if (problem) return problem;
+  const tenant = tenantIdOf((data as { tenant?: unknown })?.tenant);
+  if (!tenant) return true;
+  const { docs } = await req.payload.find({
+    collection: 'landing-page-topics',
+    where: {
+      and: [
+        { tenant: { equals: tenant } },
+        { slug: { equals: value } },
+        ...(id ? [{ id: { not_equals: id } }] : []),
+      ],
+    },
+    locale: req.locale ?? defaultLocale,
+    limit: 1,
+    depth: 0,
+    req,
+  });
+  return docs.length
+    ? `Another topic (${docs[0].name}) already uses "${value}" in this language.`
+    : true;
+};
+
+/** The default-locale slug, from the name, when none was typed. */
+const fillSlug: CollectionBeforeChangeHook = ({ data, req }) => {
+  if ((req.locale ?? defaultLocale) !== defaultLocale) return data;
+  if (!data.slug && data.name) data.slug = autoTopicSlug(data.name);
+  return data;
+};
+
+const valueAt = (doc: unknown, field: string) =>
+  field
+    .split('.')
+    .reduce<unknown>(
+      (node, key) => (node as Record<string, unknown> | undefined)?.[key],
+      doc,
+    );
+
+/**
+ * Translates the name and copy into the tenant's other locales whenever
+ * they change in the default locale. Never blocks the save.
+ */
+const queueTranslation: CollectionAfterChangeHook = async ({
+  doc,
+  previousDoc,
+  operation,
+  req,
+  context,
+}) => {
+  if (context?.skipLandingTopicTranslation) return doc;
+  if ((req.locale ?? defaultLocale) !== defaultLocale) return doc;
+  const fields = LANDING_TOPIC_TRANSLATED_FIELDS.filter((field) => {
+    const value = valueAt(doc, field);
+    if (!value) return false;
+    return operation === 'create' || value !== valueAt(previousDoc, field);
+  }) as LandingTopicField[];
+  if (fields.length === 0) return doc;
+  try {
+    await req.payload.jobs.queue({
+      task: 'translateLandingTopic',
+      input: { topicId: doc.id, fields },
+      queue: 'translation',
+      req,
+    });
+  } catch (error) {
+    log.error(
+      { err: error, topicId: doc.id },
+      'Failed to queue landing topic translation; save continues',
+    );
+  }
+  return doc;
 };
 
 /**
@@ -55,7 +145,11 @@ export const LandingPageTopics: CollectionConfig = {
     delete: superAdminOrSupportOrTenantAccess,
   },
   versions: { drafts: false, maxPerDoc: 50 },
-  hooks: { beforeDelete: [refuseDeleteWithPages] },
+  hooks: {
+    beforeChange: [fillSlug],
+    afterChange: [queueTranslation],
+    beforeDelete: [refuseDeleteWithPages],
+  },
   admin: {
     useAsTitle: 'name',
     group: 'Landing pages',
@@ -105,6 +199,26 @@ export const LandingPageTopics: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      name: 'slugWarning',
+      type: 'ui',
+      admin: {
+        components: {
+          Field:
+            '@/payload/collections/LandingPages/components/LandingTopicSlugWarning',
+        },
+      },
+    },
+    {
+      name: 'sourceStatus',
+      type: 'ui',
+      admin: {
+        components: {
+          Field:
+            '@/payload/collections/LandingPages/components/LandingTopicSourceField',
+        },
+      },
     },
     {
       name: 'search',

@@ -35,6 +35,17 @@ export const landingPages: Tab = {
   },
   fields: [
     {
+      name: 'landingTopics',
+      type: 'ui',
+      admin: {
+        condition: (data) => Boolean(data?.featureFlags?.enableLandingPages),
+        components: {
+          Field:
+            '@/payload/collections/LandingPages/components/LandingTopicsField',
+        },
+      },
+    },
+    {
       name: 'regions',
       type: 'json',
       validate: validateRegions,

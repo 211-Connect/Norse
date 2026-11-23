@@ -96,15 +96,35 @@ and a reference to its source. If the source subtopic or suggestion later
 changes or is deleted, the editor shows a warning and nothing changes
 automatically. "Re-copy from source" updates the search on request.
 
-The name and slug are localized. The `translate` job fills them for every
-tenant locale from the source name, and the admin can edit them. Slugs are
-lower-case ASCII: accents are dropped (`alimentación` → `alimentacion`). A
-name in a non-Latin script (Chinese, Arabic, Russian…) has no ASCII slug, so
-that locale uses the default locale's slug; the page is still in that
-language. Slugs are checked against reserved first segments (route folders
-and locale codes, `RESERVED_TOPIC_SLUGS` in
-`features/landing-pages/lib/slugs.ts`); `tests/landing-pages-slugs.test.ts`
-fails when a new route folder is missing from that list.
+**In the admin.** The Landing Pages tab's Topics section
+(`LandingTopicsField`) lists the tenant's topics and has an **Add topics**
+panel with three tabs: topic-card subtopics (multi-select, grouped by card;
+link subtopics and subtopics already added can't be ticked), search
+suggestions (their taxonomy codes), and a custom query (text or
+comma-separated taxonomy codes). It reads the saved Resource Directory, so a
+new card or suggestion appears after a save. `features/landing-pages/lib/topicSources.ts`
+lists the sources and compares a topic with its source.
+
+The topic editor shows a warning when its source subtopic or suggestion
+changed (search or name) or is gone, with **Re-copy from source**, which
+updates the form for the admin to save. Editing a slug that live pages use
+shows that the ranking moves to the new URL; the old address redirects after
+Apply changes.
+
+**Names and slugs in every locale.** A topic is written in English. On
+create, an empty slug is filled from the name. Whenever the English name or
+copy changes, the `translateLandingTopic` job (queue `translation`) translates
+them into the tenant's other locales with `{…}` tags masked
+(`lib/templateTags.ts`), and sets each locale's slug from its translated name
+unless someone edited that slug. Slugs are lower-case ASCII: accents are
+dropped (`alimentación` → `alimentacion`). A name in a non-Latin script
+(Chinese, Arabic, Russian…) has no ASCII slug, so that locale's slug stays
+empty and its pages use the default locale's slug; the page is still in that
+language. A slug must be unique among the tenant's topics in its locale and
+must not be a reserved first segment (route folders and locale codes,
+`RESERVED_TOPIC_SLUGS` in `features/landing-pages/lib/slugs.ts`);
+`tests/landing-pages-slugs.test.ts` fails when a new route folder is missing
+from that list.
 
 ## URLs
 

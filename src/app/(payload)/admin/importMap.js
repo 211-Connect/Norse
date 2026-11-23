@@ -22,11 +22,14 @@ import { default as default_3b301e482d0e37c98ec50b2153f0f45d } from '@/payload/c
 import { default as default_f83d96d079111af09b6323bb84c1f19e } from '@/payload/collections/ResourceDirectories/components/FacetsRowLabel'
 import { default as default_a2840d49293f7e4212d4182b1c3febc3 } from '@/payload/collections/ResourceDirectories/components/UseCustomCardLayoutField'
 import { default as default_b88409986c301af77c1522dd3c50f441 } from '@/payload/collections/ResourceDirectories/components/TranslationUsageTable'
+import { default as default_a28901f6ad4d6c62b637653f799d516b } from '@/payload/collections/LandingPages/components/LandingTopicsField'
 import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/collections/ResourceDirectories/components/EditViewWrapper'
 import { default as default_7a8b15e24786becdbc27798cd6643e36 } from '@/payload/collections/OrchestrationConfig/components/TenantHeader'
 import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel'
 import { default as default_e9d1e9858fa8526951b37594e35d9c62 } from '@/payload/collections/OrchestrationConfig/components/SchemasRowLabel'
 import { default as default_b690e758ec84d761af30377d4503f117 } from '@/payload/collections/HybridSearchConfig/components/HybridSearchConfigHeader'
+import { default as default_efa8a888503dd86fc143e75f46c06fcc } from '@/payload/collections/LandingPages/components/LandingTopicSlugWarning'
+import { default as default_18869ce1423567d6ca3883d76611dd66 } from '@/payload/collections/LandingPages/components/LandingTopicSourceField'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_f4855407f4109e46fff942e4b3f7606f } from '@/payload/components/ScorecardsNavLink'
 import { default as default_516dbf33cc3b162579335bb6874ed173 } from '@/payload/components/PopulateApiConfigCacheButton'
@@ -99,11 +102,14 @@ export const importMap = {
   "@/payload/collections/ResourceDirectories/components/FacetsRowLabel#default": default_f83d96d079111af09b6323bb84c1f19e,
   "@/payload/collections/ResourceDirectories/components/UseCustomCardLayoutField#default": default_a2840d49293f7e4212d4182b1c3febc3,
   "@/payload/collections/ResourceDirectories/components/TranslationUsageTable#default": default_b88409986c301af77c1522dd3c50f441,
+  "@/payload/collections/LandingPages/components/LandingTopicsField#default": default_a28901f6ad4d6c62b637653f799d516b,
   "@/payload/collections/ResourceDirectories/components/EditViewWrapper#default": default_76ffa28dff37b978c6ada354e1e9e67c,
   "@/payload/collections/OrchestrationConfig/components/TenantHeader#default": default_7a8b15e24786becdbc27798cd6643e36,
   "@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel#default": default_251fd09bbd0b103ad0dcec7022f13978,
   "@/payload/collections/OrchestrationConfig/components/SchemasRowLabel#default": default_e9d1e9858fa8526951b37594e35d9c62,
   "@/payload/collections/HybridSearchConfig/components/HybridSearchConfigHeader#default": default_b690e758ec84d761af30377d4503f117,
+  "@/payload/collections/LandingPages/components/LandingTopicSlugWarning#default": default_efa8a888503dd86fc143e75f46c06fcc,
+  "@/payload/collections/LandingPages/components/LandingTopicSourceField#default": default_18869ce1423567d6ca3883d76611dd66,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/ScorecardsNavLink#default": default_f4855407f4109e46fff942e4b3f7606f,
   "@/payload/components/PopulateApiConfigCacheButton#default": default_516dbf33cc3b162579335bb6874ed173,

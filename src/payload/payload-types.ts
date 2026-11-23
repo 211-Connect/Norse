@@ -281,6 +281,7 @@ export interface Config {
       warmCache: TaskWarmCache;
       deliverScheduledPdfs: TaskDeliverScheduledPdfs;
       generateLandingPages: TaskGenerateLandingPages;
+      translateLandingTopic: TaskTranslateLandingTopic;
       inline: {
         input: unknown;
         output: unknown;
@@ -1543,7 +1544,13 @@ export interface PayloadJob {
         executedAt: string;
         completedAt: string;
         taskSlug:
-          'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs' | 'generateLandingPages';
+          | 'inline'
+          | 'translateTopics'
+          | 'translate'
+          | 'warmCache'
+          | 'deliverScheduledPdfs'
+          | 'generateLandingPages'
+          | 'translateLandingTopic';
         taskID: string;
         input?:
           | {
@@ -1577,7 +1584,16 @@ export interface PayloadJob {
       }[]
     | null;
   taskSlug?:
-    ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs' | 'generateLandingPages') | null;
+    | (
+        | 'inline'
+        | 'translateTopics'
+        | 'translate'
+        | 'warmCache'
+        | 'deliverScheduledPdfs'
+        | 'generateLandingPages'
+        | 'translateLandingTopic'
+      )
+    | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -2973,6 +2989,19 @@ export interface TaskGenerateLandingPages {
       | number
       | boolean
       | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskTranslateLandingTopic".
+ */
+export interface TaskTranslateLandingTopic {
+  input: {
+    topicId: number;
+    fields?: ('name' | 'copy.title' | 'copy.description' | 'copy.h1' | 'copy.intro')[] | null;
+  };
+  output: {
+    translated: number;
   };
 }
 /**
