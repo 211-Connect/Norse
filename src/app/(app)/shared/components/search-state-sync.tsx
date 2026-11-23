@@ -12,6 +12,7 @@ import {
   USER_PREF_REGION_ID,
 } from '../lib/constants';
 import { isRegionId } from '@/types/areaSearch';
+import { searchTermFromUrl } from '../lib/search-term-from-url';
 import { validateCoordsString } from '../lib/validators';
 import { DEFAULT_SEARCH_STATE, SearchState, searchAtom } from '../store/search';
 
@@ -112,12 +113,13 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
           searchAtom,
           {
             ...DEFAULT_SEARCH_STATE,
-            // A link with `query` and no `query_label` (v2 links, a reload) still shows its words.
-            searchTerm:
-              queryLabel ||
-              (queryType === 'text' || queryType === 'hybrid' || !queryType
-                ? query
-                : ''),
+            // v2 only: a link with `query` and no `query_label` shows its words (v1 shows the label only).
+            searchTerm: searchTermFromUrl({
+              query,
+              queryLabel,
+              queryType,
+              v2: appConfig.featureFlags.enableV2Api,
+            }),
             query,
             queryLabel,
             queryType,
@@ -129,7 +131,16 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
           } satisfies SearchState,
         ],
       ] as const,
-    [coords, distance, location, query, queryLabel, queryType, region],
+    [
+      appConfig.featureFlags.enableV2Api,
+      coords,
+      distance,
+      location,
+      query,
+      queryLabel,
+      queryType,
+      region,
+    ],
   );
 
   useHydrateAndSyncAtoms(atomValues);

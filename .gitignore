@@ -75,3 +75,7 @@ test-results/
 #Ignore code quality AI rules
 .cursor/rules/codacy.mdc
 
+
+# Python bytecode (the prototype/ scripts)
+__pycache__/
+*.pyc
