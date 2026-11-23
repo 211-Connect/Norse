@@ -39,6 +39,57 @@ test('search-state-sync passes the tenant switch to the helper', () => {
   );
   assert.match(
     s,
-    /searchTermFromUrl\(\{[^}]*v2: appConfig\.featureFlags\.enableV2Api/s,
+    /searchTermFromUrl\(\{[^}]*v2: appConfig\.featureFlags\.enableV2Api/,
   );
+});
+
+// Regression (checker 2026-11-23, DOM diff with enableV2Api off vs development): the card order and a
+// wrapper element changed for v1 tenants.
+import {
+  DEFAULT_SEARCH_CARD_LAYOUT,
+  V2_DEFAULT_SEARCH_CARD_LAYOUT,
+} from '../src/app/(app)/features/search/types/card-layout-config';
+
+const ids = (l: { componentId: string }[]) => l.map((c) => c.componentId);
+
+test("v1 default card layout keeps the development order (What's Here after the description)", () => {
+  const v1 = ids(DEFAULT_SEARCH_CARD_LAYOUT);
+  assert.ok(v1.indexOf('categories') > v1.indexOf('description'));
+  assert.deepEqual(v1, [
+    'badges',
+    'resourceName',
+    'serviceName',
+    'address',
+    'phone',
+    'website',
+    'description',
+    'categories',
+    'separator',
+    'actionButtons',
+  ]);
+});
+
+test("v2 default card layout puts What's Here right below the name", () => {
+  const v2 = ids(V2_DEFAULT_SEARCH_CARD_LAYOUT);
+  assert.equal(v2.indexOf('categories'), v2.indexOf('serviceName') + 1);
+});
+
+test('buildAppConfig picks the v2 layout only when enableV2Api is on', () => {
+  const s = readFileSync(
+    'src/app/(app)/shared/utils/buildAppConfig.ts',
+    'utf8',
+  );
+  assert.match(
+    s,
+    /enableV2Api\s*\?\s*V2_DEFAULT_SEARCH_CARD_LAYOUT\s*:\s*DEFAULT_SEARCH_CARD_LAYOUT/,
+  );
+});
+
+test('render-results: the card wrapper element exists only with the v2 switch on', () => {
+  const s = readFileSync(
+    'src/app/(app)/features/search/components/render-results.tsx',
+    'utf8',
+  );
+  assert.match(s, /return v2 \? \(\s*<div[\s\S]*?data-search-result/);
+  assert.match(s, /<Fragment key=\{result\._id\}>\{card\}<\/Fragment>/);
 });
