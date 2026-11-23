@@ -104,3 +104,20 @@ test('page-wrapper: the footer has a wrapper element only on the v2 fit-viewport
     /\{fit \? \(\s*<div className="md:hidden">\s*<Footer \/>\s*<\/div>\s*\) : \(\s*<Footer \/>\s*\)\}/,
   );
 });
+
+test('autocomplete: the empty-box blur skip is opt-in (v2 location bar only), so v1 keeps its blur pick', () => {
+  const hook = readFileSync(
+    'src/app/(app)/shared/components/ui/autocomplete/use-autocomplete.ts',
+    'utf8',
+  );
+  assert.match(
+    hook,
+    /!\(skipBlurPickWhenEmpty && inputText\.trim\(\) === ''\)/,
+  );
+  const bar = readFileSync(
+    'src/app/(app)/shared/components/search/location-search-bar.tsx',
+    'utf8',
+  );
+  assert.match(bar, /skipBlurPickWhenEmpty=\{clearOnlyEmpties\}/);
+  assert.match(bar, /const clearOnlyEmpties = rankEverywhere && !isStandalone/);
+});

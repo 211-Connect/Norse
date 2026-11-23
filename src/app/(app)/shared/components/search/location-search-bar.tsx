@@ -410,6 +410,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         clearButtonTooltip={!clearOnlyEmpties}
         autoSelectIndex={autoSelectIndex}
         autoSelectOnBlurIndex={autoSelectIndex}
+        skipBlurPickWhenEmpty={clearOnlyEmpties}
         loading={isPendingResults}
         // Standalone fields live in dialogs, where the list floats over the
         // dialog's other content.
