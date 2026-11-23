@@ -64,7 +64,10 @@ const getPageData = cache(async function (
   const appConfig = await getAppConfigWithoutHost(locale);
 
   const { intent, envelope } = liftSearchRequest(rawParams);
-  const searchQuery = withAreaSettings(toFindResourcesQuery(intent), appConfig);
+  const searchQuery = withAreaSettings(
+    toFindResourcesQuery(intent, { v2: appConfig.featureFlags.enableV2Api }),
+    appConfig,
+  );
 
   // An area search needs no coords; they would only set the distance-sort origin.
   if (searchQuery.location && !searchQuery.coordinates && !searchQuery.region) {
@@ -160,7 +163,12 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const [{ locale }, rawParams] = await Promise.all([params, searchParams]);
   const appConfig = await getAppConfigWithoutHost(locale);
-  const searchQuery = toFindResourcesQuery(liftSearchRequest(rawParams).intent);
+  const searchQuery = toFindResourcesQuery(
+    liftSearchRequest(rawParams).intent,
+    {
+      v2: appConfig.featureFlags.enableV2Api,
+    },
+  );
 
   const baseTitle = appConfig.meta.title || appConfig.brand.name || '';
   const parts = [

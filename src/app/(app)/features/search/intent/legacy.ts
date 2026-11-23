@@ -25,8 +25,15 @@ const nonEmpty = (slot: Slot<string>) => valueOf(slot) || undefined;
  * region, age 0 is no age, and
  * sort falls back to relevance, or to distance for a located taxonomy search (and to relevance from distance without
  * valid coords).
+ *
+ * The v2 URL slots (`needs`, `passed_needs`, `urgency`, `other`) reach the query only when `v2` is true, which
+ * is the host tenant's `enableV2Api`. A v1 tenant's `/search` ignores them (Lucas, 2026-11-23, adversarial-review
+ * finding 2 on PR #1222): a v2 link opened on a v1 host must not change a v1 search.
  */
-export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
+export function toFindResourcesQuery(
+  intent: SearchIntent,
+  { v2 = false }: { v2?: boolean } = {},
+): FindResourcesQuery {
   const coordinates = valueOf(intent.coords);
   const location = nonEmpty(intent.location);
   const region = nonEmpty(intent.region)?.trim();
@@ -51,6 +58,15 @@ export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
     ),
     age: valueOf(intent.age) || undefined,
     // v2 prototype (round 17): these change the results, so they reach the search call.
+    ...(v2 ? v2Slots(intent) : {}),
+  };
+}
+
+/** The v2 slots that change the results (round 17). */
+function v2Slots(
+  intent: SearchIntent,
+): Pick<FindResourcesQuery, 'needs' | 'passedNeeds' | 'urgency' | 'other'> {
+  return {
     needs: valueOf(intent.needs)?.length ? valueOf(intent.needs) : undefined,
     passedNeeds: valueOf(intent.passedNeeds)?.length
       ? valueOf(intent.passedNeeds)

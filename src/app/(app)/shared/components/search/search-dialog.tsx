@@ -172,6 +172,7 @@ export function SearchDialog({
         requireUserLocation,
       }),
       searchEngine: appConfig.search.searchEngine,
+      v2: appConfig.featureFlags.enableV2Api,
     },
   });
 
