@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
+import { isPinsBody } from '../src/app/(app)/features/search/v2/v2-pins';
+
 import {
   buildPinsUrl,
   pinsCallString,
@@ -109,4 +111,14 @@ test('one pins hook and one route: no second copy for v2', () => {
   const route = read('src/app/(app)/api/search-pins/route.ts');
   assert.match(route, /enableV2Api/);
   assert.equal(existsSync('src/app/(app)/api/v2-search/pins/route.ts'), false);
+});
+
+// Review 2026-11-23: a 200 body with no `pins` array is a failed call (null), not zero pins.
+
+test('isPinsBody: only a body with a pins array counts as a pins answer', () => {
+  assert.equal(isPinsBody({ pins: [] }), true);
+  assert.equal(isPinsBody({ pins: [{ id: 'a' }] }), true);
+  for (const body of [{}, null, undefined, 'x', { pins: {} }, { pins: null }]) {
+    assert.equal(isPinsBody(body), false, JSON.stringify(body));
+  }
 });

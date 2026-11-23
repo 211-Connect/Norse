@@ -5,6 +5,7 @@ import type { AreaSettingsSource } from '@/app/(app)/features/search/utils/area-
 import { buildV2Headers } from '@/app/(app)/features/search/v2/v2-request';
 import {
   buildPinsUrl,
+  isPinsBody,
   toSearchPins,
 } from '@/app/(app)/features/search/v2/v2-pins';
 import { API_URL } from '@/app/(app)/shared/lib/constants';
@@ -92,7 +93,8 @@ async function findV2Pins(
     },
   ).catch(() => null);
   if (!upstream?.ok) return null;
-  // A 200 with a body that is not JSON is a failed call, not an empty list.
+  // A 200 with a body that is not JSON, or with no `pins` array, is a failed
+  // call, not an empty list.
   const body = await upstream.json().catch(() => null);
-  return body ? toSearchPins(body) : null;
+  return isPinsBody(body) ? toSearchPins(body) : null;
 }

@@ -133,3 +133,9 @@ export function pinsCallEnabled({
 }): boolean {
   return Boolean(query && tenantId && showAllResultsOnMap);
 }
+
+/** True only for a body with a `pins` array. */
+export const isPinsBody = (body: unknown): boolean =>
+  typeof body === 'object' &&
+  body !== null &&
+  Array.isArray((body as { pins?: unknown }).pins);

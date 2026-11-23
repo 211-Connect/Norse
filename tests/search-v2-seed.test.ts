@@ -94,3 +94,10 @@ test('v2CallString puts facet filters in the key, so a filtered URL is not the u
   assert.notEqual(plain, filtered);
   assert.match(filtered, /filters/);
 });
+
+// Review 2026-11-23: the server render forwards clarify, so the client call and cache key carry it too.
+test('v2CallString keeps clarify, so a clarify=never URL refetches the same answer', () => {
+  const s = v2CallString(new URLSearchParams('query=rent&clarify=never'));
+  assert.match(s, /clarify=never/);
+  assert.notEqual(s, v2CallString(new URLSearchParams('query=rent')));
+});
