@@ -19,6 +19,7 @@ import {
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import { resultsUrlFor } from './landing';
+import { useTranslation } from 'react-i18next';
 import { seedMatches, v2CallString, type V2Seed } from './v2-seed';
 
 import {
@@ -65,11 +66,12 @@ export function useV2Url() {
 
 async function fetchV2(
   tenantId: string | undefined,
+  locale: string,
   callString: string,
   signal?: AbortSignal,
 ): Promise<V2Response> {
   const res = await fetch(
-    `/api/v2-search?tenant_id=${encodeURIComponent(tenantId ?? '')}&${callString}`,
+    `/api/v2-search?tenant_id=${encodeURIComponent(tenantId ?? '')}&locale=${encodeURIComponent(locale)}&${callString}`,
     { signal },
   );
   if (!res.ok) throw new Error(`v2 search ${res.status}`);
@@ -95,6 +97,8 @@ export function V2SeedProvider({
 export function useV2Search() {
   const { params, query: urlQuery } = useV2Url();
   const { tenantId, featureFlags } = useAppConfig();
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   // The tenant's switch: with it off no v2 call runs, and `query` is empty, so every caller shows v1.
   const v2On = featureFlags.enableV2Api;
   const query = v2On ? urlQuery : '';
@@ -105,11 +109,11 @@ export function useV2Search() {
   const result = useQuery({
     initialData: seeded?.data,
     initialDataUpdatedAt: seeded?.fetchedAt,
-    queryKey: ['v2-search', tenantId, callString],
+    queryKey: ['v2-search', tenantId, locale, callString],
     enabled: Boolean(query && tenantId),
     placeholderData: keepPreviousData,
     staleTime: 60_000,
-    queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
+    queryFn: ({ signal }) => fetchV2(tenantId, locale, callString, signal),
   });
   // The query client outlives requests on the server, so a server render uses the seed, never an
   // older cache entry. On the client the two are the same until the first refetch.
@@ -139,19 +143,21 @@ export function useV2Facets() {
 export function useV2Prefetch() {
   const { params } = useV2Url();
   const { tenantId } = useAppConfig();
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const queryClient = useQueryClient();
   return useCallback(
     async (changes: V2Changes) => {
       const callString = v2CallString(nextV2Params(params, changes));
       await queryClient
         .fetchQuery({
-          queryKey: ['v2-search', tenantId, callString],
+          queryKey: ['v2-search', tenantId, locale, callString],
           staleTime: 60_000,
-          queryFn: ({ signal }) => fetchV2(tenantId, callString, signal),
+          queryFn: ({ signal }) => fetchV2(tenantId, locale, callString, signal),
         })
         .catch(() => undefined);
     },
-    [params, queryClient, tenantId],
+    [params, queryClient, tenantId, locale],
   );
 }
 

@@ -81,3 +81,14 @@ test('both v2 routes take the tenant from the host and never read tenant_id from
     assert.match(src, /host\.tenantId/, file);
   }
 });
+
+test('the browser sends the page locale to both v2 routes and keys the cache on it', () => {
+  const read = (f: string) =>
+    readFileSync(`src/app/(app)/features/search/v2/${f}`, 'utf8');
+  const search = read('use-v2-search.ts');
+  const pins = read('use-v2-pins.ts');
+  assert.match(search, /&locale=\$\{encodeURIComponent\(locale\)\}/);
+  assert.match(pins, /&locale=\$\{encodeURIComponent\(locale\)\}/);
+  assert.equal((search.match(/\['v2-search', tenantId, locale, callString\]/g) ?? []).length, 2);
+  assert.match(pins, /\['v2-pins', tenantId, locale, callString\]/);
+});
