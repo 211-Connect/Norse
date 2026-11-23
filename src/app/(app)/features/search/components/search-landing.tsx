@@ -16,7 +16,7 @@ import { SEARCH_INPUT_ID } from '@/app/(app)/shared/lib/constants';
 
 import { suggestionPickChanges } from '../v2/landing';
 import { useV2Navigate, useV2Prefetch, useV2Url } from '../v2/use-v2-search';
-import { EmergencyLine } from './emergency-line';
+import { DEFAULT_HOTLINES, EmergencyLine } from './emergency-line';
 import { LandingLocation } from './landing-location';
 
 /**
@@ -107,7 +107,7 @@ export function SearchLanding() {
           {/* Crisis chips and the search box (or its compact Edit row) and the place row. This block
             never scrolls: the questions below it do (GuideShell innerScroll, guide-scroll). */}
           <div className="relative z-20 shrink-0" data-testid="landing-header">
-            <EmergencyLine />
+            <EmergencyLine hotlines={DEFAULT_HOTLINES} />
             {compact && (
               <button
                 type="button"

@@ -2,7 +2,10 @@
 
 import { useAtomValue } from 'jotai';
 
-import { EmergencyLine } from '../../../features/search/components/emergency-line';
+import {
+  DEFAULT_HOTLINES,
+  EmergencyLine,
+} from '../../../features/search/components/emergency-line';
 import { useV2Navigate } from '../../../features/search/v2/use-v2-search';
 import { suggestionPickChanges } from '../../../features/search/v2/landing';
 import { searchTermAtom } from '../../store/search';
@@ -40,7 +43,7 @@ export function SearchNeedInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <EmergencyLine />
+      <EmergencyLine hotlines={DEFAULT_HOTLINES} />
       <label htmlFor={inputId} className="text-2xl font-semibold">
         {needTexts.title}
       </label>

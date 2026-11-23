@@ -8,7 +8,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 import { appConfigContext } from '../src/app/(app)/shared/context/app-config-context';
 import { buildSearchUrl } from '../src/app/(app)/features/search/utils/buildSearchUrl';
-import { EmergencyLine } from '../src/app/(app)/features/search/components/emergency-line';
+import {
+  DEFAULT_HOTLINES,
+  EmergencyLine,
+} from '../src/app/(app)/features/search/components/emergency-line';
 import { DialButton } from '../src/app/(app)/features/search/components/dial-button';
 import {
   EmergencyBox,
@@ -43,7 +46,9 @@ test('dialing: every emergency control on a v2 tenant renders a tel: link', () =
       asV2Tenant(createElement(HotlineNumbers, { hotlines: HOTLINES })),
     ),
     renderToStaticMarkup(
-      asV2Tenant(createElement(HotlineNumbers, { hotlines: HOTLINES, soft: true })),
+      asV2Tenant(
+        createElement(HotlineNumbers, { hotlines: HOTLINES, soft: true }),
+      ),
     ),
     renderToStaticMarkup(
       asV2Tenant(createElement(EmergencyBox, { hotlines: HOTLINES })),
@@ -283,7 +288,7 @@ test('bottom bar: Continue replaces Skip and Show results now while options are 
 
 test('crisis line: the first search shows the two small buttons, no large 988 button', () => {
   const form = read(`${APP}shared/components/search/search-need-form.tsx`);
-  assert.match(form, /<EmergencyLine \/>/);
+  assert.match(form, /<EmergencyLine hotlines=\{DEFAULT_HOTLINES\} \/>/);
   assert.doesNotMatch(form, /SearchCrisisButton|in a crisis/);
   const html = renderToStaticMarkup(
     asV2Tenant(createElement(EmergencyLine, { hotlines: HOTLINES })),
@@ -292,7 +297,22 @@ test('crisis line: the first search shows the two small buttons, no large 988 bu
   assert.match(html, /always-on-988-link/);
 });
 
-// Contract v2: no default list in the UI. No hotlines from the response, no call buttons.
+// Landing and need form (no search response) keep the default 911/988 line (Lucas, 2026-11-23).
+test('landing and need form use the default 911/988 line', () => {
+  for (const f of [
+    'features/search/components/search-landing.tsx',
+    'shared/components/search/search-need-form.tsx',
+  ]) {
+    assert.match(read(`${APP}${f}`), /hotlines=\{DEFAULT_HOTLINES\}/);
+  }
+  const html = renderToStaticMarkup(
+    asV2Tenant(createElement(EmergencyLine, { hotlines: DEFAULT_HOTLINES })),
+  );
+  assert.match(html, /always-on-911-link/);
+  assert.match(html, /always-on-988-link/);
+});
+
+// Contract v2: a search response with no hotlines draws no call buttons.
 test('hotlines only from the response: none sent draws nothing', () => {
   for (const el of [
     createElement(EmergencyLine),

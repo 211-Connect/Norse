@@ -599,7 +599,7 @@ export const isNoneOption = (o: Pick<V2Option, 'label' | 'value'>) =>
 
 /**
  * The options the page may draw, at most `limit` until the person asks for more. "None of these"
- * comes only from the `none_of_these` flag (contract v2). Only a legacy question (no `placement`)
+ * is never drawn: the UI ignores the `none_of_these` flag (Lucas, 2026-11-23). Only a legacy question (no `placement`)
  * still carries a fake none option, so only then it is filtered out (remove when dev runs PR 2).
  */
 export function visibleOptions<T extends Pick<V2Option, 'label' | 'value'>>(

@@ -11,8 +11,17 @@ const CHIP =
   'relative inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-xs no-underline after:absolute after:-inset-y-2 after:inset-x-0 after:content-[""] focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none';
 
 /**
+ * Pages with no search response (the landing page, the need form) keep this default line
+ * (Lucas, 2026-11-23). On a search response the API's `hotlines[]` govern, and none sent draws nothing.
+ */
+export const DEFAULT_HOTLINES: V2Hotline[] = [
+  { label: 'Emergency: call 911', number: '911' },
+  { label: 'Crisis line', number: '988' },
+];
+
+/**
  * The always-on emergency line (ADR 0039 Decision 45): small chips for the numbers the API sent
- * with the emergency question (`hotlines[]`), directly above a search box. The UI has no default
+ * with the emergency question (`hotlines[]`), directly above a search box. On a search response the UI has no default
  * list (contract v2): with no numbers it draws nothing. The first number is the stronger chip
  * (red, bold); the others are quieter (gray outline). It has no bar and no width of its own.
  */
