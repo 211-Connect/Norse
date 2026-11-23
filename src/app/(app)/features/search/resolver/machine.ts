@@ -57,6 +57,8 @@ export type ResolverInput = {
   loopGuard: boolean;
   policy: SearchPolicy;
   searchEngine: SearchEngine;
+  /** The host tenant's `enableV2Api`: only then do the v2 URL slots count (`toFindResourcesQuery`). */
+  v2: boolean;
 };
 
 export type ResolverContext = ResolverInput & {
@@ -169,6 +171,7 @@ export const searchResolverMachine = setup({
      * is not classified again and not rewritten (a rewrite would drop `urgency` and `asked`). Lucas 2026-11-18 (2A).
      */
     answeredInUrl: ({ context }) =>
+      context.v2 &&
       [context.intent.needs, context.intent.urgency, context.intent.asked].some(
         (slot) => slot.stated,
       ),
@@ -216,7 +219,7 @@ export const searchResolverMachine = setup({
     const clarify = toLegacyAiClarifyState(input.intent);
     return {
       ...input,
-      searchQuery: toFindResourcesQuery(input.intent),
+      searchQuery: toFindResourcesQuery(input.intent, { v2: input.v2 }),
       clarify,
       origin: 'url',
       clarifyOptions: clarify?.options.length ? clarify.options : null,

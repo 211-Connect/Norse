@@ -55,11 +55,28 @@ test('v2 slots write back to the same intent', () => {
 });
 
 test('needs, passed needs, urgency and Other text reach the search call; refine and asked do not', () => {
-  const query = toFindResourcesQuery(liftQueryString(URL_).intent);
+  const query = toFindResourcesQuery(liftQueryString(URL_).intent, {
+    v2: true,
+  });
   assert.deepStrictEqual(query.needs, ['N-HOU-02']);
   assert.deepStrictEqual(query.passedNeeds, ['N-MON-02']);
   assert.equal(query.urgency, 'U-2');
   assert.equal(query.other, 'no car');
   assert.equal('refine' in query, false);
   assert.equal('asked' in query, false);
+});
+
+// Seam (adversarial-review finding 2, PR #1222): `/search` on a v1 host tenant (`enableV2Api` off)
+// reads a URL that a v2 page wrote. The v2 slots stay out of its search call.
+test('v1 host tenant: needs, passed needs, urgency and Other text do not reach the search call', () => {
+  const intent = liftQueryString(URL_).intent;
+  for (const query of [
+    toFindResourcesQuery(intent),
+    toFindResourcesQuery(intent, { v2: false }),
+  ]) {
+    for (const slot of ['needs', 'passedNeeds', 'urgency', 'other'] as const) {
+      assert.equal(query[slot], undefined, slot);
+    }
+    assert.equal(query.query, 'rent');
+  }
 });
