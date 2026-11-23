@@ -7,7 +7,10 @@ import {
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';
-import { validateHotlineNumber } from '../fields/hotlineNumber';
+import {
+  validateHotlineLabel,
+  validateHotlineNumber,
+} from '../fields/hotlineNumber';
 import { getCustomLayoutComponentLabel } from './resource';
 
 const CARD_COMPONENT_ID_OPTIONS = Object.values(SearchCardComponentId).map(
@@ -431,7 +434,7 @@ export const search: Tab = {
           labels: { singular: 'Hotline', plural: 'Hotlines' },
           admin: {
             description:
-              'Shown, in this order, only when a search looks like an emergency. Leave empty to use 988 (Crisis line) and 911 (Emergency).',
+              'Shown, in this order, only when a search looks like an emergency. Leave empty to use 988 (Crisis line) and 911 (Emergency). A list replaces both: add 988 or 911 yourself if you want them shown.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
@@ -442,7 +445,13 @@ export const search: Tab = {
               type: 'row',
               fields: [
                 // Not localized: the Redis value is per tenant, not per language.
-                { name: 'label', type: 'text', required: true, maxLength: 60 },
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  maxLength: 60,
+                  validate: validateHotlineLabel,
+                },
                 {
                   name: 'number',
                   type: 'text',

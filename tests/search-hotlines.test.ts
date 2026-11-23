@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-import { isValidHotlineNumber } from '../src/payload/collections/ResourceDirectories/fields/hotlineNumber';
+import {
+  isValidHotlineNumber,
+  validateHotlineLabel,
+} from '../src/payload/collections/ResourceDirectories/fields/hotlineNumber';
 import { buildHybridSearchConfigCache } from '../src/payload/collections/HybridSearchConfig/utilities/buildHybridSearchConfigCache';
 import { search as searchTab } from '../src/payload/collections/ResourceDirectories/tabs/search';
 
@@ -104,7 +107,7 @@ test('all rows blank gives [] so Norse-API falls back to 988 and 911', () => {
   );
 });
 
-test('the hotlines migration is registered last, after the v2 flag migration', () => {
+test('the hotlines migration is registered after the v2 flag migration', () => {
   const index = readFileSync(
     'src/payload/migrations/postgres/index.ts',
     'utf8',
@@ -112,4 +115,15 @@ test('the hotlines migration is registered last, after the v2 flag migration', (
   const names = [...index.matchAll(/name: '([^']+)'/g)].map((m) => m[1]);
   assert.equal(names.at(-1), '20261123_120000_v2_search_hotlines');
   assert.ok(names.indexOf('20261119_180448_v2_search_flag') < names.length - 1);
+});
+
+test('a blank hotline label is rejected in the admin, not dropped silently', () => {
+  for (const blank of ['', '   ', undefined, null]) {
+    assert.notEqual(
+      (validateHotlineLabel as any)(blank, {}),
+      true,
+      String(blank),
+    );
+  }
+  assert.equal((validateHotlineLabel as any)('Crisis line', {}), true);
 });

@@ -20,3 +20,11 @@ export const validateHotlineNumber: TextFieldSingleValidation = (value) =>
   typeof value === 'string' && isValidHotlineNumber(value)
     ? true
     : HOTLINE_NUMBER_MESSAGE;
+
+export const HOTLINE_LABEL_MESSAGE = 'Enter a name for this hotline.';
+
+/** A blank label is dropped from the cache, so a crisis number would vanish silently: reject it here. */
+export const validateHotlineLabel: TextFieldSingleValidation = (value) =>
+  typeof value === 'string' && value.trim() !== ''
+    ? true
+    : HOTLINE_LABEL_MESSAGE;
