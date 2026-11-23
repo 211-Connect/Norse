@@ -10,6 +10,10 @@ import {
 } from '@/payload/payload-types';
 import { AppConfig } from '@/types/appConfig';
 
+import {
+  dialingAllowed,
+  V2_DIAL_TENANTS_ENV,
+} from '../../features/search/components/no-dial-flag';
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import {
   DEFAULT_SEARCH_CARD_LAYOUT,
@@ -241,6 +245,7 @@ export async function buildAppConfig(
         enablePrintableDirectories: false,
         enableOrganizationSearch: false,
         enableV2Api: false,
+        v2DialingEnabled: false,
         requireAuthenticationForFavorites: false,
         requireUserLocation: false,
         showAgeFilter: false,
@@ -402,6 +407,10 @@ export async function buildAppConfig(
       enableOrganizationSearch:
         resourceDirectory.featureFlags?.enableOrganizationSearch ?? false,
       enableV2Api: resourceDirectory.featureFlags?.enableV2Api ?? false,
+      v2DialingEnabled: dialingAllowed(
+        getTenantId(resourceDirectory),
+        process.env[V2_DIAL_TENANTS_ENV],
+      ),
       requireAuthenticationForFavorites:
         resourceDirectory.featureFlags?.requireAuthenticationForFavorites ??
         false,

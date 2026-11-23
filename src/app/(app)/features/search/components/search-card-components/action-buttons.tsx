@@ -19,6 +19,7 @@ import { cn } from '@/app/(app)/shared/lib/utils';
 import { getPhoneHref } from '@/app/(app)/shared/utils/phone';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
+import { useNoDial } from '../../../../shared/hooks/use-no-dial';
 import { useIsV2 } from '../v2-results-bridge';
 import { SearchCardComponentProps } from './types';
 import { useResourceCardEntry } from './use-resource-card-entry';
@@ -28,7 +29,8 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   const appConfig = useAppConfig();
   const searchCoords = useAtomValue(searchCoordinatesAtom);
   const entry = useResourceCardEntry();
-  const isV2 = useIsV2();
+  // No Call button while v2 results show AND the tenant is not turned on (`no-dial-flag.ts`).
+  const noDial = useIsV2() && useNoDial();
   const viewDetailsText =
     appConfig.search.texts?.viewDetailsText || t('call_to_action.view_details');
   const viewDetailsButtonVariant =
@@ -37,7 +39,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   return (
     <div className="flex flex-col gap-2 print:hidden">
       <div className="grid w-full grid-cols-1 gap-2 lg:grid-cols-3">
-        {result.phone && !isV2 ? (
+        {result.phone && !noDial ? (
           <ReferralButton
             asChild
             className="w-full gap-1 overflow-hidden"

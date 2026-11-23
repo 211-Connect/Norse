@@ -71,6 +71,8 @@ export type AppConfig = {
     enableOrganizationSearch: boolean;
     /** Super-admin only, default off: the tenant's site uses the v2 search page and API. */
     enableV2Api: boolean;
+    /** Server env `V2_DIAL_TENANT_IDS` only, default off: a v2 tenant whose phone numbers dial and text. */
+    v2DialingEnabled: boolean;
     requireUserLocation: boolean;
     showAgeFilter: boolean;
     showFeedbackButtonGlobal: boolean;
