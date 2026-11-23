@@ -30,6 +30,7 @@ export type CacheKey =
   | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
   | `region_area:${string}`
+  | `state_regions:${string}`
   | `search_config:${TenantId}:${Locale}`
   | `search_suggestions:${TenantId}:${Locale}:${Hash}`
   | `orchestration_config:${TenantId}`;

@@ -56,6 +56,7 @@ Shared rules for every memory entry:
 | Search results, **common** searches | 1 h | 15 min | shared by many visitors |
 | Search results, other searches | 1 h | no | too many distinct keys for memory |
 | Map pins, geocoding | yes | no | |
+| A state's counties and places (landing-page region picker, `state_regions:<STATE>`) | 1 day | no | read only in the admin; the catalog changes only when Dagster publishes |
 | **Resources** (`/search/[id]`, `/details/original/[id]`, batch for favorites and printable directories) | **no** | **no** | almost every resource request is for a different id (bots crawl them one by one), so a cache only adds a Redis write and a round trip per request |
 
 A **common search** (`isCommonSearch`,
