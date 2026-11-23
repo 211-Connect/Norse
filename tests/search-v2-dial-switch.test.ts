@@ -68,3 +68,18 @@ test('the seam: the env name is read in buildAppConfig and the hook reads the co
   );
   assert.match(hook, /noDialFor\(useAppConfig\(\)\.featureFlags\)/);
 });
+
+test('the fallback tenant id and a non-string id never turn dialing on', () => {
+  assert.equal(dialingAllowed('unknown', 'unknown'), false);
+  assert.equal(dialingAllowed(7 as never, '7'), false);
+});
+
+test('the search card number and Call button follow the switch (both stay off by default)', () => {
+  const dir =
+    'src/app/(app)/features/search/components/search-card-components/';
+  const phone = readFileSync(dir + 'phone.tsx', 'utf8');
+  const actions = readFileSync(dir + 'action-buttons.tsx', 'utf8');
+  assert.match(phone, /const noDial = useIsV2\(\) && useNoDial\(\)/);
+  assert.match(actions, /const noDial = useIsV2\(\) && useNoDial\(\)/);
+  assert.match(actions, /result\.phone && !noDial/);
+});

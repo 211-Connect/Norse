@@ -8,6 +8,11 @@
  * wildcard). `buildAppConfig` reads it and sets `featureFlags.v2DialingEnabled` for that tenant.
  * Unset, empty or a tenant not in the list: no dial, as before. v1 tenants always dial.
  *
+ * Operations: set the env on the service that runs `buildAppConfig` (the CMS service when the app
+ * reads its config from a remote CMS). The config is cached up to one hour (and until a CMS save),
+ * so a turn-on or turn-off applies after a restart and the cache expiry; to turn a tenant off at
+ * once, remove it from the env, restart, and flush `app_config:*` in Redis.
+ *
  * No React and no server-only imports, so the unit tests can import it.
  */
 export const NO_DIAL = true;
@@ -19,7 +24,10 @@ export function dialingAllowed(
   tenantId: string | null | undefined,
   list: string | null | undefined,
 ): boolean {
-  if (!tenantId || !list) return false;
+  // 'unknown' is the config's fallback id for a missing tenant; it never turns dialing on.
+  if (!tenantId || tenantId === 'unknown' || typeof tenantId !== 'string')
+    return false;
+  if (!list) return false;
   return list
     .split(',')
     .map((id) => id.trim())
