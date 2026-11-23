@@ -20,8 +20,9 @@ const fake: Fake = {
   calls: 0,
   failNext: true,
 };
-(globalThis as typeof globalThis & { reverseGeocodeFake?: Fake }).reverseGeocodeFake =
-  fake;
+(
+  globalThis as typeof globalThis & { reverseGeocodeFake?: Fake }
+).reverseGeocodeFake = fake;
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
