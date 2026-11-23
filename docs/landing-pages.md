@@ -142,7 +142,7 @@ fails when a new route folder is missing from that list.
 
 Every collection is scoped to one Resource Directory.
 
-- **`landing-page-topics`** (table `lp_topics`): localized `name` and `slug`; localized overrides
+- **`landing-page-topics`** (table `lp_topics`): `enabled` (Generate pages); localized `name` and `slug`; localized overrides
   for SEO title, meta description, H1 and intro; the copied search; `source`.
 - **`landing-pages`** (table `lp_pages`): one row per region × topic. Topic
   relation; `regionId` (`state:WA`, `county:53053`, `place:5370000`) with the
@@ -190,6 +190,36 @@ unchanged K", and on confirmation queues the generation job:
 
 Every generated page is live. A page's result count never changes its status;
 an admin can turn any page `off`.
+
+**How it is built.** The diff is `planGeneration` in
+`features/landing-pages/lib/plan.ts`, a pure function tested in
+`tests/landing-pages-plan.test.ts`. Its input is the selection
+(`landingPages.regions` on the Resource Directory, a JSON list of
+`{ id, type, name, state, countyId }`), the tenant's topics with `enabled` on,
+the tenant's enabled locales and the existing rows. `previewLandingPages`
+returns the plan for the confirmation; the `generateLandingPages` job (queue
+`landingPages`, input `{ tenantId }`, no retries) writes it in one transaction
+with bulk SQL (`src/payload/services/landingPagesGeneration.ts`), so generated
+rows get a Payload version only once someone edits them.
+`getLandingGenerationStatus` reads the tenant's latest run from the jobs
+collection (queued, running, done with its counts, failed). The job refuses to
+run while `featureFlags.enableLandingPages` is off.
+
+Rules the plan follows:
+
+- A region keeps the place slug its pages already have; a new region whose
+  slug is taken gets its county's name added, then its number.
+- A page set to `off` stays off, whatever the selection says.
+- A page retired now gets the nearest live parent for the same topic (county,
+  then state), else the equivalent `/search` URL. A target an admin already
+  set is kept while it still leads somewhere.
+- A removed topic is turned off with **Generate pages** (`enabled`), not
+  deleted: a topic with pages can't be deleted, because its retired pages
+  still need its search for their redirect.
+- An address change (topic slug edited) makes the new path current and keeps
+  the old row, which then redirects. Going back to an old slug makes that row
+  current again. Two pages that would share an address are reported as
+  conflicts and the second one is skipped.
 
 ## Old URLs keep working
 

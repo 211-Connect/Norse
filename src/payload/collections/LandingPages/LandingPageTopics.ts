@@ -1,4 +1,9 @@
-import type { CollectionConfig, TextFieldSingleValidation } from 'payload';
+import {
+  APIError,
+  type CollectionBeforeDeleteHook,
+  type CollectionConfig,
+  type TextFieldSingleValidation,
+} from 'payload';
 
 import { topicSlugProblem } from '@/app/(app)/features/landing-pages/lib/slugs';
 
@@ -8,6 +13,29 @@ import { landingCopyFields } from './copyFields';
 const validateTopicSlug: TextFieldSingleValidation = (value) => {
   if (!value) return true; // filled by the translate job or the editor
   return topicSlugProblem(value) ?? true;
+};
+
+/**
+ * Pages keep their topic for good (a retired page redirects to the topic's
+ * search), so a topic with pages is turned off, not deleted.
+ */
+const refuseDeleteWithPages: CollectionBeforeDeleteHook = async ({
+  id,
+  req,
+}) => {
+  const { totalDocs } = await req.payload.count({
+    collection: 'landing-pages',
+    where: { topic: { equals: id } },
+    req,
+  });
+  if (totalDocs > 0) {
+    throw new APIError(
+      `This topic has ${totalDocs} landing pages. Turn off "Generate pages" instead, then apply changes; its pages will redirect.`,
+      400,
+      undefined,
+      true,
+    );
+  }
 };
 
 /**
@@ -27,12 +55,31 @@ export const LandingPageTopics: CollectionConfig = {
     delete: superAdminOrSupportOrTenantAccess,
   },
   versions: { drafts: false, maxPerDoc: 50 },
+  hooks: { beforeDelete: [refuseDeleteWithPages] },
   admin: {
     useAsTitle: 'name',
     group: 'Landing pages',
-    defaultColumns: ['name', 'slug', 'search.queryType', 'updatedAt'],
+    defaultColumns: [
+      'name',
+      'slug',
+      'enabled',
+      'search.queryType',
+      'updatedAt',
+    ],
   },
   fields: [
+    {
+      name: 'enabled',
+      label: 'Generate pages',
+      type: 'checkbox',
+      defaultValue: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description:
+          "Off: Apply changes retires this topic's pages, which then redirect to the equivalent search.",
+      },
+    },
     {
       type: 'row',
       fields: [

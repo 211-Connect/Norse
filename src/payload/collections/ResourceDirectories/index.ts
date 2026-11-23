@@ -24,6 +24,7 @@ import { featureFlags } from './tabs/featureFlags';
 import { footer } from './tabs/footer';
 import { header } from './tabs/header';
 import { highlights } from './tabs/highlights';
+import { landingPages } from './tabs/landingPages';
 import { newLayout } from './tabs/newLayout';
 import { printableDirectories } from './tabs/printableDirectories';
 import { privacyPolicyPage } from './tabs/privacyPolicyPage';
@@ -163,6 +164,7 @@ export const ResourceDirectories: CollectionConfig = {
         termsOfUsePage,
         featureFlags,
         printableDirectories,
+        landingPages,
       ],
     },
   ],

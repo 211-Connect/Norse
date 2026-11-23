@@ -95,6 +95,7 @@ import * as migration_20261118_092914_area_search_unlocated from './20261118_092
 import * as migration_20261119_111137_brand_email from './20261119_111137_brand_email';
 import * as migration_20261123_135715_landing_pages from './20261123_135715_landing_pages';
 import * as migration_20261123_140113_tenant_seo_settings from './20261123_140113_tenant_seo_settings';
+import * as migration_20261123_140939_landing_pages_selection from './20261123_140939_landing_pages_selection';
 
 export const migrations = [
   {
@@ -581,5 +582,10 @@ export const migrations = [
     up: migration_20261123_140113_tenant_seo_settings.up,
     down: migration_20261123_140113_tenant_seo_settings.down,
     name: '20261123_140113_tenant_seo_settings',
+  },
+  {
+    up: migration_20261123_140939_landing_pages_selection.up,
+    down: migration_20261123_140939_landing_pages_selection.down,
+    name: '20261123_140939_landing_pages_selection',
   },
 ];

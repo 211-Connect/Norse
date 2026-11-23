@@ -280,6 +280,7 @@ export interface Config {
       translate: TaskTranslate;
       warmCache: TaskWarmCache;
       deliverScheduledPdfs: TaskDeliverScheduledPdfs;
+      generateLandingPages: TaskGenerateLandingPages;
       inline: {
         input: unknown;
         output: unknown;
@@ -1099,6 +1100,10 @@ export interface ResourceDirectory {
     requireAuthenticationForFavorites?: boolean | null;
     showAgeFilter?: boolean | null;
     enablePrintableDirectories?: boolean | null;
+    /**
+     * SEO landing pages (topic × place) and their sitemaps. See the Landing Pages tab.
+     */
+    enableLandingPages?: boolean | null;
   };
   printableDirectories?: {
     /**
@@ -1158,6 +1163,20 @@ export interface ResourceDirectory {
       userQuotaUsd?: number | null;
       tenantCapUsd?: number | null;
     };
+  };
+  landingPages?: {
+    /**
+     * The selected regions: [{ id, type, name, state, countyId }]. Every selected state always gets its state pages.
+     */
+    regions?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1313,6 +1332,10 @@ export interface TranslationUsageAlert {
 export interface LandingPageTopic {
   id: number;
   tenant?: (string | null) | Tenant;
+  /**
+   * Off: Apply changes retires this topic's pages, which then redirect to the equivalent search.
+   */
+  enabled?: boolean | null;
   /**
    * What the topic is called on its pages, in the words people search with.
    */
@@ -1519,7 +1542,8 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs';
+        taskSlug:
+          'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs' | 'generateLandingPages';
         taskID: string;
         input?:
           | {
@@ -1552,7 +1576,8 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs') | null;
+  taskSlug?:
+    ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs' | 'generateLandingPages') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -2202,6 +2227,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         requireAuthenticationForFavorites?: T;
         showAgeFilter?: T;
         enablePrintableDirectories?: T;
+        enableLandingPages?: T;
       };
   printableDirectories?:
     | T
@@ -2245,6 +2271,11 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               userQuotaUsd?: T;
               tenantCapUsd?: T;
             };
+      };
+  landingPages?:
+    | T
+    | {
+        regions?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2335,6 +2366,7 @@ export interface TranslationUsageAlertsSelect<T extends boolean = true> {
  */
 export interface LandingPageTopicsSelect<T extends boolean = true> {
   tenant?: T;
+  enabled?: T;
   name?: T;
   slug?: T;
   search?:
@@ -2914,6 +2946,33 @@ export interface TaskDeliverScheduledPdfs {
     sentAsLink: number;
     skipped: number;
     failed: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateLandingPages".
+ */
+export interface TaskGenerateLandingPages {
+  input: {
+    tenantId: string;
+  };
+  output: {
+    creates: number;
+    retires: number;
+    revives: number;
+    unchanged: number;
+    addressChanges: number;
+    redirectsUpdated: number;
+    conflicts: number;
+    conflictList?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
 }
 /**

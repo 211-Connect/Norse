@@ -136,5 +136,19 @@ export const featureFlags: Tab = {
         update: superAdminOrSupportAccess,
       },
     },
+    {
+      name: 'enableLandingPages',
+      type: 'checkbox',
+      label: 'Enable Landing Pages',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
+      },
+      admin: {
+        description:
+          'SEO landing pages (topic × place) and their sitemaps. See the Landing Pages tab.',
+      },
+    },
   ],
 };
