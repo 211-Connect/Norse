@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { resolveV2HostTenant } from '@/app/(app)/features/search/v2/v2-host-tenant';
+import type { AreaSettingsSource } from '@/app/(app)/features/search/utils/area-settings';
 import { buildV2Headers } from '@/app/(app)/features/search/v2/v2-request';
 import {
   buildPinsUrl,
@@ -80,11 +81,11 @@ export async function GET(request: NextRequest) {
 /** `null` when the upstream call fails, as `findResourcePins` does. */
 async function findV2Pins(
   incoming: URLSearchParams,
-  appConfig: { tenantId: string },
+  appConfig: { tenantId: string; search: AreaSettingsSource },
 ) {
   if (!API_URL) return null;
   const upstream = await fetch(
-    buildPinsUrl(API_URL, incoming, appConfig.tenantId),
+    buildPinsUrl(API_URL, incoming, appConfig.tenantId, appConfig.search),
     {
       headers: buildV2Headers(await getTenantApiKey(appConfig.tenantId)),
       cache: 'no-store',

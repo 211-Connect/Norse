@@ -8,6 +8,10 @@
  * exact search.
  */
 
+import {
+  addAreaSettings,
+  type AreaSettingsSource,
+} from '../utils/area-settings';
 import { v2FilterPairs } from './v2-contract';
 
 /** The v2 parameters the draft contract names. Anything else on the page URL stays out of the call. */
@@ -54,6 +58,8 @@ export function buildV2Url(
   incoming: Pick<URLSearchParams, 'get'> &
     Partial<Pick<URLSearchParams, 'entries'>>,
   tenantId: string,
+  /** The tenant's Payload area settings; sent with an area search (`region`) that names none. */
+  areaSettings?: AreaSettingsSource | null,
 ): string {
   const outgoing = new URLSearchParams();
   for (const key of V2_FORWARD) {
@@ -69,6 +75,7 @@ export function buildV2Url(
       outgoing.append(key, value);
     }
   }
+  addAreaSettings(outgoing, areaSettings);
   outgoing.set('tenant_id', tenantId);
   outgoing.set('locale', incoming.get('locale') || DEFAULT_LOCALE);
   return `${apiUrl}/v2/search?${outgoing}`;

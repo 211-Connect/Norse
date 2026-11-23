@@ -2,6 +2,7 @@ import { API_URL } from '@/app/(app)/shared/lib/constants';
 import { getTenantApiKey } from '@/lib/api/getTenantApiKey';
 import { createLogger } from '@/lib/logger';
 
+import type { AreaSettingsSource } from '../utils/area-settings';
 import type { V2Response } from './v2-contract';
 import { buildV2Headers, buildV2Url } from './v2-request';
 
@@ -19,6 +20,8 @@ export async function fetchV2Server(
   tenantId: string,
   /** The route's locale (`/es/search` is `es`), sent as it is. */
   locale?: string,
+  /** The tenant's Payload area settings (`appConfig.search`). */
+  areaSettings?: AreaSettingsSource | null,
 ): Promise<V2Response | null> {
   if (!API_URL) return null;
   try {
@@ -30,6 +33,7 @@ export async function fetchV2Server(
             key === 'locale' && locale ? locale : incoming.get(key),
         },
         tenantId,
+        areaSettings,
       ),
       {
         headers: buildV2Headers(await getTenantApiKey(tenantId)),
