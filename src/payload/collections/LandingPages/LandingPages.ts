@@ -5,6 +5,7 @@ import {
   superAdminOrSupportAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../Users/access/roles';
+import { landingPagesEndpoints } from '../../endpoints/landingPages';
 import { landingCopyFields } from './copyFields';
 
 const REGION_ID = /^(state:[A-Z]{2}|county:\d{5}|place:\d{7})$/;
@@ -26,6 +27,7 @@ export const LandingPages: CollectionConfig = {
     delete: superAdminAccess,
   },
   versions: { drafts: false, maxPerDoc: 50 },
+  endpoints: landingPagesEndpoints,
   indexes: [{ fields: ['tenant', 'topic', 'regionId'], unique: true }],
   admin: {
     useAsTitle: 'label',

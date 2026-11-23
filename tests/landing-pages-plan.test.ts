@@ -117,6 +117,7 @@ describe('planGeneration', () => {
   test('creates every region × topic, the state page, and an address per locale', () => {
     const { plan, next } = generate(base());
     assert.equal(plan.summary.creates, 3);
+    assert.equal(plan.summary.addressChanges, 0); // first addresses, not moves
     assert.deepEqual(next.slugs.map((s) => `${s.locale}/${s.path}`).sort(), [
       'en/food/pierce-county-wa',
       'en/food/tacoma-wa',

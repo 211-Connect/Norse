@@ -35,6 +35,17 @@ export const landingPages: Tab = {
   },
   fields: [
     {
+      name: 'landingSummary',
+      type: 'ui',
+      admin: {
+        condition: (data) => Boolean(data?.featureFlags?.enableLandingPages),
+        components: {
+          Field:
+            '@/payload/collections/LandingPages/components/LandingSummaryCard',
+        },
+      },
+    },
+    {
       name: 'landingTopics',
       type: 'ui',
       admin: {
@@ -55,8 +66,10 @@ export const landingPages: Tab = {
       },
       admin: {
         condition: (data) => Boolean(data?.featureFlags?.enableLandingPages),
-        description:
-          'The selected regions: [{ id, type, name, state, countyId }]. Every selected state always gets its state pages.',
+        components: {
+          Field:
+            '@/payload/collections/LandingPages/components/RegionPickerField',
+        },
       },
     },
   ],

@@ -51,9 +51,12 @@ Every field is hidden until a super-admin turns on
 `featureFlags.enableLandingPages`, the same pattern as printable directories.
 Each tenant has its own Resource Directory.
 
-- Summary card: live pages, locales, when pages were last generated and last
-  counted, a link to the page list, and **Apply changes**.
-- Regions: a state › county › city tree.
+- Summary card (`LandingSummaryCard`): live pages, locales, when pages were
+  last generated and last counted, a link to the page list, and **Apply
+  changes**. Apply changes is disabled while the form has unsaved edits,
+  because it works from the saved settings.
+- Regions (`RegionPickerField` on the `landingPages.regions` JSON field): a
+  state › county › city tree.
 - Topics: the `landing-page-topics` records.
 - Copy templates for each locale.
 
@@ -63,12 +66,16 @@ the flag on and the Tenant is not `noindex`.
 ## Regions
 
 The picker loads a state's counties and cities from Norse-API
-`GET /internal/regions?state=XX&type=county|place`, through the generated SDK
-and cached for a day. Each entry has `id`, `type`, `name`, `state`, `countyId`
-(cities only: the county containing the city's centroid) and `population`
-when the Census data includes it. The admin picks one or more states, then
-ticks counties and cities. The tree has "select all" buttons, and cities are
-sorted by population.
+`GET /regions?state=XX` through the generated SDK (`getStateRegions` in
+`src/payload/services/stateRegions.ts`, cached in Redis for a day; the first
+load of a state takes a few seconds). Each entry has `id`, `type`, `name`,
+`state` and, for cities, `county_id` (the county containing the city's
+centroid). The admin picks one or more states, then ticks counties and
+cities: one row per county with its cities under it, plus "Cities outside any
+county". The tree has search, "Select all counties", "Select all cities",
+"Clear" and per-county all/none links. Counties and cities are sorted by
+name; the region index has no population, so sorting by population waits
+until it does.
 
 - A selected state always gets its state pages. The state itself can't be
   unticked.
@@ -77,7 +84,23 @@ sorted by population.
   type, state and `countyId` copied in. "Select all" ticks what the index holds
   now. A city added to the index later shows up as "N new cities available"
   and gets pages only after someone ticks it. Pages never appear or disappear
-  just because the region index changed.
+  just because the region index changed. To tell which cities are new, the
+  state's entry stores `seen`: every region id the index held when the state
+  was last edited. A city missing from `seen` is new; a state never edited in
+  the picker shows none. The list logic is `lib/regionSelection.ts`, tested in
+  `tests/landing-pages-region-selection.test.ts`. A ticked region the index
+  later drops stays selected.
+
+The tab's admin calls are custom endpoints on the `landing-pages` collection
+(`src/payload/endpoints/landingPages.ts`). Each takes `tenantId` and allows
+super-admins, support and admins of that tenant:
+
+| Endpoint | Returns |
+| --- | --- |
+| `GET /api/landing-pages/admin/regions?tenantId=&state=` | The state's counties and cities; 502 when Norse-API fails. |
+| `GET /api/landing-pages/admin/summary?tenantId=` | Live pages, locale count, last generated, last counted, the latest run. |
+| `POST /api/landing-pages/admin/preview` `{ tenantId }` | The plan's counts and the first conflicts, without writing. |
+| `POST /api/landing-pages/admin/apply` `{ tenantId }` | Queues the generation job; 409 while a run is queued or running. |
 
 Cities are loaded for Washington first and will cover every US state, so
 nothing here assumes Washington.
@@ -199,8 +222,10 @@ a fake store in `tests/landing-pages-resolve.test.ts`.
 ## Generating pages
 
 Saving the tab does not change any pages. **Apply changes** first runs the
-generation diff without writing, shows "creates N, retires M (with targets),
-unchanged K", and on confirmation queues the generation job:
+generation diff without writing, shows what would change (new pages, pages
+back live, retired pages, moved addresses, updated redirects, skipped
+conflicts), and on confirmation queues the generation job. The card polls
+until the run ends:
 
 - new region × topic pairs → `live` rows, with a slug for each tenant locale;
 - every selected state gets its state page for each topic;
@@ -222,7 +247,10 @@ returns the plan for the confirmation; the `generateLandingPages` job (queue
 with bulk SQL (`src/payload/services/landingPagesGeneration.ts`), so generated
 rows get a Payload version only once someone edits them.
 `getLandingGenerationStatus` reads the tenant's latest run from the jobs
-collection (queued, running, done with its counts, failed). The job refuses to
+collection (queued, running, done with its counts, failed). Finished jobs are
+deleted, so "last generated" falls back to the newest page update. The
+plan's `addressChanges` counts moved addresses only; a new page's or new
+language's first address is not a change. The job refuses to
 run while `featureFlags.enableLandingPages` is off.
 
 Rules the plan follows:

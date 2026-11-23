@@ -1166,9 +1166,6 @@ export interface ResourceDirectory {
     };
   };
   landingPages?: {
-    /**
-     * The selected regions: [{ id, type, name, state, countyId }]. Every selected state always gets its state pages.
-     */
     regions?:
       | {
           [k: string]: unknown;

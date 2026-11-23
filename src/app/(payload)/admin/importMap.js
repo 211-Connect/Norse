@@ -22,7 +22,9 @@ import { default as default_3b301e482d0e37c98ec50b2153f0f45d } from '@/payload/c
 import { default as default_f83d96d079111af09b6323bb84c1f19e } from '@/payload/collections/ResourceDirectories/components/FacetsRowLabel'
 import { default as default_a2840d49293f7e4212d4182b1c3febc3 } from '@/payload/collections/ResourceDirectories/components/UseCustomCardLayoutField'
 import { default as default_b88409986c301af77c1522dd3c50f441 } from '@/payload/collections/ResourceDirectories/components/TranslationUsageTable'
+import { default as default_d1907b411e61eb2b098302e326d9cb1d } from '@/payload/collections/LandingPages/components/LandingSummaryCard'
 import { default as default_a28901f6ad4d6c62b637653f799d516b } from '@/payload/collections/LandingPages/components/LandingTopicsField'
+import { default as default_d2de56ec110b559959019647ddf54fff } from '@/payload/collections/LandingPages/components/RegionPickerField'
 import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/collections/ResourceDirectories/components/EditViewWrapper'
 import { default as default_7a8b15e24786becdbc27798cd6643e36 } from '@/payload/collections/OrchestrationConfig/components/TenantHeader'
 import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel'
@@ -102,7 +104,9 @@ export const importMap = {
   "@/payload/collections/ResourceDirectories/components/FacetsRowLabel#default": default_f83d96d079111af09b6323bb84c1f19e,
   "@/payload/collections/ResourceDirectories/components/UseCustomCardLayoutField#default": default_a2840d49293f7e4212d4182b1c3febc3,
   "@/payload/collections/ResourceDirectories/components/TranslationUsageTable#default": default_b88409986c301af77c1522dd3c50f441,
+  "@/payload/collections/LandingPages/components/LandingSummaryCard#default": default_d1907b411e61eb2b098302e326d9cb1d,
   "@/payload/collections/LandingPages/components/LandingTopicsField#default": default_a28901f6ad4d6c62b637653f799d516b,
+  "@/payload/collections/LandingPages/components/RegionPickerField#default": default_d2de56ec110b559959019647ddf54fff,
   "@/payload/collections/ResourceDirectories/components/EditViewWrapper#default": default_76ffa28dff37b978c6ada354e1e9e67c,
   "@/payload/collections/OrchestrationConfig/components/TenantHeader#default": default_7a8b15e24786becdbc27798cd6643e36,
   "@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel#default": default_251fd09bbd0b103ad0dcec7022f13978,

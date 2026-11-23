@@ -416,9 +416,11 @@ export function planGeneration(input: PlanInput): GenerationPlan {
         }
       }
       claimed.add(pathKey);
-      addressChanges++;
-      if (current)
+      // Only a move counts; a new page or language gets its first address.
+      if (current) {
+        addressChanges++;
         slugUpdates.set(current.id, { id: current.id, current: false });
+      }
       if (row) {
         slugUpdates.set(row.id, {
           id: row.id,
