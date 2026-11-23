@@ -1,14 +1,12 @@
 'use client';
 
-import { NO_DIAL } from '@/app/(app)/features/search/components/no-dial-flag';
+import { noDialFor } from '@/app/(app)/features/search/components/no-dial-flag';
 
-import { useFlag } from './use-flag';
+import { useAppConfig } from './use-app-config';
 
 /**
- * True when no phone number may dial or text: the no-dial switch is on AND the tenant is on v2
- * (`enableV2Api`). v1 tenants always dial, as before.
+ * True when no phone number may dial or text: the tenant is on v2 (`enableV2Api`), the no-dial
+ * switch is on, and the tenant is not turned on (`v2DialingEnabled`, from the server env
+ * `V2_DIAL_TENANT_IDS`; see `no-dial-flag.ts`). v1 tenants always dial, as before.
  */
-export const useNoDial = (): boolean => {
-  const v2 = useFlag('enableV2Api');
-  return NO_DIAL && v2 === true;
-};
+export const useNoDial = (): boolean => noDialFor(useAppConfig().featureFlags);
