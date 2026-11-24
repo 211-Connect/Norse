@@ -9,6 +9,7 @@ import {
   TenantMedia,
 } from '@/payload/payload-types';
 import { AppConfig } from '@/types/appConfig';
+import { searchHotlinesFor } from '@/utils/hotlines';
 
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import {
@@ -557,6 +558,10 @@ export async function buildAppConfig(
         resourceDirectory.search.searchSettings.defaultRadius ?? undefined,
       searchEngine:
         resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
+      hotlines: searchHotlinesFor(
+        resourceDirectory.featureFlags?.enableV2Api,
+        resourceDirectory.search.searchSettings.hotlines,
+      ),
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
       showAllResultsOnMap:
         resourceDirectory.search.searchSettings.showAllResultsOnMap ?? false,

@@ -288,7 +288,7 @@ test('bottom bar: Continue replaces Skip and Show results now while options are 
 
 test('crisis line: the first search shows the two small buttons, no large 988 button', () => {
   const form = read(`${APP}shared/components/search/search-need-form.tsx`);
-  assert.match(form, /<EmergencyLine hotlines=\{DEFAULT_HOTLINES\} \/>/);
+  assert.match(form, /<EmergencyLine \/>/);
   assert.doesNotMatch(form, /SearchCrisisButton|in a crisis/);
   const html = renderToStaticMarkup(
     asV2Tenant(createElement(EmergencyLine, { hotlines: HOTLINES })),
@@ -297,26 +297,26 @@ test('crisis line: the first search shows the two small buttons, no large 988 bu
   assert.match(html, /always-on-988-link/);
 });
 
-// Landing and need form (no search response) keep the default 911/988 line (Lucas, 2026-11-23).
-test('landing and need form use the default 911/988 line', () => {
+// Landing and need form pass nothing: the line reads the tenant's hotlines and adds 911 and 988.
+test('landing and need form draw the line with no props', () => {
   for (const f of [
     'features/search/components/search-landing.tsx',
     'shared/components/search/search-need-form.tsx',
   ]) {
-    assert.match(read(`${APP}${f}`), /hotlines=\{DEFAULT_HOTLINES\}/);
+    const src = read(`${APP}${f}`);
+    assert.match(src, /<EmergencyLine \/>/);
+    assert.doesNotMatch(src, /DEFAULT_HOTLINES/);
   }
   const html = renderToStaticMarkup(
-    asV2Tenant(createElement(EmergencyLine, { hotlines: DEFAULT_HOTLINES })),
+    asV2Tenant(createElement(EmergencyLine, {})),
   );
   assert.match(html, /always-on-911-link/);
   assert.match(html, /always-on-988-link/);
 });
 
-// Contract v2: a search response with no hotlines draws no call buttons.
-test('hotlines only from the response: none sent draws nothing', () => {
+// HotlineNumbers and the box show only the API's numbers; the always-on line adds 911 and 988.
+test('hotlines only from the response: none sent draws nothing (HotlineNumbers, EmergencyBox)', () => {
   for (const el of [
-    createElement(EmergencyLine),
-    createElement(EmergencyLine, { hotlines: [] }),
     createElement(HotlineNumbers, {}),
     createElement(HotlineNumbers, { hotlines: [] }),
   ]) {

@@ -161,6 +161,8 @@ export type AppConfig = {
     }[];
     defaultRadius?: number;
     searchEngine: SearchEngine;
+    /** The tenant's emergency hotlines. Set only when `enableV2Api` is on; absent for v1. */
+    hotlines?: { label: string; number: string }[];
     resultsLimit: number;
     showAllResultsOnMap: boolean;
     pinnedResourcesMode: 'ignore' | 'boost' | 'top';

@@ -4,22 +4,9 @@ import type {
 } from '@/payload/payload-types';
 import { DEFAULT_UNLOCATED } from '@/types/areaSearch';
 import type { HybridSearchConfigCache } from '@/types/hybridSearchConfig';
+import { toCacheHotlines } from '@/utils/hotlines';
 
-type SearchSettingsHotlines = NonNullable<
-  NonNullable<ResourceDirectory['search']>['searchSettings']
->['hotlines'];
-
-/** Keeps order, trims, and drops rows with a blank label or number. */
-export function toCacheHotlines(
-  hotlines: SearchSettingsHotlines | null | undefined,
-): HybridSearchConfigCache['hotlines'] {
-  return (hotlines ?? [])
-    .map((h) => ({
-      label: (h.label ?? '').trim(),
-      number: (h.number ?? '').trim(),
-    }))
-    .filter((h) => h.label !== '' && h.number !== '');
-}
+export { toCacheHotlines };
 
 /**
  * Merges the tenant's HybridSearchConfig weight overrides with the
