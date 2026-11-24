@@ -71,6 +71,22 @@ export function Footer() {
                 </li>
               )}
 
+              {/* The way into the SEO landing pages (docs/landing-pages.md). */}
+              {appConfig.featureFlags.enableLandingPages &&
+                !appConfig.noindex && (
+                  <li>
+                    <Link
+                      className={cn(
+                        buttonVariants({ variant: 'link' }),
+                        'text-primary! whitespace-pre-wrap',
+                      )}
+                      href="/sitemap"
+                    >
+                      {t('footer.sitemap')}
+                    </Link>
+                  </li>
+                )}
+
               {appConfig.footer.customMenu.map((el) => (
                 <li key={el.name}>
                   <Link

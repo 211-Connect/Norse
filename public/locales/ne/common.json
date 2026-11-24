@@ -172,7 +172,8 @@
     "provided_by": "द्वारा प्रदान गरिएको डेटा"
   },
   "footer": {
-    "copyright": "© प्रतिलिपि अधिकार {{text}}"
+    "copyright": "© प्रतिलिपि अधिकार {{text}}",
+    "sitemap": "साइटम्याप"
   },
   "carousel": {
     "previous": "अघिल्लो",

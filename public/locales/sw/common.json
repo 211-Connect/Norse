@@ -172,7 +172,8 @@
     "provided_by": "Data iliyotolewa na"
   },
   "footer": {
-    "copyright": "© Haki miliki {{text}}"
+    "copyright": "© Haki miliki {{text}}",
+    "sitemap": "Ramani ya tovuti"
   },
   "carousel": {
     "previous": "Iliyotangulia",

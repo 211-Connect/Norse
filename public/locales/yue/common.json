@@ -172,7 +172,8 @@
     "provided_by": "資料由"
   },
   "footer": {
-    "copyright": "© 版權所有 {{text}}"
+    "copyright": "© 版權所有 {{text}}",
+    "sitemap": "網站地圖"
   },
   "carousel": {
     "previous": "之前",

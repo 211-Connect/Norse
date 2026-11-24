@@ -172,7 +172,8 @@
     "provided_by": "Dữ liệu được cung cấp bởi"
   },
   "footer": {
-    "copyright": "© Bản quyền {{text}}"
+    "copyright": "© Bản quyền {{text}}",
+    "sitemap": "Sơ đồ trang web"
   },
   "carousel": {
     "previous": "Trước",

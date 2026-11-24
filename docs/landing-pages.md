@@ -472,13 +472,31 @@ builders in `features/landing-pages/lib/sitemap.ts`).
 - Built per request from the cached page list (`landing_sitemap`, see
   Caching), with `Cache-Control: public, max-age=600`.
 
-**HTML.** `/sitemap` in each locale, linked from the footer of every page (the
-link label comes from the app's translation strings). It groups pages by topic:
-the state page, then counties A–Z with their cities indented. Past about 2,000
-links it splits into `/sitemap/{topic-slug}` pages. It is indexable, with a
-canonical pointing to itself and hreflang to the other locales. This footer
-link is how crawlers and people find the landing pages, and links between the
-landing pages lead to the rest.
+**HTML.** `/sitemap` in each locale (`[locale]/(rest)/sitemap/page.tsx`,
+tree in `lib/htmlSitemap.ts`). This page is how crawlers and people find the
+landing pages, and links between the landing pages lead to the rest.
+
+- **Footer link** on every page while the flag is on and the Tenant is not
+  `noindex`. Its label is `footer.sitemap` in `common.json`, not the CMS
+  footer menu.
+- **Layout:** one collapsible section (`<details>`) per topic, A–Z. Each
+  section lists its states, then counties A–Z with their cities indented
+  under them. Collapsed sections stay in the HTML, so crawlers see every
+  link. A state without a page is a heading without a link. Cities whose
+  county has no page come last.
+- **Size:** past 2,000 links in a locale (`HTML_SITEMAP_LINK_LIMIT`),
+  `/sitemap` lists the topics only, and each topic gets
+  `/sitemap/{topic-slug}`. Those pages always exist, but they are only
+  linked once the page splits.
+- **SEO:** indexable, with a canonical pointing to itself and hreflang to
+  the locales that have pages (topic pages: the topic's slug in each
+  locale).
+- **A locale without pages** lists the default locale's pages, so the footer
+  link never leads to a 404. That variant is `noindex, follow`.
+- **404** when the host serves no landing pages or has none at all.
+- **Data:** built from the cached page list (`landing_sitemap`, see Caching).
+- Metadata only ever adds `noindex`. A deployment that blocks crawlers keeps
+  its `noindex, nofollow`.
 
 ## Caching
 
@@ -489,7 +507,7 @@ landing pages lead to the rest.
 | Live pages per locale (hub, sitemaps) | Redis + memory | `landing_sitemap:<tenant>:<hash of version>` | 1 day; a new version is a new key |
 | Landing-page search results | Redis | `search_results:…` (shared builder) | 24 h, refreshed by the warm-up job |
 | Landing-page map pins | Redis | `search_pins:…` | 24 h, refreshed by the warm-up job |
-| XML sitemaps | built per request from the page list above | | HTTP `max-age` 10 min |
+| XML and HTML sitemaps | built per request from the page list above | | XML: HTTP `max-age` 10 min |
 | Region lists for the picker | Redis | state, type | 1 day |
 
 The HTML of a page is not cached by a CDN, because a page served from the CDN

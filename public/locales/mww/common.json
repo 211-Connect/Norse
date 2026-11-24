@@ -172,7 +172,8 @@
     "provided_by": "Cov ntaub ntawv muab los ntawm"
   },
   "footer": {
-    "copyright": "© Muaj Cai {{text}}"
+    "copyright": "© Muaj Cai {{text}}",
+    "sitemap": "Daim ntawv qhia lub vev xaib"
   },
   "carousel": {
     "previous": "Yav tas los",

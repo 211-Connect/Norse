@@ -177,7 +177,8 @@
     "go_to": "પર જાઓ"
   },
   "footer": {
-    "copyright": "© કૉપિરાઇટ {{text}}"
+    "copyright": "© કૉપિરાઇટ {{text}}",
+    "sitemap": "સાઇટમેપ"
   },
   "filter_results_count_one": "{{count}} પરિણામ",
   "filter_results_count_other": "{{count}} પરિણામો",

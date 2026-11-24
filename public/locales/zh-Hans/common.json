@@ -172,7 +172,8 @@
     "provided_by": "数据提供"
   },
   "footer": {
-    "copyright": "© 版权 {{text}}"
+    "copyright": "© 版权 {{text}}",
+    "sitemap": "网站地图"
   },
   "carousel": {
     "previous": "以前的",

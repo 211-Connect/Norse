@@ -172,7 +172,8 @@
     "provided_by": "ଦ୍ଵାରା ପ୍ରଦାନ କରାଯାଇଥିବା ଡାଟା"
   },
   "footer": {
-    "copyright": "© କପିରାଇଟ୍ {{text}}"
+    "copyright": "© କପିରାଇଟ୍ {{text}}",
+    "sitemap": "ସାଇଟମ୍ୟାପ୍"
   },
   "carousel": {
     "previous": "ପୂର୍ବବର୍ତ୍ତୀ",

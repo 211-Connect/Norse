@@ -172,7 +172,8 @@
     "provided_by": "Dataaji ɗi..."
   },
   "footer": {
-    "copyright": "© Hakkeeji {{text}}"
+    "copyright": "© Hakkeeji {{text}}",
+    "sitemap": "Kartal lowre"
   },
   "carousel": {
     "previous": "Je sali",

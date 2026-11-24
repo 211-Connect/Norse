@@ -172,7 +172,8 @@
     "provided_by": "Данные предоставлены"
   },
   "footer": {
-    "copyright": "© Авторские права {{text}}"
+    "copyright": "© Авторские права {{text}}",
+    "sitemap": "Карта сайта"
   },
   "carousel": {
     "previous": "Предыдущий",

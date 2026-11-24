@@ -177,7 +177,8 @@
     "go_to": "E hele i"
   },
   "footer": {
-    "copyright": "© Kuleana kope {{text}}"
+    "copyright": "© Kuleana kope {{text}}",
+    "sitemap": "Palapala ʻāina pūnaewele"
   },
   "filter_results_count_one": "hopena {{count}}",
   "filter_results_count_other": "Nā hopena {{count}}",

@@ -172,7 +172,8 @@
     "provided_by": "Daataa kan kenne"
   },
   "footer": {
-    "copyright": "© Mirga garagalchuu {{text}}"
+    "copyright": "© Mirga garagalchuu {{text}}",
+    "sitemap": "Kaartaa marsariitii"
   },
   "carousel": {
     "previous": "Kan duraa",
