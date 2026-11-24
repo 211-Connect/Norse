@@ -107,8 +107,16 @@ test('a place already given and the emergency question never ask', () => {
   const on = { ...step, onPage: true, requireLocation: true };
   assert.equal(asksLocationStep({ ...on, locationDone: true }), false);
   assert.equal(asksLocationStep({ ...on, isEmergency: true }), false);
-  // No client-side limit: the API caps before_results questions (contract v2).
+  // requireUserLocation asks past the guide limit; other tenants stop asking at 3 steps.
   assert.equal(asksLocationStep({ ...on, used: 3 }), true);
+  assert.equal(
+    asksLocationStep({ ...on, requireLocation: false, used: 3 }),
+    false,
+  );
+  assert.equal(
+    asksLocationStep({ ...on, requireLocation: false, used: 2 }),
+    true,
+  );
 });
 
 test('tenants without requireUserLocation keep the old rule', () => {

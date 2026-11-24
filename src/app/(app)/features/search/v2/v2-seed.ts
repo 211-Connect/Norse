@@ -100,7 +100,6 @@ const CALL_KEYS = [
   'query',
   'needs',
   'passed_needs',
-  'asked',
   'urgency',
   'clarify',
   'taxonomy',

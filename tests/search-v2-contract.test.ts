@@ -24,6 +24,8 @@ import {
   stringsOf,
   nextQuestionOf,
   refineQuestionOf,
+  guideQuestionOf,
+  GUIDE_LIMIT,
   GUIDE_PLACEMENTS,
   REFINE_PLACEMENTS,
   emergencyPopupMode,
@@ -700,4 +702,100 @@ test('refineQuestionOf: each of its answers writes U-0, U-1 or U-2', () => {
     const changes = answerChanges(q, [v], { needs: [], passedNeeds: [] });
     assert.equal(changes.urgency, v);
   }
+});
+
+// F1 + F3: the guide limit and no repeat.
+const guideNeed = (id: string, over: Partial<V2Question> = {}) =>
+  mkQ({
+    id,
+    type: 'need',
+    placement: 'before_results',
+    options: [{ label: id, parameter: 'needs', value: `N-${id}` }],
+    ...over,
+  });
+
+test('guideQuestionOf: GUIDE_LIMIT is 3 and the first unasked question comes', () => {
+  assert.equal(GUIDE_LIMIT, 3);
+  const r = respOf(guideNeed('a'), guideNeed('b'), guideNeed('c'));
+  assert.equal(guideQuestionOf(r, [], [])?.id, 'a');
+  assert.equal(guideQuestionOf(r, ['a'], ['a'])?.id, 'b');
+});
+
+test('guideQuestionOf: at the limit only emergency and no_match remain', () => {
+  const r = respOf(guideNeed('d'), guideNeed('no_match'));
+  assert.equal(guideQuestionOf(r, ['a', 'b'], ['a', 'b'])?.id, 'd');
+  assert.equal(
+    guideQuestionOf(r, ['a', 'b', 'c'], ['a', 'b', 'c'])?.id,
+    'no_match',
+  );
+  assert.equal(
+    guideQuestionOf(respOf(guideNeed('d')), ['a', 'b', 'c'], ['a', 'b', 'c']),
+    undefined,
+  );
+  const withEmergency = respOf(
+    guideNeed('d'),
+    mkQ({ placement: 'popup' }),
+    guideNeed('no_match'),
+  );
+  assert.equal(
+    guideQuestionOf(withEmergency, ['a', 'b', 'c'], ['a', 'b', 'c'])?.id,
+    'emergency',
+  );
+});
+
+test('guideQuestionOf: the location marker and the emergency id count toward the limit', () => {
+  const r = respOf(guideNeed('d'));
+  assert.equal(guideQuestionOf(r, ['emergency', 'location'], [])?.id, 'd');
+  assert.equal(
+    guideQuestionOf(r, ['emergency', 'location', 'a'], []),
+    undefined,
+  );
+  // Duplicates in the URL count once.
+  assert.equal(guideQuestionOf(r, ['a', 'a', 'a'], [])?.id, 'd');
+});
+
+test('guideQuestionOf: any asked id is skipped, no_match too', () => {
+  const r = respOf(guideNeed('a'), guideNeed('no_match'), guideNeed('b'));
+  assert.equal(guideQuestionOf(r, ['a'], ['a'])?.id, 'no_match');
+  assert.equal(
+    guideQuestionOf(r, ['a', 'no_match'], ['a', 'no_match'])?.id,
+    'b',
+  );
+});
+
+test('guideQuestionOf: the emergency question is skipped only by askedForNext', () => {
+  const popup = mkQ({ placement: 'popup' });
+  const r = respOf(popup, guideNeed('a'));
+  // The danger popup keeps its question although `asked` has it.
+  assert.equal(guideQuestionOf(r, ['emergency'], [])?.id, 'emergency');
+  assert.equal(guideQuestionOf(r, ['emergency'], ['emergency'])?.id, 'a');
+});
+
+test('guideQuestionOf: legacy shape (importance, no placement)', () => {
+  const legacy = respOf(
+    mkQ({ importance: 'critical' }),
+    mkQ({ id: 'narrow:1', type: 'narrow', importance: 'high' }),
+    mkQ({ id: 'late', type: 'find_need', importance: 'low' }),
+  );
+  assert.equal(guideQuestionOf(legacy, [], [])?.id, 'emergency');
+  assert.equal(
+    guideQuestionOf(legacy, ['emergency'], ['emergency'])?.id,
+    'narrow:1',
+  );
+  assert.equal(
+    guideQuestionOf(
+      legacy,
+      ['emergency', 'narrow:1'],
+      ['emergency', 'narrow:1'],
+    )?.id,
+    undefined,
+  );
+});
+
+test('nextQuestionOf does not skip asked ids for the refine card (legacy narrow:1 repeats)', () => {
+  const r = respOf(mkQ({ id: 'narrow:1', type: 'narrow', importance: 'low' }));
+  assert.equal(
+    nextQuestionOf(r, ['narrow:1'], REFINE_PLACEMENTS)?.id,
+    'narrow:1',
+  );
 });

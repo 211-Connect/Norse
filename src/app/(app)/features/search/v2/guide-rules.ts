@@ -1,6 +1,7 @@
 import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 
 import { isPickedPlace } from './landing';
+import { GUIDE_LIMIT } from './v2-contract';
 
 /** After a place is picked in the guide, the card shows its loading state for at least this long. */
 export const MIN_PLACE_LOADING_MS = 800;
@@ -88,8 +89,9 @@ export function canGoBackFrom({
 
 /**
  * Whether the guide shows its location step. Only an unanswered step shows, never for the emergency
- * question. The API caps the before_results questions, so the UI has no limit of its own. A tenant with requireUserLocation on always asks, also
- * when the engine has no question to ask, so no search starts without a place (Lucas 2026-11-20).
+ * question, and not once `used` steps reach `GUIDE_LIMIT`. A tenant with requireUserLocation on
+ * always asks, also past the limit and when the engine has no question to ask, so no search starts
+ * without a place (Lucas 2026-11-20).
  */
 export function asksLocationStep({
   locationDone,
@@ -106,9 +108,7 @@ export function asksLocationStep({
   hasQuestions: boolean;
   requireLocation: boolean;
 }): boolean {
-  return (
-    !locationDone &&
-    !isEmergency &&
-    (!onPage || hasQuestions || used > 0 || requireLocation)
-  );
+  if (locationDone || isEmergency) return false;
+  if (requireLocation) return true;
+  return used < GUIDE_LIMIT && (!onPage || hasQuestions || used > 0);
 }

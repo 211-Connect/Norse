@@ -463,6 +463,32 @@ export const GUIDE_PLACEMENTS: readonly V2Placement[] = [
   'before_results',
 ];
 
+/** The guided find page asks at most this many steps (the location marker and the emergency id count). */
+export const GUIDE_LIMIT = 3;
+
+/**
+ * The question the guided find page shows now. Candidates have a `GUIDE_PLACEMENTS` placement.
+ * The emergency question is skipped only when its id is in `askedForNext` (the danger popup keeps
+ * it although `asked` has it). Every other id, `no_match` included, is skipped when it is in
+ * `asked`. At `GUIDE_LIMIT` distinct ids in `asked` only the emergency and `no_match` questions
+ * remain: the safety question and the way out of an empty weak match always come.
+ */
+export function guideQuestionOf(
+  response: V2Response | undefined,
+  asked: readonly string[],
+  askedForNext: readonly string[],
+): V2Question | undefined {
+  const full = new Set(asked).size >= GUIDE_LIMIT;
+  return response?.clarification.questions.find((q) => {
+    if (!GUIDE_PLACEMENTS.includes(placementOf(q))) return false;
+    if (canonicalType(q.type) === 'emergency') {
+      return !askedForNext.includes(q.id);
+    }
+    if (asked.includes(q.id)) return false;
+    return !full || q.id === NO_MATCH_ID;
+  });
+}
+
 /** `needs=` never carries N-X: it means "not yet known" and the route answers 400 (Decision 43). */
 export const withoutNX = (needs: string | null) => {
   const kept = (needs ?? '')

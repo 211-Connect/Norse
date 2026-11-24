@@ -19,8 +19,6 @@ export const V2_FORWARD = [
   'query',
   'needs',
   'passed_needs',
-  // Question ids already asked: the API caps before_results questions at 3 (contract v2).
-  'asked',
   'urgency',
   'clarify',
   'location',

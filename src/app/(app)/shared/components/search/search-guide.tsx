@@ -35,9 +35,8 @@ import {
   hotlinesOf,
   isSoftEmergency,
   canonicalType,
-  GUIDE_PLACEMENTS,
+  guideQuestionOf,
   stringsOf,
-  nextQuestionOf,
   totalOf,
   useV2Navigate,
   useV2Search,
@@ -399,7 +398,7 @@ export function SearchGuideFromUrl({
       : popupMode === 'danger'
         ? asked.filter((id) => id !== emergencyQ.id)
         : asked;
-  const guideNext = nextQuestionOf(data, askedForNext, GUIDE_PLACEMENTS);
+  const guideNext = guideQuestionOf(data, asked, askedForNext);
   // A soft emergency question always shows its three answers (the red popup is unchanged).
   const v2 =
     guideNext &&
@@ -418,7 +417,7 @@ export function SearchGuideFromUrl({
     searchRegion,
   });
   const locationDone = hasLocation || asked.includes(LOCATION_STEP);
-  const used = asked.length;
+  const used = new Set(asked).size;
   // The emergency question never waits behind the location step. On the landing page, an engine
   // with no question at all sends the person straight to the results, so no location step either.
   const hasQuestions = (data?.clarification.questions.length ?? 0) > 0;
@@ -434,7 +433,7 @@ export function SearchGuideFromUrl({
       hasQuestions,
       requireLocation,
     });
-  // The API caps the before_results questions (3 per search), so the UI has no limit of its own.
+  // The guide asks at most GUIDE_LIMIT steps (guideQuestionOf); the API gets no `asked`.
   const question =
     v2 && (canonicalType(v2.type) === 'emergency' || !showLocation)
       ? v2
