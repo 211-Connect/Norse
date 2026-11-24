@@ -12,12 +12,12 @@ function render(containerId?: string): string {
   );
 }
 
-test('renders the stock GTM noscript iframe for a container id', () => {
-  // Search Console's GTM verification expects Google's snippet unmodified:
-  // no extra attributes, no stray characters.
+test('renders the sandboxed GTM noscript iframe for a container id', () => {
+  // Google's snippet plus an empty `sandbox` (ISS-2876); nothing else added.
+  // Search Console ownership is proven by the site-verification meta tag.
   assert.equal(
     render('GTM-WQXT865'),
-    '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQXT865" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>',
+    '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQXT865" height="0" width="0" style="display:none;visibility:hidden" sandbox=""></iframe></noscript>',
   );
 });
 

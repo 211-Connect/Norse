@@ -1,8 +1,13 @@
 /**
- * Google's stock GTM `<noscript>` snippet. Rendered as the first child of
- * `<body>` because Search Console's GTM ownership verification reads it from
- * the server HTML without running JavaScript, and fails if it is modified or
- * not at the top of `<body>`. Keep the markup identical to Google's snippet.
+ * Google's GTM `<noscript>` snippet, rendered as the first child of `<body>`
+ * where Google expects it.
+ *
+ * The iframe carries an empty `sandbox` (every restriction on): security
+ * scanners flag an unsandboxed third-party frame (Acunetix "Insecure Frame
+ * (External)", ISS-2876). `ns.html` only loads tracking pixels, which still
+ * load in a sandboxed frame. Search Console ownership is proven with the
+ * `google-site-verification` meta tag (see `googleSiteVerification.ts`), not
+ * with this snippet, so the deviation from Google's stock markup is safe.
  */
 export function GoogleTagManagerNoscript({
   containerId,
@@ -18,6 +23,7 @@ export function GoogleTagManagerNoscript({
         height="0"
         width="0"
         style={{ display: 'none', visibility: 'hidden' }}
+        sandbox=""
       />
     </noscript>
   );
