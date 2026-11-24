@@ -36,7 +36,6 @@ import {
   isSoftEmergency,
   canonicalType,
   guideQuestionOf,
-  stringsOf,
   totalOf,
   useV2Navigate,
   useV2Search,
@@ -358,6 +357,7 @@ export function SearchGuideFromUrl({
   const onPage = placement === 'page';
   // The count key lives in `common`; the search page's default namespace is `page-search`.
   const { t } = useTranslation('common');
+  const skipToResults = t('v2_skip_to_results', 'Skip to results');
   const { data, isFetching, error, query } = useV2Search();
   const { params, asked, needs, passedNeeds } = useV2Url();
   const {
@@ -406,7 +406,6 @@ export function SearchGuideFromUrl({
     isSoftEmergency(guideNext)
       ? withEmergencyAnswers(guideNext)
       : guideNext;
-  const strings = stringsOf(data);
   // A place already saved for this visit counts: the results page uses it, so asking for it again
   // with the same place filled in is a wasted step (Lucas UX pass, 2026-11-16).
   const hasLocation = hasSavedLocation({
@@ -438,9 +437,7 @@ export function SearchGuideFromUrl({
     v2 && (canonicalType(v2.type) === 'emergency' || !showLocation)
       ? v2
       : undefined;
-  const card = question
-    ? toCardQuestion(question, strings.alsoFitOne)
-    : undefined;
+  const card = question ? toCardQuestion(question) : undefined;
   const style = card ? QUESTION_STYLES[card.type ?? 'subtle'] : undefined;
   const isEmergency = question
     ? canonicalType(question.type) === 'emergency'
@@ -671,7 +668,6 @@ export function SearchGuideFromUrl({
             mode={popupMode}
             question={withEmergencyAnswers(emergencyQ)}
             hotlines={hotlines}
-            title={strings.popupTitle}
             busy={isPending}
             onAnswer={(value) => {
               const q = withEmergencyAnswers(emergencyQ);
@@ -695,7 +691,6 @@ export function SearchGuideFromUrl({
               soft={soft}
               onAnswer={(option) => answerQuestion([option.label])}
               onSkip={soft ? skipEmergency : undefined}
-              skipLabel={strings.skipToResults}
             />
           </>
         )}
@@ -916,8 +911,8 @@ export function SearchGuideFromUrl({
               {onPage
                 ? 'Show results now'
                 : data
-                  ? `${strings.skipToResults} (${totalOf(data)})`
-                  : strings.skipToResults}
+                  ? `${skipToResults} (${totalOf(data)})`
+                  : skipToResults}
             </Button>
           )}
         </div>

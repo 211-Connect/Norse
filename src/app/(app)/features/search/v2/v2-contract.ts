@@ -25,16 +25,15 @@ export type V2QuestionType = 'emergency' | 'urgency' | 'need';
 export type V2LegacyQuestionType = 'confirm_urgency' | 'find_need' | 'narrow';
 /** Where a question shows: over everything, on the find page, or beside the results. */
 export type V2Placement = 'popup' | 'before_results' | 'with_results';
-/** How loud a question looks. */
-export type V2Style = 'strong' | 'standard' | 'subtle';
+/** How loud a question looks: orange (`standard`) or quiet (`subtle`). The page decides it. */
+export type V2Style = 'standard' | 'subtle';
 
 export type V2Question = {
   id: string;
   type: V2QuestionType | V2LegacyQuestionType;
   /** Absent on a legacy response (API older than contract v2); see `placementOf`. */
   placement?: V2Placement;
-  style?: V2Style;
-  /** Legacy fields: read only by the fallback in `placementOf` / `styleOfQuestion`. */
+  /** Legacy fields: read only by the fallback in `placementOf`. */
   importance?: 'critical' | 'high' | 'medium' | 'low';
   value?: number;
   priority?: number;
@@ -81,13 +80,6 @@ export type V2ResolvedLocation = {
   unlocated: 'none' | 'virtual' | 'all';
 };
 
-/** The words the API sends beside the questions (contract v2). */
-export type V2Strings = {
-  popup_title?: string;
-  skip_to_results?: string;
-  also_fit_one?: string;
-};
-
 export type V2Response = {
   /** Facet counts for the current filters. v1 shape; absent or `{}` from older servers and stubs. */
   facets?: V2Facet[] | Record<string, never>;
@@ -115,8 +107,6 @@ export type V2Response = {
   clarification: {
     rules_version: string;
     questions: V2Question[];
-    /** Words from the API string table (request locale). Absent on a legacy response. */
-    strings?: V2Strings;
   };
   model_version: string | null;
   rules_version: string;
@@ -144,7 +134,7 @@ export const canonicalType = (
       : 'need';
 
 type PlacementInput = Pick<V2Question, 'type'> &
-  Partial<Pick<V2Question, 'placement' | 'style' | 'importance'>>;
+  Partial<Pick<V2Question, 'placement' | 'importance'>>;
 
 /**
  * The one place that decides where a question shows: the API's `placement` when present.
@@ -159,17 +149,11 @@ export function placementOf(q: PlacementInput): V2Placement {
 }
 
 /**
- * The one place that decides how loud a question looks: the API's `style` when present.
- * FALLBACK (remove when dev runs PR 2): without `style` the old `importance` decides.
- * critical -> strong, high -> standard (strong for the soft emergency band), else subtle.
+ * The one place that decides how loud a question looks. The page decides it from the placement:
+ * a `with_results` question is the quiet card (`subtle`), every other one is orange (`standard`).
  */
 export function styleOfQuestion(q: PlacementInput): V2Style {
-  if (q.style) return q.style;
-  if (q.importance === 'critical') return 'strong';
-  if (q.importance === 'high') {
-    return canonicalType(q.type) === 'emergency' ? 'strong' : 'standard';
-  }
-  return 'subtle';
+  return placementOf(q) === 'with_results' ? 'subtle' : 'standard';
 }
 
 /** True for a response from an API older than contract v2 (no `placement` on the question). */
@@ -179,24 +163,13 @@ export const isLegacyQuestion = (q: Pick<V2Question, 'placement'>) =>
 /** The look of a question card: red for the emergency question, else the question's `style`. */
 export type QuestionStyle = 'emergency' | V2Style;
 
-/** Red for the emergency question; otherwise strong, standard (orange) or subtle (quiet). */
+/** Red for the emergency question; otherwise standard (orange) or subtle (quiet). */
 export const styleOf = (q: PlacementInput): QuestionStyle =>
   canonicalType(q.type) === 'emergency' ? 'emergency' : styleOfQuestion(q);
 
 /** The soft emergency band is the calmer orange card, shown before the results (not a popup). */
 export const isSoftEmergency = (q?: PlacementInput) =>
   Boolean(q) && placementOf(q!) !== 'popup';
-
-/** Words from the API; the English is the legacy fallback for a response with no `strings`. */
-export function stringsOf(response?: Pick<V2Response, 'clarification'>) {
-  const s = response?.clarification?.strings;
-  return {
-    // Legacy fallback (remove when dev runs PR 2): English when the API sends no strings.
-    popupTitle: s?.popup_title || 'Are you in danger right now?',
-    skipToResults: s?.skip_to_results || 'Skip to results',
-    alsoFitOne: s?.also_fit_one || 'Does this also fit?',
-  };
-}
 
 /** The id of the one question a weak match asks (Norse-API ISS-2796). */
 export const NO_MATCH_ID = 'no_match';
@@ -498,15 +471,18 @@ export const withoutNX = (needs: string | null) => {
   return kept.length ? kept.join(',') : null;
 };
 
+/** The old engine's stem for a one-need question, and the words that replace it. */
+const LEGACY_ALSO_FIT_STEM = 'Do any of these also fit?';
+export const ALSO_FIT_ONE = 'Does this also fit?';
+
 /**
  * The rules engine asks one area at a time, so a question can offer a single need (live NY run
  * 2026-11-16: 66 of 198 searches). "Pick all that fit" over one checkbox reads wrong, so the page
- * shows it as a one-tap question: not multi-select, and "Do any of these also fit?" becomes
- * `strings.also_fit_one` ("Does this also fit?"). Two or more options keep the engine's wording.
+ * shows it as a one-tap question: not multi-select, and the legacy stem "Do any of these also fit?"
+ * becomes `ALSO_FIT_ONE` ("Does this also fit?"). Two or more options keep the engine's wording.
  */
 export function cardWording(
   q: Pick<V2Question, 'stem' | 'multi_select' | 'options'>,
-  alsoFitOne: string = stringsOf().alsoFitOne,
 ): {
   text: string;
   multi: boolean;
@@ -514,8 +490,8 @@ export function cardWording(
   const single = q.options.filter((o) => o.parameter === 'needs').length === 1;
   if (!single) return { text: q.stem, multi: q.multi_select };
   return {
-    // Legacy stem only (a contract v2 stem is already the right words); the words come from the API.
-    text: q.stem === 'Do any of these also fit?' ? alsoFitOne : q.stem,
+    // Legacy stem only (a contract v2 stem is already the right words).
+    text: q.stem === LEGACY_ALSO_FIT_STEM ? ALSO_FIT_ONE : q.stem,
     multi: false,
   };
 }

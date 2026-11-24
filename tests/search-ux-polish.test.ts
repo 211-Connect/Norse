@@ -454,4 +454,28 @@ test('soft emergency question renders the question and three answers', async () 
   assert.match(html, /No, I am safe, I need help today/);
   assert.match(html, /No, I am safe, I need help this week/);
   assert.match(html, /data-testid="emergency-skip"/);
+  // No i18n provider here: the English default value of t() shows.
+  assert.match(html, /Skip to results/);
+});
+
+// F4: the words are the page's own now, not the API's `clarification.strings`.
+test('skip text: v2_skip_to_results is in the en and es common.json', () => {
+  for (const [lang, text] of [
+    ['en', 'Skip to results'],
+    ['es', 'Ir a los resultados'],
+  ]) {
+    const json = JSON.parse(read(`public/locales/${lang}/common.json`));
+    assert.equal(json.v2_skip_to_results, text, lang);
+  }
+});
+
+test('popup title is the question stem, the skip text a t() key, with no strings left', () => {
+  const popup = read(`${APP}features/search/components/search-follow-up.tsx`);
+  const box = read(`${APP}features/search/components/emergency-box.tsx`);
+  const guide = read(`${APP}shared/components/search/search-guide.tsx`);
+  assert.match(popup, /question\.stem\.trim\(\) \|\| POPUP_TITLE_FALLBACK/);
+  assert.doesNotMatch(popup, /popupTitle|skipLabel|stringsOf|alsoFitOne/);
+  assert.match(box, /t\('v2_skip_to_results', 'Skip to results'\)/);
+  assert.match(guide, /t\('v2_skip_to_results', 'Skip to results'\)/);
+  assert.doesNotMatch(box + guide, /skipLabel|stringsOf|strings\./);
 });

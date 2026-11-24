@@ -91,7 +91,6 @@ import {
   styleOf,
   styleOfQuestion,
   placementOf,
-  stringsOf,
   useV2Navigate,
   useV2Search,
   useV2Url,
@@ -1120,7 +1119,7 @@ export function OptionCard({
   );
 }
 
-/** The look follows the question's `style` (strong, standard, subtle); the emergency question is red. */
+/** The look follows the question's `style` (standard, subtle); the emergency question is red. */
 export const QUESTION_STYLES = {
   emergency: {
     card: 'border-red-700 bg-red-50',
@@ -1128,7 +1127,6 @@ export const QUESTION_STYLES = {
     title: '',
     button: 'border-red-700 text-red-700 bg-white',
   },
-  strong: ORANGE,
   standard: ORANGE,
   subtle: QUIET,
   none: QUIET,
@@ -1170,18 +1168,18 @@ function PopupQuickExit() {
  * (urgency=U-0) shows big Call buttons and a way on to the results. Focus is trapped inside,
  * starts on the first button, and the heading labels the dialog.
  */
+/** The popup title only when the API sends a blank stem. */
+const POPUP_TITLE_FALLBACK = 'Are you in danger right now?';
+
 export function EmergencyPopup({
   mode,
   question,
   hotlines,
-  title = stringsOf().popupTitle,
   busy = false,
   onAnswer,
   onContinue,
 }: {
   mode: 'ask' | 'danger';
-  /** `clarification.strings.popup_title` from the API. */
-  title?: string;
   /** The question with the three urgency options (see `withEmergencyAnswers`). */
   question: V2Question;
   hotlines: V2Hotline[];
@@ -1223,7 +1221,9 @@ export function EmergencyPopup({
         }}
       >
         <DialogTitle className="max-w-md text-center text-3xl leading-tight font-bold tracking-normal">
-          {mode === 'ask' ? title : 'Call for help now'}
+          {mode === 'ask'
+            ? question.stem.trim() || POPUP_TITLE_FALLBACK
+            : 'Call for help now'}
         </DialogTitle>
         <DialogDescription className="sr-only">
           {mode === 'ask'
@@ -1418,14 +1418,11 @@ export const resultCount = (count: number) =>
   `${count} ${count === 1 ? 'result' : 'results'}`;
 
 /** A v2 question in the shape the cards draw. Option values ride along, so an answer can write them. */
-export function toCardQuestion(
-  q: V2Question,
-  alsoFitOne?: string,
-): Question & { values: string[] } {
+export function toCardQuestion(q: V2Question): Question & { values: string[] } {
   return {
     id: q.id,
     type: styleOf(q),
-    ...cardWording(q, alsoFitOne),
+    ...cardWording(q),
     values: q.options.map((o) => o.value),
     answers: q.options.map((o) => ({
       label: o.label,
@@ -1454,7 +1451,6 @@ export function SearchRefineQuestion() {
   const setFlagged = useSetAtom(flaggedAtom);
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
-  const strings = stringsOf(data);
   // Popup only (Lucas 2026-11-18): the red question is the full-screen popup, never a card.
   const dismissed = useAtomValue(emergencyPopupDismissedAtom) === label;
   const setDismissed = useSetAtom(emergencyPopupDismissedAtom);
@@ -1473,7 +1469,7 @@ export function SearchRefineQuestion() {
   const isPending = isFetching || isWriting;
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = v2
-    ? toCardQuestion(v2, strings.alsoFitOne)
+    ? toCardQuestion(v2)
     : {
         id: 'done',
         text: 'Is there anything else we should know?',
@@ -1555,7 +1551,6 @@ export function SearchRefineQuestion() {
       mode={popupMode}
       question={withEmergencyAnswers(emergencyQ)}
       hotlines={hotlines}
-      title={strings.popupTitle}
       busy={isPending}
       onAnswer={onPopupAnswer}
       onContinue={() => setDismissed(label)}
@@ -1578,7 +1573,6 @@ export function SearchRefineQuestion() {
             soft={soft}
             onAnswer={(option) => answer([option.label])}
             onSkip={soft ? skipEmergency : undefined}
-            skipLabel={strings.skipToResults}
           />
         )}
         {pin.pinned && !popup && (

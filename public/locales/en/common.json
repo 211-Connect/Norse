@@ -237,6 +237,7 @@
   },
   "filter_results_count_one": "{{count}} result",
   "filter_results_count_other": "{{count}} results",
+  "v2_skip_to_results": "Skip to results",
   "autocomplete": {
     "results_available_one": "{{count}} result available",
     "results_available_other": "{{count}} results available",

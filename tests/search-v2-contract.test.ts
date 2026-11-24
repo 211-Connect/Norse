@@ -21,7 +21,7 @@ import {
   styleOfQuestion,
   placementOf,
   canonicalType,
-  stringsOf,
+  ALSO_FIT_ONE,
   nextQuestionOf,
   refineQuestionOf,
   guideQuestionOf,
@@ -235,11 +235,7 @@ test('emergencyPopupMode: by placement; ask, danger, or none', () => {
   assert.equal(emergencyPopupMode(popup, null, ['emergency']), null);
   // Soft band: before_results is never a popup.
   assert.equal(
-    emergencyPopupMode(
-      { ...popup, placement: 'before_results', style: 'strong' },
-      null,
-      [],
-    ),
+    emergencyPopupMode({ ...popup, placement: 'before_results' }, null, []),
     null,
   );
   // Legacy shape (no placement): critical -> popup, high -> soft.
@@ -280,22 +276,17 @@ test('withoutNX: N-X is never sent in needs= (Decision 43: the route would answe
   assert.equal(withoutNX(null), null);
 });
 
-test('placementOf and styleOfQuestion: the API fields win; no importance read', () => {
+test('placementOf and styleOfQuestion: placement wins; style comes from placement only', () => {
   const q = {
     type: 'need' as const,
     placement: 'with_results' as const,
-    style: 'subtle' as const,
-    importance: 'critical' as const, // ignored when the new fields are there
+    importance: 'critical' as const, // ignored when placement is there
   };
   assert.equal(placementOf(q), 'with_results');
   assert.equal(styleOfQuestion(q), 'subtle');
   assert.equal(placementOf({ type: 'emergency', placement: 'popup' }), 'popup');
   assert.equal(
-    styleOfQuestion({
-      type: 'urgency',
-      placement: 'before_results',
-      style: 'standard',
-    }),
+    styleOfQuestion({ type: 'urgency', placement: 'before_results' }),
     'standard',
   );
 });
@@ -309,7 +300,7 @@ test('placementOf and styleOfQuestion: legacy importance fallback', () => {
     importance,
   });
   assert.equal(placementOf(at('find_need', 'critical')), 'popup');
-  assert.equal(styleOfQuestion(at('find_need', 'critical')), 'strong');
+  assert.equal(styleOfQuestion(at('find_need', 'critical')), 'standard');
   assert.equal(placementOf(at('find_need', 'high')), 'before_results');
   assert.equal(styleOfQuestion(at('find_need', 'high')), 'standard');
   assert.equal(placementOf(at('confirm_urgency', 'high')), 'before_results');
@@ -319,7 +310,7 @@ test('placementOf and styleOfQuestion: legacy importance fallback', () => {
   }
   // Soft emergency band: high importance on the emergency question.
   assert.equal(placementOf(at('emergency', 'high')), 'before_results');
-  assert.equal(styleOfQuestion(at('emergency', 'high')), 'strong');
+  assert.equal(styleOfQuestion(at('emergency', 'high')), 'standard');
 });
 
 test('canonicalType: legacy names count as the new ones', () => {
@@ -332,18 +323,23 @@ test('canonicalType: legacy names count as the new ones', () => {
 });
 
 test('styleOf: red for the emergency type, else the question style', () => {
-  assert.equal(styleOf({ type: 'emergency', style: 'strong' }), 'emergency');
+  assert.equal(styleOf({ type: 'emergency', placement: 'popup' }), 'emergency');
   assert.equal(styleOf({ type: 'emergency', importance: 'low' }), 'emergency');
   assert.equal(
-    styleOf({ type: 'need', placement: 'before_results', style: 'strong' }),
-    'strong',
-  );
-  assert.equal(
-    styleOf({ type: 'need', placement: 'before_results', style: 'standard' }),
+    styleOf({ type: 'need', placement: 'before_results' }),
     'standard',
   );
   assert.equal(
-    styleOf({ type: 'urgency', placement: 'with_results', style: 'subtle' }),
+    styleOf({ type: 'urgency', placement: 'with_results' }),
+    'subtle',
+  );
+  // An old `style` field on the wire is ignored: only the placement decides.
+  assert.equal(
+    styleOf({
+      type: 'need',
+      placement: 'with_results',
+      style: 'strong',
+    } as never),
     'subtle',
   );
   assert.equal(styleOf({ type: 'find_need', importance: 'high' }), 'standard');
@@ -372,32 +368,16 @@ test('nextQuestionOf routes by placement', () => {
   assert.equal(nextQuestionOf(response, [], REFINE_PLACEMENTS)?.id, 'b');
 });
 
-test('stringsOf: words come from the API, English only when strings is absent', () => {
-  const withStrings = {
-    clarification: {
-      rules_version: 'r',
-      questions: [],
-      strings: { popup_title: 'P', skip_to_results: 'S', also_fit_one: 'A' },
-    },
-  };
-  assert.deepEqual(stringsOf(withStrings), {
-    popupTitle: 'P',
-    skipToResults: 'S',
-    alsoFitOne: 'A',
-  });
-  assert.equal(stringsOf(undefined).skipToResults, 'Skip to results');
-  assert.equal(stringsOf(undefined).alsoFitOne, 'Does this also fit?');
-});
-
-test('cardWording: the one-need wording comes from the API string', () => {
+test('cardWording: the legacy one-need stem becomes the constant', () => {
   const q = {
     stem: 'Do any of these also fit?',
     multi_select: true,
     options: [{ label: 'a', parameter: 'needs' as const, value: 'a' }],
   };
-  assert.equal(cardWording(q, 'Passt das auch?').text, 'Passt das auch?');
+  assert.equal(cardWording(q).text, ALSO_FIT_ONE);
+  assert.equal(ALSO_FIT_ONE, 'Does this also fit?');
   // A contract v2 stem is already the right words.
-  assert.equal(cardWording({ ...q, stem: 'Fits too?' }, 'X').text, 'Fits too?');
+  assert.equal(cardWording({ ...q, stem: 'Fits too?' }).text, 'Fits too?');
 });
 
 test('cardWording: a one-need question is one tap, not "Pick all that fit"', () => {

@@ -1,11 +1,12 @@
 'use client';
 
 import { Phone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
-import { stringsOf, type V2Hotline } from '../v2/use-v2-search';
+import type { V2Hotline } from '../v2/use-v2-search';
 import { DialButton } from './dial-button';
 import type { Answer, Question } from './search-follow-up';
 
@@ -64,7 +65,6 @@ export function EmergencyBox({
   soft = false,
   onAnswer,
   onSkip,
-  skipLabel = stringsOf().skipToResults,
   headingId = 'emergency-question',
   announce = true,
 }: {
@@ -73,12 +73,12 @@ export function EmergencyBox({
   soft?: boolean;
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
-  /** `clarification.strings.skip_to_results` from the API. */
-  skipLabel?: string;
   headingId?: string;
   /** False while the popup holds the one announcement, so the card behind it is not a second alert. */
   announce?: boolean;
 }) {
+  // The default text is English: the fallback locale may lack the key.
+  const { t } = useTranslation('common');
   return (
     <section
       aria-label="Emergency help"
@@ -136,7 +136,7 @@ export function EmergencyBox({
               data-testid="emergency-skip"
               onClick={onSkip}
             >
-              {skipLabel}
+              {t('v2_skip_to_results', 'Skip to results')}
             </Button>
           )}
         </div>
