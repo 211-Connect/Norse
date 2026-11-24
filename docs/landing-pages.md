@@ -451,11 +451,26 @@ Home page topic cards are unchanged; they still open `/search`.
 ## Sitemaps
 
 **XML.** `/sitemap.xml` is a sitemap index pointing to
-`/sitemaps/landing-{n}.xml` files of up to 10,000 URLs each. Each URL lists its
-locale versions as hreflang alternates plus `x-default`. `lastmod` comes from
-slug or copy changes, not from changing results. `robots.txt` adds a
-`Sitemap:` line when the host serves one. `/sitemaps/resources-{n}.xml` is
-reserved for resource pages.
+`/sitemaps/landing-{n}.xml` files of up to 10,000 URLs each
+(`src/app/sitemap.xml/route.ts`, `src/app/sitemaps/[file]/route.ts`,
+builders in `features/landing-pages/lib/sitemap.ts`).
+
+- One URL per page and locale. Each lists every locale version of its page
+  as an `xhtml:link rel="alternate" hreflang` entry, plus `x-default` (the
+  default locale's version).
+- `lastmod` is the later of the page's and its current slugs' `updatedAt`:
+  slug or copy changes, never changing results. Each file in the index has
+  the latest `lastmod` of its URLs.
+- URLs are on the canonical host, like the pages' canonical tags.
+- Served (otherwise 404) when the host serves landing pages, search engines
+  may index it (`shouldBlockCrawlers`: the deployment allows them and the
+  Tenant is not `noindex`), and it has at least one live page. The CMS role
+  never serves them. Both paths skip the proxy, like `robots.txt`, so
+  `sitemaps` and `sitemap` are reserved topic slugs.
+- `robots.txt` adds a `Sitemap:` line when the host serves one.
+- `/sitemaps/resources-{n}.xml` is reserved for resource pages.
+- Built per request from the cached page list (`landing_sitemap`, see
+  Caching), with `Cache-Control: public, max-age=600`.
 
 **HTML.** `/sitemap` in each locale, linked from the footer of every page (the
 link label comes from the app's translation strings). It groups pages by topic:
@@ -474,7 +489,7 @@ landing pages lead to the rest.
 | Live pages per locale (hub, sitemaps) | Redis + memory | `landing_sitemap:<tenant>:<hash of version>` | 1 day; a new version is a new key |
 | Landing-page search results | Redis | `search_results:…` (shared builder) | 24 h, refreshed by the warm-up job |
 | Landing-page map pins | Redis | `search_pins:…` | 24 h, refreshed by the warm-up job |
-| XML and HTML sitemaps | Redis | tenant, locale, version | 24 h backstop |
+| XML sitemaps | built per request from the page list above | | HTTP `max-age` 10 min |
 | Region lists for the picker | Redis | state, type | 1 day |
 
 The HTML of a page is not cached by a CDN, because a page served from the CDN

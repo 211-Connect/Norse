@@ -35,7 +35,7 @@ Tests: `tests/resource-seo.test.ts`.
 
 | Piece | Ticket | Blocked on |
 | --- | --- | --- |
-| `sitemap.xml` of resource pages per tenant host | ISS-2679 | Norse-API has no endpoint that lists a tenant's resources; `/search` stops at 10,000 results |
+| Resource pages in the sitemap (`/sitemaps/resources-{n}.xml` in the landing-page index, [landing-pages.md](landing-pages.md#sitemaps)) | ISS-2679 | Norse-API has no endpoint that lists a tenant's resources; `/search` stops at 10,000 results |
 | Canonical on `/search` pages | ISS-2680 | the landing page → query → topic card design (`query_label` is part of the intent) |
 | Cacheable HTML for anonymous visitors | ISS-2681 | Arcjet bypass on cache hits, per-visitor HTML, first-visit cookies, Cloudflare rules |
 

@@ -13,9 +13,11 @@ import {
 import { liftSearchRequest } from '@/app/(app)/features/search/utils/liftSearchRequest';
 import { withAreaSettings } from '@/app/(app)/features/search/utils/withAreaSettings';
 import { toPinsQuery } from '@/app/(app)/shared/lib/search-params';
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { findResources } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getHost } from '@/app/(app)/shared/utils/getHost';
 import { createLogger } from '@/lib/logger';
 import { type AppConfig } from '@/types/appConfig';
 import { type FiltersMap } from '@/types/search';
@@ -43,6 +45,18 @@ const log = createLogger('landing-page');
  */
 export function servesLandingPages(appConfig: AppConfig): boolean {
   return appConfig.featureFlags.enableLandingPages && !appConfig.noindex;
+}
+
+/**
+ * `https://host[/basePath]` for canonical, hreflang and sitemap URLs: the
+ * tenant's canonical host, else the request's.
+ */
+export async function landingOrigin(appConfig: AppConfig): Promise<string> {
+  const { host, protocol } = await getHost();
+  const scheme = protocol.split(',')[0]?.trim() || 'https';
+  return withOptionalCustomBasePath(
+    `${scheme}://${appConfig.canonicalHost ?? host}`,
+  ).replace(/\/$/, '');
 }
 
 const queryOf = (params: RawSearchParams): string => {

@@ -198,7 +198,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!admin|api/auth|chrome.devtools|api|_next/static|_next/image|images|fonts|favicon.ico|robots.txt|sitemap.xml).*)',
+    '/((?!admin|api/auth|chrome.devtools|api|_next/static|_next/image|images|fonts|favicon.ico|robots.txt|sitemap.xml|sitemaps/).*)',
     { source: '/' },
   ],
 };

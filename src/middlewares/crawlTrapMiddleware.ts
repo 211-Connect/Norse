@@ -19,7 +19,7 @@ function cleanedHref(request: NextRequest): string {
 
 /**
  * `410 Gone` for any request whose query has a crawl-trap key (`amp;…`, see `src/lib/crawl-trap.ts`), on every
- * page route the proxy matches (not `/api`, `/admin`, static files, `robots.txt` or `sitemap.xml`) and every
+ * page route the proxy matches (not `/api`, `/admin`, static files, `robots.txt`, `sitemap.xml` or `/sitemaps/`) and every
  * tenant. It runs before the tenant lookup, so a trapped request costs no CMS call, no search and no Arcjet
  * decision. 410 tells search engines to drop the URL rather than retry it. The body is a tiny page linking to
  * the same URL without the broken keys, for a person who followed a mangled link; the link is `nofollow`.

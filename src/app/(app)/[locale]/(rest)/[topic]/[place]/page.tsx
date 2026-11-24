@@ -17,6 +17,7 @@ import { localizedLandingHref } from '@/app/(app)/features/landing-pages/lib/slu
 import {
   getLandingContent,
   getLandingResults,
+  landingOrigin,
   resolveLandingRequest,
 } from '@/app/(app)/features/landing-pages/server/landing-page-data';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
@@ -25,11 +26,8 @@ import { SearchResultsProvider } from '@/app/(app)/features/search/context/searc
 import { type RawSearchParams } from '@/app/(app)/features/search/intent';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
-import { getHost } from '@/app/(app)/shared/utils/getHost';
 import { shouldBlockCrawlers } from '@/app/(app)/shared/utils/shouldBlockCrawlers';
 import { protectPage } from '@/lib/arcjet-page';
-import { type AppConfig } from '@/types/appConfig';
 
 const i18nNamespaces = ['page-search', 'page-resource', 'page-list', 'common'];
 
@@ -37,15 +35,6 @@ type Props = {
   params: Promise<{ locale: string; topic: string; place: string }>;
   searchParams: Promise<RawSearchParams>;
 };
-
-/** `https://host[/basePath]` on the tenant's canonical host. */
-async function canonicalOriginFor(appConfig: AppConfig): Promise<string> {
-  const { host, protocol } = await getHost();
-  const scheme = protocol.split(',')[0]?.trim() || 'https';
-  return withOptionalCustomBasePath(
-    `${scheme}://${appConfig.canonicalHost ?? host}`,
-  ).replace(/\/$/, '');
-}
 
 export const generateMetadata = async ({
   params,
@@ -64,7 +53,7 @@ export const generateMetadata = async ({
   });
   const [{ copy }, origin] = await Promise.all([
     getLandingContent(appConfig, page, locale),
-    canonicalOriginFor(appConfig),
+    landingOrigin(appConfig),
   ]);
   const refined = isRefinedRequest(rawParams);
   const { canonical, languages } = landingAlternates({
@@ -123,7 +112,7 @@ export default async function LandingPage({ params, searchParams }: Props) {
       appConfig.i18n.locales,
       appConfig.i18n.defaultLocale,
     ),
-    canonicalOriginFor(appConfig),
+    landingOrigin(appConfig),
     headers(),
   ]);
   const nonce = headersList.get('x-nonce') ?? '';
