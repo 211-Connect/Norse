@@ -157,7 +157,7 @@ export default async function RootLayout({
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"
       >
-        {/* Must stay the first child of <body> for Search Console GTM verification. */}
+        {/* First child of <body>, where Google expects the GTM noscript snippet. */}
         <GoogleTagManagerNoscript containerId={appConfig.gtmContainerId} />
         <Providers
           appConfig={appConfig}

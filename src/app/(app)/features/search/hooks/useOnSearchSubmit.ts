@@ -119,6 +119,7 @@ export const useOnSearchSubmit = ({
           userCoordinates,
           appConfig.tenantId,
           searchRegion,
+          search.searchLocationGeocode,
         );
         navigateClassicSearch(locationPayload);
         return;
@@ -145,6 +146,7 @@ export const useOnSearchSubmit = ({
           userCoordinates,
           appConfig.tenantId,
           searchRegion,
+          search.searchLocationGeocode,
         );
         navigateClassicSearch(locationPayload);
         return;
@@ -158,6 +160,7 @@ export const useOnSearchSubmit = ({
           userCoordinates,
           appConfig.tenantId,
           searchRegion,
+          search.searchLocationGeocode,
         );
         navigateAiSearch({
           taxonomies: predictResponse?.hsis_taxonomies,
