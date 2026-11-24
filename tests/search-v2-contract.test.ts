@@ -480,21 +480,86 @@ test('weak match: Other text joins the query and writes no needs and no `other`'
   );
 });
 
-test('Other text keeps the answers although the query text changes', () => {
-  const state = { needs: ['N-FOD'], passedNeeds: ['N-HOU'], urgency: 'U-2' };
+test('Other text keeps the needs; asked and urgency go (safety)', () => {
+  const state = { needs: ['N-FOD'], passedNeeds: ['N-HOU'] };
   const changes = otherChanges(noMatch, 'zzqx', 'rent help', state);
   const next = nextV2Params(
     new URLSearchParams(
       'query=zzqx&needs=N-FOD&passed_needs=N-HOU&urgency=U-2&asked=no_match',
     ),
-    { ...changes, asked: ['no_match'] },
+    changes,
   );
   assert.equal(next.get('query'), 'zzqx. rent help');
   assert.equal(next.get('needs'), 'N-FOD');
   assert.equal(next.get('passed_needs'), 'N-HOU');
-  assert.equal(next.get('urgency'), 'U-2');
+  assert.equal(next.has('urgency'), false);
+  assert.equal(next.has('asked'), false);
   assert.equal(next.has('other'), false);
   assert.equal(next.has('query_label'), false);
+});
+
+const emergencyQ: V2Question = {
+  id: 'emergency',
+  type: 'emergency',
+  placement: 'popup',
+  stem: 'Are you in danger right now?',
+  options: [],
+  multi_select: false,
+  allow_other: true,
+  none_of_these: false,
+};
+const urgencyQ: V2Question = {
+  id: 'urgency_when',
+  type: 'urgency',
+  placement: 'before_results',
+  stem: 'How soon?',
+  options: [
+    { label: 'Today', parameter: 'urgency', value: 'U-1' },
+    { label: 'This week', parameter: 'urgency', value: 'U-2' },
+  ],
+  multi_select: false,
+  allow_other: true,
+  none_of_these: false,
+};
+
+test('Other text "he is hitting me" after a skipped emergency: the popup asks again', () => {
+  const state = { needs: [], passedNeeds: [] };
+  for (const q of [emergencyQ, noMatch, urgencyQ, undefined]) {
+    const url = new URLSearchParams(
+      'query=rent&asked=emergency,no_match,urgency_when&urgency=U-1',
+    );
+    const changes = otherChanges(q, 'rent', 'he is hitting me', state);
+    const next = nextV2Params(url, changes);
+    assert.equal(next.get('query'), 'rent. he is hitting me');
+    assert.equal(next.has('asked'), false, `asked dropped for ${q?.id}`);
+    assert.equal(next.has('urgency'), false, `urgency dropped for ${q?.id}`);
+    assert.equal(
+      emergencyPopupMode(
+        emergencyQ,
+        next.get('urgency'),
+        (next.get('asked') ?? '').split(',').filter(Boolean),
+      ),
+      'ask',
+    );
+  }
+});
+
+test('Other text in the guide order: the extra comes last and wins', () => {
+  const state = { needs: [], passedNeeds: [] };
+  for (const q of [emergencyQ, urgencyQ, noMatch]) {
+    const merged = {
+      asked: ['emergency', q.id],
+      ...answerChanges(q, ['U-1'], state),
+      ...otherChanges(q, 'rent', 'he is hitting me', state),
+    };
+    const next = nextV2Params(
+      new URLSearchParams('query=rent&asked=emergency&urgency=U-1'),
+      merged,
+    );
+    assert.equal(next.has('urgency'), false, q.id);
+    assert.equal(next.has('asked'), false, q.id);
+    assert.equal(emergencyPopupMode(emergencyQ, null, []), 'ask');
+  }
 });
 
 test('Other text on another question still answers like a Skip', () => {

@@ -391,26 +391,28 @@ export function answerChanges(
 
 /**
  * The URL changes for typed "Other" text. The text joins `query` (Decision 7); there is no `other`
- * parameter. A new query text would drop the answers (Decision 51), so the current `needs`,
- * `passed_needs` and `urgency` are written again here. On the `no_match` question nothing else is
- * written, so the question can come again if the text is still not enough; elsewhere the text
- * answers like a Skip.
+ * parameter. A new query text would drop `needs` and `passed_needs` (Decision 51), so they are
+ * written again here. `asked` and `urgency` are always cleared (safety): the new text may say
+ * something the old answers did not (for example "he is hitting me"), so the emergency question
+ * must be able to ask again, and a skipped or answered urgency must not hide it. On the `no_match`
+ * question nothing else is written, so the question can come again if the text is still not enough;
+ * elsewhere the text answers like a Skip, except that it never writes `urgency` (not even U-X).
  */
 export function otherChanges(
   question: V2Question | undefined,
   currentQuery: string | null,
   text: string,
-  state: { needs: string[]; passedNeeds: string[]; urgency?: string | null },
+  state: { needs: string[]; passedNeeds: string[] },
 ): V2Changes {
   const keep: V2Changes = {
     query: [currentQuery?.trim(), text.trim()].filter(Boolean).join('. '),
     query_label: null,
     needs: [...state.needs],
     passed_needs: [...state.passedNeeds],
-    urgency: state.urgency ?? null,
   };
-  if (!question || question.id === NO_MATCH_ID) return keep;
-  return { ...keep, ...answerChanges(question, [], state) };
+  const cleared: V2Changes = { asked: null, urgency: null };
+  if (!question || question.id === NO_MATCH_ID) return { ...keep, ...cleared };
+  return { ...keep, ...answerChanges(question, [], state), ...cleared };
 }
 
 /**

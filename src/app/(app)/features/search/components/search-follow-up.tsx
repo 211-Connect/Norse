@@ -1520,14 +1520,10 @@ export function SearchRefineQuestion() {
     setNoted('Thank you. We added that to your search.');
     setFlagged((prev) => [...prev, text]);
     moveFocus.current = true;
-    // The text joins the query (Decision 7). On the weak-match question it writes nothing else.
+    // The text joins the query (Decision 7). It clears `asked` and `urgency`,
+    // so the emergency question can ask again.
     write({
-      ...(v2 ? { asked: [...new Set([...asked, v2.id])] } : {}),
-      ...otherChanges(v2, params.get('query'), text, {
-        needs,
-        passedNeeds,
-        urgency: params.get('urgency'),
-      }),
+      ...otherChanges(v2, params.get('query'), text, { needs, passedNeeds }),
     });
   };
   // Each answer is a history entry, so the browser's Back button undoes it.

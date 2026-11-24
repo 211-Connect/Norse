@@ -594,11 +594,7 @@ export function SearchGuideFromUrl({
     writeAnswer(
       question,
       picks.map((l) => valueOfLabel(question, l)),
-      otherChanges(question, params.get('query'), text, {
-        needs,
-        passedNeeds,
-        urgency: params.get('urgency'),
-      }),
+      otherChanges(question, params.get('query'), text, { needs, passedNeeds }),
     );
   };
 
