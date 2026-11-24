@@ -75,6 +75,7 @@ const LandingSummaryCard = () => {
       setStatus(
         await call<Status>(`summary?tenantId=${encodeURIComponent(tenantId)}`),
       );
+      setError(null);
     } catch (err) {
       setError((err as Error).message);
     }
@@ -87,11 +88,13 @@ const LandingSummaryCard = () => {
   const working =
     status?.generation.state === 'queued' ||
     status?.generation.state === 'running';
+  // A failed refresh (signed out, server down) stops polling; the error shows.
+  const polling = working && !error;
   useEffect(() => {
-    if (!working) return;
+    if (!polling) return;
     const timer = setInterval(() => void refresh(), 3000);
     return () => clearInterval(timer);
-  }, [working, refresh]);
+  }, [polling, refresh]);
 
   if (!tenantId) return null;
 

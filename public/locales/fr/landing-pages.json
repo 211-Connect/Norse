@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "Comté de {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} dans {{location}}",
+    "description": "Trouvez {{topic}} dans {{location}} : adresses, horaires et comment obtenir de l’aide, de {{name}}.",
+    "h1": "{{topic}} dans {{location}}",
+    "intro": "Programmes et services pour {{topic}} à {{location}}. Appelez le 211 si vous avez besoin d'aide pour trouver le bon."
+  }
+}

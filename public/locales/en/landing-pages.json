@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} in {{location}}",
+    "description": "Find {{topic}} in {{location}}: addresses, hours and how to get help, from {{name}}.",
+    "h1": "{{topic}} in {{location}}",
+    "intro": "Programs and services for {{topic}} in {{location}}. Call 211 if you need help finding the right one."
+  }
+}

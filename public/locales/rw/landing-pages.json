@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} muri {{location}}",
+    "description": "Shaka {{topic}} muri {{location}}: aderesi, amasaha n'uburyo bwo kubona ubufasha, kuri {{name}}.",
+    "h1": "{{topic}} muri {{location}}",
+    "intro": "Porogaramu na serivisi za {{topic}} muri {{location}}. Hamagara 211 niba ukeneye ubufasha bwo kubona ikwiye."
+  }
+}

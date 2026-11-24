@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} ካውንቲ",
+    "place": "{{name}}፣ {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} በ {{location}} ውስጥ",
+    "description": "{{topic}} በ{{location}} ውስጥ ያግኙ፡ አድራሻዎች፣ የስራ ሰዓቶች እና እርዳታ እንዴት ማግኘት እንደሚችሉ፣ ከ {{name}} ያግኙ።",
+    "h1": "{{topic}} በ {{location}} ውስጥ",
+    "intro": "በ{{location}} ውስጥ ለ {{topic}} ፕሮግራሞች እና አገልግሎቶች። ትክክለኛውን ለማግኘት እርዳታ ከፈለጉ 211 ይደውሉ።"
+  }
+}

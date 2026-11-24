@@ -5,10 +5,35 @@ import {
   superAdminOrSupportAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../Users/access/roles';
+import {
+  MAX_SLUG_LENGTH,
+  SLUG_PATTERN,
+} from '@/app/(app)/features/landing-pages/lib/slugs';
+
 import { landingPagesEndpoints } from '../../endpoints/landingPages';
 import { landingCopyFields } from './copyFields';
 
 const REGION_ID = /^(state:[A-Z]{2}|county:\d{5}|place:\d{7})$/;
+
+const COMPONENTS = '@/payload/collections/LandingPages/components';
+
+/**
+ * Admins switch pages between live and off. Retiring and reviving follow the
+ * selection and are done by the generation job only.
+ */
+const validateStatus = (
+  value: string | null | undefined,
+  { previousValue }: { previousValue?: string | null },
+) => {
+  if (!previousValue || value === previousValue) return true;
+  if (previousValue === 'retired') {
+    return 'A retired page comes back when its region and topic are selected again and Apply changes runs.';
+  }
+  if (value === 'retired') {
+    return 'Pages are retired by removing their region or topic and running Apply changes. Use Off to hide one page.';
+  }
+  return true;
+};
 
 /**
  * One landing page: a topic in a region (state, county or city), in every
@@ -22,7 +47,8 @@ export const LandingPages: CollectionConfig = {
   labels: { singular: 'Landing page', plural: 'Landing pages' },
   access: {
     read: superAdminOrSupportOrTenantAccess,
-    create: superAdminAccess,
+    // Pages come from the generation job only (SQL, no access check).
+    create: () => false,
     update: superAdminOrSupportOrTenantAccess,
     delete: superAdminAccess,
   },
@@ -32,13 +58,18 @@ export const LandingPages: CollectionConfig = {
   admin: {
     useAsTitle: 'label',
     group: 'Landing pages',
+    listSearchableFields: ['label', 'regionName'],
     defaultColumns: [
       'label',
+      'topic',
       'regionType',
       'status',
       'resultCount',
-      'countedAt',
+      'addresses',
     ],
+    components: {
+      beforeListTable: [`${COMPONENTS}/LandingPagesExport`],
+    },
   },
   fields: [
     {
@@ -66,6 +97,7 @@ export const LandingPages: CollectionConfig = {
           required: true,
           defaultValue: 'live',
           index: true,
+          validate: validateStatus,
           options: [
             { label: 'Live', value: 'live' },
             { label: 'Off', value: 'off' },
@@ -96,10 +128,15 @@ export const LandingPages: CollectionConfig = {
         },
         {
           name: 'regionType',
+          label: 'Level',
           type: 'select',
           required: true,
           index: true,
-          options: ['state', 'county', 'place'],
+          options: [
+            { label: 'State', value: 'state' },
+            { label: 'County', value: 'county' },
+            { label: 'City', value: 'place' },
+          ],
           admin: { readOnly: true },
         },
         {
@@ -130,10 +167,31 @@ export const LandingPages: CollectionConfig = {
       name: 'placeSlug',
       type: 'text',
       required: true,
+      access: {
+        update: superAdminOrSupportAccess,
+      },
+      validate: (value: string | null | undefined) =>
+        (value &&
+          SLUG_PATTERN.test(value) &&
+          value.length <= MAX_SLUG_LENGTH) ||
+        'Lowercase letters, digits and single hyphens, e.g. tacoma-wa.',
       admin: {
-        readOnly: true,
         description:
-          'The second part of the address, e.g. tacoma-wa. The same in every locale.',
+          'The second part of the address, e.g. tacoma-wa. The same in every locale. A change takes effect on Apply changes.',
+        components: {
+          afterInput: [`${COMPONENTS}/LandingPlaceSlugWarning`],
+        },
+      },
+    },
+    {
+      name: 'addresses',
+      type: 'ui',
+      label: 'URL',
+      admin: {
+        components: {
+          Cell: `${COMPONENTS}/LandingPageAddressesCell`,
+          Field: `${COMPONENTS}/LandingPageAddressesField`,
+        },
       },
     },
     {
@@ -197,7 +255,7 @@ export const LandingPages: CollectionConfig = {
         description:
           'Overrides the topic and the Resource Directory templates for this page only.',
       },
-      fields: landingCopyFields,
+      fields: landingCopyFields('page'),
     },
   ],
 };

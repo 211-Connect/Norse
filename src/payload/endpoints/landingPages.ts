@@ -1,6 +1,9 @@
 import type { Endpoint, PayloadRequest } from 'payload';
 
 import { createLogger } from '@/lib/logger';
+import { locales } from '@/payload/i18n/locales';
+import { getLandingCopyContext } from '@/payload/services/landingCopy';
+import { exportLandingPagesCsv } from '@/payload/services/landingPagesAdmin';
 import {
   GENERATE_LANDING_PAGES_TASK,
   LandingGenerationError,
@@ -19,6 +22,9 @@ import {
 } from '../collections/Users/access/roles';
 
 const log = createLogger('landing-pages-endpoints');
+
+const LOCALES = new Set<string>(locales);
+const isLocale = (value: string) => LOCALES.has(value);
 
 /**
  * Admin endpoints of the Landing Pages tab (docs/landing-pages.md), under
@@ -198,7 +204,68 @@ const apply: Endpoint = {
   },
 };
 
+/**
+ * GET ?tenantId=&locale=&pageId=&topicId= → what copy previews are filled
+ * from: the inherited layers, tag values and the page's address.
+ */
+const copyContext: Endpoint = {
+  path: '/admin/copy-context',
+  method: 'get',
+  handler: async (req) => {
+    const checked = guard(req, query(req, 'tenantId'));
+    if (checked instanceof Response) return checked;
+    const locale = query(req, 'locale') || 'en';
+    if (!isLocale(locale)) {
+      return Response.json({ message: 'Unknown locale' }, { status: 400 });
+    }
+    const pageId = query(req, 'pageId');
+    const topicId = query(req, 'topicId');
+    if ([pageId, topicId].some((id) => id && !/^\d+$/.test(id))) {
+      return Response.json(
+        { message: 'pageId and topicId are numbers' },
+        { status: 400 },
+      );
+    }
+    try {
+      return Response.json(
+        await getLandingCopyContext({
+          tenantId: checked.tenantId,
+          locale,
+          pageId,
+          topicId,
+        }),
+      );
+    } catch (error) {
+      return failed(error, checked.tenantId, 'Copy preview');
+    }
+  },
+};
+
+/** GET ?tenantId= → every page of the tenant as a CSV download. */
+const exportCsv: Endpoint = {
+  path: '/admin/export',
+  method: 'get',
+  handler: async (req) => {
+    const checked = guard(req, query(req, 'tenantId'));
+    if (checked instanceof Response) return checked;
+    try {
+      const csv = await exportLandingPagesCsv(checked.tenantId);
+      const date = new Date().toISOString().slice(0, 10);
+      return new Response(csv, {
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="landing-pages-${date}.csv"`,
+        },
+      });
+    } catch (error) {
+      return failed(error, checked.tenantId, 'Export');
+    }
+  },
+};
+
 export const landingPagesEndpoints: Endpoint[] = [
+  copyContext,
+  exportCsv,
   regions,
   summary,
   preview,

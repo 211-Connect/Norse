@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} કાઉન્ટી",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} માં {{location}}",
+    "description": "{{topic}} ને {{location}} માં શોધો: સરનામાં, કલાકો અને મદદ કેવી રીતે મેળવવી, {{name}} માંથી.",
+    "h1": "{{topic}} માં {{location}}",
+    "intro": "{{topic}} માં {{location}} માટે કાર્યક્રમો અને સેવાઓ. જો તમને યોગ્ય શોધવામાં મદદની જરૂર હોય તો 211 પર કૉલ કરો."
+  }
+}

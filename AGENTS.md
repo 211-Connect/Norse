@@ -37,7 +37,7 @@ Other docs, load only when the task touches that area:
 - [docs/seo.md](/docs/seo.md) — technical SEO on existing pages: self-referencing canonical on resource detail pages; status of the sitemap, `/search` canonical and HTML caching.
 - [docs/template-tags.md](/docs/template-tags.md) — `{name}`, `{phone}`, `{email}` in any CMS-configured text (legal pages, footer, …): where the values come from, how `buildAppConfig` replaces them, adding a tag.
 - [docs/cms-app-release-plan.md](/docs/cms-app-release-plan.md) — running the split CMS/app deployment for multi-tenant and MBOA: images, hostnames, environment per app, dashboard settings, how releases deploy, checks and rollback.
-- [docs/landing-pages.md](/docs/landing-pages.md) — SEO landing pages (topic × place × locale): Tenant → SEO and Resource Directory → Landing Pages settings, region picker, topics, URL shape and reserved slugs, collections and bridge, generation job, old-URL redirects, copy templates, XML and HTML sitemaps, caching, warm-up job, analytics.
+- [docs/landing-pages.md](/docs/landing-pages.md) — SEO landing pages (topic × place × locale): Tenant → SEO and Resource Directory → Landing Pages settings, region picker, topics, URL shape and reserved slugs, collections and bridge, generation job, old-URL redirects, page copy (layers, `{location}` per locale, translation, previews), page list and editor, XML and HTML sitemaps, caching, warm-up job, analytics.
 - [docs/observability.md](/docs/observability.md) — traces, metrics and logs: OTLP pipeline, service names (`norse-app`/`norse-cms`), sampling and trace boundaries (app → CMS link), Postgres/Redis spans, env vars, Prometheus metric names, log fields, Arcjet failure reading guide, and the local stack.
 
 ## Feature documentation

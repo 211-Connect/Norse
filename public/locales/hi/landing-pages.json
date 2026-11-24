@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} काउंटी",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} में {{location}}",
+    "description": "{{topic}} में {{location}} खोजें: पते, खुलने का समय और {{name}} से सहायता कैसे प्राप्त करें।",
+    "h1": "{{topic}} में {{location}}",
+    "intro": "{{topic}} के लिए {{location}} में उपलब्ध कार्यक्रम और सेवाएं। सही सेवा ढूंढने में सहायता के लिए 211 पर कॉल करें।"
+  }
+}

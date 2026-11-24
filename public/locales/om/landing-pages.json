@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} {{location}} keessatti.",
+    "description": "{{topic}} {{location}}: teessoo, sa'aatii fi akkaataa gargaarsa itti argatan, {{name}} irraa barbaadi.",
+    "h1": "{{topic}} {{location}} keessatti.",
+    "intro": "Sagantaa fi tajaajiloota {{topic}} {{location}} keessatti. Yoo gargaarsa sirrii ta’e argachuuf barbaadde 211 bilbili."
+  }
+}

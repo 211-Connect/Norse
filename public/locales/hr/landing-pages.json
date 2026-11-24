@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "Okrug {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} u {{location}}",
+    "description": "Pronađite {{topic}} u {{location}}: adrese, radno vrijeme i kako dobiti pomoć od {{name}}.",
+    "h1": "{{topic}} u {{location}}",
+    "intro": "Programi i usluge za {{topic}} u {{location}}. Nazovite 211 ako vam je potrebna pomoć u pronalaženju pravog."
+  }
+}

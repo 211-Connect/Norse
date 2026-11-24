@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} i le {{location}}",
+    "description": "Saili le {{topic}} i le {{location}}: tuatusi, itula ma le auala e maua ai se fesoasoani, mai le {{name}}.",
+    "h1": "{{topic}} i le {{location}}",
+    "intro": "Polokalama ma auaunaga mo {{topic}} i le {{location}}. Vala'au le 211 pe afai e te mana'omia se fesoasoani e su'e ai le mea sa'o."
+  }
+}

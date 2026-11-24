@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "округ {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} у {{location}}",
+    "description": "Знайдіть {{topic}} у {{location}}: адреси, години роботи та як отримати допомогу від {{name}}.",
+    "h1": "{{topic}} у {{location}}",
+    "intro": "Програми та послуги для {{topic}} у {{location}}. Зателефонуйте 211, якщо вам потрібна допомога у пошуку потрібної."
+  }
+}

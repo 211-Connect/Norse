@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "Kaunti ya {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} katika {{location}}",
+    "description": "Tafuta {{topic}} katika {{location}}: anwani, saa na jinsi ya kupata usaidizi, kutoka kwa {{name}}.",
+    "h1": "{{topic}} katika {{location}}",
+    "intro": "Programu na huduma za {{topic}} katika {{location}}. Piga simu 211 ikiwa unahitaji usaidizi wa kupata inayofaa."
+  }
+}

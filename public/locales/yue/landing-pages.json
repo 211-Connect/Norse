@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}}縣",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} 喺 {{location}}",
+    "description": "喺 {{topic}} 搵 {{location}} ：地址、營業時間同埋點樣搵人幫手，嚟自 {{name}} 。",
+    "h1": "{{topic}} 喺 {{location}}",
+    "intro": "喺 {{topic}} 入面嘅 {{location}} 嘅程式同服務。如果你需要幫手搵啱嘅，打211。"
+  }
+}

@@ -58,7 +58,7 @@ Each tenant has its own Resource Directory.
 - Regions (`RegionPickerField` on the `landingPages.regions` JSON field): a
   state › county › city tree.
 - Topics: the `landing-page-topics` records.
-- Copy templates for each locale.
+- Page copy (`landingPages.templates`): the copy templates, per locale.
 
 A host serves landing pages and sitemaps only when its Resource Directory has
 the flag on and the Tenant is not `noindex`.
@@ -193,7 +193,8 @@ Every collection is scoped to one Resource Directory.
   `placeSlug`; `status` (`live`, `off`, `retired`); `redirect` (a target
   page, or a site path such as a `/search` URL); `resultCount`, `countedAt`;
   localized overrides for title, description, H1 and intro. Unique on
-  Resource Directory + topic + region.
+  Resource Directory + topic + region. Pages are never created or deleted
+  by hand (`create` is closed): the generation job writes them.
 - **`landing-page-slugs`** (table `lp_slugs`): Resource Directory, locale,
   path (`topic-slug/place-slug`), page, `current`. Unique on Resource
   Directory + locale + path. Exactly one row per page and locale is current;
@@ -290,9 +291,15 @@ warning that its ranking moves to the new URL, with a short dip.
 
 ## Page copy
 
-Four fields: SEO title, meta description, H1, intro. Each is filled, in order,
-by the page override, the topic override, or the tenant template for the
-locale.
+Four fields: SEO title, meta description, H1, intro. Each is filled from the
+first layer that has it:
+
+1. the page override (`copy` on the page),
+2. the topic override (`copy` on the topic),
+3. the Resource Directory template (`landingPages.templates`, the "Page copy"
+   group on the Landing Pages tab),
+4. the built-in default for the locale (`defaults` in
+   `public/locales/<locale>/landing-pages.json`).
 
 | Variable | Value |
 | --- | --- |
@@ -301,13 +308,66 @@ locale.
 | `{state}` | the state's name |
 | `{name}`, `{phone}`, `{email}` | the tenant values ([template-tags.md](template-tags.md)) |
 
-Region display names are built from the app's locale strings, not stored in
-the CMS, so every locale works without data entry. Templates are
-machine-translated by the `translate` job with `{…}` variables protected from
-translation. Unknown tags are left as typed. The editor shows character
-counters (title about 60, description about 155) and a Google-result preview.
+A known tag with no value becomes empty; unknown tags and `{{…}}` are left as
+typed. The logic is `features/landing-pages/lib/copy.ts` (`pickCopy`,
+`fillCopy`, `regionDisplayName`), tested in `tests/landing-pages-copy.test.ts`.
+
+**Region names** come from the `region` patterns in the same locale file
+(`"county": "Condado de {{name}}"`, `"place": "{{name}}, {{state}}"`), so every
+locale works without data entry. The index name's state suffix is dropped
+("Pierce County, WA" → "Pierce"); only names ending in "County" use the
+pattern, so parishes and boroughs keep their name. State names stay in
+English. The strings were machine-translated with `npm run sync-translations`
+and the county patterns then corrected by hand; where the local word was
+uncertain the English "County" is kept.
+
+**Translation.** Templates are written in English. Saving them queues the
+`translate` job like other Resource Directory texts
+(`AUTO_TRANSLATED_STRING_PATHS`). The job masks every single-brace tag before
+sending text to the engine and restores it afterwards (`lib/templateTags.ts`,
+lenient about sentinels the engine mangles); a tag the translation dropped is
+appended. Clearing an English template clears it in every locale, so all
+locales fall back to their built-in text together. Topic copy is translated
+by `translateLandingTopic` the same way. Page overrides are not translated.
+
+**Admin.** Every copy field (templates, topic, page) shows what it inherits
+as a greyed placeholder and where it comes from; a filled field says what it
+overrides, with **Use inherited** to clear it. A row of variable chips under
+each field inserts a tag at the cursor (at the end when the field is not
+focused). Title and description show the
+length with sample values filled in, against about 60 and 155 characters. A
+Google-result preview follows each group, built from the form's unsaved
+values. On the templates and a topic it uses a sample page: a live county page
+of the topic if there is one, else any live page, else a selected region. The
+preview reads `GET /api/landing-pages/admin/copy-context` (inherited layers,
+tag values, the page's site path; `src/payload/services/landingCopy.ts`).
+
 The result count is never put into copy, because a title that keeps changing
 keeps moving the ranking.
+
+## Page list and editor
+
+**List** (`/admin/collections/landing-pages`, scoped by the tenant selector):
+columns label, topic, level (state, county, city), status, result count and
+URL (the current address in the default locale with a link, and how many
+languages have one). Search matches the label and the place name; the
+standard filters cover topic, level, status and result count (equals 0).
+**Export CSV** downloads every page of the selected tenant with its current
+URL in each locale (`GET /api/landing-pages/admin/export`).
+
+**Editor:**
+
+- Addresses: the current address in every locale with **Open page**, and the
+  old addresses that redirect to it.
+- Status: super-admins and support switch a page between Live and Off, one at
+  a time or with bulk edit. Retired is set and cleared only by Apply changes;
+  the API refuses it.
+- Place slug: super-admins and support can edit it (lowercase, digits,
+  hyphens). A warning explains the ranking move. The new address applies on
+  Apply changes, which keeps the old one as a redirect.
+- Copy overrides with inheritance and the preview, as above.
+- History: Payload versions (up to 50 per page). Pages written by the
+  generation job get a version only once someone edits them.
 
 ## The page
 

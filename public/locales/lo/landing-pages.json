@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} ໃນ {{location}}",
+    "description": "ຊອກຫາ {{topic}} ໃນ {{location}}: ທີ່ຢູ່, ເວລາເປີດ ແລະ ວິທີການຮັບຄວາມຊ່ວຍເຫຼືອ, ຈາກ {{name}}.",
+    "h1": "{{topic}} ໃນ {{location}}",
+    "intro": "ໂປຣແກຣມ ແລະ ການບໍລິການສຳລັບ {{topic}} ໃນ {{location}}. ໂທຫາ 211 ຖ້າທ່ານຕ້ອງການຄວາມຊ່ວຍເຫຼືອໃນການຊອກຫາອັນທີ່ເໝາະສົມ."
+  }
+}

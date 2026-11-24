@@ -1,5 +1,6 @@
 import type { JSONFieldValidation, Tab } from 'payload';
 
+import { landingCopyFields } from '../../LandingPages/copyFields';
 import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 const REGION_ID = /^(state:[A-Z]{2}|county:\d{5}|place:\d{7})$/;
@@ -55,6 +56,17 @@ export const landingPages: Tab = {
             '@/payload/collections/LandingPages/components/LandingTopicsField',
         },
       },
+    },
+    {
+      name: 'templates',
+      type: 'group',
+      label: 'Page copy',
+      admin: {
+        condition: (data) => Boolean(data?.featureFlags?.enableLandingPages),
+        description:
+          'Used by every page unless its topic or the page sets its own. Variables: {topic}, {location}, {state}, {name}, {phone}, {email}. Empty fields use the built-in text for the language. Other languages are translated automatically from English.',
+      },
+      fields: landingCopyFields('template'),
     },
     {
       name: 'regions',

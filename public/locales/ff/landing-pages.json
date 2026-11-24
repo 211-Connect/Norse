@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} e nder {{location}}",
+    "description": "Yiytu {{topic}} e nder {{location}}: adresseeji, waktuuji e no keɓir-ɗaa ballal, gila e {{name}}.",
+    "h1": "{{topic}} e nder {{location}}",
+    "intro": "Porogaraamuuji e sarwisaaji ngam {{topic}} e nder {{location}}. Noddu 211 so aɗa yiɗi ballal ngam heɓde mo foti."
+  }
+}

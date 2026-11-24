@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "Degmada {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} ee {{location}}",
+    "description": "Ka hel {{topic}} {{location}}: cinwaanada, saacadaha iyo sida loo helo caawimo, laga bilaabo {{name}}.",
+    "h1": "{{topic}} ee {{location}}",
+    "intro": "Barnaamijyada iyo adeegyada {{topic}} ee ku jira {{location}}. Wac 211 haddii aad u baahan tahay caawimo helitaanka mid sax ah."
+  }
+}

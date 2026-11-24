@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "округ {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} в {{location}}",
+    "description": "Найдите {{topic}} в {{location}}: адреса, часы работы и как получить помощь, от {{name}}.",
+    "h1": "{{topic}} в {{location}}",
+    "intro": "Программы и услуги для {{topic}} в {{location}}. Позвоните по номеру 211, если вам нужна помощь в поиске нужной программы."
+  }
+}

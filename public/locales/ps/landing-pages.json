@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}، {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} په {{location}} کې",
+    "description": "{{topic}} په {{location}} کې ومومئ: پتې، ساعتونه او څنګه مرسته ترلاسه کړئ، له {{name}} څخه.",
+    "h1": "{{topic}} په {{location}} کې",
+    "intro": "په {{topic}} کې د {{location}} لپاره پروګرامونه او خدمات. که تاسو د سم موندلو کې مرستې ته اړتیا لرئ نو 211 ته زنګ ووهئ."
+  }
+}

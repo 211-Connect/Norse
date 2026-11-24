@@ -1166,6 +1166,27 @@ export interface ResourceDirectory {
     };
   };
   landingPages?: {
+    /**
+     * Used by every page unless its topic or the page sets its own. Variables: {topic}, {location}, {state}, {name}, {phone}, {email}. Empty fields use the built-in text for the language. Other languages are translated automatically from English.
+     */
+    templates?: {
+      /**
+       * SEO title: the blue link in Google results. About 60 characters.
+       */
+      title?: string | null;
+      /**
+       * Meta description: the grey text under the link. About 155 characters. It changes how many people click, not the ranking.
+       */
+      description?: string | null;
+      /**
+       * The main heading on the page.
+       */
+      h1?: string | null;
+      /**
+       * A short paragraph above the results.
+       */
+      intro?: string | null;
+    };
     regions?:
       | {
           [k: string]: unknown;
@@ -1412,7 +1433,7 @@ export interface LandingPage {
   regionState: string;
   countyId?: string | null;
   /**
-   * The second part of the address, e.g. tacoma-wa. The same in every locale.
+   * The second part of the address, e.g. tacoma-wa. The same in every locale. A change takes effect on Apply changes.
    */
   placeSlug: string;
   /**
@@ -2288,6 +2309,14 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   landingPages?:
     | T
     | {
+        templates?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              h1?: T;
+              intro?: T;
+            };
         regions?: T;
       };
   updatedAt?: T;

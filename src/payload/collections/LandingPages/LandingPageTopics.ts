@@ -303,7 +303,7 @@ export const LandingPageTopics: CollectionConfig = {
         description:
           'Overrides the Resource Directory templates for every page of this topic. Leave empty to use the templates.',
       },
-      fields: landingCopyFields,
+      fields: landingCopyFields('topic'),
     },
   ],
 };

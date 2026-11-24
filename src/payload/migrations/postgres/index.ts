@@ -97,6 +97,7 @@ import * as migration_20261123_135715_landing_pages from './20261123_135715_land
 import * as migration_20261123_140113_tenant_seo_settings from './20261123_140113_tenant_seo_settings';
 import * as migration_20261123_140939_landing_pages_selection from './20261123_140939_landing_pages_selection';
 import * as migration_20261123_143643_landing_topic_translation from './20261123_143643_landing_topic_translation';
+import * as migration_20261123_162051_landing_copy_templates from './20261123_162051_landing_copy_templates';
 
 export const migrations = [
   {
@@ -593,5 +594,10 @@ export const migrations = [
     up: migration_20261123_143643_landing_topic_translation.up,
     down: migration_20261123_143643_landing_topic_translation.down,
     name: '20261123_143643_landing_topic_translation',
+  },
+  {
+    up: migration_20261123_162051_landing_copy_templates.up,
+    down: migration_20261123_162051_landing_copy_templates.down,
+    name: '20261123_162051_landing_copy_templates',
   },
 ];

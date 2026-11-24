@@ -5,7 +5,9 @@
  */
 
 const TAG = /\{[a-zA-Z]+\}/g;
-const SENTINEL = /@@__T(\d+)__@@/g;
+// Translation engines sometimes drop an `@` or `_` or add spaces inside the
+// sentinel (seen with Amharic: `@__T1__@@`), so restoring is lenient.
+const SENTINEL = /@{1,2}\s*_{1,2}\s*T\s*(\d+)\s*_{1,2}\s*@{1,2}/g;
 
 export type MaskedTemplate = { text: string; tags: string[] };
 

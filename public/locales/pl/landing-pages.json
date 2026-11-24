@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "Hrabstwo {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} w {{location}}",
+    "description": "Znajdź {{topic}} w {{location}}: adresy, godziny otwarcia i informacje o tym, jak uzyskać pomoc od {{name}}.",
+    "h1": "{{topic}} w {{location}}",
+    "intro": "Programy i usługi dla {{topic}} w {{location}}. Zadzwoń pod numer 211, jeśli potrzebujesz pomocy w znalezieniu odpowiedniego programu."
+  }
+}

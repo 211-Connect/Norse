@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "Quận {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} trong {{location}}",
+    "description": "Tìm {{topic}} tại {{location}}: địa chỉ, giờ mở cửa và cách nhận trợ giúp, từ {{name}}.",
+    "h1": "{{topic}} trong {{location}}",
+    "intro": "Các chương trình và dịch vụ dành cho {{topic}} tại {{location}}. Gọi 211 nếu bạn cần trợ giúp tìm đúng chương trình/dịch vụ."
+  }
+}

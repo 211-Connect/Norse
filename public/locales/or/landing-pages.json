@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} ରେ {{location}}",
+    "description": "{{topic}} କୁ {{location}} ରେ ଖୋଜନ୍ତୁ: ଠିକଣା, ସମୟ ଏବଂ ସାହାଯ୍ୟ କିପରି ପାଇବେ, {{name}} ରୁ।",
+    "h1": "{{topic}} ରେ {{location}}",
+    "intro": "{{topic}} ରେ {{location}} ପାଇଁ କାର୍ଯ୍ୟକ୍ରମ ଏବଂ ସେବା। ଯଦି ଆପଣଙ୍କୁ ସଠିକ୍ ଖୋଜିବାରେ ସାହାଯ୍ୟର ଆବଶ୍ୟକତା ଅଛି, ତେବେ 211 କୁ କଲ୍ କରନ୍ତୁ।"
+  }
+}

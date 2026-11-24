@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}}县",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} 在 {{location}}",
+    "description": "在 {{topic}} 中查找 {{location}}：地址、营业时间以及如何从 {{name}} 获取帮助。",
+    "h1": "{{topic}} 在 {{location}}",
+    "intro": "为{{topic}}在{{location}}地区提供的项目和服务。如果您需要帮助找到合适的项目和服务，请致电211。"
+  }
+}

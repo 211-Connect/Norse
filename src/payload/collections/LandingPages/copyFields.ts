@@ -1,16 +1,28 @@
 import type { Field } from 'payload';
 
+/** Which layer of the copy a set of fields edits (docs/landing-pages.md). */
+export type CopyScope = 'template' | 'topic' | 'page';
+
+const COMPONENTS = '@/payload/collections/LandingPages/components';
+
+const field = (scope: CopyScope) => ({
+  Field: { path: `${COMPONENTS}/LandingCopyField`, clientProps: { scope } },
+});
+
 /**
  * The four texts of a landing page, all localized and all optional: an empty
- * one inherits (page → topic → Resource Directory template). Variables such
- * as `{topic}` and `{location}` are filled when the page renders.
+ * one inherits (page → topic → Resource Directory template → built-in
+ * default). Variables such as `{topic}` and `{location}` are filled when the
+ * page renders. Each field shows what it inherits and a character count; a
+ * Google-result preview follows.
  */
-export const landingCopyFields: Field[] = [
+export const landingCopyFields = (scope: CopyScope): Field[] => [
   {
     name: 'title',
     type: 'text',
     localized: true,
     admin: {
+      components: field(scope),
       description:
         'SEO title: the blue link in Google results. About 60 characters.',
     },
@@ -20,6 +32,7 @@ export const landingCopyFields: Field[] = [
     type: 'textarea',
     localized: true,
     admin: {
+      components: field(scope),
       description:
         'Meta description: the grey text under the link. About 155 characters. It changes how many people click, not the ranking.',
     },
@@ -28,12 +41,30 @@ export const landingCopyFields: Field[] = [
     name: 'h1',
     type: 'text',
     localized: true,
-    admin: { description: 'The main heading on the page.' },
+    admin: {
+      components: field(scope),
+      description: 'The main heading on the page.',
+    },
   },
   {
     name: 'intro',
     type: 'textarea',
     localized: true,
-    admin: { description: 'A short paragraph above the results.' },
+    admin: {
+      components: field(scope),
+      description: 'A short paragraph above the results.',
+    },
+  },
+  {
+    name: 'preview',
+    type: 'ui',
+    admin: {
+      components: {
+        Field: {
+          path: `${COMPONENTS}/LandingCopyPreview`,
+          clientProps: { scope },
+        },
+      },
+    },
   },
 ];

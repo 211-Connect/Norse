@@ -39,3 +39,11 @@ test('text without tags is unchanged', () => {
     'Bancos de alimentos',
   );
 });
+
+test('a sentinel the engine mangled is still restored', () => {
+  const { tags } = maskTemplateTags('Free {topic} in {location}');
+  assert.equal(
+    unmaskTemplateTags('በ @__T1__@@ ውስጥ ነፃ @@_T0__ @@', tags),
+    'በ {location} ውስጥ ነፃ {topic}',
+  );
+});

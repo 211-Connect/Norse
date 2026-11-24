@@ -1,0 +1,12 @@
+{
+  "region": {
+    "county": "{{name}}郡",
+    "place": "{{name}}、{{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} 内の {{location}}",
+    "description": "{{topic}} の住所、営業時間、サポートの受け方については、{{location}} を参照してください。 {{name}}",
+    "h1": "{{topic}} 内の {{location}}",
+    "intro": "{{topic}} の {{location}} 向けのプログラムとサービス。適切なプログラムを見つけるのにサポートが必要な場合は、211 に電話してください。"
+  }
+}
