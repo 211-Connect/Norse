@@ -54,8 +54,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
               <span className="truncate"> {t('call_to_action.call')} </span>
             </Link>
           </ReferralButton>
-        ) : result.phone ? null : (
-          // v2 only: the card's info block already shows a provider number as text (Lucas, 2026-11-18).
+        ) : (
           <ReferralButton
             className="w-full gap-1 overflow-hidden"
             size="sm"

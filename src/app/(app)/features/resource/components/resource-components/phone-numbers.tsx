@@ -19,6 +19,7 @@ import { Datum } from '../datum';
 
 export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');
+
   const mappedPhoneNumbers = useMemo(() => {
     const phoneNumbers = resource.phoneNumbers ?? [];
     return phoneNumbers.map((phone) => {
