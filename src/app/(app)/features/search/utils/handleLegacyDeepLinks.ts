@@ -30,6 +30,7 @@ type Args = {
    * search results" link stays editable.
    */
   printableDirectoryContext?: PrintableDirectoryContextParams;
+  widgetId?: string;
 };
 
 /**
@@ -43,6 +44,7 @@ export async function handleLegacyDeepLinks({
   locale,
   skipLegacyLinkCheck,
   printableDirectoryContext,
+  widgetId,
 }: Args): Promise<LegacyAiClarifyState | null> {
   let [snapshot] = initialTransition(searchResolverMachine, {
     intent,
@@ -80,12 +82,16 @@ export async function handleLegacyDeepLinks({
     const { redirectTo } = snapshot.context;
     if (!redirectTo)
       throw new Error(`search state ${snapshot.value} has no redirect`);
-    return redirect(
-      withPrintableDirectoryContext(
-        redirectTo,
-        new URLSearchParams(printableDirectoryContext),
-      ),
+    const url = withPrintableDirectoryContext(
+      redirectTo,
+      new URLSearchParams(printableDirectoryContext),
     );
+    if (widgetId === undefined) return redirect(url);
+
+    const [path, query = ''] = url.split('?');
+    const params = new URLSearchParams(query);
+    params.set('widgetId', widgetId);
+    return redirect(`${path}?${params}`);
   }
   return snapshot.context.clarify;
 }

@@ -1,10 +1,11 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { firstValue } from '@/app/(app)/features/search/intent/slot';
 import {
   createResultsEvent,
   SearchLocationContext,
@@ -24,17 +25,43 @@ import {
 interface ResultsEventsProps {
   results: any;
   totalResults: any;
+  widgetId?: string;
 }
 
 export const ResultsEvents = ({
   results,
   totalResults,
+  widgetId,
 }: ResultsEventsProps) => {
   const { searchParamsObject } = useClientSearchParams();
   const appConfig = useAppConfig();
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
   const searchLocationGeocode = useAtomValue(searchLocationGeocodeAtom);
+  const widgetSearchTracked = useRef(false);
+  const query = firstValue(searchParamsObject.query) ?? '';
+  const queryLabel = firstValue(searchParamsObject.query_label) ?? '';
+  const searchLocation = firstValue(searchParamsObject.location) ?? '';
+
+  useEffect(() => {
+    if (widgetId === undefined || widgetSearchTracked.current) return;
+    widgetSearchTracked.current = true;
+    trackEvent(AnalyticsEvent.WidgetSearch, AnalyticsTools.Umami, {
+      widgetId,
+      query,
+      queryLabel,
+      searchLocation,
+      searchCoordinates: searchCoordinates.join(','),
+      userCoordinates: userCoordinates.join(','),
+    });
+  }, [
+    widgetId,
+    query,
+    queryLabel,
+    searchLocation,
+    searchCoordinates,
+    userCoordinates,
+  ]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -68,6 +95,16 @@ export const ResultsEvents = ({
         locationContext,
       );
 
+      if (widgetId !== undefined && !widgetSearchTracked.current) {
+        widgetSearchTracked.current = true;
+        trackEvent(AnalyticsEvent.WidgetSearch, AnalyticsTools.Umami, {
+          widgetId,
+          query,
+          queryLabel,
+          ...locationPayload,
+        });
+      }
+
       if (totalResults === 0) {
         trackEvent(AnalyticsEvent.SearchZeroResults, AnalyticsTools.Umami, {
           query: String(searchParamsObject.query ?? ''),
@@ -85,12 +122,15 @@ export const ResultsEvents = ({
   }, [
     appConfig.sessionId,
     appConfig.tenantId,
+    query,
+    queryLabel,
     results,
     searchCoordinates,
     searchParamsObject,
     totalResults,
     userCoordinates,
     searchLocationGeocode,
+    widgetId,
   ]);
 
   return null;
