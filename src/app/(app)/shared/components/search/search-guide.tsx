@@ -635,7 +635,7 @@ export function SearchGuideFromUrl({
 
         {error && (
           <p role="alert" className="font-semibold text-red-700">
-            We could not load the next question. Your results are ready.
+            We could not load the next question.
           </p>
         )}
         {/* One calm status line for the whole wait; the skeleton keeps the card's room. */}

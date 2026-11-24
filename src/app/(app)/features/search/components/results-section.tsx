@@ -35,6 +35,7 @@ import { SortSelect } from './sort-select';
 import { showsSort } from '../utils/sort-options';
 import { useV2Search } from '../v2/use-v2-search';
 import { SaveQueryToDirectoryButton } from './save-query-to-directory-button';
+import { useV2Failure } from './v2-failure-context';
 
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
@@ -101,6 +102,8 @@ export function ResultsSection({
   const searchParams = useSearchParams();
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const { results, totalResults, currentPage } = useSearchResults();
+  // A failed v2 call hides the count, the print, save and share buttons and the pagination.
+  const { failed } = useV2Failure();
   const resultsCount = results.length;
   const query = useAtomValue(queryAtom);
   const queryLabel = useAtomValue(queryLabelAtom);
@@ -214,28 +217,30 @@ export function ResultsSection({
             <AlertDescription>{t(aiAlertMessageKey)}</AlertDescription>
           </Alert>
         )}
-        <div className="flex items-center justify-between">
-          <ResultTotal />
-          <div className="flex flex-wrap justify-end gap-2.5">
-            {resultsCount > 0 && (
-              <DirectoryPrintControl
-                loadData={loadPrintableData}
-                renderDocument={renderPdfDocument}
-              />
-            )}
-            {/* When editing a source, allow saving a query that matches
+        {!failed && (
+          <div className="flex items-center justify-between">
+            <ResultTotal />
+            <div className="flex flex-wrap justify-end gap-2.5">
+              {resultsCount > 0 && (
+                <DirectoryPrintControl
+                  loadData={loadPrintableData}
+                  renderDocument={renderPdfDocument}
+                />
+              )}
+              {/* When editing a source, allow saving a query that matches
                 nothing yet — the user may be narrowing it on purpose. */}
-            {(resultsCount > 0 || directoryContext?.source) && (
-              <SaveQueryToDirectoryButton
-                queryTitle={shareTitle}
-                queryParams={serializedQueryParams}
-                directoryContext={directoryContext}
-                disabled={isDirectoryContextLoading}
-              />
-            )}
-            <ShareButton title={shareTitle} body={shareBody} />
+              {(resultsCount > 0 || directoryContext?.source) && (
+                <SaveQueryToDirectoryButton
+                  queryTitle={shareTitle}
+                  queryParams={serializedQueryParams}
+                  directoryContext={directoryContext}
+                  disabled={isDirectoryContextLoading}
+                />
+              )}
+              <ShareButton title={shareTitle} body={shareBody} />
+            </div>
           </div>
-        </div>
+        )}
         {(showSort || Boolean(v2Query)) && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {showSort && <SortSelect />}
@@ -246,7 +251,7 @@ export function ResultsSection({
 
       <div className="flex flex-col gap-6">
         <RenderResults cardLayout={cardLayout} />
-        <ResultsPagination />
+        {!failed && <ResultsPagination />}
         {v2 && <ResultsHelpItem />}
       </div>
     </section>

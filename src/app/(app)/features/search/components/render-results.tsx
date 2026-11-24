@@ -20,6 +20,8 @@ import {
 } from '../v2/use-v2-search';
 import { CardLayoutRenderer } from './card-layout-renderer';
 import { NoResultsCard } from './no-results-card';
+import { V2ErrorCard } from './v2-error-card';
+import { useV2Failure } from './v2-failure-context';
 import { weakMatchText } from '../v2/v2-results';
 
 type RenderResultsProps = {
@@ -44,6 +46,7 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
   const { results, currentPage } = useSearchResults();
   const { data } = useV2Search();
   const { needs, query } = useV2Url();
+  const { failed, retry, retrying } = useV2Failure();
   const appConfig = useAppConfig();
   const contactNumber = appConfig?.contact?.number;
   const noResultsText = appConfig?.search?.texts?.noResultsFallbackText;
@@ -92,10 +95,16 @@ export function RenderResults({ cardLayout }: RenderResultsProps) {
           {area}
         </p>
       )}
-      {results.length === 0 && (
-        <NoResultsCard
-          text={weak ? weakMatchText(noResultsText, contactNumber) : undefined}
-        />
+      {failed ? (
+        <V2ErrorCard onRetry={retry} busy={retrying} />
+      ) : (
+        results.length === 0 && (
+          <NoResultsCard
+            text={
+              weak ? weakMatchText(noResultsText, contactNumber) : undefined
+            }
+          />
+        )
       )}
       {noMatch && (
         <p

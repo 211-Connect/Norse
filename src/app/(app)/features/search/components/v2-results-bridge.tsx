@@ -3,12 +3,15 @@
 import { createContext, useContext, type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+
 import {
   SearchResultsProvider,
   useSearchResults,
 } from '../context/search-results-context';
 import { useV2Search } from '../v2/use-v2-search';
-import { v2Results } from '../v2/v2-results';
+import { v2CallFailed, v2Results } from '../v2/v2-results';
+import { V2FailureProvider } from './v2-failure-context';
 
 const IsV2Context = createContext(false);
 
@@ -25,20 +28,47 @@ export const useIsV2 = () => useContext(IsV2Context);
  */
 export function V2ResultsBridge({ children }: PropsWithChildren) {
   const base = useSearchResults();
-  const { data } = useV2Search();
+  const { data, query, isError, failureCount, isFetching, refetch } =
+    useV2Search();
+  const { featureFlags } = useAppConfig();
   const { i18n } = useTranslation();
   const v2 = v2Results(data, base.results, i18n.language);
+  // A failed call is an error state, never the v1 cards: no results, no total, no pins.
+  const failed = v2CallFailed({
+    v2On: featureFlags.enableV2Api,
+    query,
+    data,
+    isError,
+    failureCount,
+  });
+  const failure = {
+    failed,
+    retry: () => void refetch(),
+    retrying: isFetching,
+  };
   return (
     <IsV2Context.Provider value={Boolean(v2)}>
-      <SearchResultsProvider
-        value={{
-          ...base,
-          results: v2?.results ?? base.results,
-          totalResults: v2?.totalResults ?? base.totalResults,
-        }}
-      >
-        {children}
-      </SearchResultsProvider>
+      <V2FailureProvider value={failure}>
+        <SearchResultsProvider
+          value={
+            failed
+              ? {
+                  ...base,
+                  results: [],
+                  totalResults: 0,
+                  isTotalCapped: false,
+                  pinsQuery: null,
+                }
+              : {
+                  ...base,
+                  results: v2?.results ?? base.results,
+                  totalResults: v2?.totalResults ?? base.totalResults,
+                }
+          }
+        >
+          {children}
+        </SearchResultsProvider>
+      </V2FailureProvider>
     </IsV2Context.Provider>
   );
 }

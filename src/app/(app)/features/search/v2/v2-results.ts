@@ -99,3 +99,27 @@ export function weakMatchText(
     `No results found for your search. Need help? Call ${contactNumber ?? '211'}.`
   );
 }
+
+/**
+ * Whether the v2 call failed and the page has nothing from v2 to show. The tenant's switch is on,
+ * there is a query, there is no usable answer (`v2Results` is null), and the call errored, is
+ * failing, or answered with something unusable. Still loading is not a failure. A background
+ * refetch that fails keeps the data it has, so it is not a failure either.
+ */
+export function v2CallFailed({
+  v2On,
+  query,
+  data,
+  isError,
+  failureCount,
+}: {
+  v2On: boolean;
+  query: string;
+  data: V2Response | null | undefined;
+  isError: boolean;
+  failureCount: number;
+}): boolean {
+  if (!v2On || !query) return false;
+  if (v2Results(data, []) !== null) return false;
+  return isError || failureCount > 0 || Boolean(data);
+}

@@ -6,6 +6,7 @@ import {
   hitToResult,
   weakMatchText,
   v2Results,
+  v2CallFailed,
 } from '../src/app/(app)/features/search/v2/v2-results';
 import type { V2Response } from '../src/app/(app)/features/search/v2/v2-contract';
 
@@ -129,4 +130,34 @@ test('weakMatchText: the fallback uses 211 without a number', () => {
     weakMatchText(undefined, undefined),
     'No results found for your search. Need help? Call 211.',
   );
+});
+
+// Item 6: a failed v2 call is an error state with retry, never the v1 cards.
+test('v2CallFailed: the table', () => {
+  const ok = response(['a']);
+  const base = {
+    v2On: true,
+    query: 'rent',
+    data: undefined as V2Response | undefined,
+    isError: false,
+    failureCount: 0,
+  };
+  const failed = (over: Partial<typeof base>) =>
+    v2CallFailed({ ...base, ...over });
+  // Still loading: not failed (the v1 cards stay until the answer is here).
+  assert.equal(failed({}), false);
+  // The call errored, or is failing and retrying.
+  assert.equal(failed({ isError: true }), true);
+  assert.equal(failed({ failureCount: 1 }), true);
+  // A response with no hit list is unusable.
+  assert.equal(failed({ data: {} as V2Response }), true);
+  assert.equal(failed({ data: { search: {} } as V2Response }), true);
+  // A background refetch that failed keeps the data it has.
+  assert.equal(failed({ data: ok, isError: true, failureCount: 3 }), false);
+  assert.equal(failed({ data: ok }), false);
+  // An empty hit list is a real answer, not a failure.
+  assert.equal(failed({ data: response([]) }), false);
+  // v2 off or no query: v1 untouched, whatever the hook says.
+  assert.equal(failed({ v2On: false, isError: true }), false);
+  assert.equal(failed({ query: '', isError: true, failureCount: 2 }), false);
 });
