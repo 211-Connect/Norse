@@ -1817,14 +1817,13 @@ export function SearchClassifierPeek() {
               {(() => {
                 const e = emergencyQuestionOf(data);
                 return e ? `${placementOf(e)}/${styleOfQuestion(e)}` : 'none';
-              })()}.
+              })()}
+              .
             </p>
             <p>
               Questions:{' '}
               {data.clarification.questions
-                .map(
-                  (q) => `${q.id} (${placementOf(q)}/${styleOfQuestion(q)})`,
-                )
+                .map((q) => `${q.id} (${placementOf(q)}/${styleOfQuestion(q)})`)
                 .join(', ') || 'none'}
             </p>
             <p>

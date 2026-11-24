@@ -91,7 +91,10 @@ test('v2CallString keeps only call keys, drops N-X, in a stable order', () => {
 test('v2CallString and buildV2Url carry asked=', () => {
   const p = new URLSearchParams('query=food&asked=start,spread');
   assert.equal(v2CallString(p), 'query=food&asked=start%2Cspread');
-  assert.notEqual(v2CallString(p), v2CallString(new URLSearchParams('query=food')));
+  assert.notEqual(
+    v2CallString(p),
+    v2CallString(new URLSearchParams('query=food')),
+  );
   const url = buildV2Url('http://api', p, 't1');
   assert.match(url, /asked=start%2Cspread/);
 });

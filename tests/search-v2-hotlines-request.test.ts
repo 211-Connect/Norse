@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-  hotlinesOf,
-} from '../src/app/(app)/features/search/v2/v2-contract';
+import { hotlinesOf } from '../src/app/(app)/features/search/v2/v2-contract';
 import {
   buildV2Headers,
   buildV2Url,

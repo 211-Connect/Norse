@@ -286,18 +286,22 @@ test('placementOf and styleOfQuestion: the API fields win; no importance read', 
   };
   assert.equal(placementOf(q), 'with_results');
   assert.equal(styleOfQuestion(q), 'subtle');
+  assert.equal(placementOf({ type: 'emergency', placement: 'popup' }), 'popup');
   assert.equal(
-    placementOf({ type: 'emergency', placement: 'popup' }),
-    'popup',
-  );
-  assert.equal(
-    styleOfQuestion({ type: 'urgency', placement: 'before_results', style: 'standard' }),
+    styleOfQuestion({
+      type: 'urgency',
+      placement: 'before_results',
+      style: 'standard',
+    }),
     'standard',
   );
 });
 
 test('placementOf and styleOfQuestion: legacy importance fallback', () => {
-  const at = (type: V2Question['type'], importance: 'critical' | 'high' | 'medium' | 'low') => ({
+  const at = (
+    type: V2Question['type'],
+    importance: 'critical' | 'high' | 'medium' | 'low',
+  ) => ({
     type,
     importance,
   });
@@ -327,9 +331,18 @@ test('canonicalType: legacy names count as the new ones', () => {
 test('styleOf: red for the emergency type, else the question style', () => {
   assert.equal(styleOf({ type: 'emergency', style: 'strong' }), 'emergency');
   assert.equal(styleOf({ type: 'emergency', importance: 'low' }), 'emergency');
-  assert.equal(styleOf({ type: 'need', placement: 'before_results', style: 'strong' }), 'strong');
-  assert.equal(styleOf({ type: 'need', placement: 'before_results', style: 'standard' }), 'standard');
-  assert.equal(styleOf({ type: 'urgency', placement: 'with_results', style: 'subtle' }), 'subtle');
+  assert.equal(
+    styleOf({ type: 'need', placement: 'before_results', style: 'strong' }),
+    'strong',
+  );
+  assert.equal(
+    styleOf({ type: 'need', placement: 'before_results', style: 'standard' }),
+    'standard',
+  );
+  assert.equal(
+    styleOf({ type: 'urgency', placement: 'with_results', style: 'subtle' }),
+    'subtle',
+  );
   assert.equal(styleOf({ type: 'find_need', importance: 'high' }), 'standard');
   assert.equal(styleOf({ type: 'narrow', importance: 'low' }), 'subtle');
 });

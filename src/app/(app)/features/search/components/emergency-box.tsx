@@ -146,11 +146,7 @@ export function EmergencyBox({
 }
 
 /** The numbers in one thin row, for the pinned block on a phone. */
-export function PinnedNumbers({
-  hotlines = [],
-}: {
-  hotlines?: V2Hotline[];
-}) {
+export function PinnedNumbers({ hotlines = [] }: { hotlines?: V2Hotline[] }) {
   if (hotlines.length === 0) return null;
   return (
     <div className="flex gap-2" data-testid="search-hotline-pinned">
