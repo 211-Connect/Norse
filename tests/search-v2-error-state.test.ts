@@ -83,7 +83,7 @@ test('wiring: the bridge, RenderResults and ResultsSection read the failure', ()
   assert.match(bridge, /v2CallFailed\(/);
   assert.match(bridge, /pinsQuery: null/);
   assert.match(bridge, /refetch/);
-  const render = read(`${APP}render-results.tsx`);
+  const render = read(`${APP}render-results-v2.tsx`);
   assert.match(render, /useV2Failure\(\)/);
   assert.match(render, /failed \? \(\s*<V2ErrorCard/);
   const section = read(`${APP}results-section.tsx`);

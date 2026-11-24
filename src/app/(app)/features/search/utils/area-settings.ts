@@ -34,6 +34,21 @@ export function areaSettingsOf(search: AreaSettingsSource | null | undefined): {
 }
 
 /**
+ * The settings for the v1 page query. With the v2 switch off the raw Payload values go through as on
+ * `development` (no filter); with it on, only known values (`areaSettingsOf`).
+ */
+export function areaSettingsForQuery(
+  search: AreaSettingsSource | null | undefined,
+  v2: boolean,
+): { areaMatch?: AreaMatch; unlocated?: Unlocated } {
+  if (v2) return areaSettingsOf(search);
+  return {
+    areaMatch: search?.areaMatch as AreaMatch | undefined,
+    unlocated: search?.unlocatedInAreaSearch as Unlocated | undefined,
+  };
+}
+
+/**
  * Adds `area_match` and `unlocated` to the outgoing v2 parameters of an area search (`region`).
  * A value the caller already sent wins, as on Norse-API. A search without `region` is not an area
  * search and gets nothing.

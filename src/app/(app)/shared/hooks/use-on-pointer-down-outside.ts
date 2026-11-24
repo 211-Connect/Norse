@@ -18,11 +18,20 @@ type Options = {
   keepSelector?: string;
 };
 
+/** v1 adds its two listeners with no options; only the v2 boxes (own `events`) ask for passive. */
+export function listenerOptions(
+  events: string[] | undefined,
+): AddEventListenerOptions | undefined {
+  return events ? { passive: true } : undefined;
+}
+
 export function useOnPointerDownOutside(
   ref: React.RefObject<HTMLElement | null>,
   handler: (event: PointerEvent) => void,
-  { active = true, events = POINTER_DOWN_EVENTS, keepSelector }: Options = {},
+  { active = true, events: eventsOption, keepSelector }: Options = {},
 ) {
+  const events = eventsOption ?? POINTER_DOWN_EVENTS;
+  const custom = eventsOption !== undefined;
   const eventKey = events.join(',');
   useEffect(() => {
     if (!active) return;
@@ -37,14 +46,16 @@ export function useOnPointerDownOutside(
     };
 
     for (const name of names) {
-      document.addEventListener(name, listener as EventListener, {
-        passive: true,
-      });
+      document.addEventListener(
+        name,
+        listener as EventListener,
+        listenerOptions(custom ? events : undefined),
+      );
     }
     return () => {
       for (const name of names) {
         document.removeEventListener(name, listener as EventListener);
       }
     };
-  }, [ref, handler, active, eventKey, keepSelector]);
+  }, [ref, handler, active, eventKey, keepSelector, custom]);
 }

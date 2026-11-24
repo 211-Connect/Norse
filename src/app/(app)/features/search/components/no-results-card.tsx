@@ -18,7 +18,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
-import { DialButton } from './dial-button';
+import { NoResultsCall } from './no-results-call';
 
 /** `text` replaces the footer message (the v2 weak-match note, which names the way on). */
 export function NoResultsCard({ text: textOverride }: { text?: string } = {}) {
@@ -55,14 +55,13 @@ export function NoResultsCard({ text: textOverride }: { text?: string } = {}) {
         <p className="font-semibold">{text}</p>
 
         {appConfig?.contact?.number && (
-          // The one phone path: DialButton goes through getPhoneHref.
-          <DialButton
+          <NoResultsCall
             number={appConfig.contact.number}
-            testId="no-results-call"
+            v2={appConfig.featureFlags?.enableV2Api === true}
             className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
           >
             <Phone className="size-4" /> {appConfig.contact.number}
-          </DialButton>
+          </NoResultsCall>
         )}
       </CardFooter>
     </Card>

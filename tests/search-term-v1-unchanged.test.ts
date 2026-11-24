@@ -87,7 +87,7 @@ test('buildAppConfig picks the v2 layout only when enableV2Api is on', () => {
 
 test('render-results: the card wrapper element exists only with the v2 switch on', () => {
   const s = readFileSync(
-    'src/app/(app)/features/search/components/render-results.tsx',
+    'src/app/(app)/features/search/components/render-results-v2.tsx',
     'utf8',
   );
   assert.match(s, /return v2 \? \(\s*<div[\s\S]*?data-search-result/);

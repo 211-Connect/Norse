@@ -29,7 +29,7 @@ test('no-results-card: query label shows for everyone; the number goes through t
     s,
     /searchParams\?\.get\('query_label'\) \|\| searchParams\?\.get\('query'\)/,
   );
-  assert.match(s, /<DialButton/);
+  assert.match(s, /<NoResultsCall/);
   assert.doesNotMatch(s, /useIsV2|LocalizedLink/);
   // `text` replaces the footer message (the v2 weak-match note).
   assert.match(s, /text: textOverride/);

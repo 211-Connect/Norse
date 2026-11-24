@@ -31,7 +31,7 @@ import {
   type RawSearchParams,
 } from '@/app/(app)/features/search/intent';
 import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
-import { areaSettingsOf } from '@/app/(app)/features/search/utils/area-settings';
+import { areaSettingsForQuery } from '@/app/(app)/features/search/utils/area-settings';
 import { liftSearchRequest } from '@/app/(app)/features/search/utils/liftSearchRequest';
 import { navigateToSearchWithCoords } from '@/app/(app)/features/search/utils';
 import { getPrintableDirectoryContextParams } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
@@ -48,7 +48,10 @@ function withAreaSettings(
   if (!query.region) return query;
   return {
     ...query,
-    ...areaSettingsOf(appConfig.search),
+    ...areaSettingsForQuery(
+      appConfig.search,
+      appConfig.featureFlags.enableV2Api === true,
+    ),
   };
 }
 

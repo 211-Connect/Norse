@@ -73,7 +73,7 @@ test('v1 and v2 read the same setting through one function', () => {
     'src/app/(app)/[locale]/(rest)/search/page.tsx',
     'utf8',
   );
-  assert.match(page, /\.\.\.areaSettingsOf\(appConfig\.search\)/);
+  assert.match(page, /\.\.\.areaSettingsForQuery\(\s*appConfig\.search,/);
   assert.doesNotMatch(page, /areaMatch: appConfig\.search\.areaMatch/);
 });
 
