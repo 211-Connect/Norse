@@ -2,6 +2,8 @@
 
 import { isRegionId } from '@/types/areaSearch';
 
+import type { SearchLocationGeocode } from '../store/search';
+
 import { reverseGeocode } from '../serverActions/geocoding/reverseGeocode';
 
 interface LocationMeta {
@@ -36,11 +38,50 @@ async function getLocationMeta(
   };
 }
 
-export function getSearchLocationMeta(
+export async function getSearchLocationMeta(
   searchCoordinates: number[],
   tenantId: string,
+  selectedLocation?: SearchLocationGeocode | null,
+  regionType = '',
 ): Promise<LocationMeta> {
-  return getLocationMeta(searchCoordinates, tenantId);
+  const selectedMeta =
+    selectedLocation?.coordinates.length === 2 &&
+    selectedLocation.coordinates.every(
+      (coordinate, index) => coordinate === searchCoordinates[index],
+    )
+      ? {
+          city: selectedLocation.place?.trim() ?? '',
+          zipCode: selectedLocation.postcode?.trim() ?? '',
+          county: selectedLocation.district?.trim() ?? '',
+        }
+      : null;
+
+  if (selectedMeta && hasRequiredMetadata(selectedMeta, regionType)) {
+    return selectedMeta;
+  }
+
+  const reverseMeta = await getLocationMeta(searchCoordinates, tenantId);
+  if (!selectedMeta) return reverseMeta;
+
+  return {
+    city: selectedMeta.city || reverseMeta.city,
+    zipCode: selectedMeta.zipCode || reverseMeta.zipCode,
+    county: selectedMeta.county || reverseMeta.county,
+  };
+}
+
+function hasRequiredMetadata(meta: LocationMeta, regionType: string): boolean {
+  switch (regionType) {
+    case 'state':
+      return true;
+    case 'county':
+      return Boolean(meta.county);
+    case 'place':
+    case 'zip':
+      return Boolean(meta.city && meta.county);
+    default:
+      return Boolean(meta.city && meta.zipCode && meta.county);
+  }
 }
 
 export type SearchLocationPayload = {
@@ -91,6 +132,7 @@ export async function buildSearchLocationPayload(
   userCoordinates: number[],
   tenantId: string,
   searchRegion?: string | null,
+  selectedLocation?: SearchLocationGeocode | null,
 ): Promise<SearchLocationPayload> {
   const regionId = isRegionId(searchRegion) ? searchRegion : '';
   const [regionType = '', regionCode = ''] = regionId
@@ -100,7 +142,12 @@ export async function buildSearchLocationPayload(
   const [rawSearchMeta, userMeta] = await Promise.all([
     regionType === 'state'
       ? EMPTY_LOCATION_META
-      : getSearchLocationMeta(searchCoordinates, tenantId),
+      : getSearchLocationMeta(
+          searchCoordinates,
+          tenantId,
+          selectedLocation,
+          regionType,
+        ),
     getLocationMeta(userCoordinates, tenantId),
   ]);
   const searchMeta = regionId

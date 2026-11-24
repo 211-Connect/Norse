@@ -7,13 +7,17 @@ import { useHydrateAndSyncAtoms } from '../hooks/use-hydrate-and-sync-atoms';
 import { useAppConfig } from '../hooks/use-app-config';
 import {
   USER_PREF_COORDS,
+  USER_PREF_DISTRICT,
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
+  USER_PREF_PLACE,
+  USER_PREF_POSTCODE,
   USER_PREF_REGION_ID,
 } from '../lib/constants';
 import { isRegionId } from '@/types/areaSearch';
 import { validateCoordsString } from '../lib/validators';
-import { DEFAULT_SEARCH_STATE, SearchState, searchAtom } from '../store/search';
+import { DEFAULT_SEARCH_STATE, searchAtom } from '../store/search';
+import type { SearchLocationGeocode, SearchState } from '../store/search';
 
 /** Search parameters of the current URL, as parsed by the page. */
 export interface PageSearchState {
@@ -80,6 +84,35 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
     : validateCoordsString(cookieCoords)
       ? cookieCoords
       : '';
+  const searchLocationGeocode = useMemo<SearchLocationGeocode | null>(() => {
+    const currentCoordinates = coords ? parseCoords(coords) : [];
+    const savedCoordinates = cookieCoords ? parseCoords(cookieCoords) : [];
+    if (
+      currentCoordinates.length !== 2 ||
+      savedCoordinates.length !== 2 ||
+      currentCoordinates.some(
+        (coordinate, index) => coordinate !== savedCoordinates[index],
+      ) ||
+      region !== cookieRegion
+    ) {
+      return null;
+    }
+
+    return {
+      coordinates: savedCoordinates,
+      place: cookies[USER_PREF_PLACE] || undefined,
+      postcode: cookies[USER_PREF_POSTCODE] || undefined,
+      district: cookies[USER_PREF_DISTRICT] || undefined,
+    };
+  }, [
+    coords,
+    cookieCoords,
+    region,
+    cookieRegion,
+    cookies[USER_PREF_PLACE],
+    cookies[USER_PREF_POSTCODE],
+    cookies[USER_PREF_DISTRICT],
+  ]);
 
   useEffect(() => {
     if (urlCoords) {
@@ -120,11 +153,21 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
             searchLocation: location,
             prevSearchLocation: location,
             searchCoordinates: coords ? parseCoords(coords) : [],
+            searchLocationGeocode,
             searchRegion: region,
           } satisfies SearchState,
         ],
       ] as const,
-    [coords, distance, location, query, queryLabel, queryType, region],
+    [
+      coords,
+      distance,
+      location,
+      query,
+      queryLabel,
+      queryType,
+      region,
+      searchLocationGeocode,
+    ],
   );
 
   useHydrateAndSyncAtoms(atomValues);
