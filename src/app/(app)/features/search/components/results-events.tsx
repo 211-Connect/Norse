@@ -17,6 +17,7 @@ import {
 } from '@/app/(app)/shared/lib/analytics';
 import {
   searchCoordinatesAtom,
+  searchLocationGeocodeAtom,
   userCoordinatesAtom,
 } from '@/app/(app)/shared/store/search';
 
@@ -33,6 +34,7 @@ export const ResultsEvents = ({
   const appConfig = useAppConfig();
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
+  const searchLocationGeocode = useAtomValue(searchLocationGeocodeAtom);
 
   useEffect(() => {
     let isCancelled = false;
@@ -46,6 +48,7 @@ export const ResultsEvents = ({
         typeof searchParamsObject.region === 'string'
           ? searchParamsObject.region
           : null,
+        searchLocationGeocode,
       );
 
       if (isCancelled) {
@@ -87,6 +90,7 @@ export const ResultsEvents = ({
     searchParamsObject,
     totalResults,
     userCoordinates,
+    searchLocationGeocode,
   ]);
 
   return null;

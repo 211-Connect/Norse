@@ -50,6 +50,7 @@ export function UseMyLocationButton() {
 
             setSearch((prev) => ({
               ...prev,
+              searchLocationGeocode: location,
               searchLocation: location.address,
               searchCoordinates: location.coordinates,
               // Seed prevSearchLocation so useLocations fetches the address

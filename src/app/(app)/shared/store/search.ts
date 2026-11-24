@@ -2,6 +2,13 @@ import { atom } from 'jotai';
 
 import { ResourceEntry } from '@/app/(app)/shared/lib/analytics';
 
+import type { GeocodeResult } from '@/types/resource';
+
+export type SearchLocationGeocode = Pick<
+  GeocodeResult,
+  'coordinates' | 'place' | 'postcode' | 'district'
+>;
+
 export type SearchState = typeof DEFAULT_SEARCH_STATE;
 
 export const DEFAULT_SEARCH_STATE = {
@@ -17,6 +24,7 @@ export const DEFAULT_SEARCH_STATE = {
   searchTerm: '',
   searchLocation: '',
   searchCoordinates: [] as any[],
+  searchLocationGeocode: null as SearchLocationGeocode | null,
   prevSearchLocation: '',
   searchLocationValidationError: '',
   searchDistance: '',
@@ -47,6 +55,9 @@ export const searchLocationValidationErrorAtom = atom(
 );
 export const searchCoordinatesAtom = atom(
   (get) => get(searchAtom).searchCoordinates,
+);
+export const searchLocationGeocodeAtom = atom(
+  (get) => get(searchAtom).searchLocationGeocode,
 );
 
 export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);

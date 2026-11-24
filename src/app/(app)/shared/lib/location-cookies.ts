@@ -13,6 +13,14 @@ import {
   USER_PREF_REGION_ID,
 } from './constants';
 
+function setOptionalLocationCookie(name: string, value?: string | null) {
+  if (value?.trim()) {
+    setCookie(name, value, COOKIE_OPTIONS);
+  } else {
+    deleteCookie(name, COOKIE_OPTIONS);
+  }
+}
+
 const COOKIE_OPTIONS = { path: '/' } as const;
 
 /**
@@ -39,17 +47,10 @@ export function clearLocationCookies() {
 export function setLocationCookies(address: string, result: GeocodeResult) {
   setCookie(USER_PREF_COORDS, result.coordinates.join(','), COOKIE_OPTIONS);
   setCookie(USER_PREF_LOCATION, address, COOKIE_OPTIONS);
-  if (result.country)
-    setCookie(USER_PREF_COUNTRY, result.country, COOKIE_OPTIONS);
-  if (result.district)
-    setCookie(USER_PREF_DISTRICT, result.district, COOKIE_OPTIONS);
-  if (result.place) setCookie(USER_PREF_PLACE, result.place, COOKIE_OPTIONS);
-  if (result.postcode)
-    setCookie(USER_PREF_POSTCODE, result.postcode, COOKIE_OPTIONS);
-  if (result.region) setCookie(USER_PREF_REGION, result.region, COOKIE_OPTIONS);
-  if (result.region_id) {
-    setCookie(USER_PREF_REGION_ID, result.region_id, COOKIE_OPTIONS);
-  } else {
-    deleteCookie(USER_PREF_REGION_ID, COOKIE_OPTIONS);
-  }
+  setOptionalLocationCookie(USER_PREF_COUNTRY, result.country);
+  setOptionalLocationCookie(USER_PREF_DISTRICT, result.district);
+  setOptionalLocationCookie(USER_PREF_PLACE, result.place);
+  setOptionalLocationCookie(USER_PREF_POSTCODE, result.postcode);
+  setOptionalLocationCookie(USER_PREF_REGION, result.region);
+  setOptionalLocationCookie(USER_PREF_REGION_ID, result.region_id);
 }

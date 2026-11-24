@@ -91,9 +91,14 @@ search map                useRegionArea(region) → /api/region-area → GET /re
 
 `buildSearchLocationPayload` (`shared/lib/search-location-meta.ts`) builds the
 location part of the Umami `search_text` / `search_taxonomy` /
-`search_hybrid` and `search_zero_results` events. It takes the region: the
-`searchRegion` atom when the search is submitted, and the URL's `region` (what
-the server searched) for the results events.
+`search_hybrid` and `search_zero_results` events. On location commit, the
+selected forward-geocode result is retained with the search state and saved in
+the `USER_PREF_*` location cookies. Matching coordinates reuse its city,
+postcode and district; missing metadata falls back to reverse geocoding. The
+results page restores that metadata from cookies only when the URL coordinates
+and region match the saved location. The region is the `searchRegion` atom
+when the search is submitted, and the URL's `region` (what the server searched)
+for the results events.
 
 | Property           | Area search            | Radius search | No location |
 | ------------------ | ---------------------- | ------------- | ----------- |
@@ -101,21 +106,22 @@ the server searched) for the results events.
 | `searchRegionId`   | e.g. `county:53033`    | empty         | empty       |
 | `searchRegionType` | `state` / `county` / `place` / `zip` | empty | empty |
 
-`searchCity`, `searchZipCode` and `searchCounty` are reverse-geocoded from
-`coords`. For an area search `coords` is one point inside the area, so only
-the levels the area fixes are kept: a state search sends none of the three
-(and skips the reverse geocode), a county search only the county, a place
-search the city and county, and a ZIP search takes its ZIP from the id. This
-keeps a state search from being counted in the "Searches by county" and
-"Searches by zip code" widgets under whichever county holds its centre.
+For an area search `coords` is one point inside the area, so only the levels
+the area fixes are kept: a state search sends none of city/ZIP/county, a county
+search only the county, a place search the city and county, and a ZIP search
+takes its ZIP from the id. State searches skip search-location reverse
+geocoding. This keeps a state search from being counted in the "Searches by
+county" and "Searches by zip code" widgets under whichever county holds its
+centre.
 
 GTM (`google-tag-manager.ts`): `search` and `norse_search` carry `region_id`.
 `search` also keeps `region`, which is the `user-pref-region` cookie (Mapbox
 state name), not the region id.
 
-Not done yet, in Norse-API: the search CSV export fills empty
-city/ZIP/county from `searchCoordinates`, which brings the centre point's
-values back for area searches, and no widget groups by `searchRegionId`.
+Norse-API CSV export reverse-geocodes historical rows when city/ZIP/county
+metadata is missing. It does not apply the area scoping described above, so
+centroid metadata can reappear in exported area-search rows. Analytics widgets
+do not group by `searchRegionId`.
 
 ## Printable directories
 
