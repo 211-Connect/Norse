@@ -10,9 +10,7 @@ async function load() {
   const { apiConfigCacheService } = await import('../src/cacheService');
   const mod =
     await import('../src/payload/collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache');
-  const rdHook =
-    await import('../src/payload/collections/ResourceDirectories/hooks/pushHybridSearchConfigToCache');
-  return { apiConfigCacheService, mod, rdHook };
+  return { apiConfigCacheService, mod };
 }
 
 /** Make only the hybrid-search key fail; any other cache write is a no-op. */
@@ -62,18 +60,54 @@ describe('pushHybridSearchConfigToCache result', () => {
     assert.equal(result, 'skipped');
   });
 
-  test('failed: the real set swallows a Redis error; the push uses setOrThrow, which throws', async () => {
-    const { CacheService } = await import('../src/cacheService');
-    const svc = new CacheService();
-    (svc as unknown as { isEnabled: boolean }).isEnabled = true;
-    (svc as unknown as { client: unknown }).client = {
-      status: 'ready',
-      set: async () => {
-        throw new Error('redis down');
-      },
+  // The real apiConfigCacheService, with Redis enabled and a given client.
+  const pushWithRealService = async (state: object) => {
+    const { apiConfigCacheService, mod } = await load();
+    const svc = apiConfigCacheService as unknown as Record<string, unknown>;
+    const saved = {
+      isEnabled: svc.isEnabled,
+      client: svc.client,
+      lastConnectFailureAt: svc.lastConnectFailureAt,
     };
-    await svc.set('k', 'v');
-    await assert.rejects(svc.setOrThrow('k', 'v'), /redis down/);
+    Object.assign(svc, { isEnabled: true }, state);
+    try {
+      return await mod.pushHybridSearchConfigToCache(
+        't1',
+        { payload: {}, context: {} } as never,
+        { hybridSearchConfig: null, resourceDirectory: rd },
+      );
+    } finally {
+      Object.assign(svc, saved);
+    }
+  };
+
+  test('failed: a Redis command error (real service) -> "failed"', async () => {
+    const result = await pushWithRealService({
+      client: {
+        status: 'ready',
+        set: async () => {
+          throw new Error('redis down');
+        },
+      },
+    });
+    assert.equal(result, 'failed');
+  });
+
+  test('failed: Redis enabled but in the connect cooldown -> "failed", not "skipped"', async () => {
+    const result = await pushWithRealService({
+      client: null,
+      lastConnectFailureAt: Date.now(),
+    });
+    assert.equal(result, 'failed');
+  });
+
+  test('pushed: the real service wrote the key -> "pushed"', async () => {
+    const keys: string[] = [];
+    const result = await pushWithRealService({
+      client: { status: 'ready', set: async (key: string) => keys.push(key) },
+    });
+    assert.equal(result, 'pushed');
+    assert.deepEqual(keys, [getHybridSearchConfigKey('t1')]);
   });
 
   test('pushed: set succeeds -> "pushed"', async () => {
@@ -109,71 +143,23 @@ describe('pushHybridSearchConfigToCache result', () => {
   });
 });
 
-describe('afterChange hooks mark req.context only on a failed push', () => {
-  const run = async (fail: boolean, context: object | undefined) => {
-    const { apiConfigCacheService, mod, rdHook } = await load();
-    const stub = stubSet(apiConfigCacheService as never, fail);
-    try {
-      const req = {
-        payload: { find: async () => ({ docs: [] }) },
-        context,
-      } as never as {
-        context?: Record<string, unknown>;
-      };
-      // Resource directory hook, with the tenant read from the doc.
-      await (
-        rdHook.pushHybridSearchConfigToCacheFromResourceDirectory as never as (
-          a: unknown,
-        ) => Promise<unknown>
-      )({ doc: { id: 't1', tenant: 't1' }, req });
-      return req.context;
-    } finally {
-      stub.restore();
-    }
-  };
-  const KEY = 'hybridSearchCachePushFailed';
-
-  test('failure sets the flag', async () => {
-    const ctx = await run(true, {});
-    assert.equal(ctx?.[KEY], true);
-  });
-
-  test('success leaves the flag unset', async () => {
-    const ctx = await run(false, {});
-    assert.equal(ctx?.[KEY], undefined);
-  });
-
-  test('failure with no req.context does not throw', async () => {
-    const ctx = await run(true, undefined);
-    assert.equal(ctx?.[KEY], true);
-  });
-});
-
-describe('HybridSearchConfig afterChange hook', () => {
-  const KEY = 'hybridSearchCachePushFailed';
-  const call = async (fail: boolean) => {
+describe('afterChange hook', () => {
+  test('a failed push never throws; the saved doc is returned', async () => {
     const { apiConfigCacheService, mod } = await load();
-    const stub = stubSet(apiConfigCacheService as never, fail);
+    const stub = stubSet(apiConfigCacheService as never, true);
+    const doc = { id: 'h1', tenant: 't1' };
+    const req = {
+      payload: { find: async () => ({ docs: [{ id: 'rd1', tenant: 't1' }] }) },
+    };
     try {
-      const req = {
-        payload: {
-          find: async () => ({ docs: [{ id: 'rd1', tenant: 't1' }] }),
-        },
-        context: {},
-      };
-      await (
+      const hook =
         mod.pushHybridSearchConfigToCacheAfterChangeHook as never as (
           a: unknown,
-        ) => Promise<unknown>
-      )({ doc: { id: 'h1', tenant: 't1' }, req });
-      return req.context as Record<string, unknown>;
+        ) => Promise<unknown>;
+      assert.equal(await hook({ doc, req }), doc);
+      assert.equal(stub.writes.length, 1);
     } finally {
       stub.restore();
     }
-  };
-
-  test('sets the flag only when the push fails', async () => {
-    assert.equal((await call(true))[KEY], true);
-    assert.equal((await call(false))[KEY], undefined);
   });
 });

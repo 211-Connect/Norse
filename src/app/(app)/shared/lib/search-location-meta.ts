@@ -1,10 +1,13 @@
 'use client';
 
+import { createLogger } from '@/lib/logger';
 import { isRegionId } from '@/types/areaSearch';
 
 import type { SearchLocationGeocode } from '../store/search';
 
 import { reverseGeocode } from '../serverActions/geocoding/reverseGeocode';
+
+const log = createLogger('search-location-meta');
 
 interface LocationMeta {
   city: string;
@@ -24,10 +27,15 @@ async function getLocationMeta(
 ): Promise<LocationMeta> {
   if (coordinates.length !== 2) return EMPTY_LOCATION_META;
 
+  // This metadata only enriches analytics events: a geocoder failure must not
+  // drop the event. The server action's own error is logged on the server.
   const results = await reverseGeocode(coordinates.join(','), {
     locale: 'en',
     tenantId,
     provider: 'opencage',
+  }).catch((error: unknown) => {
+    log.warn({ err: error }, 'reverse geocode failed; location left empty');
+    return [];
   });
   const hit = results.find((result) => result.type === 'coordinates');
 

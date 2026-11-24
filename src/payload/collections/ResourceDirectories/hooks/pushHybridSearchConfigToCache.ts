@@ -1,10 +1,7 @@
 import { CollectionAfterChangeHook } from 'payload';
 
 import { createLogger } from '@/lib/logger';
-import {
-  markHybridSearchCachePushFailed,
-  pushHybridSearchConfigToCache,
-} from '@/payload/collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
+import { pushHybridSearchConfigToCache } from '@/payload/collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
 import { ResourceDirectory } from '@/payload/payload-types';
 
 const log = createLogger('pushHybridSearchConfigToCacheFromResourceDirectory');
@@ -22,10 +19,9 @@ export const pushHybridSearchConfigToCacheFromResourceDirectory: CollectionAfter
     return doc;
   }
 
-  const result = await pushHybridSearchConfigToCache(tenantId, req, {
+  await pushHybridSearchConfigToCache(tenantId, req, {
     resourceDirectory: doc,
   });
-  if (result === 'failed') markHybridSearchCachePushFailed(req);
 
   return doc;
 };
