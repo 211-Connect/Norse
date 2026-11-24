@@ -232,6 +232,28 @@ export function emergencyPopupMode(
 export const isUrgencyAnswered = (urgency?: string | null) =>
   Boolean(urgency) && urgency !== 'U-0' && urgency !== 'U-X';
 
+/**
+ * "Continue to results" closes the danger popup (`urgency=U-0`) for this query text only. It never
+ * closes the question itself: with U-0 gone (Back, or the same words searched again) it asks again.
+ */
+export const isDangerDismissed = (
+  dismissedQuery: string | null,
+  query: string,
+  urgency: string | null | undefined,
+) => Boolean(query) && dismissedQuery === query && urgency === 'U-0';
+
+/**
+ * A usable 200: a hit list and a question list. A body without `clarification` is a failed call,
+ * never "no danger question".
+ */
+export const isV2Body = (body: unknown): body is V2Response => {
+  const b = body as Partial<V2Response> | null | undefined;
+  return (
+    Array.isArray(b?.search?.hits?.hits) &&
+    Array.isArray(b?.clarification?.questions)
+  );
+};
+
 export const emergencyQuestionOf = (response?: V2Response) =>
   response?.clarification.questions.find(
     (q) => canonicalType(q.type) === 'emergency',

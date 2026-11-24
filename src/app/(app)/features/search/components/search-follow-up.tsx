@@ -66,6 +66,8 @@ import { queryLabelAtom } from '@/app/(app)/shared/store/search';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { DialButton } from './dial-button';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { popupHotlines } from './emergency-line';
 import { EmergencyBox, HotlineNumbers, PinnedNumbers } from './emergency-box';
 
 import {
@@ -88,6 +90,7 @@ import {
   isSoftEmergency,
   nextQuestionOf,
   refineQuestionOf,
+  isDangerDismissed,
   styleOf,
   styleOfQuestion,
   placementOf,
@@ -1142,12 +1145,6 @@ export const SHOW_QUICK_EXIT_ON_EMERGENCY = true;
 /** The query text the person closed the danger popup for ("Continue to results"). */
 export const emergencyPopupDismissedAtom = atom<string | null>(null);
 
-/** 911 first: the popup's big buttons put the emergency number on top. */
-export const popupHotlines = (hotlines: V2Hotline[]) =>
-  [...hotlines].sort(
-    (a, b) => Number(b.number === '911') - Number(a.number === '911'),
-  );
-
 const POPUP_BUTTON =
   'flex h-auto min-h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-lg font-semibold no-underline focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none disabled:opacity-60';
 
@@ -1188,6 +1185,7 @@ export function EmergencyPopup({
   onContinue: () => void;
 }) {
   useLockPageScroll(true);
+  const tenantHotlines = useAppConfig()?.search?.hotlines;
   const setPopupOpen = useSetAtom(emergencyPopupOpenAtom);
   useEffect(() => {
     setPopupOpen(true);
@@ -1255,7 +1253,7 @@ export function EmergencyPopup({
             ))}
           {mode === 'danger' && (
             <>
-              {popupHotlines(hotlines).map((line, i) => (
+              {popupHotlines(hotlines, tenantHotlines).map((line, i) => (
                 <DialButton
                   key={line.number}
                   number={line.number}
@@ -1452,7 +1450,11 @@ export function SearchRefineQuestion() {
   // The emergency comes only from the emergency question (Decision 54).
   const emergencyQ = emergencyQuestionOf(data);
   // Popup only (Lucas 2026-11-18): the red question is the full-screen popup, never a card.
-  const dismissed = useAtomValue(emergencyPopupDismissedAtom) === label;
+  const dismissed = isDangerDismissed(
+    useAtomValue(emergencyPopupDismissedAtom),
+    label,
+    params.get('urgency'),
+  );
   const setDismissed = useSetAtom(emergencyPopupDismissedAtom);
   const popupMode = dismissed
     ? null
@@ -1524,7 +1526,13 @@ export function SearchRefineQuestion() {
     // The text joins the query (Decision 7). It clears `asked` and `urgency`,
     // so the emergency question can ask again.
     write({
-      ...otherChanges(v2, params.get('query'), text, { needs, passedNeeds }),
+      // A question of the last answer, kept while a new text loads, passes no needs for the new text.
+      ...otherChanges(
+        isPlaceholderData ? undefined : v2,
+        params.get('query'),
+        text,
+        { needs, passedNeeds },
+      ),
     });
   };
   // Each answer is a history entry, so the browser's Back button undoes it.

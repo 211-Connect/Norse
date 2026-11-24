@@ -36,6 +36,7 @@ import {
   isSoftEmergency,
   canonicalType,
   guideQuestionOf,
+  isDangerDismissed,
   totalOf,
   useV2Navigate,
   useV2Search,
@@ -387,7 +388,11 @@ export function SearchGuideFromUrl({
   const emergencyQ = emergencyQuestionOf(data);
   // Popup only (Lucas 2026-11-18): the red question is the full-screen popup, never a card. Each
   // answer writes urgency= and searches again; the danger popup (U-0) has Continue to results.
-  const dismissed = Boolean(query) && dismissedFor === query;
+  const dismissed = isDangerDismissed(
+    dismissedFor,
+    query,
+    params.get('urgency'),
+  );
   const popupMode = dismissed
     ? null
     : emergencyPopupMode(

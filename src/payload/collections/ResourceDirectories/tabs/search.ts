@@ -434,7 +434,7 @@ export const search: Tab = {
           labels: { singular: 'Hotline', plural: 'Hotlines' },
           admin: {
             description:
-              'Shown, in this order, only when a search looks like an emergency. Leave empty to use 988 (Crisis line) and 911 (Emergency). A list replaces both: add 988 or 911 yourself if you want them shown.',
+              'Shown, in this order, only when a search looks like an emergency. Leave empty to use 988 (Crisis line) and 911 (Emergency). On the emergency question a list replaces both (the always-on line keeps 911 and 988): add 988 or 911 yourself if you want them shown.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,

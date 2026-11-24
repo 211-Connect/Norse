@@ -25,6 +25,7 @@ import { v2ApiPath } from './v2-request';
 import { seedMatches, v2CallString, type V2Seed } from './v2-seed';
 
 import {
+  isV2Body,
   answerChanges,
   activeFiltersOf,
   facetsToFilters,
@@ -74,7 +75,9 @@ async function fetchV2(
     signal,
   });
   if (!res.ok) throw new Error(`v2 search ${res.status}`);
-  return (await res.json()) as V2Response;
+  const body: unknown = await res.json();
+  if (!isV2Body(body)) throw new Error('v2 search: unusable body');
+  return body;
 }
 
 /**

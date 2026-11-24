@@ -178,3 +178,15 @@ test('buildAppConfig sets search.hotlines through searchHotlinesFor with the v2 
     /\.\.\.searchHotlinesFor\(\s*resourceDirectory\.featureFlags\?\.enableV2Api,\s*resourceDirectory\.search\.searchSettings\.hotlines,?\s*\)/,
   );
 });
+
+test('the danger popup always has numbers: an answer without any shows the tenant list, 911 and 988', async () => {
+  const { popupHotlines } =
+    await import('../src/app/(app)/features/search/components/emergency-line');
+  const n = (rows: { number: string }[]) => rows.map((r) => r.number);
+  assert.deepEqual(n(popupHotlines([])), ['911', '988']);
+  assert.deepEqual(
+    n(popupHotlines([], [{ label: 'Crisis', number: '555-0100' }])),
+    ['911', '555-0100', '988'],
+  );
+  assert.deepEqual(n(popupHotlines([{ label: 'A', number: '555' }])), ['555']);
+});

@@ -9,6 +9,8 @@ import {
   groupByMatchedNeeds,
   isSoftEmergency,
   isWeakMatch,
+  isDangerDismissed,
+  isV2Body,
   noMatchQuestionOf,
   countTone,
   isNoneOption,
@@ -789,4 +791,24 @@ test('emergencyPopupMode: the old answer, kept while a new text loads, never ask
   assert.equal(emergencyPopupMode(popup, null, [], true), null);
   assert.equal(emergencyPopupMode(popup, null, [], false), 'ask');
   assert.equal(emergencyPopupMode(popup, 'U-0', [], true), 'danger');
+});
+
+test('isDangerDismissed: closes the U-0 popup of that text only; the question asks again without U-0', () => {
+  assert.equal(isDangerDismissed('help', 'help', 'U-0'), true);
+  assert.equal(isDangerDismissed('help', 'help', null), false);
+  assert.equal(isDangerDismissed('help', 'he hits me', 'U-0'), false);
+  assert.equal(isDangerDismissed(null, '', 'U-0'), false);
+});
+
+test('isV2Body: a 200 with no hits or no question list is a failed call', () => {
+  const search = { hits: { hits: [] } };
+  assert.equal(isV2Body({ search, clarification: { questions: [] } }), true);
+  for (const bad of [
+    null,
+    '',
+    {},
+    { search },
+    { clarification: { questions: [] } },
+  ])
+    assert.equal(isV2Body(bad), false);
 });
