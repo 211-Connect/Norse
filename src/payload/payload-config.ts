@@ -154,7 +154,10 @@ const config = buildConfig({
     },
     user: Users.slug,
     components: {
-      beforeNavLinks: ['@/payload/components/AnalyticsNavLink'],
+      beforeNavLinks: [
+        '@/payload/components/AnalyticsNavLink',
+        '@/payload/components/LandingPagesNavGate',
+      ],
       afterNavLinks: [
         '@/payload/components/ScorecardsNavLink',
         '@/payload/components/PopulateApiConfigCacheButton',

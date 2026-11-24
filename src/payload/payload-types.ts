@@ -1101,9 +1101,6 @@ export interface ResourceDirectory {
     requireAuthenticationForFavorites?: boolean | null;
     showAgeFilter?: boolean | null;
     enablePrintableDirectories?: boolean | null;
-    /**
-     * SEO landing pages (topic × place) and their sitemaps. See the Landing Pages tab.
-     */
     enableLandingPages?: boolean | null;
   };
   printableDirectories?: {

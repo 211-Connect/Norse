@@ -45,6 +45,7 @@ import { default as default_cc6a892a38550f48130aae13fe7fe854 } from '@/payload/c
 import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/components/ClearCacheButton'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
+import { default as default_a9b58703eb6be87e7846d25a11300a59 } from '@/payload/components/LandingPagesNavGate'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_c5dffe636895d753138026b95fe2f960 } from '@/payload/components/AnalyticsView'
 import { default as default_935f67371f05c46a1bc08ee807616da6 } from '@/payload/components/AnalyticsRedirectView'
@@ -133,6 +134,7 @@ export const importMap = {
   "@/payload/components/ClearCacheButton#default": default_4a6586eaa0248cb1fccb2e03335a2b51,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,
+  "@/payload/components/LandingPagesNavGate#default": default_a9b58703eb6be87e7846d25a11300a59,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/AnalyticsView#default": default_c5dffe636895d753138026b95fe2f960,
   "@/payload/components/AnalyticsRedirectView#default": default_935f67371f05c46a1bc08ee807616da6,

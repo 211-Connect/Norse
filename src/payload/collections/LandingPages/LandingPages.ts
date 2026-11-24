@@ -56,6 +56,7 @@ export const LandingPages: CollectionConfig = {
   endpoints: landingPagesEndpoints,
   indexes: [{ fields: ['tenant', 'topic', 'regionId'], unique: true }],
   admin: {
+    pagination: { defaultLimit: 100, limits: [25, 50, 100, 200] },
     useAsTitle: 'label',
     group: 'Landing pages',
     listSearchableFields: ['label', 'regionName'],

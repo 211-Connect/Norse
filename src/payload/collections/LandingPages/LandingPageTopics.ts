@@ -151,6 +151,7 @@ export const LandingPageTopics: CollectionConfig = {
     beforeDelete: [refuseDeleteWithPages],
   },
   admin: {
+    pagination: { defaultLimit: 100, limits: [25, 50, 100, 200] },
     useAsTitle: 'name',
     group: 'Landing pages',
     defaultColumns: [

@@ -137,3 +137,37 @@
   width: auto;
   margin: 0;
 }
+
+.landing-topics__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.landing-topics__group legend {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.landing-topics__select-all {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--theme-elevation-600);
+  font: inherit;
+  font-size: 0.85em;
+  font-weight: 400;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.landing-topics__select-all:hover,
+.landing-topics__select-all:focus-visible {
+  color: var(--theme-text);
+}
+
+.landing-topics__added {
+  color: var(--theme-success-500, var(--theme-elevation-500));
+  font-size: 0.9em;
+}

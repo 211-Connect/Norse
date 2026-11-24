@@ -131,6 +131,38 @@ const LandingTopicsField = () => {
       return next;
     });
 
+  /** Keys that can still be ticked: have a search and aren't topics yet. */
+  const selectableKeys = (list: TopicSource[]) =>
+    list
+      .filter((s) => s.search && !s.disabledReason)
+      .map((s) => sourceKey(s.kind, s.ref))
+      .filter((key) => !added.has(key));
+
+  /** "Select all" for a list, or "Clear" once all of it is ticked. */
+  const selectAllButton = (list: TopicSource[], label: string) => {
+    const keys = selectableKeys(list);
+    if (keys.length === 0) return null;
+    const all = keys.every((key) => selected.has(key));
+    return (
+      <button
+        type="button"
+        className="landing-topics__select-all"
+        onClick={() =>
+          setSelected((previous) => {
+            const next = new Set(previous);
+            for (const key of keys) {
+              if (all) next.delete(key);
+              else next.add(key);
+            }
+            return next;
+          })
+        }
+      >
+        {all ? 'Clear' : label}
+      </button>
+    );
+  };
+
   const addSelected = async () => {
     if (!tenantId) return;
     setSaving(true);
@@ -291,30 +323,57 @@ const LandingTopicsField = () => {
             </p>
           ) : (
             <>
-              {groups.map((group) => (
-                <fieldset key={group} className="landing-topics__group">
-                  {group && <legend>{group}</legend>}
-                  {visible
-                    .filter((s) => (s.group ?? '') === group)
-                    .map((source) => {
+              <div className="landing-topics__toolbar">
+                {selectAllButton(
+                  visible,
+                  tab === 'subtopic'
+                    ? 'Select all subtopics'
+                    : 'Select all suggestions',
+                )}
+              </div>
+              {groups.map((group) => {
+                const inGroup = visible.filter(
+                  (s) => (s.group ?? '') === group,
+                );
+                return (
+                  <fieldset key={group} className="landing-topics__group">
+                    {group && (
+                      <legend>
+                        {group}
+                        {groups.length > 1 &&
+                          selectAllButton(inGroup, 'Select all')}
+                      </legend>
+                    )}
+                    {inGroup.map((source) => {
                       const key = sourceKey(source.kind, source.ref);
                       const isAdded = added.has(key);
                       const reason = isAdded
-                        ? 'Already a topic'
+                        ? undefined
                         : source.disabledReason;
                       return (
                         <label
                           key={key}
                           className="landing-topics__option"
-                          data-disabled={Boolean(reason) || undefined}
+                          data-disabled={
+                            isAdded || Boolean(reason) || undefined
+                          }
+                          title={isAdded ? 'Already a topic' : undefined}
                         >
                           <input
                             type="checkbox"
-                            disabled={Boolean(reason)}
+                            disabled={isAdded || Boolean(reason)}
                             checked={selected.has(key)}
                             onChange={() => toggle(key)}
                           />
                           <span>{source.label || '(no name)'}</span>
+                          {isAdded && (
+                            <span
+                              className="landing-topics__added"
+                              aria-label="Already a topic"
+                            >
+                              ✓
+                            </span>
+                          )}
                           {reason && (
                             <span className="landing-topics__reason">
                               {reason}
@@ -323,8 +382,9 @@ const LandingTopicsField = () => {
                         </label>
                       );
                     })}
-                </fieldset>
-              ))}
+                  </fieldset>
+                );
+              })}
               <Button
                 size="small"
                 disabled={saving || selected.size === 0}

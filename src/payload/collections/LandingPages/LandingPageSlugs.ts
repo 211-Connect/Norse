@@ -25,6 +25,7 @@ export const LandingPageSlugs: CollectionConfig = {
   },
   indexes: [{ fields: ['tenant', 'locale', 'path'], unique: true }],
   admin: {
+    pagination: { defaultLimit: 100, limits: [25, 50, 100, 200] },
     useAsTitle: 'path',
     group: 'Landing pages',
     defaultColumns: ['path', 'locale', 'current', 'page', 'updatedAt'],

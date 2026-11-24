@@ -63,6 +63,12 @@ Each tenant has its own Resource Directory.
 A host serves landing pages and sitemaps only when its Resource Directory has
 the flag on and the Tenant is not `noindex`.
 
+The "Landing pages" group in the admin menu (pages, topics, addresses) is
+shown only while the selected tenant has the flag on
+(`src/payload/components/LandingPagesNavGate`). Payload's `admin.hidden` sees
+the user but not the selected tenant, and would also close the collections'
+routes, so the group is hidden with CSS. The admin lists open at 100 rows.
+
 ## Regions
 
 The picker loads a state's counties and cities from Norse-API
@@ -122,9 +128,10 @@ automatically. "Re-copy from source" updates the search on request.
 **In the admin.** The Landing Pages tab's Topics section
 (`LandingTopicsField`) lists the tenant's topics and has an **Add topics**
 panel with three tabs: topic-card subtopics (multi-select, grouped by card;
-link subtopics and subtopics already added can't be ticked), search
-suggestions (their taxonomy codes), and a custom query (text or
-comma-separated taxonomy codes). It reads the saved Resource Directory, so a
+link subtopics can't be ticked), search suggestions (their taxonomy codes),
+and a custom query (text or comma-separated taxonomy codes). Each list has
+"Select all", and each topic card its own; a subtopic or suggestion that is
+already a topic is greyed out with a ✓. It reads the saved Resource Directory, so a
 new card or suggestion appears after a save. `features/landing-pages/lib/topicSources.ts`
 lists the sources and compares a topic with its source.
 

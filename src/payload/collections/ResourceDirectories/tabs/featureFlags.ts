@@ -145,10 +145,6 @@ export const featureFlags: Tab = {
         create: superAdminOrSupportAccess,
         update: superAdminOrSupportAccess,
       },
-      admin: {
-        description:
-          'SEO landing pages (topic × place) and their sitemaps. See the Landing Pages tab.',
-      },
     },
   ],
 };
