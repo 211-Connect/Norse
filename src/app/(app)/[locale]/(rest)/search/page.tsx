@@ -25,11 +25,6 @@ import { createLogger } from '@/lib/logger';
 import { type FiltersMap } from '@/types/search';
 
 import {
-  AnalyticsEvent,
-  AnalyticsTools,
-  trackEvent,
-} from '@/app/(app)/shared/lib/analytics';
-import {
   toFindResourcesQuery,
   type RawSearchParams,
 } from '@/app/(app)/features/search/intent';
@@ -63,6 +58,11 @@ const getPageData = cache(async function (
 
   const { intent, envelope } = liftSearchRequest(rawParams);
   const searchQuery = withAreaSettings(toFindResourcesQuery(intent), appConfig);
+  const widgetId = (
+    Array.isArray(rawParams.widgetId)
+      ? rawParams.widgetId[0]
+      : rawParams.widgetId
+  )?.trim();
 
   // An area search needs no coords; they would only set the distance-sort origin.
   if (searchQuery.location && !searchQuery.coordinates && !searchQuery.region) {
@@ -81,6 +81,7 @@ const getPageData = cache(async function (
     intent,
     locale,
     printableDirectoryContext: getPrintableDirectoryContextParams(rawParams),
+    widgetId,
     skipLegacyLinkCheck: envelope.sllc === '1',
   });
 
@@ -142,6 +143,7 @@ const getPageData = cache(async function (
     resources,
     t,
     searchQuery,
+    widgetId,
     envelope,
     clarify,
     intent,
@@ -218,6 +220,7 @@ export default async function SearchPage({
     totalResults,
     resources,
     searchQuery,
+    widgetId,
     envelope,
     clarify: legacyAiClarifyState,
     intent,
@@ -231,9 +234,6 @@ export default async function SearchPage({
     ? Math.min(totalResults, MAP_PINS_LIMIT)
     : totalResults;
 
-  if (searchQuery.widgetId) {
-    trackEvent(AnalyticsEvent.WidgetSearch, AnalyticsTools.Umami);
-  }
   return (
     <PageWrapper
       cookies={cookieList}
@@ -250,7 +250,11 @@ export default async function SearchPage({
       nonce={nonce}
     >
       <h1 className="sr-only">View Search Results</h1>
-      <ResultsEvents results={results} totalResults={totalResults} />
+      <ResultsEvents
+        results={results}
+        totalResults={totalResults}
+        widgetId={widgetId}
+      />
       <SearchResultsProvider
         value={{
           results,
