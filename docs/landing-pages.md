@@ -64,9 +64,12 @@ Each tenant has its own Resource Directory.
 - Topics: the `landing-page-topics` records.
 - Page copy (`landingPages.templates`): the copy templates, per locale.
 
-A host serves landing pages and sitemaps only when the deployment allows
-search engines (`NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=true`), its Resource
-Directory has the flag on and the Tenant is not `noindex`.
+A host serves landing pages when its Resource Directory has the flag on and
+the Tenant is not `noindex`; otherwise every landing URL is a 404. A
+deployment that does not allow search engines
+(`NEXT_PUBLIC_ALLOW_SEARCH_ENGINES` not `true`) still serves them, with the
+`noindex, nofollow` every page there gets, so they can be checked on
+staging. Sitemaps are served only when the deployment allows search engines.
 
 The "Landing pages" group in the admin menu (pages and topics) is
 shown only while the selected tenant has the flag on
@@ -302,7 +305,7 @@ The slug table maps every path ever issued to its page, so:
 | State removed | 308 to the equivalent `/search` URL |
 | Topic moved to the trash | 308 to `/search` with the old query and region, unless an admin set a target |
 | Page set to `off` | 404, or 308 when an admin set a target |
-| Nothing sensible to point to | 410 |
+| Nothing sensible to point to | 404 (the App Router cannot answer a page with 410) |
 
 Redirects use `permanentRedirect()` (308; `redirect()` gives a temporary 307).
 Redirects never chain: when a page retires or a slug changes, every target
@@ -389,28 +392,59 @@ URL in each locale (`GET /api/landing-pages/admin/export`).
 
 ## The page
 
-`[locale]/(rest)/[topic]/[place]`, rendered on the server for every request.
-It does not use the search intent's URL lift or resolver machine, AI
-classification or prediction.
+`[locale]/(rest)/[topic]/[place]/page.tsx`, rendered on the server for every
+request. It runs no AI classification or prediction, and it never redirects
+to add coordinates (an area search needs none).
 
-- **Metadata:** title and description from the copy; canonical tag pointing to
-  itself on the canonical host; hreflang for every tenant locale plus
-  `x-default` (the default locale).
-- **Breadcrumbs:** Home › Topic › State › County › City.
-- **Results:** the topic's search plus a region search on the page's region
-  ([area-search.md](area-search.md)), with results and map pins rendered on
-  the server through the generated SDK. One shared function builds this
-  search for the page and for the warm-up job. `?page=n` paginates, and each
-  page has its own canonical.
-- **Child places:** a state page lists its counties, a county page lists its
-  live cities.
-- **Location:** the location field shows the page's place. The visitor's
-  location cookie is never changed.
-- **Refining** stays on the page with a query string. Those variants are
-  `noindex` and their canonical is the plain URL.
-- **No results:** a "call 211" message; the page is otherwise unchanged.
-- **Bot protection:** `protectPage` like other directory pages
-  ([bot-protection.md](bot-protection.md)).
+- **Lookup:** `resolveLandingRequest`
+  (`features/landing-pages/server/landing-page-data.ts`) resolves the path
+  through `getLandingResolution` (cached, see Caching). A redirect is a 308
+  that keeps the visitor's refinements; `gone` and `not-found` are 404s.
+  The page and its metadata share the lookup (React `cache`).
+- **Metadata:** title and description from the copy; canonical pointing to
+  itself on the canonical host (`appConfig.canonicalHost`, else the request
+  host); hreflang for every locale the page has plus `x-default` (the
+  default locale), from `landingAlternates` (`lib/seo.ts`).
+- **Header** (`LandingHeader`, above the results list): breadcrumbs Home ›
+  Topic › State › County › City, the H1 and the intro. The breadcrumbs are
+  also a schema.org `BreadcrumbList` (`breadcrumbJsonLd`). The topic crumb
+  links to the hub.
+- **Results:** `landingBaseParams` (`lib/search.ts`) writes the topic's
+  search plus a region search on the page's region
+  ([area-search.md](area-search.md)) as `/search` URL parameters with
+  `buildSearchUrl`, so the search is the one a visitor would run and shares
+  its cache keys. From there it is the `/search` pipeline:
+  `liftSearchRequest` → `toFindResourcesQuery` → `withAreaSettings` →
+  `findResources`, then `SearchResultsProvider` and `SearchPageShell`, with
+  map pins as on `/search`. The warm-up job builds the search the same way.
+  `?page=n` paginates, and each page has its own canonical (`?page=n`).
+- **Child places** (`LandingPlaces`, below the results): a state page lists
+  its counties, a county page its live cities.
+- **Location:** the location field shows the page's region. The page passes
+  `fixedLocation` to `SearchStateSync`, so the visitor's location cookies
+  are never changed.
+- **Refining:** only `page`, `sort`, `age` and `filters` are read from the
+  query string; anything else in it is ignored. `FixedSearchProvider`
+  (`features/search/context/fixed-search-context.tsx`) gives the results'
+  controls the page's search, and a control's `/search` URL comes back to
+  the page as a query string while the search is still the page's own
+  (`toLandingHref`); a different search goes to `/search`. A refined
+  variant (anything but `page`) is `noindex, follow`, with its canonical on
+  the plain URL. Metadata only ever adds `noindex`: a deployment that
+  blocks crawlers keeps its `noindex, nofollow`.
+- **No results:** the usual no-results card, which shows the tenant's phone
+  number; the rest of the page is unchanged.
+- **Bot protection:** `protectPage` before any data fetch, like other
+  directory pages ([bot-protection.md](bot-protection.md)).
+
+**Hub** (`[locale]/(rest)/[topic]/page.tsx`): `/{topic-slug}` lists the
+topic's live pages at the highest level the tenant has (states, else
+counties, else cities; `hubPages` in `lib/hub.ts`), from the cached sitemap
+data. With one page there, it is a 308 to it. An unknown slug is a 404.
+
+The page labels (Home, the child-place headings) are in
+`public/locales/<locale>/landing-pages.json` under `page`; a locale without
+them uses English.
 
 Home page topic cards are unchanged; they still open `/search`.
 
@@ -435,7 +469,9 @@ landing pages lead to the rest.
 
 | Value | Where | Key | TTL |
 | --- | --- | --- | --- |
-| Resolved page config | Redis + memory | tenant, locale, path, version | memory 1 min; Redis until the version changes |
+| Version (any change to the tenant's topics, pages or URLs) | memory | `landing_version:<tenant>` | 1 min |
+| Resolved page | Redis + memory | `landing_page:<tenant>:<locale>:<hash of version and path>` | 1 day; a new version is a new key |
+| Live pages per locale (hub, sitemaps) | Redis + memory | `landing_sitemap:<tenant>:<hash of version>` | 1 day; a new version is a new key |
 | Landing-page search results | Redis | `search_results:…` (shared builder) | 24 h, refreshed by the warm-up job |
 | Landing-page map pins | Redis | `search_pins:…` | 24 h, refreshed by the warm-up job |
 | XML and HTML sitemaps | Redis | tenant, locale, version | 24 h backstop |

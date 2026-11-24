@@ -42,6 +42,7 @@ src/app/(app)/
 │   ├── resource/
 │   ├── favorites/
 │   ├── printable-directories/
+│   ├── landing-pages/   SEO landing pages ([landing-pages.md](landing-pages.md))
 │   └── error/
 └── shared/           cross-feature code
 ```

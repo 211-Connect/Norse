@@ -33,7 +33,10 @@ export type CacheKey =
   | `state_regions:${string}`
   | `search_config:${TenantId}:${Locale}`
   | `search_suggestions:${TenantId}:${Locale}:${Hash}`
-  | `orchestration_config:${TenantId}`;
+  | `orchestration_config:${TenantId}`
+  | `landing_version:${TenantId}`
+  | `landing_page:${TenantId}:${Locale}:${Hash}`
+  | `landing_sitemap:${TenantId}:${Hash}`;
 
 export type CacheConfig = {
   redis?: boolean;
@@ -85,6 +88,11 @@ export const MEMORY_CACHE_LIMITS: Partial<Record<CacheFeature, MemoryLimit>> = {
     ttlSeconds: FIFTEEN_MINUTES,
   },
   region_area: { maxEntries: 2048, maxBytes: 64 * MB },
+  // Landing pages (docs/landing-pages.md, "Caching"): the version is read on
+  // every page view, the resolved page and the page list are keyed by it.
+  landing_version: { maxEntries: 256, maxBytes: 1 * MB },
+  landing_page: { maxEntries: 4096, maxBytes: 32 * MB },
+  landing_sitemap: { maxEntries: 64, maxBytes: 64 * MB },
 };
 
 const DEFAULT_MEMORY_LIMIT: MemoryLimit = { maxEntries: 500, maxBytes: 4 * MB };

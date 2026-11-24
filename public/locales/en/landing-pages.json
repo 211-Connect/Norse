@@ -8,5 +8,11 @@
     "description": "Find {{topic}} in {{location}}: addresses, hours and how to get help, from {{name}}.",
     "h1": "{{topic}} in {{location}}",
     "intro": "Programs and services for {{topic}} in {{location}}. Call 211 if you need help finding the right one."
+  },
+  "page": {
+    "home": "Home",
+    "breadcrumbs": "Breadcrumb",
+    "counties": "Counties in {{location}}",
+    "cities": "Cities in {{location}}"
   }
 }

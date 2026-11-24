@@ -1149,7 +1149,7 @@ export interface ResourceDirectory {
   };
   landingPages?: {
     /**
-     * Used by every page unless its topic or the page sets its own. Variables: {topic}, {location}, {state}, {name}, {phone}, {email}. Empty fields use the built-in text for the language. Other languages are translated automatically from English.
+     * Used by every page unless its topic sets its own. Variables: {topic}, {location}, {state}, {name}, {phone}, {email}. Empty fields use the built-in text for the language. Other languages are translated automatically from English.
      */
     templates?: {
       /**

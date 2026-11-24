@@ -4,14 +4,13 @@ import {
   type CopyLayers,
   type CopyTagValues,
   type CopyTexts,
-  type RegionStrings,
-  fromI18nTags,
   regionDisplayName,
 } from '@/app/(app)/features/landing-pages/lib/copy';
 import {
   STATE_NAMES,
   localizedLandingHref,
 } from '@/app/(app)/features/landing-pages/lib/slugs';
+import { loadLandingStrings } from '@/app/(app)/features/landing-pages/lib/strings';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { defaultLocale } from '@/payload/i18n/locales';
 import type { LandingPage, LandingPageTopic } from '@/payload/payload-types';
@@ -23,43 +22,6 @@ import { tenantCanonicalHost } from '@/utils/canonicalHost';
  * values and the address. The page renders with it; the admin previews fill
  * it with the unsaved form values.
  */
-
-type LandingStrings = {
-  region?: Partial<RegionStrings>;
-  defaults?: CopyTexts;
-};
-
-async function readStrings(locale: string): Promise<LandingStrings> {
-  try {
-    return (await import(`@/../public/locales/${locale}/landing-pages.json`))
-      .default as LandingStrings;
-  } catch {
-    return {};
-  }
-}
-
-/** The locale's region patterns and default copy, English where missing. */
-export async function loadLandingStrings(locale: string) {
-  const [own, fallback] = await Promise.all([
-    readStrings(locale),
-    readStrings(defaultLocale),
-  ]);
-  const region: RegionStrings = {
-    county: own.region?.county || fallback.region?.county || '{{name}} County',
-    place: own.region?.place || fallback.region?.place || '{{name}}, {{state}}',
-  };
-  const texts = { ...fallback.defaults };
-  for (const [key, value] of Object.entries(own.defaults ?? {})) {
-    if (value) texts[key as keyof CopyTexts] = value;
-  }
-  const defaults = Object.fromEntries(
-    Object.entries(texts).map(([key, value]) => [
-      key,
-      value ? fromI18nTags(value) : value,
-    ]),
-  ) as CopyTexts;
-  return { region, defaults };
-}
 
 export type LandingCopyContext = {
   /** The topic, template and built-in layers. */

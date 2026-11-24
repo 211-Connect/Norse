@@ -8,5 +8,11 @@
     "description": "Encuentra {{topic}} en {{location}}: direcciones, horarios y cómo obtener ayuda, de {{name}}.",
     "h1": "{{topic}} en {{location}}",
     "intro": "Programas y servicios para {{topic}} en {{location}}. Llame al 211 si necesita ayuda para encontrar el adecuado."
+  },
+  "page": {
+    "home": "Inicio",
+    "breadcrumbs": "Ruta de navegación",
+    "counties": "Condados en {{location}}",
+    "cities": "Ciudades en {{location}}"
   }
 }

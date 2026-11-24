@@ -57,6 +57,7 @@ Shared rules for every memory entry:
 | Search results, other searches | 1 h | no | too many distinct keys for memory |
 | Map pins, geocoding | yes | no | |
 | A state's counties and places (landing-page region picker, `state_regions:<STATE>`) | 1 day | no | read only in the admin; the catalog changes only when Dagster publishes |
+| Landing pages: version (`landing_version`), resolved page (`landing_page`), live page list (`landing_sitemap`) | page and list 1 day | yes (version 1 min) | keys carry the version, so an edit reaches pages within a minute ([landing-pages.md](landing-pages.md#caching)) |
 | **Resources** (`/search/[id]`, `/details/original/[id]`, batch for favorites and printable directories) | **no** | **no** | almost every resource request is for a different id (bots crawl them one by one), so a cache only adds a Redis write and a round trip per request |
 
 A **common search** (`isCommonSearch`,

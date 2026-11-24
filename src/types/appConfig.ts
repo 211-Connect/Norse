@@ -86,6 +86,17 @@ export type AppConfig = {
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
     requireAuthenticationForFavorites: boolean;
+    /** SEO landing pages and their sitemaps (docs/landing-pages.md). */
+    enableLandingPages: boolean;
+  };
+  /** Landing-page copy templates in this locale (docs/landing-pages.md). */
+  landingPages: {
+    templates: {
+      title?: string | null;
+      description?: string | null;
+      h1?: string | null;
+      intro?: string | null;
+    };
   };
   printableDirectories: {
     accessMode: 'everyone' | 'allowlist';

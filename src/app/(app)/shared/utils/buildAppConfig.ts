@@ -250,7 +250,9 @@ export async function buildAppConfig(
         showOrganizationLocationBadge: false,
         showUseMyLocationButtonOnDesktop: false,
         turnResourceCardTaxonomiesIntoLinks: true,
+        enableLandingPages: false,
       },
+      landingPages: { templates: {} },
       printableDirectories: {
         accessMode: 'allowlist',
         allowedEmails: [],
@@ -426,6 +428,11 @@ export async function buildAppConfig(
         resourceDirectory.featureFlags?.turnResourceCardTaxonomiesIntoLinks ??
         true,
       showAgeFilter: resourceDirectory.featureFlags?.showAgeFilter ?? false,
+      enableLandingPages:
+        resourceDirectory.featureFlags?.enableLandingPages ?? false,
+    },
+    landingPages: {
+      templates: resourceDirectory.landingPages?.templates ?? {},
     },
     printableDirectories: {
       accessMode:

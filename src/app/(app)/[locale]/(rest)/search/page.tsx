@@ -9,10 +9,7 @@ import { ResultsEvents } from '@/app/(app)/features/search/components/results-ev
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import {
-  FindResourcesQuery,
-  findResources,
-} from '@/app/(app)/shared/services/search-service';
+import { findResources } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { toPinsQuery } from '@/app/(app)/shared/lib/search-params';
@@ -31,24 +28,12 @@ import {
 import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
 import { liftSearchRequest } from '@/app/(app)/features/search/utils/liftSearchRequest';
 import { navigateToSearchWithCoords } from '@/app/(app)/features/search/utils';
+import { withAreaSettings } from '@/app/(app)/features/search/utils/withAreaSettings';
 import { getPrintableDirectoryContextParams } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 
 const log = createLogger('search-page');
 
 const i18nNamespaces = ['page-search', 'page-resource', 'page-list', 'common'];
-
-/** The tenant's area search settings, sent with every area search (`region`). */
-function withAreaSettings(
-  query: FindResourcesQuery,
-  appConfig: Awaited<ReturnType<typeof getAppConfigWithoutHost>>,
-): FindResourcesQuery {
-  if (!query.region) return query;
-  return {
-    ...query,
-    areaMatch: appConfig.search.areaMatch,
-    unlocated: appConfig.search.unlocatedInAreaSearch,
-  };
-}
 
 const getPageData = cache(async function (
   locale: string,

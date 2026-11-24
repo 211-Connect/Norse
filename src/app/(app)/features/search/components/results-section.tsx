@@ -1,9 +1,8 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
-import { useSearchParams } from 'next/navigation';
 import qs from 'qs';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
@@ -22,6 +21,7 @@ import {
   queryTypeAtom,
 } from '@/app/(app)/shared/store/search';
 
+import { useEffectiveSearchParams } from '../context/fixed-search-context';
 import { useSearchResults } from '../context/search-results-context';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { PrintableDirectoryContextBanner } from './printable-directory-context-banner';
@@ -39,6 +39,8 @@ export type AiAlertType = 'low_info' | 'low_confidence' | 'general';
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
   aiSearchAlert?: string;
+  header?: ReactNode;
+  footer?: ReactNode;
 };
 
 const getAiAlertMessageKey = (aiSearchAlert?: string): string | undefined => {
@@ -86,10 +88,13 @@ const parseDistanceParam = (value?: string): number | undefined => {
 export function ResultsSection({
   cardLayout,
   aiSearchAlert,
+  header,
+  footer,
 }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
-  const searchParams = useSearchParams();
+  // On a landing page, the page's own search is not in the query string.
+  const searchParams = useEffectiveSearchParams();
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const { results, totalResults, currentPage } = useSearchResults();
   const resultsCount = results.length;
@@ -186,6 +191,7 @@ export function ResultsSection({
       >
         Search Results
       </h2>
+      {header}
       <div className="flex flex-col gap-3 print:hidden">
         {directoryContext && (
           <PrintableDirectoryContextBanner
@@ -227,6 +233,7 @@ export function ResultsSection({
         <RenderResults cardLayout={cardLayout} />
         <ResultsPagination />
       </div>
+      {footer}
     </section>
   );
 }

@@ -30,6 +30,11 @@ export interface PageSearchState {
   /** The area searched, when the location is one (docs/area-search.md). */
   region?: string;
   distance?: string;
+  /**
+   * The location is the page's own place, not one the visitor chose (an SEO
+   * landing page): shown in the form, never saved to the location cookies.
+   */
+  fixedLocation?: boolean;
 }
 
 interface SearchStateSyncProps {
@@ -61,6 +66,7 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
   const cookieCoords = cookies[USER_PREF_COORDS] ?? '';
   const cookieLocation = cookies[USER_PREF_LOCATION] ?? '';
   const urlRegion = search?.region ?? '';
+  const fixedLocation = search?.fixedLocation ?? false;
   const cookieRegion = cookies[USER_PREF_REGION_ID] ?? '';
   const distance =
     search?.distance?.trim() ||
@@ -126,7 +132,7 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
   }, [urlCoords, cookieCoords]);
 
   useEffect(() => {
-    if (urlLocation) {
+    if (urlLocation && !fixedLocation) {
       setCookie(USER_PREF_LOCATION, decodeURIComponent(urlLocation), {
         path: '/',
       });
@@ -136,7 +142,7 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
         deleteCookie(USER_PREF_REGION_ID, { path: '/' });
       }
     }
-  }, [urlLocation, urlRegion]);
+  }, [urlLocation, urlRegion, fixedLocation]);
 
   const atomValues = useMemo(
     () =>
