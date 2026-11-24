@@ -44,7 +44,6 @@ export type FindResourcesQuery = {
   distance?: string;
   filters?: Record<string, string[]>;
   sort?: SortOption;
-  widgetId?: string;
   age?: number;
   /** v2 prototype: confirmed needs (boost only), passed needs, urgency, "Other" text. */
   needs?: string[];

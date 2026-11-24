@@ -31,6 +31,7 @@ import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-locati
 import { useAtomValue } from 'jotai';
 import {
   searchCoordinatesAtom,
+  searchLocationGeocodeAtom,
   searchRegionAtom,
   userCoordinatesAtom,
 } from '@/app/(app)/shared/store/search';
@@ -96,6 +97,7 @@ export function SearchDialog({
   const requireUserLocation = useFlag('requireUserLocation');
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
+  const searchLocationGeocode = useAtomValue(searchLocationGeocodeAtom);
   const searchRegion = useAtomValue(searchRegionAtom);
   const [isLocationActive, setIsLocationActive] = useState(false);
 
@@ -111,6 +113,7 @@ export function SearchDialog({
       userCoordinates,
       appConfig.tenantId,
       searchRegion,
+      searchLocationGeocode,
     );
 
   const effects = useRef<DialogEffects | null>(null);

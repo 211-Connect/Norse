@@ -23,7 +23,6 @@ import {
   searchCoordinatesAtom,
   searchLocationAtom,
   searchLocationValidationErrorAtom,
-  userCoordinatesAtom,
 } from '../../store/search';
 import { Autocomplete, FLOATING_LISTBOX_CLASSNAME } from '../ui/autocomplete';
 import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
@@ -112,7 +111,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const globalSearchLocation = useAtomValue(searchLocationAtom);
   const globalCoords = useAtomValue(searchCoordinatesAtom);
   const globalPrevSearchLocation = useAtomValue(prevSearchLocationAtom);
-  const userCoordinates = useAtomValue(userCoordinatesAtom);
 
   // Select state based on mode
   const searchLocation = isStandalone
@@ -250,12 +248,12 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         );
       } else {
         setSearch?.((prev) => {
-          // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
+          // Update coordinates only when the committed search point changed.
           const coordinates = coords.coordinates;
           const isNewCoords =
             coords.type === 'invalid' ||
-            (coordinates?.[0] !== userCoordinates?.[0] &&
-              coordinates?.[1] !== userCoordinates?.[1]);
+            coordinates?.[0] !== prev.searchCoordinates?.[0] ||
+            coordinates?.[1] !== prev.searchCoordinates?.[1];
 
           return {
             ...prev,
@@ -269,6 +267,9 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
             // writers can recognise "no location" in every locale.
             searchLocation: isEverywhere(value) ? EVERYWHERE_LOCATION : value,
             searchLocationValidationError: '',
+            // Keep the selected geocode metadata with its coordinates for analytics.
+            searchLocationGeocode:
+              coords.type === 'coordinates' ? coords : null,
             // An area (state, county, city, ZIP) is searched as its shape;
             // an address or a place with no Region yet as a point and radius.
             searchRegion:
@@ -277,7 +278,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         });
       }
     },
-    [findCoords, isEverywhere, setSearch, isStandalone, props, userCoordinates],
+    [findCoords, isEverywhere, setSearch, isStandalone, props],
   );
 
   // Called on every keystroke (Autocomplete's onInputChange) — purely a live
@@ -316,6 +317,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         setSearch?.((prev) => ({
           ...prev,
           searchCoordinates: [],
+          searchLocationGeocode: null,
           searchLocation: nextValue,
           prevSearchLocation: nextValue,
           searchLocationValidationError: '',

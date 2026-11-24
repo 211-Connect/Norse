@@ -107,6 +107,11 @@ what a clarify URL carries (ISS-2475).
 `pdsrcid` onto `redirectTo` (`withPrintableDirectoryContext`), so a directory source opened from its "Go to
 search results" link stays editable after classification.
 
+**Widget attribution survives the redirect.** The search page passes `widgetId`
+through the legacy classification redirect, so its client can emit `widget_search`
+with that ID after the results page loads. See [search.md](/docs/search.md) for
+the event fields and counting limits.
+
 **The dialog runs on the same machine.** `useOnSearchSubmit` routes a submit with the same pure
 transitions as the server, from `ready`: a link topic, the location policy, a search as typed, or a
 prediction. `SearchDialog` runs an actor of the machine with `useMachine`, started from the page's
