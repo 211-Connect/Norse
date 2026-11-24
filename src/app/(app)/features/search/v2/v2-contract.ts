@@ -433,6 +433,30 @@ export const nextQuestionOf = (
 
 /** The refine card beside the results takes `with_results` questions. */
 export const REFINE_PLACEMENTS: readonly V2Placement[] = ['with_results'];
+
+/**
+ * The question the refine card beside the results shows (safety). A soft emergency question (not a
+ * popup) that was not skipped (its id is not in `asked`) and has no answer in the URL (urgency
+ * null, '' or U-X) shows first, with its three answers, although it is not a `with_results`
+ * question: the person on /search with the guide closed must still be asked. Otherwise the
+ * next `with_results` question.
+ */
+export function refineQuestionOf(
+  response: V2Response | undefined,
+  asked: readonly string[],
+  urgency: string | null | undefined,
+): V2Question | undefined {
+  const emergency = emergencyQuestionOf(response);
+  if (
+    emergency &&
+    isSoftEmergency(emergency) &&
+    !asked.includes(emergency.id) &&
+    (!urgency || urgency === 'U-X')
+  ) {
+    return withEmergencyAnswers(emergency);
+  }
+  return nextQuestionOf(response, asked, REFINE_PLACEMENTS);
+}
 /** The guided find page takes the popup (emergency) and `before_results` questions. */
 export const GUIDE_PLACEMENTS: readonly V2Placement[] = [
   'popup',

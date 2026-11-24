@@ -408,3 +408,50 @@ test('desktop guard: every full-screen / no-header rule in the layer is max-sm o
   );
   assert.match(bar, /sm:hidden/);
 });
+
+// S2 (safety): the soft emergency question renders in the box with its three answers.
+test('soft emergency question renders the question and three answers', async () => {
+  const { refineQuestionOf } =
+    await import('../src/app/(app)/features/search/v2/v2-contract');
+  const q = refineQuestionOf(
+    {
+      clarification: {
+        rules_version: 'r',
+        questions: [
+          {
+            id: 'emergency',
+            type: 'emergency',
+            placement: 'before_results',
+            stem: 'Are you in danger right now?',
+            options: [],
+            multi_select: false,
+            allow_other: false,
+            none_of_these: false,
+            hotlines: HOTLINES,
+          },
+        ],
+      },
+    } as never,
+    [],
+    null,
+  )!;
+  const html = renderToStaticMarkup(
+    asV2Tenant(
+      createElement(EmergencyBox, {
+        soft: true,
+        hotlines: HOTLINES,
+        question: {
+          id: q.id,
+          text: q.stem,
+          answers: q.options.map((o) => ({ label: o.label, add: [o.value] })),
+        } as never,
+        onSkip: () => undefined,
+      }),
+    ),
+  );
+  assert.match(html, /Are you in danger right now\?/);
+  assert.match(html, /Yes, I am in danger/);
+  assert.match(html, /No, I am safe, I need help today/);
+  assert.match(html, /No, I am safe, I need help this week/);
+  assert.match(html, /data-testid="emergency-skip"/);
+});

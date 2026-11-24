@@ -87,7 +87,7 @@ import {
   hotlinesOf,
   isSoftEmergency,
   nextQuestionOf,
-  REFINE_PLACEMENTS,
+  refineQuestionOf,
   styleOf,
   styleOfQuestion,
   placementOf,
@@ -1469,7 +1469,7 @@ export function SearchRefineQuestion() {
       : popupMode === 'danger'
         ? asked.filter((id) => id !== emergencyQ.id)
         : asked;
-  const v2 = nextQuestionOf(data, askedForNext, REFINE_PLACEMENTS);
+  const v2 = refineQuestionOf(data, askedForNext, params.get('urgency'));
   const isPending = isFetching || isWriting;
   // Always refine: with nothing left to ask, the card still invites more.
   const question: Question = v2

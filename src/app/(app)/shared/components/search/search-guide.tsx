@@ -399,7 +399,14 @@ export function SearchGuideFromUrl({
       : popupMode === 'danger'
         ? asked.filter((id) => id !== emergencyQ.id)
         : asked;
-  const v2 = nextQuestionOf(data, askedForNext, GUIDE_PLACEMENTS);
+  const guideNext = nextQuestionOf(data, askedForNext, GUIDE_PLACEMENTS);
+  // A soft emergency question always shows its three answers (the red popup is unchanged).
+  const v2 =
+    guideNext &&
+    canonicalType(guideNext.type) === 'emergency' &&
+    isSoftEmergency(guideNext)
+      ? withEmergencyAnswers(guideNext)
+      : guideNext;
   const strings = stringsOf(data);
   // A place already saved for this visit counts: the results page uses it, so asking for it again
   // with the same place filled in is a wasted step (Lucas UX pass, 2026-11-16).

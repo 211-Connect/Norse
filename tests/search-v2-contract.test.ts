@@ -23,6 +23,7 @@ import {
   canonicalType,
   stringsOf,
   nextQuestionOf,
+  refineQuestionOf,
   GUIDE_PLACEMENTS,
   REFINE_PLACEMENTS,
   emergencyPopupMode,
@@ -631,4 +632,72 @@ test('optionDescription gives the server text, and nothing for a missing or blan
   assert.equal(optionDescription({}), undefined);
   assert.equal(optionDescription({ description: null }), undefined);
   assert.equal(optionDescription({ description: '   ' }), undefined);
+});
+
+// S2 (safety): a soft emergency question shows on /search with the guide closed.
+const mkQ = (over: Partial<V2Question>): V2Question => ({
+  id: 'emergency',
+  type: 'emergency',
+  stem: 'Are you in danger right now?',
+  options: [],
+  multi_select: false,
+  allow_other: false,
+  none_of_these: false,
+  ...over,
+});
+const respOf = (...questions: V2Question[]) =>
+  ({ clarification: { rules_version: 'r', questions } }) as V2Response;
+const refineNeed = mkQ({
+  id: 'area_hou',
+  type: 'need',
+  placement: 'with_results',
+  options: [{ label: 'Rent', parameter: 'needs', value: 'N-HOU' }],
+});
+
+test('refineQuestionOf: soft emergency (new shape) shows with exactly U-0, U-1, U-2', () => {
+  const soft = mkQ({ placement: 'before_results' });
+  const q = refineQuestionOf(respOf(soft, refineNeed), [], null);
+  assert.equal(q?.id, 'emergency');
+  assert.deepStrictEqual(
+    q?.options.map((o) => [o.parameter, o.value]),
+    [
+      ['urgency', 'U-0'],
+      ['urgency', 'U-1'],
+      ['urgency', 'U-2'],
+    ],
+  );
+  assert.equal(refineQuestionOf(respOf(soft), [], '')?.id, 'emergency');
+  assert.equal(refineQuestionOf(respOf(soft), [], 'U-X')?.id, 'emergency');
+});
+
+test('refineQuestionOf: soft emergency (legacy importance high) shows too', () => {
+  const soft = mkQ({ importance: 'high' });
+  assert.equal(refineQuestionOf(respOf(soft), [], null)?.options.length, 3);
+});
+
+test('refineQuestionOf: skipped, answered or popup gives the with_results question', () => {
+  const soft = mkQ({ placement: 'before_results' });
+  const r = respOf(soft, refineNeed);
+  assert.equal(refineQuestionOf(r, ['emergency'], null)?.id, 'area_hou');
+  for (const u of ['U-0', 'U-1', 'U-2', 'U-3', 'U-4'])
+    assert.equal(refineQuestionOf(r, [], u)?.id, 'area_hou', u);
+  const popup = respOf(mkQ({ placement: 'popup' }), refineNeed);
+  assert.equal(refineQuestionOf(popup, [], null)?.id, 'area_hou');
+  assert.equal(
+    refineQuestionOf(respOf(mkQ({ importance: 'critical' })), [], null),
+    undefined,
+  );
+  assert.equal(refineQuestionOf(undefined, [], null), undefined);
+});
+
+test('refineQuestionOf: each of its answers writes U-0, U-1 or U-2', () => {
+  const q = refineQuestionOf(
+    respOf(mkQ({ placement: 'before_results' })),
+    [],
+    null,
+  )!;
+  for (const v of ['U-0', 'U-1', 'U-2']) {
+    const changes = answerChanges(q, [v], { needs: [], passedNeeds: [] });
+    assert.equal(changes.urgency, v);
+  }
 });
