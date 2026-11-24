@@ -120,7 +120,7 @@ export function MapLegend({
             <LegendSymbol>
               <span className="bg-primary size-2.5 rounded-full ring-[1.5px] ring-white" />
             </LegendSymbol>
-            {t('map_legend_list', { defaultValue: 'In the list' })}
+            {t('map_legend_list', { defaultValue: 'On this page' })}
           </li>
         )}
         {rows.other && (
@@ -128,7 +128,7 @@ export function MapLegend({
             <LegendSymbol>
               <span className={cn('size-2.5 rounded-full', SUBTLE_DOT)} />
             </LegendSymbol>
-            {t('map_legend_other', { defaultValue: 'Other locations' })}
+            {t('map_legend_other', { defaultValue: 'On another page' })}
           </li>
         )}
         {rows.site && (

@@ -3,6 +3,7 @@ import { Tab } from 'payload';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
+import { TEMPLATE_TAGS_DESCRIPTION } from '../templateTagsDescription';
 
 export const footer: Tab = {
   name: 'footer',
@@ -11,6 +12,9 @@ export const footer: Tab = {
       name: 'disclaimer',
       type: 'textarea',
       localized: true,
+      admin: {
+        description: TEMPLATE_TAGS_DESCRIPTION,
+      },
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,
@@ -40,6 +44,9 @@ export const footer: Tab = {
     {
       name: 'copyright',
       type: 'text',
+      admin: {
+        description: TEMPLATE_TAGS_DESCRIPTION,
+      },
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,

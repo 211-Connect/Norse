@@ -26,9 +26,10 @@ export function Navigation({
     appConfig.header.feedbackButtonLabel?.trim() || undefined;
 
   return (
-    <div className="flex justify-between print:hidden">
+    <div className="flex flex-wrap items-start gap-2 sm:justify-between print:hidden">
       <BackToResultsButton />
-      <div className="flex gap-2">
+      {/* On phones the actions join the back button's row and wrap with it. */}
+      <div className="flex flex-wrap justify-end gap-2 max-sm:contents">
         <DirectoryPrintControl
           loadData={loadPrintableDirectoryData}
           renderDocument={renderPdfDocument}

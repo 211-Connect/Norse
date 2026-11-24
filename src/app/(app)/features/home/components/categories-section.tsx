@@ -67,7 +67,7 @@ const Category = ({
               return (
                 <li key={el.name}>
                   <Link
-                    className="hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:ring-ring flex items-center gap-1 rounded-md px-2 py-2 text-sm break-words focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                    className="hover:bg-primary hover:text-primary-foreground transition-colors duration-150 focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:ring-ring flex items-center gap-1 rounded-md px-2 py-2 text-sm break-words focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                     href={`${
                       el.href
                         ? el.href
@@ -104,7 +104,7 @@ const Category = ({
 
   return (
     <Link href={href || '/'} className="group hover:underline" target={target}>
-      <Card>
+      <Card className="h-full transition-[box-shadow,transform,border-color] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:border-primary/30 group-hover:shadow-md">
         <CardContent>
           {image && (
             <div className="flex flex-col items-center justify-center pt-8 pb-8">
@@ -154,11 +154,11 @@ export function CategoriesSection({
   return (
     <div className={cn('categories container mx-auto', className)}>
       <div className="mb-4 sm:mb-8">
-        <h2 className="text-center text-3xl font-bold">
+        <h2 className="text-center text-3xl font-bold tracking-tight">
           {appConfig.topics.customHeading ||
             t('search.categories', { ns: 'common' })}
         </h2>
-        <Separator className="my-3" />
+        <Separator className="bg-primary mx-auto my-3 h-1 w-12 rounded-sm" />
         {backText && (
           <Link href="/">
             <Button variant="link" className="">

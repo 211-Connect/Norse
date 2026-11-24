@@ -42,6 +42,10 @@ export const ResultsEvents = ({
         searchCoordinates,
         userCoordinates,
         appConfig.tenantId,
+        // The region the server searched, not the one being typed.
+        typeof searchParamsObject.region === 'string'
+          ? searchParamsObject.region
+          : null,
       );
 
       if (isCancelled) {
@@ -51,6 +55,7 @@ export const ResultsEvents = ({
       const locationContext: SearchLocationContext = {
         place: locationPayload?.searchCity || null,
         postcode: locationPayload?.searchZipCode || null,
+        regionId: locationPayload?.searchRegionId || null,
       };
 
       createResultsEvent(

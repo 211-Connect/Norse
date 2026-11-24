@@ -583,7 +583,14 @@ export interface ResourceDirectory {
     favicon: number | TenantMedia;
     hero?: (number | null) | TenantMedia;
     openGraph?: (number | null) | TenantMedia;
+    /**
+     * Optional. Shown on the no-results card and inserted wherever content uses {phone}.
+     */
     phoneNumber?: string | null;
+    /**
+     * Optional. Inserted wherever content uses {email}.
+     */
+    email?: string | null;
     theme: {
       primaryColor: string;
       secondaryColor: string;
@@ -632,6 +639,9 @@ export interface ResourceDirectory {
     };
   };
   footer?: {
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     disclaimer?: string | null;
     customMenu?:
       | {
@@ -641,6 +651,9 @@ export interface ResourceDirectory {
           id?: string | null;
         }[]
       | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     copyright?: string | null;
   };
   suggestions: {
@@ -1029,16 +1042,25 @@ export interface ResourceDirectory {
   accessibilityPage?: {
     enabled?: boolean | null;
     title?: string | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     content?: string | null;
   };
   privacyPolicyPage?: {
     enabled?: boolean | null;
     title?: string | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     content?: string | null;
   };
   termsOfUsePage?: {
     enabled?: boolean | null;
     title?: string | null;
+    /**
+     * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
+     */
     content?: string | null;
   };
   featureFlags?: {
@@ -1666,6 +1688,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         hero?: T;
         openGraph?: T;
         phoneNumber?: T;
+        email?: T;
         theme?:
           | T
           | {

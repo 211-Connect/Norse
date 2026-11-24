@@ -118,7 +118,7 @@ export function MapSitePopup({
                     {pin.name}
                     {isInList && (
                       <span className="sr-only">
-                        {`, ${t('map_legend_list', { defaultValue: 'In the list' })}`}
+                        {`, ${t('map_legend_list', { defaultValue: 'On this page' })}`}
                       </span>
                     )}
                   </span>

@@ -130,7 +130,10 @@ export function DirectoriesList({
         ) : (
           <div className="grid grid-cols-1 gap-2">
             {filtered.map((directory) => (
-              <Card key={directory.id}>
+              <Card
+                key={directory.id}
+                className="hover:border-primary/30 transition-[box-shadow,border-color] duration-200 ease-out hover:shadow-md"
+              >
                 <CardContent className="flex items-center justify-between gap-4">
                   <div className="flex min-w-0 items-center gap-2">
                     <CardTitle className="mb-0 truncate text-base">

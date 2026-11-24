@@ -10,7 +10,10 @@ import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
-import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
+import {
+  favoriteListWithFavoritesAtom,
+  getFavoriteResourceId,
+} from '@/app/(app)/shared/store/favorites';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 
 import { Favorite } from './favorite';
@@ -34,7 +37,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
       ...prev,
       favorites:
         prev.favorites?.filter(
-          (favorite) => (favorite._id ?? '') !== favoriteId,
+          (favorite) => getFavoriteResourceId(favorite) !== favoriteId,
         ) || [],
     }));
   };
