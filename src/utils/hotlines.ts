@@ -19,11 +19,11 @@ export function toCacheHotlines(
 
 /**
  * The tenant's hotlines for the app config. Only a v2 tenant (`enableV2Api` on) gets the list;
- * for any other tenant it is `undefined`, so the v1 config carries no `hotlines` key at all.
+ * for any other tenant the part is empty, so the v1 config carries no `hotlines` key at all.
  */
 export function searchHotlinesFor(
   enableV2Api: boolean | null | undefined,
   hotlines: SearchSettingsHotlines | null | undefined,
-): HybridSearchConfigCache['hotlines'] | undefined {
-  return enableV2Api ? toCacheHotlines(hotlines) : undefined;
+): { hotlines?: HybridSearchConfigCache['hotlines'] } {
+  return enableV2Api ? { hotlines: toCacheHotlines(hotlines) } : {};
 }

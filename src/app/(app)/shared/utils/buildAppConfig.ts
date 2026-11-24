@@ -558,7 +558,7 @@ export async function buildAppConfig(
         resourceDirectory.search.searchSettings.defaultRadius ?? undefined,
       searchEngine:
         resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
-      hotlines: searchHotlinesFor(
+      ...searchHotlinesFor(
         resourceDirectory.featureFlags?.enableV2Api,
         resourceDirectory.search.searchSettings.hotlines,
       ),

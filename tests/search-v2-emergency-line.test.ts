@@ -157,14 +157,14 @@ test('searchHotlinesFor: only a v2 tenant gets the list; v1 config stays unchang
     { label: ' Crisis ', number: ' 555-0100 ' },
     { label: '', number: '1' },
   ] as never;
-  assert.deepEqual(searchHotlinesFor(true, rows), [
-    { label: 'Crisis', number: '555-0100' },
-  ]);
-  assert.deepEqual(searchHotlinesFor(true, undefined), []);
-  assert.equal(searchHotlinesFor(false, rows), undefined);
-  assert.equal(searchHotlinesFor(undefined, rows), undefined);
+  assert.deepEqual(searchHotlinesFor(true, rows), {
+    hotlines: [{ label: 'Crisis', number: '555-0100' }],
+  });
+  assert.deepEqual(searchHotlinesFor(true, undefined), { hotlines: [] });
+  assert.deepEqual(searchHotlinesFor(false, rows), {});
+  assert.deepEqual(searchHotlinesFor(undefined, rows), {});
   // v1 config bytes: the key is not even present.
-  const v1 = JSON.stringify({ a: 1, hotlines: searchHotlinesFor(false, rows) });
+  const v1 = JSON.stringify({ a: 1, ...searchHotlinesFor(false, rows) });
   assert.equal(v1, '{"a":1}');
 });
 
@@ -175,6 +175,6 @@ test('buildAppConfig sets search.hotlines through searchHotlinesFor with the v2 
   );
   assert.match(
     src,
-    /hotlines: searchHotlinesFor\(\s*resourceDirectory\.featureFlags\?\.enableV2Api,\s*resourceDirectory\.search\.searchSettings\.hotlines,?\s*\)/,
+    /\.\.\.searchHotlinesFor\(\s*resourceDirectory\.featureFlags\?\.enableV2Api,\s*resourceDirectory\.search\.searchSettings\.hotlines,?\s*\)/,
   );
 });

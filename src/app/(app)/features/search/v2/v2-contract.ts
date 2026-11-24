@@ -219,11 +219,13 @@ export function emergencyPopupMode(
   q: (Pick<V2Question, 'id'> & PlacementInput) | undefined,
   urgency: string | null | undefined,
   asked: readonly string[],
+  /** The response is the last call's, kept while the new one loads: never ask about the old text. */
+  stale = false,
 ): 'ask' | 'danger' | null {
   if (!q || isSoftEmergency(q)) return null;
   if (urgency === 'U-0') return 'danger';
   if (urgency && urgency !== 'U-X') return null;
-  return asked.includes(q.id) ? null : 'ask';
+  return stale || asked.includes(q.id) ? null : 'ask';
 }
 
 /** A safe answer is in the URL (U-1 to U-4): the person answered the emergency question. */

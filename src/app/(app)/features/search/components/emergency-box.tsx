@@ -63,6 +63,7 @@ export function EmergencyBox({
   question,
   hotlines,
   soft = false,
+  busy = false,
   onAnswer,
   onSkip,
   headingId = 'emergency-question',
@@ -71,6 +72,8 @@ export function EmergencyBox({
   question?: Question;
   hotlines?: V2Hotline[];
   soft?: boolean;
+  /** A call is running: the answers wait, so none lands on a newer text. The numbers stay usable. */
+  busy?: boolean;
   onAnswer?: (answer: Answer) => void;
   onSkip?: () => void;
   headingId?: string;
@@ -120,6 +123,7 @@ export function EmergencyBox({
                   ? 'border-orange-400 text-orange-900'
                   : 'border-red-700 text-red-700',
               )}
+              disabled={busy}
               onClick={() => onAnswer?.(option)}
             >
               {option.label}
@@ -134,6 +138,7 @@ export function EmergencyBox({
                 soft ? 'text-orange-900' : 'text-red-700',
               )}
               data-testid="emergency-skip"
+              disabled={busy}
               onClick={onSkip}
             >
               {t('v2_skip_to_results', 'Skip to results')}

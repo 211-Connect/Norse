@@ -479,3 +479,24 @@ test('popup title is the question stem, the skip text a t() key, with no strings
   assert.match(guide, /t\('v2_skip_to_results', 'Skip to results'\)/);
   assert.doesNotMatch(box + guide, /skipLabel|stringsOf|strings\./);
 });
+
+// While a new text loads, the old danger question cannot be answered; its numbers can be called.
+test('EmergencyBox busy: the answers and Skip are disabled, the numbers are not', () => {
+  const html = renderToStaticMarkup(
+    asV2Tenant(
+      createElement(EmergencyBox, {
+        busy: true,
+        soft: true,
+        hotlines: HOTLINES,
+        question: {
+          id: 'emergency',
+          text: 'In danger?',
+          answers: [{ label: 'Safe', add: [], value: 'U-1' }],
+        } as never,
+        onSkip: () => undefined,
+      }),
+    ),
+  );
+  assert.equal(html.match(/<button[^>]*disabled=""/g)?.length, 2);
+  assert.match(html, /href="tel:911"/);
+});

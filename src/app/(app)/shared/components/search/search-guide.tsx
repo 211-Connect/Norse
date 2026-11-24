@@ -358,7 +358,7 @@ export function SearchGuideFromUrl({
   // The count key lives in `common`; the search page's default namespace is `page-search`.
   const { t } = useTranslation('common');
   const skipToResults = t('v2_skip_to_results', 'Skip to results');
-  const { data, isFetching, error, query } = useV2Search();
+  const { data, isFetching, isPlaceholderData, error, query } = useV2Search();
   const { params, asked, needs, passedNeeds } = useV2Url();
   const {
     answer: writeAnswer,
@@ -390,7 +390,12 @@ export function SearchGuideFromUrl({
   const dismissed = Boolean(query) && dismissedFor === query;
   const popupMode = dismissed
     ? null
-    : emergencyPopupMode(emergencyQ, params.get('urgency'), asked);
+    : emergencyPopupMode(
+        emergencyQ,
+        params.get('urgency'),
+        asked,
+        isPlaceholderData,
+      );
   const askedForNext = !emergencyQ
     ? asked
     : dismissed
@@ -689,6 +694,7 @@ export function SearchGuideFromUrl({
               question={soft ? card : undefined}
               hotlines={hotlines}
               soft={soft}
+              busy={isPending}
               onAnswer={(option) => answerQuestion([option.label])}
               onSkip={soft ? skipEmergency : undefined}
             />

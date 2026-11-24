@@ -779,3 +779,14 @@ test('nextQuestionOf does not skip asked ids for the refine card (legacy narrow:
     'narrow:1',
   );
 });
+
+test('emergencyPopupMode: the old answer, kept while a new text loads, never asks; U-0 stays', () => {
+  const popup = {
+    id: 'emergency',
+    type: 'emergency' as const,
+    placement: 'popup' as const,
+  };
+  assert.equal(emergencyPopupMode(popup, null, [], true), null);
+  assert.equal(emergencyPopupMode(popup, null, [], false), 'ask');
+  assert.equal(emergencyPopupMode(popup, 'U-0', [], true), 'danger');
+});

@@ -1444,7 +1444,7 @@ export const valueOfLabel = (q: V2Question, label: string) =>
  */
 export function SearchRefineQuestion() {
   // The count key lives in `common`; the search page's default namespace is `page-search`.
-  const { data, isFetching, query: label } = useV2Search();
+  const { data, isFetching, isPlaceholderData, query: label } = useV2Search();
   const { refine, params, asked, needs, passedNeeds } = useV2Url();
   const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
   const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
@@ -1456,7 +1456,12 @@ export function SearchRefineQuestion() {
   const setDismissed = useSetAtom(emergencyPopupDismissedAtom);
   const popupMode = dismissed
     ? null
-    : emergencyPopupMode(emergencyQ, params.get('urgency'), asked);
+    : emergencyPopupMode(
+        emergencyQ,
+        params.get('urgency'),
+        asked,
+        isPlaceholderData,
+      );
   // The danger popup (urgency=U-0) keeps the question although it is in `asked`; after Continue it goes.
   const askedForNext = !emergencyQ
     ? asked
@@ -1571,6 +1576,7 @@ export function SearchRefineQuestion() {
             question={soft ? question : undefined}
             hotlines={hotlines}
             soft={soft}
+            busy={isPending}
             onAnswer={(option) => answer([option.label])}
             onSkip={soft ? skipEmergency : undefined}
           />
