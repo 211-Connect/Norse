@@ -93,11 +93,7 @@ import * as migration_20261109_103137 from './20261109_103137';
 import * as migration_20261117_105248_area_search_settings from './20261117_105248_area_search_settings';
 import * as migration_20261118_092914_area_search_unlocated from './20261118_092914_area_search_unlocated';
 import * as migration_20261119_111137_brand_email from './20261119_111137_brand_email';
-import * as migration_20261123_135715_landing_pages from './20261123_135715_landing_pages';
-import * as migration_20261123_140113_tenant_seo_settings from './20261123_140113_tenant_seo_settings';
-import * as migration_20261123_140939_landing_pages_selection from './20261123_140939_landing_pages_selection';
-import * as migration_20261123_143643_landing_topic_translation from './20261123_143643_landing_topic_translation';
-import * as migration_20261123_162051_landing_copy_templates from './20261123_162051_landing_copy_templates';
+import * as migration_20261124_123900_landing_pages from './20261124_123900_landing_pages';
 
 export const migrations = [
   {
@@ -576,28 +572,8 @@ export const migrations = [
     name: '20261119_111137_brand_email',
   },
   {
-    up: migration_20261123_135715_landing_pages.up,
-    down: migration_20261123_135715_landing_pages.down,
-    name: '20261123_135715_landing_pages',
-  },
-  {
-    up: migration_20261123_140113_tenant_seo_settings.up,
-    down: migration_20261123_140113_tenant_seo_settings.down,
-    name: '20261123_140113_tenant_seo_settings',
-  },
-  {
-    up: migration_20261123_140939_landing_pages_selection.up,
-    down: migration_20261123_140939_landing_pages_selection.down,
-    name: '20261123_140939_landing_pages_selection',
-  },
-  {
-    up: migration_20261123_143643_landing_topic_translation.up,
-    down: migration_20261123_143643_landing_topic_translation.down,
-    name: '20261123_143643_landing_topic_translation',
-  },
-  {
-    up: migration_20261123_162051_landing_copy_templates.up,
-    down: migration_20261123_162051_landing_copy_templates.down,
-    name: '20261123_162051_landing_copy_templates',
+    up: migration_20261124_123900_landing_pages.up,
+    down: migration_20261124_123900_landing_pages.down,
+    name: '20261124_123900_landing_pages',
   },
 ];

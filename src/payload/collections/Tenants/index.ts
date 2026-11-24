@@ -1,8 +1,5 @@
 import type { CollectionConfig } from 'payload';
 
-import type { Tenant } from '@/payload/payload-types';
-import { canonicalHostProblem } from '@/utils/canonicalHost';
-
 import { defaultLocale, locales } from '@/payload/i18n/locales';
 
 import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
@@ -157,12 +154,8 @@ export const Tenants: CollectionConfig = {
     },
     {
       name: 'seo',
-      label: 'SEO',
+      label: 'SEO Settings',
       type: 'group',
-      admin: {
-        description:
-          'Search-engine settings for this site’s host. What landing pages exist is set on the Resource Directory (Landing Pages).',
-      },
       access: {
         create: superAdminOrSupportAccess,
         read: () => true,
@@ -180,45 +173,6 @@ export const Tenants: CollectionConfig = {
               admin: {
                 description:
                   "Keeps this site out of Google and other search results — useful while it's still being built, not yet ready to launch, or kept behind a login, so it isn't found before you intend it to be. Applies to your live site; staging and preview are always kept private. This asks reputable search engines not to list your pages; separately, and always on, our built-in protections keep your directory from being harvested by automated scrapers — so your information reaches real people using it fairly, not outside businesses repackaging it in their own products.",
-              },
-            },
-            {
-              name: 'sitemap',
-              label: 'Serve sitemaps',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description:
-                  'Serves /sitemap.xml and the /sitemap page listing every landing page. Only applies while landing pages are on and the site is not hidden.',
-              },
-            },
-          ],
-        },
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'canonicalHost',
-              label: 'Canonical host',
-              type: 'text',
-              validate: (
-                value: string | null | undefined,
-                { data }: { data: Partial<Tenant> },
-              ) => canonicalHostProblem(value, data?.trustedDomains) ?? true,
-              admin: {
-                placeholder: 'First trusted domain',
-                description:
-                  'The host search engines should list, used in canonical tags, language links and sitemaps. Empty: the first trusted domain.',
-              },
-            },
-            {
-              name: 'searchConsoleProperty',
-              label: 'Search Console property',
-              type: 'text',
-              admin: {
-                placeholder: 'sc-domain:example.org',
-                description:
-                  'The Google Search Console property for this host, as Search Console names it (sc-domain:… or https://…/). Read by the search analytics import.',
               },
             },
           ],

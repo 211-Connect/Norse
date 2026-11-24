@@ -71,6 +71,7 @@ export const translateLandingTopic: TaskConfig<'translateLandingTopic'> = {
       id: input.topicId,
       locale: 'all',
       depth: 0,
+      trash: true,
     })) as unknown as Record<string, unknown> & { tenant: unknown };
     const tenantId =
       typeof topic.tenant === 'object' && topic.tenant
@@ -138,6 +139,7 @@ export const translateLandingTopic: TaskConfig<'translateLandingTopic'> = {
         data,
         context: { skipLandingTopicTranslation: true },
         req,
+        trash: true,
       });
     }
 

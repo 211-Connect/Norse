@@ -15,7 +15,6 @@ export type CopyContext = {
   values: CopyTagValues;
   host: string | null;
   path: string | null;
-  sample: boolean;
 };
 
 // One request per document and locale, shared by the fields and preview.
@@ -52,7 +51,6 @@ export function useLandingCopyContext(scope: CopyScope) {
   useEffect(() => {
     if (!tenantId) return;
     const params = new URLSearchParams({ tenantId, locale });
-    if (scope === 'page' && id) params.set('pageId', String(id));
     if (scope === 'topic' && id) params.set('topicId', String(id));
     let cancelled = false;
     void load(`/api/landing-pages/admin/copy-context?${params}`).then(

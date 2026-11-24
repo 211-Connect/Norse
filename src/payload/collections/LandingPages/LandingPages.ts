@@ -5,13 +5,8 @@ import {
   superAdminOrSupportAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../Users/access/roles';
-import {
-  MAX_SLUG_LENGTH,
-  SLUG_PATTERN,
-} from '@/app/(app)/features/landing-pages/lib/slugs';
 
 import { landingPagesEndpoints } from '../../endpoints/landingPages';
-import { landingCopyFields } from './copyFields';
 
 const REGION_ID = /^(state:[A-Z]{2}|county:\d{5}|place:\d{7})$/;
 
@@ -38,8 +33,8 @@ const validateStatus = (
 /**
  * One landing page: a topic in a region (state, county or city), in every
  * locale. Rows are created and retired by the generation job, never by hand
- * (docs/landing-pages.md); admins edit copy overrides and turn pages off.
- * Never deleted, so old addresses keep redirecting.
+ * (docs/landing-pages.md); super-admins and support turn pages off and set
+ * redirect targets. Never deleted, so old URLs keep redirecting.
  */
 export const LandingPages: CollectionConfig = {
   slug: 'landing-pages',
@@ -49,7 +44,7 @@ export const LandingPages: CollectionConfig = {
     read: superAdminOrSupportOrTenantAccess,
     // Pages come from the generation job only (SQL, no access check).
     create: () => false,
-    update: superAdminOrSupportOrTenantAccess,
+    update: superAdminOrSupportAccess,
     delete: superAdminAccess,
   },
   versions: { drafts: false, maxPerDoc: 50 },
@@ -78,7 +73,7 @@ export const LandingPages: CollectionConfig = {
       type: 'text',
       admin: {
         readOnly: true,
-        description: 'Topic and place, for lists.',
+        description: 'Topic and region, for lists.',
       },
     },
     {
@@ -104,12 +99,9 @@ export const LandingPages: CollectionConfig = {
             { label: 'Off', value: 'off' },
             { label: 'Retired', value: 'retired' },
           ],
-          access: {
-            update: superAdminOrSupportAccess,
-          },
           admin: {
             description:
-              'Live: in Google and the sitemaps. Off: switched off by an admin. Retired: removed from the selection; its address redirects.',
+              'Live: in Google and the sitemaps. Off: switched off by an admin. Retired: removed from the selection; its URL redirects.',
           },
         },
       ],
@@ -124,7 +116,7 @@ export const LandingPages: CollectionConfig = {
           index: true,
           validate: (value: string | null | undefined) =>
             (value && REGION_ID.test(value)) ||
-            'A state, county or place Region id, e.g. county:53053.',
+            'A state, county or city region id, e.g. county:53053.',
           admin: { readOnly: true },
         },
         {
@@ -142,6 +134,7 @@ export const LandingPages: CollectionConfig = {
         },
         {
           name: 'regionName',
+          label: 'Region name',
           type: 'text',
           required: true,
           admin: { readOnly: true },
@@ -166,22 +159,13 @@ export const LandingPages: CollectionConfig = {
     },
     {
       name: 'placeSlug',
+      label: 'Region slug',
       type: 'text',
       required: true,
-      access: {
-        update: superAdminOrSupportAccess,
-      },
-      validate: (value: string | null | undefined) =>
-        (value &&
-          SLUG_PATTERN.test(value) &&
-          value.length <= MAX_SLUG_LENGTH) ||
-        'Lowercase letters, digits and single hyphens, e.g. tacoma-wa.',
       admin: {
+        readOnly: true,
         description:
-          'The second part of the address, e.g. tacoma-wa. The same in every locale. A change takes effect on Apply changes.',
-        components: {
-          afterInput: [`${COMPONENTS}/LandingPlaceSlugWarning`],
-        },
+          'The second part of the URL, e.g. tacoma-wa. The same in every locale.',
       },
     },
     {
@@ -198,9 +182,6 @@ export const LandingPages: CollectionConfig = {
     {
       name: 'redirect',
       type: 'group',
-      access: {
-        update: superAdminOrSupportAccess,
-      },
       admin: {
         condition: (data) => data?.status !== 'live',
         description:
@@ -248,15 +229,6 @@ export const LandingPages: CollectionConfig = {
           admin: { readOnly: true },
         },
       ],
-    },
-    {
-      name: 'copy',
-      type: 'group',
-      admin: {
-        description:
-          'Overrides the topic and the Resource Directory templates for this page only.',
-      },
-      fields: landingCopyFields('page'),
     },
   ],
 };

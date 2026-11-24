@@ -49,10 +49,13 @@ const validateTopicSlug: TextFieldSingleValidation = async (
     limit: 1,
     depth: 0,
     req,
+    // A trashed topic keeps its URLs, which still redirect.
+    trash: true,
   });
-  return docs.length
-    ? `Another topic (${docs[0].name}) already uses "${value}" in this language.`
-    : true;
+  if (!docs.length) return true;
+  return docs[0].deletedAt
+    ? `A topic in the trash (${docs[0].name}) still uses "${value}" in this language.`
+    : `Another topic (${docs[0].name}) already uses "${value}" in this language.`;
 };
 
 /** The default-locale slug, from the name, when none was typed. */
@@ -107,7 +110,8 @@ const queueTranslation: CollectionAfterChangeHook = async ({
 
 /**
  * Pages keep their topic for good (a retired page redirects to the topic's
- * search), so a topic with pages is turned off, not deleted.
+ * search), so a topic with pages stays in the trash rather than being
+ * deleted for good. Moving it to the trash is an update, not a delete.
  */
 const refuseDeleteWithPages: CollectionBeforeDeleteHook = async ({
   id,
@@ -120,7 +124,7 @@ const refuseDeleteWithPages: CollectionBeforeDeleteHook = async ({
   });
   if (totalDocs > 0) {
     throw new APIError(
-      `This topic has ${totalDocs} landing pages. Turn off "Generate pages" instead, then apply changes; its pages will redirect.`,
+      `This topic has ${totalDocs} landing pages, which redirect using its search, so it stays in the trash.`,
       400,
       undefined,
       true,
@@ -145,6 +149,9 @@ export const LandingPageTopics: CollectionConfig = {
     delete: superAdminOrSupportOrTenantAccess,
   },
   versions: { drafts: false, maxPerDoc: 50 },
+  // Deleting moves a topic to the trash: Apply changes then retires its
+  // pages, and restoring it brings them back.
+  trash: true,
   hooks: {
     beforeChange: [fillSlug],
     afterChange: [queueTranslation],
@@ -154,27 +161,9 @@ export const LandingPageTopics: CollectionConfig = {
     pagination: { defaultLimit: 100, limits: [25, 50, 100, 200] },
     useAsTitle: 'name',
     group: 'Landing pages',
-    defaultColumns: [
-      'name',
-      'slug',
-      'enabled',
-      'search.queryType',
-      'updatedAt',
-    ],
+    defaultColumns: ['name', 'slug', 'search.queryType', 'updatedAt'],
   },
   fields: [
-    {
-      name: 'enabled',
-      label: 'Generate pages',
-      type: 'checkbox',
-      defaultValue: true,
-      index: true,
-      admin: {
-        position: 'sidebar',
-        description:
-          "Off: Apply changes retires this topic's pages, which then redirect to the equivalent search.",
-      },
-    },
     {
       type: 'row',
       fields: [
@@ -196,7 +185,7 @@ export const LandingPageTopics: CollectionConfig = {
           validate: validateTopicSlug,
           admin: {
             description:
-              'The first part of the page address, e.g. food-pantries in /food-pantries/tacoma-wa.',
+              'The first part of the page URL, e.g. food-pantries in /food-pantries/tacoma-wa.',
           },
         },
       ],

@@ -15,15 +15,15 @@ directory pointing to the record steward's own site is deferred to ISS-2676). It
 - **the record's id** (`resource.id`, its service-at-location id), not the URL's. Norse-API's lookup falls back
   to the Mongo `_id` and then across tenants, so a page reached through a fallback still names the record's
   real URL;
-- **the tenant's canonical host**: Tenant → SEO → Canonical host (`seo.canonicalHost`, which must be one of the
-  trusted domains), else the first trusted domain, read through `@/lib/cms` (`tenantCanonicalHost` in
-  `src/utils/canonicalHost.ts`), so a tenant with several domains has one canonical. When the tenant cannot be
-  read, it falls back to the request's host;
+- **the tenant's first trusted domain** (`trustedDomains[0]`, read through `@/lib/cms` and
+  `tenantCanonicalHost` in `src/utils/canonicalHost.ts`), the primary domain Norse already uses elsewhere, so a
+  tenant with several domains has one canonical. When the tenant cannot be read, it falls back to the request's
+  host;
 - the first value of `x-forwarded-proto` (a proxy chain can append more), the custom base path if set, and no
   locale prefix for the tenant's default locale (as `next-i18n-router` serves it). The id is lower-cased.
 
 A 404 or a redirect has no canonical, because `generateMetadata` returns nothing without a resource. Locally and
-on staging the canonical names the tenant's canonical host, which may be the production one; those hosts
+on staging the canonical names the tenant's first trusted domain, which may be the production one; those hosts
 are not indexed.
 
 **Ids will change.** Resource URLs are built from ids that a planned re-key will change. Old URLs redirect through

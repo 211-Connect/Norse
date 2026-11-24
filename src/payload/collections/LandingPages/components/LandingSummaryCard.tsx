@@ -203,12 +203,8 @@ const LandingSummaryCard = () => {
               )}
               {preview.summary.addressChanges > 0 && (
                 <li>
-                  {plural(
-                    preview.summary.addressChanges,
-                    'address',
-                    'addresses',
-                  )}{' '}
-                  changed; old ones redirect
+                  {plural(preview.summary.addressChanges, 'URL')} changed; old
+                  ones redirect
                 </li>
               )}
               {preview.summary.redirectsUpdated > 0 && (
@@ -221,8 +217,8 @@ const LandingSummaryCard = () => {
           {preview.summary.conflicts > 0 && (
             <details className="landing-summary__conflicts">
               <summary>
-                {plural(preview.summary.conflicts, 'address', 'addresses')}{' '}
-                skipped: already used by another page
+                {plural(preview.summary.conflicts, 'URL')} skipped: already used
+                by another page
               </summary>
               <ul>
                 {preview.conflicts.map((c) => (

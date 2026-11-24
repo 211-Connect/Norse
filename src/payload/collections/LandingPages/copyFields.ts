@@ -1,7 +1,7 @@
 import type { Field } from 'payload';
 
 /** Which layer of the copy a set of fields edits (docs/landing-pages.md). */
-export type CopyScope = 'template' | 'topic' | 'page';
+export type CopyScope = 'template' | 'topic';
 
 const COMPONENTS = '@/payload/collections/LandingPages/components';
 
@@ -11,8 +11,7 @@ const field = (scope: CopyScope) => ({
 
 /**
  * The four texts of a landing page, all localized and all optional: an empty
- * one inherits (page → topic → Resource Directory template → built-in
- * default). Variables such as `{topic}` and `{location}` are filled when the
+ * one inherits (topic → Resource Directory template → built-in default). Variables such as `{topic}` and `{location}` are filled when the
  * page renders. Each field shows what it inherits and a character count; a
  * Google-result preview follows.
  */

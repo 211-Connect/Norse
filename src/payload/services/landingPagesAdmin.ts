@@ -107,6 +107,7 @@ export async function exportLandingPagesCsv(tenantId: string): Promise<string> {
       where: { tenant: { equals: tenantId } },
       depth: 0,
       pagination: false,
+      trash: true,
     }),
   ]);
   const topicName = new Map(

@@ -47,8 +47,6 @@ export type LandingPageView = {
     copy: LandingCopy;
   };
   region: LandingRegion;
-  /** The page's own copy overrides in the requested locale. */
-  copy: LandingCopy;
   /** The page's current path in this locale. */
   path: string;
   /** Current path per locale, for hreflang. */

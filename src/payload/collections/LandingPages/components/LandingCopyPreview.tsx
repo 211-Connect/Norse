@@ -46,16 +46,14 @@ const LandingCopyPreview = ({
     below.map((source) => [source, context.layers[source]]),
   );
   const copy = fillCopy({ ...layers, [scope]: own }, context.values);
-  // A sample without a page has no address yet.
+  // A sample without a page has no URL yet.
   const parts = (context.path ?? '/…').split('/').filter(Boolean);
 
   return (
     <div className="landing-copy-preview">
       <p className="landing-copy-preview__label">
-        Google preview
-        {context.sample
-          ? `, with a sample page: ${context.values.topic} in ${context.values.location}`
-          : ''}
+        Google preview, with a sample page: {context.values.topic} in{' '}
+        {context.values.location}
       </p>
       <div className="landing-copy-preview__result">
         <div className="landing-copy-preview__url">

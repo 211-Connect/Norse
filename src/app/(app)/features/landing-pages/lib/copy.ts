@@ -1,7 +1,7 @@
 /**
  * Landing-page copy (docs/landing-pages.md, "Page copy"): four texts, each
- * taken from the first layer that has it (page override → topic override →
- * Resource Directory template → built-in default for the locale), then its
+ * taken from the first layer that has it (topic override → Resource
+ * Directory template → built-in default for the locale), then its
  * `{tags}` filled. Pure, so the page, the sitemap and the admin previews
  * share it.
  */
@@ -11,7 +11,7 @@ export type CopyField = (typeof COPY_FIELDS)[number];
 export type CopyTexts = Partial<Record<CopyField, string | null | undefined>>;
 
 /** Layers from the most specific to the least. */
-export const COPY_SOURCES = ['page', 'topic', 'template', 'default'] as const;
+export const COPY_SOURCES = ['topic', 'template', 'default'] as const;
 export type CopySource = (typeof COPY_SOURCES)[number];
 export type CopyLayers = Partial<Record<CopySource, CopyTexts | null>>;
 

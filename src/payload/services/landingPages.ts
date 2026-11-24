@@ -182,6 +182,8 @@ class PayloadLandingStore implements LandingStore {
       id: topicId,
       depth: 0,
       locale: 'all',
+      // A trashed topic's pages stay live until Apply changes retires them.
+      trash: true,
     });
 
     const { docs: slugRows } = await this.payload.find({
@@ -259,7 +261,6 @@ class PayloadLandingStore implements LandingStore {
         copy: pickCopy(topic.copy as Record<string, Localized<string>>, locale),
       },
       region,
-      copy: pickCopy(page.copy as Record<string, Localized<string>>, locale),
       path,
       alternates,
       parents,
@@ -310,6 +311,7 @@ export async function listLandingSitemap(
         depth: 0,
         locale: 'all',
         pagination: false,
+        trash: true,
       }),
     ]);
 
@@ -374,6 +376,8 @@ export async function getLandingPagesVersion(
         depth: 0,
         pagination: false,
         select: { updatedAt: true },
+        // Moving a topic to the trash is a change too.
+        trash: true,
       });
       return docs[0]?.updatedAt ?? '';
     }),

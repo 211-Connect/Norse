@@ -26,7 +26,7 @@ const TACOMA: SelectedRegion = {
 };
 const FOOD: PlanTopic = {
   id: 1,
-  enabled: true,
+  trashed: false,
   slugs: { en: 'food', es: 'alimentos' },
   names: { en: 'Food', es: 'Alimentos', zh: '食物' },
   search: { queryType: 'taxonomy', query: 'BD' },
@@ -187,7 +187,7 @@ describe('planGeneration', () => {
     const first = generate(base()).next;
     const { plan, next } = generate({
       ...first,
-      topics: [{ ...FOOD, enabled: false }],
+      topics: [{ ...FOOD, trashed: true }],
     });
     assert.equal(plan.summary.retires, 3);
     assert.equal(

@@ -27,11 +27,10 @@ export function resourceCanonicalUrl({
   return `${protocol}://${host}${path}`;
 }
 
-/** A trusted-domain entry as an admin may type it (`https://Search.WA211.org/`), as a bare lower-case host. */
 /**
- * The origin a canonical URL names: the tenant's canonical host (`seo.canonicalHost`, else its first trusted
- * domain), not whichever host the request came in on, so a tenant with several domains has one canonical. Only
- * the first `x-forwarded-proto` value counts, since a chain of proxies can append more.
+ * The origin a canonical URL names: the tenant's first trusted domain (`tenantCanonicalHost`), not whichever host
+ * the request came in on, so a tenant with several domains has one canonical. Only the first `x-forwarded-proto`
+ * value counts, since a chain of proxies can append more.
  */
 export function canonicalOrigin({
   tenant,

@@ -602,7 +602,6 @@ export async function buildAppConfig(
     },
     noindex: getTenant(resourceDirectory)?.seo?.noindex ?? false,
     canonicalHost: tenantCanonicalHost(getTenant(resourceDirectory)),
-    sitemap: getTenant(resourceDirectory)?.seo?.sitemap ?? true,
     badges:
       resourceDirectory.badges?.list
         ?.filter((badge) => badge.filter)

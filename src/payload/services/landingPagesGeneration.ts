@@ -77,10 +77,12 @@ async function loadInput(payload: Payload, tenantId: string) {
     locale: 'all',
     depth: 0,
     pagination: false,
+    // Trashed topics retire their pages and still give the redirect search.
+    trash: true,
   });
   const topics: PlanTopic[] = topicDocs.map((topic) => ({
     id: topic.id,
-    enabled: topic.enabled !== false,
+    trashed: Boolean(topic.deletedAt),
     slugs: asLocalized(topic.slug),
     names: asLocalized(topic.name),
     search: { queryType: topic.search.queryType, query: topic.search.query },

@@ -35,16 +35,20 @@ matching `/search` URLs (ISS-2671), and resource pages in the sitemap
 
 Settings are split by who edits them and what they apply to.
 
-**Tenant → SEO** (the `seo` group; super-admin and support): settings for a
-host.
+**Tenant → SEO** (the `seo` group; super-admin and support): only
+`seo.noindex`, which keeps the host out of search engines. When it is on, the
+host serves no landing pages and no sitemaps. Nothing else is configured per
+host:
 
-| Field | Meaning |
-| --- | --- |
-| `seo.noindex` | Keeps the host out of search engines. When it is on, the host serves no landing pages and no sitemaps. |
-| `seo.sitemap` | Whether the host serves `/sitemap.xml` and `/sitemap`. On by default. |
-| `seo.canonicalHost` | The host used in canonical tags, hreflang links and sitemap URLs. Must be one of the trusted domains; empty means the first trusted domain. Read through `tenantCanonicalHost` (`src/utils/canonicalHost.ts`) and `appConfig.canonicalHost`. |
-| `seo.searchConsoleProperty` | The Search Console property (`sc-domain:…` or `https://…/`) the analytics import reads. Ownership is verified by the deployment-wide `GOOGLE_SITE_VERIFICATION` token, so there is no per-tenant token. |
-| Crawler policy | Bot catalog overrides (ISS-2674), to be added to this group. |
+- **Canonical host:** the tenant's first trusted domain, which is the
+  production domain by convention (`tenantCanonicalHost` in
+  `src/utils/canonicalHost.ts`, exposed as `appConfig.canonicalHost`). It is
+  used in canonical tags, hreflang links and sitemap URLs. To change it,
+  reorder the trusted domains.
+- **Sitemaps:** served whenever landing pages are served; there is no
+  separate switch.
+- **Search Console:** the analytics import picks the property our service
+  account can read that covers the canonical host (see Analytics).
 
 **Resource Directory → Landing Pages tab**: content, edited by tenant admins.
 Every field is hidden until a super-admin turns on
@@ -60,14 +64,17 @@ Each tenant has its own Resource Directory.
 - Topics: the `landing-page-topics` records.
 - Page copy (`landingPages.templates`): the copy templates, per locale.
 
-A host serves landing pages and sitemaps only when its Resource Directory has
-the flag on and the Tenant is not `noindex`.
+A host serves landing pages and sitemaps only when the deployment allows
+search engines (`NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=true`), its Resource
+Directory has the flag on and the Tenant is not `noindex`.
 
-The "Landing pages" group in the admin menu (pages, topics, addresses) is
+The "Landing pages" group in the admin menu (pages and topics) is
 shown only while the selected tenant has the flag on
 (`src/payload/components/LandingPagesNavGate`). Payload's `admin.hidden` sees
 the user but not the selected tenant, and would also close the collections'
 routes, so the group is hidden with CSS. The admin lists open at 100 rows.
+The URLs collection (`landing-page-slugs`) is internal and not in the menu;
+the page editor shows a page's URLs.
 
 ## Regions
 
@@ -126,7 +133,8 @@ changes or is deleted, the editor shows a warning and nothing changes
 automatically. "Re-copy from source" updates the search on request.
 
 **In the admin.** The Landing Pages tab's Topics section
-(`LandingTopicsField`) lists the tenant's topics and has an **Add topics**
+(`LandingTopicsField`) lists the tenant's topics (name, URL slug, search;
+trashed ones greyed out as "In the trash") and has an **Add topics**
 panel with three tabs: topic-card subtopics (multi-select, grouped by card;
 link subtopics can't be ticked), search suggestions (their taxonomy codes),
 and a custom query (text or comma-separated taxonomy codes). Each list has
@@ -173,7 +181,7 @@ from that list.
   county → city), which is what breadcrumbs and the HTML sitemap show, and
   `/food-pantries` works as a hub URL. It sends a 308 to the state page when
   the tenant covers one state, and lists its state pages otherwise.
-- **Topic slugs are translated; place slugs are not.** Place names are proper
+- **Topic slugs are translated; region slugs are not.** Place names are proper
   nouns. Counties are `{name}-county-{st}`, cities `{name}-{st}`, and states
   use their full name. These rules keep Spokane city and Spokane County apart,
   and same-named cities in different states. If two places in one state still
@@ -192,24 +200,26 @@ from that list.
 
 Every collection is scoped to one Resource Directory.
 
-- **`landing-page-topics`** (table `lp_topics`): `enabled` (Generate pages); localized `name` and `slug`; localized overrides
-  for SEO title, meta description, H1 and intro; the copied search; `source`.
+- **`landing-page-topics`** (table `lp_topics`, with Payload's trash,
+  `deletedAt`): localized `name` and `slug`; localized overrides for SEO
+  title, meta description, H1 and intro; the copied search; `source`.
 - **`landing-pages`** (table `lp_pages`): one row per region × topic. Topic
   relation; `regionId` (`state:WA`, `county:53053`, `place:5370000`) with the
   region's name, type, state and `countyId` copied in; the untranslated
-  `placeSlug`; `status` (`live`, `off`, `retired`); `redirect` (a target
-  page, or a site path such as a `/search` URL); `resultCount`, `countedAt`;
-  localized overrides for title, description, H1 and intro. Unique on
+  `placeSlug` (the region slug, read-only); `status` (`live`, `off`,
+  `retired`); `redirect` (a target page, or a site path such as a `/search`
+  URL); `resultCount`, `countedAt`. Unique on
   Resource Directory + topic + region. Pages are never created or deleted
   by hand (`create` is closed): the generation job writes them.
 - **`landing-page-slugs`** (table `lp_slugs`): Resource Directory, locale,
-  path (`topic-slug/place-slug`), page, `current`. Unique on Resource
+  path (`topic-slug/region-slug`), page, `current`. Unique on Resource
   Directory + locale + path. Exactly one row per page and locale is current;
   rows are never deleted.
 
 Topics and pages keep Payload versions (no drafts), which gives a dated change
 history to compare with Search Console data. Tenant admins edit topics and
-copy. Super-admins and support set status and manual redirect targets.
+the copy templates. Only super-admins and support edit pages: status and
+manual redirect targets.
 
 The public app (`NORSE_ROLE=app`) has no Postgres. It reads through
 `@/lib/cms` bridge functions backed by internal CMS routes
@@ -231,7 +241,7 @@ a fake store in `tests/landing-pages-resolve.test.ts`.
 
 Saving the tab does not change any pages. **Apply changes** first runs the
 generation diff without writing, shows what would change (new pages, pages
-back live, retired pages, moved addresses, updated redirects, skipped
+back live, retired pages, moved URLs, updated redirects, skipped
 conflicts), and on confirmation queues the generation job. The card polls
 until the run ends:
 
@@ -248,7 +258,7 @@ an admin can turn any page `off`.
 `features/landing-pages/lib/plan.ts`, a pure function tested in
 `tests/landing-pages-plan.test.ts`. Its input is the selection
 (`landingPages.regions` on the Resource Directory, a JSON list of
-`{ id, type, name, state, countyId }`), the tenant's topics with `enabled` on,
+`{ id, type, name, state, countyId }`), the tenant's topics (trashed ones marked),
 the tenant's enabled locales and the existing rows. `previewLandingPages`
 returns the plan for the confirmation; the `generateLandingPages` job (queue
 `landingPages`, input `{ tenantId }`, no retries) writes it in one transaction
@@ -257,21 +267,24 @@ rows get a Payload version only once someone edits them.
 `getLandingGenerationStatus` reads the tenant's latest run from the jobs
 collection (queued, running, done with its counts, failed). Finished jobs are
 deleted, so "last generated" falls back to the newest page update. The
-plan's `addressChanges` counts moved addresses only; a new page's or new
-language's first address is not a change. The job refuses to
+plan's `addressChanges` counts moved URLs only; a new page's or new
+language's first URL is not a change. The job refuses to
 run while `featureFlags.enableLandingPages` is off.
 
 Rules the plan follows:
 
-- A region keeps the place slug its pages already have; a new region whose
+- A region keeps the region slug its pages already have; a new region whose
   slug is taken gets its county's name added, then its number.
 - A page set to `off` stays off, whatever the selection says.
 - A page retired now gets the nearest live parent for the same topic (county,
   then state), else the equivalent `/search` URL. A target an admin already
   set is kept while it still leads somewhere.
-- A removed topic is turned off with **Generate pages** (`enabled`), not
-  deleted: a topic with pages can't be deleted, because its retired pages
-  still need its search for their redirect.
+- A topic is removed by deleting it, which moves it to Payload's trash: the
+  plan reads every topic with `trash: true`, retires the pages of trashed
+  ones, and still uses their search for the redirect. Restoring the topic
+  brings its pages back on the next Apply changes. A topic with pages can't
+  be deleted from the trash for good. Its slugs stay reserved while it is in
+  the trash, so a new topic can't take over its old URLs.
 - An address change (topic slug edited) makes the new path current and keeps
   the old row, which then redirects. Going back to an old slug makes that row
   current again. Two pages that would share an address are reported as
@@ -283,11 +296,11 @@ The slug table maps every path ever issued to its page, so:
 
 | Change | The old URL answers |
 | --- | --- |
-| Topic slug or page slug edited | 308 to the current slug |
+| Topic slug edited | 308 to the current slug |
 | City removed | 308 to its county's page for the topic, else the state page |
 | County removed | 308 to the state page |
 | State removed | 308 to the equivalent `/search` URL |
-| Topic removed | 308 to `/search` with the old query and region, unless an admin set a target |
+| Topic moved to the trash | 308 to `/search` with the old query and region, unless an admin set a target |
 | Page set to `off` | 404, or 308 when an admin set a target |
 | Nothing sensible to point to | 410 |
 
@@ -301,11 +314,10 @@ warning that its ranking moves to the new URL, with a short dip.
 Four fields: SEO title, meta description, H1, intro. Each is filled from the
 first layer that has it:
 
-1. the page override (`copy` on the page),
-2. the topic override (`copy` on the topic),
-3. the Resource Directory template (`landingPages.templates`, the "Page copy"
+1. the topic override (`copy` on the topic),
+2. the Resource Directory template (`landingPages.templates`, the "Page copy"
    group on the Landing Pages tab),
-4. the built-in default for the locale (`defaults` in
+3. the built-in default for the locale (`defaults` in
    `public/locales/<locale>/landing-pages.json`).
 
 | Variable | Value |
@@ -335,19 +347,20 @@ sending text to the engine and restores it afterwards (`lib/templateTags.ts`,
 lenient about sentinels the engine mangles); a tag the translation dropped is
 appended. Clearing an English template clears it in every locale, so all
 locales fall back to their built-in text together. Topic copy is translated
-by `translateLandingTopic` the same way. Page overrides are not translated.
+by `translateLandingTopic` the same way. Pages have no copy of their own:
+across hundreds of pages, per-page text would rarely be kept up.
 
-**Admin.** Every copy field (templates, topic, page) shows what it inherits
+**Admin.** Every copy field (templates and topic) shows what it inherits
 as a greyed placeholder and where it comes from; a filled field says what it
 overrides, with **Use inherited** to clear it. A row of variable chips under
 each field inserts a tag at the cursor (at the end when the field is not
 focused). Title and description show the
 length with sample values filled in, against about 60 and 155 characters. A
 Google-result preview follows each group, built from the form's unsaved
-values. On the templates and a topic it uses a sample page: a live county page
+values. It uses a sample page: a live county page
 of the topic if there is one, else any live page, else a selected region. The
 preview reads `GET /api/landing-pages/admin/copy-context` (inherited layers,
-tag values, the page's site path; `src/payload/services/landingCopy.ts`).
+tag values, the sample page's site path; `src/payload/services/landingCopy.ts`).
 
 The result count is never put into copy, because a title that keeps changing
 keeps moving the ranking.
@@ -356,23 +369,21 @@ keeps moving the ranking.
 
 **List** (`/admin/collections/landing-pages`, scoped by the tenant selector):
 columns label, topic, level (state, county, city), status, result count and
-URL (the current address in the default locale with a link, and how many
-languages have one). Search matches the label and the place name; the
+URL (the current URL in the default locale with a link, and how many
+languages have one). Search matches the label and the region name; the
 standard filters cover topic, level, status and result count (equals 0).
 **Export CSV** downloads every page of the selected tenant with its current
 URL in each locale (`GET /api/landing-pages/admin/export`).
 
 **Editor:**
 
-- Addresses: the current address in every locale with **Open page**, and the
-  old addresses that redirect to it.
+- URLs: the current URL in every locale with **Open page**, and the old URLs
+  that redirect to it.
 - Status: super-admins and support switch a page between Live and Off, one at
   a time or with bulk edit. Retired is set and cleared only by Apply changes;
   the API refuses it.
-- Place slug: super-admins and support can edit it (lowercase, digits,
-  hyphens). A warning explains the ranking move. The new address applies on
-  Apply changes, which keeps the old one as a redirect.
-- Copy overrides with inheritance and the preview, as above.
+- Region slug: read-only. It is set when the page is generated and never
+  changes, so a page's ranking never moves because of it.
 - History: Payload versions (up to 50 per page). Pages written by the
   generation job get a version only once someone edits them.
 
@@ -448,7 +459,10 @@ the counts as sortable columns, with a "0 results" filter and CSV export.
 - **Umami:** search and result events carry `surface` (`landing` or `search`),
   `landingPageId` and `locale`.
 - **Search Console:** a daily job imports impressions, clicks, CTR and average
-  position per landing-page URL and query for each Tenant's property, into
+  position per landing-page URL and query, into
   Norse-API/Mongo (the same pattern as
   [blocked-traffic-analytics.md](blocked-traffic-analytics.md)). A Payload
   widget shows trends per page and per topic. Nothing is stored in Postgres.
+  The property is the one our service account can read (Search Console
+  `sites.list`) that covers the tenant's canonical host, so it is not
+  configured per tenant.

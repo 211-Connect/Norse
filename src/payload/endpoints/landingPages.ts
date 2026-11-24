@@ -205,8 +205,8 @@ const apply: Endpoint = {
 };
 
 /**
- * GET ?tenantId=&locale=&pageId=&topicId= → what copy previews are filled
- * from: the inherited layers, tag values and the page's address.
+ * GET ?tenantId=&locale=&topicId= → what copy previews are filled from:
+ * the inherited layers, tag values and a sample page's URL.
  */
 const copyContext: Endpoint = {
   path: '/admin/copy-context',
@@ -218,20 +218,15 @@ const copyContext: Endpoint = {
     if (!isLocale(locale)) {
       return Response.json({ message: 'Unknown locale' }, { status: 400 });
     }
-    const pageId = query(req, 'pageId');
     const topicId = query(req, 'topicId');
-    if ([pageId, topicId].some((id) => id && !/^\d+$/.test(id))) {
-      return Response.json(
-        { message: 'pageId and topicId are numbers' },
-        { status: 400 },
-      );
+    if (topicId && !/^\d+$/.test(topicId)) {
+      return Response.json({ message: 'topicId is a number' }, { status: 400 });
     }
     try {
       return Response.json(
         await getLandingCopyContext({
           tenantId: checked.tenantId,
           locale,
-          pageId,
           topicId,
         }),
       );

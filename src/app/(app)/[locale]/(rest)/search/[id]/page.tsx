@@ -26,7 +26,7 @@ const log = createLogger('resource-page');
 const i18nNamespaces = ['page-resource', 'page-list', 'common'];
 
 /**
- * The page's canonical URL (ISS-2678): the record's own id on the tenant's canonical host (`seo.canonicalHost`, else the first trusted domain), so an
+ * The page's canonical URL (ISS-2678): the record's own id on the tenant's primary (first trusted) domain, so an
  * `_id` or cross-tenant fallback lookup, or a second domain, never declares itself the canonical page. Falls back
  * to the request's host when the tenant cannot be read.
  */

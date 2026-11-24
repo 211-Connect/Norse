@@ -12,8 +12,8 @@ const idOf = (value: unknown) =>
       : null;
 
 /**
- * Page editor: the current address in every locale with an Open link, and
- * the old addresses that redirect here.
+ * Page editor: the current URL in every locale with an Open link, and the
+ * old URLs that redirect here.
  */
 export default async function LandingPageAddressesField({
   data,
@@ -30,9 +30,9 @@ export default async function LandingPageAddressesField({
 
   return (
     <div className="landing-addresses">
-      <p className="landing-addresses__label">Addresses</p>
+      <p className="landing-addresses__label">URLs</p>
       {current.length === 0 ? (
-        <p>None yet. Addresses are created by Apply changes.</p>
+        <p>None yet. URLs are created by Apply changes.</p>
       ) : (
         <table>
           <tbody>
@@ -54,7 +54,7 @@ export default async function LandingPageAddressesField({
         <details>
           <summary>
             {old.length} old{' '}
-            {old.length === 1 ? 'address redirects' : 'addresses redirect'} here
+            {old.length === 1 ? 'URL redirects' : 'URLs redirect'} here
           </summary>
           <ul>
             {old.map((address) => (

@@ -15,19 +15,18 @@ const es = { county: 'Condado de {{name}}', place: '{{name}}, {{state}}' };
 describe('landing page copy', () => {
   test('each field comes from the most specific layer that has it', () => {
     const layers = {
-      page: { title: 'Page title', h1: '  ' },
-      topic: { h1: 'Topic h1', description: null },
+      topic: { title: 'Topic title', h1: '  ', description: null },
       template: { description: 'Template description', h1: 'Template h1' },
       default: { intro: 'Default intro', title: 'Default title' },
     };
     assert.deepEqual(pickCopy(layers), {
-      title: { text: 'Page title', source: 'page' },
-      h1: { text: 'Topic h1', source: 'topic' },
+      title: { text: 'Topic title', source: 'topic' },
+      h1: { text: 'Template h1', source: 'template' },
       description: { text: 'Template description', source: 'template' },
       intro: { text: 'Default intro', source: 'default' },
     });
     // What a field inherits when its own layer is empty.
-    assert.equal(pickCopy(layers, 'page').title?.source, 'default');
+    assert.equal(pickCopy(layers, 'topic').title?.source, 'default');
   });
 
   test('fills known tags, keeps unknown and double-brace ones', () => {

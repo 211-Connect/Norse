@@ -7,7 +7,7 @@ import './LandingTopicFields.css';
 
 /**
  * Shown while a slug that live pages already use is being edited: their
- * addresses move, the old ones answer 308 (docs/landing-pages.md).
+ * URLs move, the old ones answer 308 (docs/landing-pages.md).
  */
 const LandingTopicSlugWarning = () => {
   const { id } = useDocumentInfo();
@@ -40,8 +40,8 @@ const LandingTopicSlugWarning = () => {
       This URL is in Google; changing it moves its ranking to the new URL, with
       a short dip.{' '}
       {livePages === 1
-        ? 'The old address of its live page keeps'
-        : `The old addresses of its ${livePages} live pages keep`}{' '}
+        ? 'The old URL of its live page keeps'
+        : `The old URLs of its ${livePages} live pages keep`}{' '}
       working with a 308 redirect after Apply changes.
     </p>
   );

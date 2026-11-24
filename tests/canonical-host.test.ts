@@ -1,27 +1,17 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
-import {
-  canonicalHostProblem,
-  tenantCanonicalHost,
-} from '../src/utils/canonicalHost';
-
-const trustedDomains = [
-  { domain: 'search.wa211.org' },
-  { domain: 'wa211.norse.app' },
-];
+import { bareHost, tenantCanonicalHost } from '../src/utils/canonicalHost';
 
 describe('tenantCanonicalHost', () => {
-  test('the explicit canonical host, else the first trusted domain', () => {
+  test('the first trusted domain, as a bare host', () => {
     assert.equal(
       tenantCanonicalHost({
-        seo: { canonicalHost: 'wa211.norse.app' },
-        trustedDomains,
+        trustedDomains: [
+          { domain: 'https://Search.WA211.org/' },
+          { domain: 'wa211.norse.app' },
+        ],
       }),
-      'wa211.norse.app',
-    );
-    assert.equal(
-      tenantCanonicalHost({ seo: { canonicalHost: '' }, trustedDomains }),
       'search.wa211.org',
     );
     assert.equal(tenantCanonicalHost({ trustedDomains: [] }), null);
@@ -29,28 +19,11 @@ describe('tenantCanonicalHost', () => {
   });
 });
 
-describe('canonicalHostProblem', () => {
-  test('empty is fine', () => {
-    assert.equal(canonicalHostProblem('', trustedDomains), null);
-    assert.equal(canonicalHostProblem(null, trustedDomains), null);
-  });
-
-  test('must be a bare host', () => {
-    assert.match(
-      canonicalHostProblem('https://search.wa211.org/', trustedDomains) ?? '',
-      /host only/,
-    );
-    assert.match(
-      canonicalHostProblem('Search.WA211.org', trustedDomains) ?? '',
-      /host only/,
-    );
-  });
-
-  test('must be one of the trusted domains', () => {
-    assert.equal(canonicalHostProblem('wa211.norse.app', trustedDomains), null);
-    assert.match(
-      canonicalHostProblem('example.org', trustedDomains) ?? '',
-      /trusted domains/,
+describe('bareHost', () => {
+  test('drops scheme, path and port', () => {
+    assert.equal(
+      bareHost('https://Search.Example.org:443/x?y'),
+      'search.example.org',
     );
   });
 });

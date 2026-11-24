@@ -7,7 +7,7 @@ const idOf = (value: unknown) =>
     ? String((value as { id: unknown }).id)
     : String(value);
 
-/** Page list column: the page's current address in the default locale. */
+/** Page list column: the page's current URL in the default locale. */
 export default async function LandingPageAddressesCell({
   rowData,
   payload,

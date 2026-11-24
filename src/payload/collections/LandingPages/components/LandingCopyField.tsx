@@ -24,7 +24,6 @@ type Props = (TextFieldClientProps | TextareaFieldClientProps) & {
 };
 
 const SOURCE_LABEL: Record<CopySource, string> = {
-  page: 'this page',
   topic: 'the topic',
   template: 'the Resource Directory templates',
   default: 'the built-in text',

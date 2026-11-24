@@ -16,7 +16,7 @@ type TopicRow = {
   id: number;
   name: string;
   slug?: string | null;
-  enabled?: boolean | null;
+  deletedAt?: string | null;
   search: TopicSearch;
   source?: { kind?: string | null; ref?: string | null } | null;
 };
@@ -98,7 +98,7 @@ const LandingTopicsField = () => {
           `/api/resource-directories/${directoryId}?depth=0&locale=en`,
         ),
         getJson<{ docs: TopicRow[] }>(
-          `/api/landing-page-topics?where[tenant][equals]=${encodeURIComponent(tenantId)}&limit=0&depth=0&locale=en&sort=name`,
+          `/api/landing-page-topics?where[tenant][equals]=${encodeURIComponent(tenantId)}&limit=0&depth=0&locale=en&sort=name&trash=true`,
         ),
       ]);
       setSources(listTopicSources(directory));
@@ -230,8 +230,8 @@ const LandingTopicsField = () => {
         <div>
           <h3 className="landing-topics__title">Topics</h3>
           <p className="landing-topics__muted">
-            Every selected place gets a page for every topic with Generate pages
-            on. Changes take effect on Apply changes.
+            Every selected region gets a page for every topic. Deleting a topic
+            moves it to the trash. Changes take effect on Apply changes.
           </p>
         </div>
         <Button
@@ -408,20 +408,27 @@ const LandingTopicsField = () => {
           <thead>
             <tr>
               <th>Topic</th>
-              <th>Address</th>
+              <th>URL slug</th>
               <th>Search</th>
-              <th>Generate pages</th>
             </tr>
           </thead>
           <tbody>
             {topics.map((topic) => (
-              <tr key={topic.id}>
+              <tr
+                key={topic.id}
+                data-trashed={topic.deletedAt ? true : undefined}
+              >
                 <td>
                   <a
-                    href={`/admin/collections/landing-page-topics/${topic.id}`}
+                    href={`/admin/collections/landing-page-topics/${topic.deletedAt ? 'trash/' : ''}${topic.id}`}
                   >
                     {topic.name}
                   </a>
+                  {topic.deletedAt && (
+                    <span className="landing-topics__trashed">
+                      In the trash
+                    </span>
+                  )}
                 </td>
                 <td>
                   <code>/{topic.slug ?? '…'}/…</code>
@@ -430,7 +437,6 @@ const LandingTopicsField = () => {
                   {topic.search.queryType === 'taxonomy' ? 'Codes: ' : 'Text: '}
                   {topic.search.query}
                 </td>
-                <td>{topic.enabled === false ? 'Off' : 'On'}</td>
               </tr>
             ))}
           </tbody>

@@ -88,23 +88,6 @@ test("canonical origin: the tenant's first trusted domain, not whichever host th
   );
 });
 
-test('canonical origin: an explicit canonical host wins over the trusted domains', () => {
-  assert.deepEqual(
-    canonicalOrigin({
-      tenant: {
-        seo: { canonicalHost: 'wa211.norse.app' },
-        trustedDomains: [
-          { domain: 'search.wa211.org' },
-          { domain: 'wa211.norse.app' },
-        ],
-      },
-      host: 'search.wa211.org',
-      protocol: 'https',
-    }),
-    { host: 'wa211.norse.app', protocol: 'https' },
-  );
-});
-
 test('canonical origin: only the first x-forwarded-proto value counts', () => {
   assert.equal(
     canonicalOrigin({ tenant: null, host: 'h', protocol: 'https, http' })

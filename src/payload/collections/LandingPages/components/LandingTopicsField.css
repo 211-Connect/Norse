@@ -171,3 +171,12 @@
   color: var(--theme-success-500, var(--theme-elevation-500));
   font-size: 0.9em;
 }
+
+.landing-topics__table tr[data-trashed] td {
+  color: var(--theme-elevation-500);
+}
+
+.landing-topics__trashed {
+  margin-left: 8px;
+  font-size: 0.85em;
+}

@@ -1,7 +1,7 @@
 /**
  * The landing-page generation diff (docs/landing-pages.md, "Generating
- * pages"): from the Resource Directory's selection (regions × enabled
- * topics, in every tenant locale) and the rows that exist, what to create,
+ * pages"): from the Resource Directory's selection (regions × topics
+ * not in the trash, in every tenant locale) and the rows that exist, what to create,
  * retire, revive and re-address. Pure: the CMS applies the plan, and the
  * Apply-changes preview shows its summary without writing.
  */
@@ -29,7 +29,8 @@ export type SelectedRegion = {
 
 export type PlanTopic = {
   id: number;
-  enabled: boolean;
+  /** In the trash: its pages retire, and redirect to its search. */
+  trashed: boolean;
   /** Localized slug and name, by locale. */
   slugs: Partial<Record<string, string | null>>;
   names: Partial<Record<string, string | null>>;
@@ -211,7 +212,7 @@ export function planGeneration(input: PlanInput): GenerationPlan {
   const regions = withStates(input.regions);
   const regionsById = new Map(regions.map((region) => [region.id, region]));
   const topicsById = new Map(input.topics.map((topic) => [topic.id, topic]));
-  const enabledTopics = input.topics.filter((topic) => topic.enabled);
+  const activeTopics = input.topics.filter((topic) => !topic.trashed);
   const placeSlugs = assignPlaceSlugs(regions, pages);
   const conflicts: string[] = [];
 
@@ -223,7 +224,7 @@ export function planGeneration(input: PlanInput): GenerationPlan {
   // 1. Which pairs are wanted, and the pages to create.
   const wanted = new Set<string>();
   const creates: PlannedPage[] = [];
-  for (const topic of enabledTopics) {
+  for (const topic of activeTopics) {
     for (const region of regions) {
       const key = pairKey(topic.id, region.id);
       wanted.add(key);
@@ -282,7 +283,7 @@ export function planGeneration(input: PlanInput): GenerationPlan {
       state: page.regionState,
       countyId: page.countyId,
     };
-    if (topic?.enabled) {
+    if (topic && !topic.trashed) {
       const parents =
         page.regionType === 'place'
           ? [page.countyId, `state:${page.regionState}`]
@@ -410,7 +411,7 @@ export function planGeneration(input: PlanInput): GenerationPlan {
           owner && finalStatus.get(`#${owner.id}`) !== 'retired';
         if (ownerKeeps) {
           conflicts.push(
-            `${locale}/${path} is already page ${row.pageId}'s address.`,
+            `${locale}/${path} is already page ${row.pageId}'s URL.`,
           );
           continue;
         }

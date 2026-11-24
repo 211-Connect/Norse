@@ -62,14 +62,12 @@ export async function loadLandingStrings(locale: string) {
 }
 
 export type LandingCopyContext = {
-  /** Every layer below the page's own overrides. */
+  /** The topic, template and built-in layers. */
   layers: CopyLayers;
   values: CopyTagValues;
   host: string | null;
-  /** The page's current address in the locale, as a site path. */
+  /** The sample page's current URL in the locale, as a site path. */
   path: string | null;
-  /** True when no page was given and one was picked (or made up) to preview. */
-  sample: boolean;
 };
 
 const idOf = (value: unknown) =>
@@ -96,7 +94,6 @@ type RegionLike = {
 export async function getLandingCopyContext(input: {
   tenantId: string;
   locale: string;
-  pageId?: string | null;
   topicId?: string | null;
 }): Promise<LandingCopyContext> {
   const { tenantId, locale } = input;
@@ -128,23 +125,21 @@ export async function getLandingCopyContext(input: {
       locale: locale as never,
       limit: 1,
       depth: 0,
+      trash: true,
     });
     return (docs[0] as T | undefined) ?? null;
   };
 
-  // The page itself, or a live page to preview with: the given topic's if
+  // A live page to preview with: the given topic's if
   // any, a county first (it reads best in a sample).
   const live: Where[] = [
     { status: { equals: 'live' } },
     ...(input.topicId ? [{ topic: { equals: Number(input.topicId) } }] : []),
   ];
-  const page = input.pageId
-    ? await first<LandingPage>('landing-pages', {
-        id: { equals: Number(input.pageId) },
-      })
-    : ((await first<LandingPage>('landing-pages', {
-        and: [...live, { regionType: { equals: 'county' } }],
-      })) ?? (await first<LandingPage>('landing-pages', { and: live })));
+  const page =
+    (await first<LandingPage>('landing-pages', {
+      and: [...live, { regionType: { equals: 'county' } }],
+    })) ?? (await first<LandingPage>('landing-pages', { and: live }));
 
   const topicId = input.topicId ?? idOf(page?.topic);
   const topic = await first<LandingPageTopic>(
@@ -198,6 +193,5 @@ export async function getLandingCopyContext(input: {
     },
     host: tenantCanonicalHost(tenant),
     path,
-    sample: !input.pageId,
   };
 }

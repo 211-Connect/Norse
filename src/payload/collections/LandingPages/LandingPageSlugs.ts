@@ -6,7 +6,7 @@ import {
 } from '../Users/access/roles';
 
 /**
- * Every landing-page address ever issued, per locale. Exactly one row per
+ * Every landing-page URL ever issued, per locale. Exactly one row per
  * page and locale is `current`; the others redirect to it. Rows are written
  * by the generation job and never deleted (docs/landing-pages.md).
  */
@@ -14,8 +14,8 @@ export const LandingPageSlugs: CollectionConfig = {
   slug: 'landing-page-slugs',
   dbName: 'lp_slugs',
   labels: {
-    singular: 'Landing page address',
-    plural: 'Landing page addresses',
+    singular: 'Landing page URL',
+    plural: 'Landing page URLs',
   },
   access: {
     read: superAdminOrSupportAccess,
@@ -25,10 +25,9 @@ export const LandingPageSlugs: CollectionConfig = {
   },
   indexes: [{ fields: ['tenant', 'locale', 'path'], unique: true }],
   admin: {
-    pagination: { defaultLimit: 100, limits: [25, 50, 100, 200] },
+    // Internal: the page editor lists a page's URLs and old URLs.
+    hidden: true,
     useAsTitle: 'path',
-    group: 'Landing pages',
-    defaultColumns: ['path', 'locale', 'current', 'page', 'updatedAt'],
   },
   fields: [
     {
@@ -40,7 +39,7 @@ export const LandingPageSlugs: CollectionConfig = {
           type: 'text',
           required: true,
           index: true,
-          admin: { description: 'topic-slug/place-slug' },
+          admin: { description: 'topic-slug/region-slug' },
         },
         { name: 'current', type: 'checkbox', defaultValue: true, index: true },
       ],

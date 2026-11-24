@@ -439,26 +439,11 @@ export interface Tenant {
   services: {
     resourceDirectory?: boolean | null;
   };
-  /**
-   * Search-engine settings for this site’s host. What landing pages exist is set on the Resource Directory (Landing Pages).
-   */
   seo?: {
     /**
      * Keeps this site out of Google and other search results — useful while it's still being built, not yet ready to launch, or kept behind a login, so it isn't found before you intend it to be. Applies to your live site; staging and preview are always kept private. This asks reputable search engines not to list your pages; separately, and always on, our built-in protections keep your directory from being harvested by automated scrapers — so your information reaches real people using it fairly, not outside businesses repackaging it in their own products.
      */
     noindex?: boolean | null;
-    /**
-     * Serves /sitemap.xml and the /sitemap page listing every landing page. Only applies while landing pages are on and the site is not hidden.
-     */
-    sitemap?: boolean | null;
-    /**
-     * The host search engines should list, used in canonical tags, language links and sitemaps. Empty: the first trusted domain.
-     */
-    canonicalHost?: string | null;
-    /**
-     * The Google Search Console property for this host, as Search Console names it (sc-domain:… or https://…/). Read by the search analytics import.
-     */
-    searchConsoleProperty?: string | null;
   };
   auth: {
     realmId: string;
@@ -1349,15 +1334,11 @@ export interface LandingPageTopic {
   id: number;
   tenant?: (string | null) | Tenant;
   /**
-   * Off: Apply changes retires this topic's pages, which then redirect to the equivalent search.
-   */
-  enabled?: boolean | null;
-  /**
    * What the topic is called on its pages, in the words people search with.
    */
   name: string;
   /**
-   * The first part of the page address, e.g. food-pantries in /food-pantries/tacoma-wa.
+   * The first part of the page URL, e.g. food-pantries in /food-pantries/tacoma-wa.
    */
   slug?: string | null;
   /**
@@ -1407,6 +1388,7 @@ export interface LandingPageTopic {
   };
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1416,12 +1398,12 @@ export interface LandingPage {
   id: number;
   tenant?: (string | null) | Tenant;
   /**
-   * Topic and place, for lists.
+   * Topic and region, for lists.
    */
   label?: string | null;
   topic: number | LandingPageTopic;
   /**
-   * Live: in Google and the sitemaps. Off: switched off by an admin. Retired: removed from the selection; its address redirects.
+   * Live: in Google and the sitemaps. Off: switched off by an admin. Retired: removed from the selection; its URL redirects.
    */
   status: 'live' | 'off' | 'retired';
   regionId: string;
@@ -1430,7 +1412,7 @@ export interface LandingPage {
   regionState: string;
   countyId?: string | null;
   /**
-   * The second part of the address, e.g. tacoma-wa. The same in every locale. A change takes effect on Apply changes.
+   * The second part of the URL, e.g. tacoma-wa. The same in every locale.
    */
   placeSlug: string;
   /**
@@ -1448,27 +1430,6 @@ export interface LandingPage {
    */
   resultCount?: number | null;
   countedAt?: string | null;
-  /**
-   * Overrides the topic and the Resource Directory templates for this page only.
-   */
-  copy?: {
-    /**
-     * SEO title: the blue link in Google results. About 60 characters.
-     */
-    title?: string | null;
-    /**
-     * Meta description: the grey text under the link. About 155 characters. It changes how many people click, not the ranking.
-     */
-    description?: string | null;
-    /**
-     * The main heading on the page.
-     */
-    h1?: string | null;
-    /**
-     * A short paragraph above the results.
-     */
-    intro?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1481,7 +1442,7 @@ export interface LandingPageSlug {
   tenant?: (string | null) | Tenant;
   locale: string;
   /**
-   * topic-slug/place-slug
+   * topic-slug/region-slug
    */
   path: string;
   current?: boolean | null;
@@ -1772,9 +1733,6 @@ export interface TenantsSelect<T extends boolean = true> {
     | T
     | {
         noindex?: T;
-        sitemap?: T;
-        canonicalHost?: T;
-        searchConsoleProperty?: T;
       };
   auth?:
     | T
@@ -2405,7 +2363,6 @@ export interface TranslationUsageAlertsSelect<T extends boolean = true> {
  */
 export interface LandingPageTopicsSelect<T extends boolean = true> {
   tenant?: T;
-  enabled?: T;
   name?: T;
   slug?: T;
   search?:
@@ -2431,6 +2388,7 @@ export interface LandingPageTopicsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2455,14 +2413,6 @@ export interface LandingPagesSelect<T extends boolean = true> {
       };
   resultCount?: T;
   countedAt?: T;
-  copy?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        h1?: T;
-        intro?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }
