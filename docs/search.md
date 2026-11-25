@@ -105,16 +105,15 @@ searches emit `search_text`. This includes free-text searches on `hybrid` and
 `text` (or unset for AI-classification navigation).
 
 Widget landings emit the Umami `widget_search` event with `widgetId`, `query`,
-`queryLabel`, and the selected `searchLocation`. Location is sent as separate
-properties: `searchCoordinates` (comma-separated longitude/latitude),
-`searchCity`, `searchZipCode`, `searchCounty`, `searchRegionId`,
-`searchRegionType`, and `searchMode`. User location is separate as
-`userCoordinates`, `userCity`, `userZipCode`, and `userCounty`. The selected
-location label is reported directly; geocoded fields are scoped to the
-selected area and are empty when unavailable. The Widget Searches metric counts
-this event; an Event Card can break it down by these properties. Widget
-landings do not emit separate `search_text`, `search_taxonomy`, or
-`search_hybrid` events.
+and `queryLabel`. Location is sent as separate properties: `searchCoordinates`
+(comma-separated longitude/latitude), `searchCity`, `searchZipCode`,
+`searchCounty`, `searchRegionId`, `searchRegionType`, and `searchMode`. User
+location is separate as `userCoordinates`, `userCity`, `userZipCode`, and
+`userCounty`. The selected location label (`searchLocation`) is not sent;
+geocoded fields are scoped to the selected area and are empty when unavailable.
+The Widget Searches metric counts this event; an Event Card can break it down
+by these properties. Widget landings do not emit separate `search_text`,
+`search_taxonomy`, or `search_hybrid` events.
 
 Widget embeds can set a distinct `wid` to identify the instance. Searches from
 embeds without an ID are recorded with an empty `widgetId` and cannot be

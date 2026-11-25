@@ -41,7 +41,6 @@ export const ResultsEvents = ({
   const widgetSearchTracked = useRef(false);
   const query = firstValue(searchParamsObject.query) ?? '';
   const queryLabel = firstValue(searchParamsObject.query_label) ?? '';
-  const searchLocation = firstValue(searchParamsObject.location) ?? '';
 
   useEffect(() => {
     let isCancelled = false;
@@ -77,12 +76,17 @@ export const ResultsEvents = ({
 
       if (widgetId !== undefined && !widgetSearchTracked.current) {
         widgetSearchTracked.current = true;
+        const {
+          userZipCode: _userZipCode,
+          userCounty: _userCounty,
+          userCity: _userCity,
+          ...widgetLocationPayload
+        } = locationPayload;
         trackEvent(AnalyticsEvent.WidgetSearch, AnalyticsTools.Umami, {
           widgetId,
           query,
           queryLabel,
-          ...locationPayload,
-          searchLocation,
+          ...widgetLocationPayload,
         });
       }
 
@@ -105,7 +109,6 @@ export const ResultsEvents = ({
     appConfig.tenantId,
     query,
     queryLabel,
-    searchLocation,
     results,
     searchCoordinates,
     searchParamsObject,
