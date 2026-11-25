@@ -173,6 +173,24 @@ export class CacheService {
     }
   }
 
+  /**
+   * Like `set`, for callers that must report the outcome: a Redis error, or
+   * no connection (the connect cooldown included), throws; `false` = Redis
+   * disabled (nothing written); `true` = written.
+   */
+  async setOrThrow(key: string, value: string, ttl?: number): Promise<boolean> {
+    await this.ensureConnection();
+    if (!this.isEnabled) return false;
+    if (!this.client) throw new Error('Redis not connected');
+    const client = this.client;
+    await trackDependency('redis', 'set', () =>
+      ttl !== undefined && ttl > 0
+        ? client.setex(key, ttl, value)
+        : client.set(key, value),
+    );
+    return true;
+  }
+
   async get(key: string): Promise<string | null> {
     try {
       await this.ensureConnection();

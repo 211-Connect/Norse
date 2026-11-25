@@ -9,6 +9,13 @@ import { getHybridSearchConfigKey } from '../utilities/getHybridSearchConfigKey'
 
 const log = createLogger('pushHybridSearchConfigToCache');
 
+/**
+ * `pushed`: the cache now holds the new config. `skipped`: nothing to push (no
+ * resource directory, or Redis disabled), so the cache did NOT change. `failed`:
+ * the push threw (a Redis error or no connection included).
+ */
+export type HybridSearchCachePushResult = 'pushed' | 'skipped' | 'failed';
+
 type Overrides = {
   hybridSearchConfig?: HybridSearchConfig | null;
   resourceDirectory?: ResourceDirectory | null;
@@ -18,7 +25,7 @@ export const pushHybridSearchConfigToCache = async (
   tenantId: string,
   req: PayloadRequest,
   overrides: Overrides = {},
-): Promise<void> => {
+): Promise<HybridSearchCachePushResult> => {
   try {
     const { payload } = req;
 
@@ -55,18 +62,33 @@ export const pushHybridSearchConfigToCache = async (
         { tenantId },
         'No resource directory found for tenant; skipping hybrid search config cache update',
       );
-      return;
+      return 'skipped';
     }
 
     const cacheKey = getHybridSearchConfigKey(tenantId);
-    await apiConfigCacheService.set(cacheKey, JSON.stringify(cache));
+    // setOrThrow: `set` logs and swallows a Redis error, which would read as 'pushed'.
+    const written = await apiConfigCacheService.setOrThrow(
+      cacheKey,
+      JSON.stringify(cache),
+    );
+    if (!written) {
+      log.warn(
+        { tenantId },
+        'Redis disabled; hybrid search config cache not updated',
+      );
+      return 'skipped';
+    }
 
     log.info({ tenantId }, 'Hybrid search config cache updated');
+    return 'pushed';
   } catch (error) {
+    // Never throw here (an afterChange throw would roll back the save). Log
+    // and report the failure to the caller.
     log.error(
       { err: error, tenantId },
       'Error pushing hybrid search config to cache',
     );
+    return 'failed';
   }
 };
 
