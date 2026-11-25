@@ -67,7 +67,7 @@ import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { DialButton } from './dial-button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { popupHotlines } from './emergency-line';
+import { emergencyLineHotlines, popupHotlines } from './emergency-line';
 import { EmergencyBox, HotlineNumbers, PinnedNumbers } from './emergency-box';
 
 import {
@@ -1441,6 +1441,7 @@ export const valueOfLabel = (q: V2Question, label: string) =>
  * (real ml-broker classifier, real rules engine). It hides while the guided flow (`refine=1`) is open.
  */
 export function SearchRefineQuestion() {
+  const tenantHotlines = useAppConfig()?.search?.hotlines;
   // The count key lives in `common`; the search page's default namespace is `page-search`.
   const { data, isFetching, isPlaceholderData, query: label } = useV2Search();
   const { refine, params, asked, needs, passedNeeds } = useV2Url();
@@ -1516,7 +1517,11 @@ export function SearchRefineQuestion() {
   if (!label || refine || !data) return null;
   const type: keyof typeof QUESTION_STYLES = v2 ? styleOf(v2) : 'none';
   const style = QUESTION_STYLES[type];
-  const hotlines = hotlinesOf(emergencyQ);
+  // Card, popup and pinned row share the chip row's list: tenant, API, then 911 and 988 (F-1 = A).
+  const hotlines = emergencyLineHotlines(
+    tenantHotlines,
+    hotlinesOf(emergencyQ),
+  );
   const soft = isSoftEmergency(emergencyQ);
 
   const submitOther = (text: string) => {

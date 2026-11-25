@@ -179,14 +179,65 @@ test('buildAppConfig sets search.hotlines through searchHotlinesFor with the v2 
   );
 });
 
-test('the danger popup always has numbers: an answer without any shows the tenant list, 911 and 988', async () => {
+test('S-13 the danger popup: tenant numbers first, then 911 and 988, no duplicates', async () => {
   const { popupHotlines } =
     await import('../src/app/(app)/features/search/components/emergency-line');
   const n = (rows: { number: string }[]) => rows.map((r) => r.number);
+  const tenant = [{ label: 'County Crisis', number: '555-123-4567' }];
+  // no tenant hotlines, nothing sent
   assert.deepEqual(n(popupHotlines([])), ['911', '988']);
-  assert.deepEqual(
-    n(popupHotlines([], [{ label: 'Crisis', number: '555-0100' }])),
-    ['911', '555-0100', '988'],
+  // tenant only (the API list carries only the tenant number)
+  assert.deepEqual(n(popupHotlines(tenant, tenant)), [
+    '555-123-4567',
+    '911',
+    '988',
+  ]);
+  assert.deepEqual(n(popupHotlines(tenant)), ['555-123-4567', '911', '988']);
+  // tenant list in the app config, nothing sent
+  assert.deepEqual(n(popupHotlines([], tenant)), [
+    '555-123-4567',
+    '911',
+    '988',
+  ]);
+  // 988 written as 9-8-8 is drawn once, with the tenant label
+  const spaced = [{ label: 'Our lifeline', number: '9-8-8' }];
+  const out = popupHotlines(spaced, spaced);
+  assert.deepEqual(n(out), ['9-8-8', '911']);
+  assert.equal(out[0].label, 'Our lifeline');
+  // no tenant hotlines, API sends its own
+  assert.deepEqual(n(popupHotlines([{ label: 'A', number: '555' }])), [
+    '555',
+    '911',
+    '988',
+  ]);
+});
+
+test('S-13 in-card numbers: SearchRefineQuestion merges tenant, API, 911, 988 with the chip-row helper', () => {
+  const src = readFileSync(
+    'src/app/(app)/features/search/components/search-follow-up.tsx',
+    'utf8',
   );
-  assert.deepEqual(n(popupHotlines([{ label: 'A', number: '555' }])), ['555']);
+  assert.match(
+    src,
+    /const hotlines = emergencyLineHotlines\(\s*tenantHotlines,\s*hotlinesOf\(emergencyQ\),?\s*\)/,
+  );
+});
+
+test('S-13 a tenant without the v2 flag: no tenant hotlines reach the list, the card draws only what it is given', async () => {
+  const { HotlineNumbers } =
+    await import('../src/app/(app)/features/search/components/emergency-box');
+  const rows = [{ label: 'County Crisis', number: '555-123-4567' }];
+  const cfg = searchHotlinesFor(false, rows as never);
+  assert.deepEqual(cfg, {});
+  assert.deepEqual(
+    numbers(emergencyLineHotlines((cfg as { hotlines?: never[] }).hotlines)),
+    ['911', '988'],
+  );
+  const html = renderToStaticMarkup(
+    createElement(HotlineNumbers, {
+      hotlines: [{ label: 'A', number: '555' }],
+    }),
+  );
+  assert.match(html, /tel:555/);
+  assert.doesNotMatch(html, /tel:911/);
 });

@@ -54,12 +54,12 @@ export function emergencyLineHotlines(
   return out;
 }
 
-/** 911 first: the popup's big buttons put the emergency number on top. */
-/** An answer with no usable numbers still shows the tenant's and 911/988: this popup covers the emergency line. */
+/**
+ * The popup's Call buttons: the same list as the chip row (tenant, the API's, then 911 and 988, no
+ * number twice), also when the API sent only the tenant's numbers (Lucas, 2026-11-25, F-1 = A).
+ */
 export const popupHotlines = (hotlines: V2Hotline[], tenant?: V2Hotline[]) =>
-  [...(hotlines.length ? hotlines : emergencyLineHotlines(tenant))].sort(
-    (a, b) => Number(b.number === '911') - Number(a.number === '911'),
-  );
+  emergencyLineHotlines(tenant, hotlines);
 
 /**
  * The always-on emergency line (ADR 0039 Decision 45): small chips directly above a search box.
