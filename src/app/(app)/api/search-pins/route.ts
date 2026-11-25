@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { resolveV2HostTenant } from '@/app/(app)/features/search/v2/v2-host-tenant';
+import type { AreaSettingsSource } from '@/app/(app)/features/search/utils/area-settings';
+import { buildV2Headers } from '@/app/(app)/features/search/v2/v2-request';
+import {
+  buildPinsUrl,
+  isPinsBody,
+  toSearchPins,
+} from '@/app/(app)/features/search/v2/v2-pins';
+import { API_URL } from '@/app/(app)/shared/lib/constants';
+import { getTenantApiKey } from '@/lib/api/getTenantApiKey';
 import { parsePinsQuery } from '@/app/(app)/shared/lib/search-params';
 import { findResourcePins } from '@/app/(app)/shared/services/search-pins-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
@@ -20,11 +30,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
+  const isV2 = request.nextUrl.searchParams.get('v2') === '1';
   const params = parsePinsQuery(request.nextUrl.search);
   const locale = params.locale;
 
   if (typeof locale !== 'string' || !isValidLocale(locale)) {
     return NextResponse.json({ error: 'Invalid locale' }, { status: 400 });
+  }
+
+  // The same host-tenant check as `/api/v2-search` (enableV2Api on, locale offered), one function.
+  if (isV2) {
+    const host = await resolveV2HostTenant(locale, {
+      getConfig: getAppConfigWithoutHost,
+      isValidLocale,
+    });
+    if (!host.ok) {
+      return NextResponse.json({ error: host.error }, { status: host.status });
+    }
   }
 
   const appConfig = await getAppConfigWithoutHost(locale);
@@ -36,7 +58,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const pins = await findResourcePins(params, locale, appConfig.tenantId);
+  // v2 tenants only (`enableV2Api`): the same pins, from Norse-API `GET /v2/search/pins`. The key
+  // stays on the server, and the path carries the version (ADR 0039).
+  const pins = isV2
+    ? await findV2Pins(request.nextUrl.searchParams, appConfig)
+    : await findResourcePins(params, locale, appConfig.tenantId);
 
   if (!pins) {
     return NextResponse.json({ error: 'Pins unavailable' }, { status: 502 });
@@ -51,4 +77,24 @@ export async function GET(request: NextRequest) {
       },
     },
   );
+}
+
+/** `null` when the upstream call fails, as `findResourcePins` does. */
+async function findV2Pins(
+  incoming: URLSearchParams,
+  appConfig: { tenantId: string; search: AreaSettingsSource },
+) {
+  if (!API_URL) return null;
+  const upstream = await fetch(
+    buildPinsUrl(API_URL, incoming, appConfig.tenantId, appConfig.search),
+    {
+      headers: buildV2Headers(await getTenantApiKey(appConfig.tenantId)),
+      cache: 'no-store',
+    },
+  ).catch(() => null);
+  if (!upstream?.ok) return null;
+  // A 200 with a body that is not JSON, or with no `pins` array, is a failed
+  // call, not an empty list.
+  const body = await upstream.json().catch(() => null);
+  return isPinsBody(body) ? toSearchPins(body) : null;
 }

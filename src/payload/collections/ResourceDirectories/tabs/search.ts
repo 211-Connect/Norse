@@ -7,6 +7,10 @@ import {
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';
+import {
+  validateHotlineLabel,
+  validateHotlineNumber,
+} from '../fields/hotlineNumber';
 import { getCustomLayoutComponentLabel } from './resource';
 
 const CARD_COMPONENT_ID_OPTIONS = Object.values(SearchCardComponentId).map(
@@ -421,6 +425,42 @@ export const search: Tab = {
             create: superAdminOrSupportOrTenantAccess,
             update: superAdminOrSupportOrTenantAccess,
           },
+        },
+        {
+          name: 'hotlines',
+          type: 'array',
+          label: 'Emergency hotlines',
+          maxRows: 4,
+          labels: { singular: 'Hotline', plural: 'Hotlines' },
+          admin: {
+            description:
+              'Shown, in this order, only when a search looks like an emergency. Leave empty to use 988 (Crisis line) and 911 (Emergency). On the emergency question a list replaces both (the always-on line keeps 911 and 988): add 988 or 911 yourself if you want them shown.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                // Not localized: the Redis value is per tenant, not per language.
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  maxLength: 60,
+                  validate: validateHotlineLabel,
+                },
+                {
+                  name: 'number',
+                  type: 'text',
+                  required: true,
+                  validate: validateHotlineNumber,
+                },
+              ],
+            },
+          ],
         },
       ],
     },

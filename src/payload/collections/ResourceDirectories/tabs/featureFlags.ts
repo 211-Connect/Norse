@@ -55,6 +55,29 @@ export const featureFlags: Tab = {
       },
     },
     {
+      name: 'enableV2Api',
+      type: 'checkbox',
+      label: 'Enable v2 search API',
+      defaultValue: false,
+      access: {
+        create: superAdminAccess,
+        update: superAdminAccess,
+      },
+    },
+    {
+      name: 'enableV2Ai',
+      type: 'checkbox',
+      label: 'v2 AI (classifier, questions, need boost)',
+      defaultValue: true,
+      admin: {
+        condition: (_, siblingData) => siblingData?.enableV2Api === true,
+      },
+      access: {
+        create: superAdminAccess,
+        update: superAdminAccess,
+      },
+    },
+    {
       name: 'showOrganizationLocationBadge',
       type: 'checkbox',
       defaultValue: false,

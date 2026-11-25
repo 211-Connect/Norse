@@ -29,13 +29,14 @@ import { ALL_FIXTURES } from './search-intent-fixtures';
 const AI: SearchPolicy = { needs: 'gate', location: 'refine' };
 const CLASSIC: SearchPolicy = { needs: 'refine', location: 'refine' };
 
-function input(query: string, policy: SearchPolicy): ResolverInput {
+function input(query: string, policy: SearchPolicy, v2 = true): ResolverInput {
   const { intent, envelope } = liftQueryString(query);
   return {
     intent,
     loopGuard: envelope.sllc === '1',
     policy,
     searchEngine: policy.needs === 'gate' ? 'ai_classification' : 'classic',
+    v2,
   };
 }
 
@@ -190,6 +191,36 @@ test('the loop guard and an empty query are never classified', () => {
   );
   assert.equal(resolve('location=Seattle', AI).value, 'ready');
   assert.equal(resolve('query=&query_type=text', AI).value, 'ready');
+});
+
+test('a URL that carries v2 answers is never classified or redirected (needs, urgency, asked)', () => {
+  for (const answers of ['needs=N-FOD-01', 'urgency=U-2', 'asked=need_area']) {
+    const snapshot = resolve(`query=food&query_type=hybrid&${answers}`, AI);
+    assert.equal(snapshot.value, 'ready', answers);
+    assert.equal(snapshot.hasTag('page:redirect'), false, answers);
+  }
+  // No answers: the gate still classifies.
+  assert.equal(
+    resolve('query=food&query_type=hybrid', AI).value,
+    'needs_prediction',
+  );
+});
+
+// Seam (adversarial-review finding 2, PR #1222): the v2 link is built by the v2 page; the v1 host
+// tenant (`enableV2Api` off) reads the same URL here and must treat it as it did before v2.
+test('v1 host tenant: v2 answers in the URL do not skip classification and do not reach the search query', () => {
+  for (const answers of ['needs=N-FOD-01', 'urgency=U-2', 'asked=need_area']) {
+    const [snapshot] = [
+      initialTransition(
+        searchResolverMachine,
+        input(`query=food&query_type=hybrid&${answers}`, AI, false),
+      )[0],
+    ];
+    assert.equal(snapshot.value, 'needs_prediction', answers);
+    const q = snapshot.context.searchQuery;
+    assert.equal(q.needs, undefined, answers);
+    assert.equal(q.urgency, undefined, answers);
+  }
 });
 
 test('a direct prediction redirects to the canonical AI URL', () => {

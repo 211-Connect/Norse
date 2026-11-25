@@ -15,6 +15,7 @@ import {
   USER_PREF_REGION_ID,
 } from '../lib/constants';
 import { isRegionId } from '@/types/areaSearch';
+import { searchTermFromUrl } from '../lib/search-term-from-url';
 import { validateCoordsString } from '../lib/validators';
 import { DEFAULT_SEARCH_STATE, searchAtom } from '../store/search';
 import type { SearchLocationGeocode, SearchState } from '../store/search';
@@ -145,7 +146,13 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
           searchAtom,
           {
             ...DEFAULT_SEARCH_STATE,
-            searchTerm: queryLabel,
+            // v2 only: a link with `query` and no `query_label` shows its words (v1 shows the label only).
+            searchTerm: searchTermFromUrl({
+              query,
+              queryLabel,
+              queryType,
+              v2: appConfig.featureFlags.enableV2Api,
+            }),
             query,
             queryLabel,
             queryType,
@@ -159,6 +166,7 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
         ],
       ] as const,
     [
+      appConfig.featureFlags.enableV2Api,
       coords,
       distance,
       location,

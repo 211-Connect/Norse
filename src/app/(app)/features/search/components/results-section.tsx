@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { cn } from '@/app/(app)/shared/lib/utils';
 import { usePrintableDirectorySearchContext } from '@/app/(app)/shared/hooks/use-printable-directory-search-context';
 import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
@@ -27,9 +28,14 @@ import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { PrintableDirectoryContextBanner } from './printable-directory-context-banner';
 import { RenderResults } from './render-results';
 import { ResultTotal } from './result-total';
+import { ResultsHelpItem } from './search-follow-up';
 import { ResultsPagination } from './results-pagination';
+import { RadiusSelect } from './radius-select';
 import { SortSelect } from './sort-select';
+import { showsSort } from '../utils/sort-options';
+import { useV2Search } from '../v2/use-v2-search';
 import { SaveQueryToDirectoryButton } from './save-query-to-directory-button';
+import { useV2Failure } from './v2-failure-context';
 
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
@@ -39,6 +45,7 @@ export type AiAlertType = 'low_info' | 'low_confidence' | 'general';
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
   aiSearchAlert?: string;
+  className?: string;
 };
 
 const getAiAlertMessageKey = (aiSearchAlert?: string): string | undefined => {
@@ -86,12 +93,17 @@ const parseDistanceParam = (value?: string): number | undefined => {
 export function ResultsSection({
   cardLayout,
   aiSearchAlert,
+  className,
 }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 results list.
+  const v2 = appConfig.featureFlags.enableV2Api;
   const searchParams = useSearchParams();
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const { results, totalResults, currentPage } = useSearchResults();
+  // A failed v2 call hides the count, the print, save and share buttons and the pagination.
+  const { failed } = useV2Failure();
   const resultsCount = results.length;
   const query = useAtomValue(queryAtom);
   const queryLabel = useAtomValue(queryLabelAtom);
@@ -139,7 +151,9 @@ export function ResultsSection({
     return nextParams;
   }, [searchParams, query, queryType]);
 
-  const showSort = queryType !== 'hybrid';
+  // The v2 engine shows the sort dropdown for every query type; v1 hides it for hybrid.
+  const { query: v2Query } = useV2Search();
+  const showSort = showsSort({ queryType, isV2: Boolean(v2Query) });
 
   const loadPrintableData = useCallback(
     (locale: string) => {
@@ -176,7 +190,12 @@ export function ResultsSection({
     <section
       id="search-container"
       aria-labelledby={SEARCH_RESULTS_HEADING_ID}
-      className="bg-muted/40 flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5 print:bg-transparent"
+      className={cn(
+        // max-md:pb-24 keeps the phone's bottom bar off the last card and the help item.
+        'bg-muted/40 flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5 print:bg-transparent',
+        v2 && 'md:min-h-0 max-md:pb-24',
+        className,
+      )}
     >
       <h2
         id={SEARCH_RESULTS_HEADING_ID}
@@ -198,34 +217,42 @@ export function ResultsSection({
             <AlertDescription>{t(aiAlertMessageKey)}</AlertDescription>
           </Alert>
         )}
-        <div className="flex items-center justify-between">
-          <ResultTotal />
-          <div className="flex flex-wrap justify-end gap-2.5">
-            {resultsCount > 0 && (
-              <DirectoryPrintControl
-                loadData={loadPrintableData}
-                renderDocument={renderPdfDocument}
-              />
-            )}
-            {/* When editing a source, allow saving a query that matches
+        {!failed && (
+          <div className="flex items-center justify-between">
+            <ResultTotal />
+            <div className="flex flex-wrap justify-end gap-2.5">
+              {resultsCount > 0 && (
+                <DirectoryPrintControl
+                  loadData={loadPrintableData}
+                  renderDocument={renderPdfDocument}
+                />
+              )}
+              {/* When editing a source, allow saving a query that matches
                 nothing yet — the user may be narrowing it on purpose. */}
-            {(resultsCount > 0 || directoryContext?.source) && (
-              <SaveQueryToDirectoryButton
-                queryTitle={shareTitle}
-                queryParams={serializedQueryParams}
-                directoryContext={directoryContext}
-                disabled={isDirectoryContextLoading}
-              />
-            )}
-            <ShareButton title={shareTitle} body={shareBody} />
+              {(resultsCount > 0 || directoryContext?.source) && (
+                <SaveQueryToDirectoryButton
+                  queryTitle={shareTitle}
+                  queryParams={serializedQueryParams}
+                  directoryContext={directoryContext}
+                  disabled={isDirectoryContextLoading}
+                />
+              )}
+              <ShareButton title={shareTitle} body={shareBody} />
+            </div>
           </div>
-        </div>
-        {showSort && <SortSelect />}
+        )}
+        {(showSort || Boolean(v2Query)) && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            {showSort && <SortSelect />}
+            {Boolean(v2Query) && <RadiusSelect />}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-6">
         <RenderResults cardLayout={cardLayout} />
-        <ResultsPagination />
+        {!failed && <ResultsPagination />}
+        {v2 && <ResultsHelpItem />}
       </div>
     </section>
   );

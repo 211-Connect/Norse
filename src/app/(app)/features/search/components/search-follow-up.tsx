@@ -1,0 +1,1849 @@
+'use client';
+
+import { useLockPageScroll } from '@/app/(app)/shared/hooks/use-lock-page-scroll';
+import {
+  type Announcements,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  type UniqueIdentifier,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import {
+  ArrowUp,
+  Check,
+  ChevronDown,
+  GripVertical,
+  Info,
+  Phone,
+  Plus,
+  X,
+} from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import {
+  type DOMAttributes,
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { SafeExitLink } from '@/app/(app)/shared/components/safe-exit-link';
+import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { Button } from '@/app/(app)/shared/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/app/(app)/shared/components/ui/dialog';
+import {
+  POINTER_OR_SCROLL_EVENTS,
+  useOnPointerDownOutside,
+} from '@/app/(app)/shared/hooks/use-on-pointer-down-outside';
+import { emergencyPopupOpenAtom } from '@/app/(app)/shared/store/dialogs';
+import { queryLabelAtom } from '@/app/(app)/shared/store/search';
+import { cn } from '@/app/(app)/shared/lib/utils';
+
+import { DialButton } from './dial-button';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { emergencyLineHotlines, popupHotlines } from './emergency-line';
+import { EmergencyBox, HotlineNumbers, PinnedNumbers } from './emergency-box';
+
+import {
+  applyAnswers,
+  classifySune,
+  decideRefine,
+  EMERGENCY_ID,
+  isRankToken,
+  labelOf,
+  lookup,
+  matchAddable,
+  matchServices,
+  orderToken,
+  rankKinds,
+  removedToken,
+} from '../sune-demo/sune.mjs';
+import {
+  emergencyQuestionOf,
+  hotlinesOf,
+  isSoftEmergency,
+  nextQuestionOf,
+  refineQuestionOf,
+  isDangerDismissed,
+  styleOf,
+  styleOfQuestion,
+  placementOf,
+  useV2Navigate,
+  useV2Search,
+  useV2Url,
+  type V2Hotline,
+  type V2Question,
+} from '../v2/use-v2-search';
+import { DEMO_PEEK_ENABLED } from '../v2/demo-flag';
+import { helpControlHidden } from '../v2/help-visibility';
+import {
+  cardWording,
+  countTone,
+  emergencyPopupMode,
+  isUrgencyAnswered,
+  optionDescription,
+  otherChanges,
+  visibleOptions,
+  withEmergencyAnswers,
+} from '../v2/v2-contract';
+
+export type Answer = {
+  label: string;
+  add: string[];
+  remove?: string[];
+  keeps?: number;
+  value?: string;
+  description?: string;
+};
+export type Question = {
+  id: string;
+  type?: keyof typeof QUESTION_STYLES;
+  text: string;
+  why?: string;
+  multi?: boolean;
+  answers: Answer[];
+};
+type Kind = { key: string; label: string; description: string };
+type Decision = {
+  kind: 'question' | 'done';
+  type: keyof typeof QUESTION_STYLES;
+  band: 'high' | 'middle' | 'none';
+  total: number;
+  question?: Question;
+};
+
+/** True from the moment the box is emptied until the next search: tags and refine go with it. */
+export const searchClearedAtom = atom(false);
+const refineCollapsedAtom = atom(false);
+/** The results help panel: the phone's list item and the desktop button both open it. */
+const resultsHelpOpenAtom = atom(false);
+const HELP_ITEM_ID = 'results-help-item';
+/** The height of the sticky search bar. Below it, a phone pins the refine row. */
+const PIN_TOP = 48;
+const PINNED =
+  'fixed inset-x-0 top-12 z-30 flex max-h-[calc(100dvh-8rem)] flex-col gap-1 overflow-y-auto overscroll-contain border-b bg-white px-2.5 py-1 shadow-sm print:hidden';
+/** U-0 stays out of the URL for the same reason. The words of the search still show the danger. */
+export const urlCodes = (codes: string[]) =>
+  codes.filter((code) => code !== 'U-0');
+
+/** The URL holds the search state, so a shared link shows the same tags and results. */
+function useSuneSearch() {
+  const params = useSearchParams()!;
+  // The search that ran, not the box: typing must not reread the page until it is submitted.
+  const typedLabel = useAtomValue(queryLabelAtom) ?? '';
+  const cleared = useAtomValue(searchClearedAtom);
+  const label = cleared
+    ? ''
+    : (params.get('query_label') ?? params.get('query') ?? typedLabel);
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const stated = params
+    .getAll('taxonomy')
+    .flatMap((value) => value.split(','))
+    .filter(Boolean);
+  const codes = useMemo<string[]>(
+    () =>
+      (stated.length ? stated : (classifySune(label).codes as string[])).filter(
+        (code) => code !== 'U-X' && lookup(code),
+      ),
+
+    [stated.join(), label],
+  );
+  // Decision 54: no "I'm in an emergency" answer, so nothing is kept in memory for it.
+  const emergency = false;
+  const answered = useMemo(
+    () => (params.get('refined') ?? '').split(',').filter(Boolean),
+    [params],
+  );
+  const decision = useMemo(
+    () => decideRefine(label, codes, answered) as Decision,
+    [label, codes, answered],
+  );
+
+  // The person's order of the kinds of help. A change of tags drops it: the list is rebuilt from the tags.
+  const ranks = stated.filter((code) => isRankToken(code));
+
+  const update = (
+    nextCodes: string[],
+    nextAnswered = answered,
+    nextRanks: string[] = [],
+    history: 'push' | 'replace' = 'replace',
+  ) => {
+    const next = new URLSearchParams(params.toString());
+    next.delete('taxonomy');
+    next.delete('page');
+    // U-X is SUNE's "not yet known": it keeps an emptied search from being classified again.
+    const kept = urlCodes(nextCodes);
+    for (const code of kept.length ? kept : ['U-X']) {
+      next.append('taxonomy', code);
+    }
+    for (const token of nextRanks) next.append('taxonomy', token);
+    next.set(
+      'refined',
+      nextAnswered
+        .filter((id) => !(emergency && id === EMERGENCY_ID))
+        .join(','),
+    );
+    startTransition(() => {
+      router[history](`${pathname}?${next.toString()}`, { scroll: false });
+    });
+  };
+
+  const hotline = decision.band === 'high' || emergency;
+
+  return {
+    label,
+    codes,
+    ranks,
+    answered,
+    decision,
+    emergency,
+    hotline,
+    update,
+    isPending,
+  };
+}
+
+/** Terms a person could not find. A stand-in for a real report to our system. */
+export const flaggedAtom = atom<string[]>([]);
+/** Corrections kept for review. A stand-in: one person's correction never changes the shared mapping. */
+export const suggestionsAtom = atom<string[]>([]);
+
+type Ranked = { key: string; label: string; description?: string };
+
+/** One ranked item. The whole row drags; the grip is the keyboard way in. */
+function RankRow({
+  item,
+  at,
+  onRemove,
+  ranked,
+}: {
+  item: Ranked;
+  at: number;
+  onRemove: () => void;
+  ranked: boolean;
+}) {
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    setActivatorNodeRef,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: item.key });
+  // The mouse and touch start on the row; the keyboard starts on the grip.
+  const handlers = listeners as DOMAttributes<HTMLElement> | undefined;
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      onMouseDown={ranked ? handlers?.onMouseDown : undefined}
+      onTouchStart={ranked ? handlers?.onTouchStart : undefined}
+      className={cn(
+        'bg-card flex touch-manipulation items-center gap-2 rounded-lg border py-1.5 pr-1 pl-1 select-none',
+        ranked ? 'cursor-grab' : 'pl-3',
+        isDragging && 'border-primary relative z-10 cursor-grabbing shadow-lg',
+      )}
+    >
+      {ranked && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            ref={setActivatorNodeRef}
+            type="button"
+            {...attributes}
+            onKeyDown={handlers?.onKeyDown}
+            aria-label={`Rank ${item.label}, now number ${at + 1}`}
+            className="text-muted-foreground h-9 w-6 shrink-0 cursor-grab rounded-lg"
+          >
+            <GripVertical className="size-4" aria-hidden="true" />
+          </Button>
+          <span
+            aria-hidden="true"
+            className="bg-primary text-primary-foreground flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
+          >
+            {at + 1}
+          </span>
+        </>
+      )}
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium">{item.label}</span>
+        {item.description && (
+          <span className="text-muted-foreground block text-xs">
+            {item.description}
+          </span>
+        )}
+      </span>
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        aria-label={`Remove ${item.label}`}
+        className="shrink-0 rounded-lg"
+        onClick={onRemove}
+      >
+        <X className="size-4" aria-hidden="true" />
+      </Button>
+    </li>
+  );
+}
+
+/** A list a person ranks by dragging. Step 1 ranks needs; step 2 ranks kinds of help. */
+function RankList({
+  items,
+  label,
+  listRef,
+  onDragging,
+  onRemove,
+  onReorder,
+  testId,
+}: {
+  items: Ranked[];
+  label: string;
+  listRef?: RefObject<HTMLOListElement | null>;
+  onDragging: (dragging: boolean) => void;
+  onRemove: (item: Ranked) => void;
+  onReorder: (items: Ranked[]) => void;
+  testId: string;
+}) {
+  // A drop shows at once; the URL and the rerun catch up behind it.
+  const [list, setList] = useState(items);
+  const order = items.map((item) => item.key).join();
+  useEffect(() => {
+    setList(items);
+  }, [order]);
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 180, tolerance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+  const moved = useRef(false);
+  const labelOfRow = (id: UniqueIdentifier) =>
+    list.find((item) => item.key === String(id))?.label ?? '';
+  const numberOfRow = (id: UniqueIdentifier) =>
+    list.findIndex((item) => item.key === String(id)) + 1;
+  // Screen readers hear the labels. The library's default reads out the internal ids.
+  const announcements: Announcements = {
+    onDragStart: ({ active }) =>
+      `Picked up ${labelOfRow(active.id)}. Use the arrow keys to move it. Press space to drop it, or Escape to cancel.`,
+    // The first event is the row over itself; saying so would cut off the instructions above.
+    onDragOver: ({ active, over }) => {
+      if (over?.id !== active.id) moved.current = true;
+      if (!over || !moved.current) return undefined;
+      return `${labelOfRow(active.id)} is over number ${numberOfRow(over.id)}.`;
+    },
+    onDragEnd: ({ active, over }) =>
+      `${labelOfRow(active.id)} is now number ${numberOfRow(over?.id ?? active.id)}.`,
+    onDragCancel: ({ active }) =>
+      `Cancelled. ${labelOfRow(active.id)} stays at number ${numberOfRow(active.id)}.`,
+  };
+  const drop = ({ active, over }: DragEndEvent) => {
+    onDragging(false);
+    if (!over || active.id === over.id) return;
+    const keys = list.map((item) => item.key);
+    const to = keys.indexOf(String(over.id));
+    const next = arrayMove(list, keys.indexOf(String(active.id)), to);
+    setList(next);
+    onReorder(next);
+  };
+
+  return (
+    <DndContext
+      accessibility={{
+        announcements,
+        screenReaderInstructions: {
+          draggable:
+            'Press space to pick up this item. Use the arrow keys to move it. Press space to drop it, or Escape to cancel.',
+        },
+      }}
+      collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis]}
+      onDragCancel={() => onDragging(false)}
+      onDragEnd={drop}
+      onDragStart={() => {
+        moved.current = false;
+        onDragging(true);
+      }}
+      sensors={sensors}
+    >
+      <SortableContext
+        items={list.map((item) => item.key)}
+        strategy={verticalListSortingStrategy}
+      >
+        <ol
+          ref={listRef}
+          tabIndex={-1}
+          aria-label={label}
+          className="flex flex-col gap-1 outline-none"
+          data-testid={testId}
+        >
+          {list.map((item, at) => (
+            <RankRow
+              key={item.key}
+              item={item}
+              at={at}
+              onRemove={() => onRemove(item)}
+              ranked={list.length > 1}
+            />
+          ))}
+        </ol>
+      </SortableContext>
+    </DndContext>
+  );
+}
+
+/** Phase 2 of the help panel: the kinds of help behind the search, in the order we rank them. */
+function RankStep({
+  kinds,
+  removed,
+  onChange,
+  onDragging,
+  onMissing,
+}: {
+  kinds: Kind[];
+  removed: Kind[];
+  onDragging: (dragging: boolean) => void;
+  onChange: (kinds: Kind[], removed: Kind[]) => void;
+  onMissing: (text: string) => void;
+}) {
+  // Remove and Put back delete the button in focus, so focus goes to the list.
+  const listRef = useRef<HTMLOListElement>(null);
+  const remove = (item: Ranked) => {
+    onChange(
+      kinds.filter((kind) => kind.key !== item.key),
+      [...removed, item as Kind],
+    );
+    listRef.current?.focus();
+  };
+  const putBack = (kind: Kind) => {
+    onChange(
+      [...kinds, kind],
+      removed.filter((item) => item.key !== kind.key),
+    );
+    listRef.current?.focus();
+  };
+
+  return (
+    <>
+      <RankList
+        items={kinds}
+        label="Kinds of help, ranked"
+        listRef={listRef}
+        onDragging={onDragging}
+        onRemove={remove}
+        onReorder={(next) => onChange(next as Kind[], removed)}
+        testId="search-rank-list"
+      />
+      {kinds.length === 0 && (
+        <p className="text-muted-foreground text-sm">
+          Nothing left. Put one back or add what is missing.
+        </p>
+      )}
+      {removed.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-muted-foreground">Removed:</span>
+          {removed.map((kind) => (
+            <Button
+              variant="outline"
+              key={kind.key}
+              type="button"
+              aria-label={`Put back ${kind.label}`}
+              className="border-primary/50 bg-primary/10 text-primary h-auto shrink-0 gap-1 rounded-lg border-dashed px-3 py-1.5 text-sm font-medium"
+              onClick={() => putBack(kind)}
+            >
+              <Plus className="size-3.5" aria-hidden="true" />
+              {kind.label}
+            </Button>
+          ))}
+        </div>
+      )}
+      <OtherBox placeholder="Add what is missing" onSubmit={onMissing} />
+    </>
+  );
+}
+
+/**
+ * Prototype: tags stay out of the way until a person says the results look wrong.
+ * The button appears as the 3rd result comes into view, or at once with fewer than 3.
+ */
+export function SearchResultsHelp() {
+  const { label, codes, ranks, answered, update } = useSuneSearch();
+  const setFlagged = useSetAtom(flaggedAtom);
+  const setSuggestions = useSetAtom(suggestionsAtom);
+  const [shown, setShown] = useState(false);
+  // D1: hidden while the refine card is on screen or the list has fewer than 4 results.
+  const [suppressed, setSuppressed] = useState(true);
+  const [open, setOpen] = useAtom(resultsHelpOpenAtom);
+  const dragging = useRef(false);
+  const onDragging = (value: boolean) => {
+    dragging.current = value;
+  };
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const needListRef = useRef<HTMLOListElement>(null);
+  const [phase, setPhase] = useState<'tags' | 'rank' | 'done'>('tags');
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
+  const [thanks, setThanks] = useState('');
+  const addBoxRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  // Clicking away hides the box and keeps what was typed.
+  useOnPointerDownOutside(addBoxRef, () => setAdding(false), {
+    active: adding,
+    events: POINTER_OR_SCROLL_EVENTS,
+    keepSelector: '[data-dismiss-keep]',
+  });
+
+  useEffect(() => {
+    setShown(false);
+    const check = () => {
+      const third = document.querySelectorAll('[data-search-result]')[2]
+        ?.firstElementChild;
+      if (!third || third.getBoundingClientRect().top < window.innerHeight) {
+        setShown(true);
+      }
+    };
+    const checkSuppressed = () => {
+      const card = document.querySelector(
+        '[data-testid="search-refine-question"]',
+      );
+      setSuppressed(
+        helpControlHidden({
+          resultCount: document.querySelectorAll('[data-search-result]').length,
+          refineRect: card ? card.getBoundingClientRect() : null,
+          viewportHeight: window.innerHeight,
+        }),
+      );
+    };
+    checkSuppressed();
+    const settled = setTimeout(check, 1500);
+    // The card and the list load after the first render, so a slow poll keeps the state current.
+    const poll = setInterval(checkSuppressed, 500);
+    window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('scroll', checkSuppressed, { passive: true });
+    window.addEventListener('resize', checkSuppressed);
+    return () => {
+      clearTimeout(settled);
+      clearInterval(poll);
+      window.removeEventListener('scroll', check);
+      window.removeEventListener('scroll', checkSuppressed);
+      window.removeEventListener('resize', checkSuppressed);
+    };
+  }, [label]);
+
+  // A new step replaces the panel's content, so focus moves to its title.
+  const firstPhase = useRef(true);
+  useEffect(() => {
+    if (firstPhase.current) {
+      firstPhase.current = false;
+      return;
+    }
+    titleRef.current?.focus();
+  }, [phase]);
+
+  if (!label.trim()) return null;
+
+  const { kinds, removed } = rankKinds([...codes, ...ranks]) as {
+    kinds: Kind[];
+    removed: Kind[];
+  };
+  const reorder = (nextKinds: Kind[], nextRemoved: Kind[]) =>
+    update(codes, answered, [
+      ...nextKinds.map((kind) => orderToken(kind.key)),
+      ...nextRemoved.map((kind) => removedToken(kind.key)),
+    ]);
+  const reportMissing = (text: string) => {
+    setFlagged((prev) => [...prev, text]);
+    setThanks(`Thank you. We will look at adding “${text}”.`);
+  };
+  // The search already changed for this person. The shared mapping waits for a review.
+  const finish = () => {
+    const tags = codes.map((code) => labelOf(code)).join(', ');
+    const order = kinds.map((kind) => kind.label).join(' > ');
+    setSuggestions((prev) => [...prev, `“${label}”: ${tags}: ${order}`]);
+    setThanks('');
+    setPhase('done');
+  };
+  const needs = codes.filter((code: string) => code.startsWith('N-'));
+  const others = codes.filter((code: string) => !code.startsWith('N-'));
+  const TITLES = {
+    tags: 'Did we get your needs right?',
+    rank: 'Do these solutions look right?',
+    done: 'Thank you',
+  };
+  const DESCRIPTIONS = {
+    tags:
+      needs.length > 1
+        ? 'Drag to rank. 1 matters most.'
+        : 'Remove or add what you need.',
+    rank:
+      kinds.length > 1
+        ? 'Drag to rank. 1 is the best fit.'
+        : 'Remove this or add what is missing.',
+    done: 'Your results are updated.',
+  };
+
+  const typed = draft.trim().toLowerCase();
+  const matches = matchAddable(typed, codes) as {
+    code: string;
+    label: string;
+  }[];
+
+  const closeAdd = () => {
+    setAdding(false);
+    setDraft('');
+    addButtonRef.current?.focus();
+  };
+  const addTerm = (code: string) => {
+    update([...codes, code]);
+    setThanks('');
+    closeAdd();
+  };
+  // A term SUNE lacks never becomes a tag: the person flags it and we look at it.
+  const flagMissing = () => {
+    const text = draft.trim();
+    setFlagged((prev) => [...prev, text]);
+    setThanks(`Thank you. We will look at adding “${text}”.`);
+    closeAdd();
+  };
+
+  const removeNeed = (item: Ranked) => {
+    update(codes.filter((code) => code !== item.key));
+    (needs.length > 1 ? needListRef : addButtonRef).current?.focus();
+  };
+  const removeTrait = (code: string) => {
+    update(codes.filter((item) => item !== code));
+    addButtonRef.current?.focus();
+  };
+
+  return (
+    <Dialog
+      modal={false}
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) setPhase('tags');
+        setThanks('');
+      }}
+    >
+      <DialogTrigger
+        className={cn(
+          // Below xl the floating Quick exit holds the bottom edge.
+          'fixed right-4 bottom-4 z-30 cursor-pointer rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-lg max-xl:bottom-20 print:hidden',
+          // A phone gets the list item at the end of the results instead (Lucas, 2026-11-13).
+          'max-md:hidden',
+          // Before it appears it stays in the tab order, so a keyboard user can still reach it.
+          !shown &&
+            'pointer-events-none opacity-0 focus:pointer-events-auto focus:opacity-100',
+          // D1: out of the way while the refine card shows or the list is short.
+          suppressed && !open && 'hidden',
+        )}
+        data-testid="search-results-help"
+      >
+        Not getting the results you expected?
+      </DialogTrigger>
+      <DialogContent
+        bare
+        overlay={false}
+        withClose={false}
+        aria-modal="false"
+        className="bg-card fixed inset-x-4 bottom-4 z-40 flex max-h-[80dvh] flex-col gap-3 overflow-y-auto rounded-xl border p-4 shadow-xl max-xl:bottom-20 max-xl:max-h-[calc(100dvh-6rem)] md:left-auto md:w-96"
+        data-testid="search-results-help-panel"
+        // On a phone the opener is the list item, so focus goes back to it.
+        onCloseAutoFocus={(event) => {
+          const item = document.getElementById(HELP_ITEM_ID);
+          if (item && item.offsetParent) {
+            event.preventDefault();
+            item.focus();
+          }
+        }}
+        onEscapeKeyDown={(event) => {
+          // Escape cancels a keyboard drag or the Add box, not the whole panel.
+          if (adding || dragging.current) event.preventDefault();
+        }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            {phase !== 'done' && (
+              <p className="text-muted-foreground text-xs">
+                Step {phase === 'tags' ? 1 : 2} of 2
+              </p>
+            )}
+            <DialogTitle
+              ref={titleRef}
+              tabIndex={-1}
+              className="text-lg font-semibold outline-none"
+            >
+              {TITLES[phase]}
+            </DialogTitle>
+          </div>
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Close"
+              className="size-8"
+            >
+              <X className="size-5" aria-hidden="true" />
+            </Button>
+          </DialogClose>
+        </div>
+        <DialogDescription>{DESCRIPTIONS[phase]}</DialogDescription>
+        {phase === 'rank' && (
+          <RankStep
+            kinds={kinds}
+            removed={removed}
+            onChange={reorder}
+            onDragging={onDragging}
+            onMissing={reportMissing}
+          />
+        )}
+        {phase === 'tags' && (
+          <>
+            <RankList
+              items={needs.map((code) => ({
+                key: code,
+                label: labelOf(code),
+              }))}
+              label="Your needs, ranked"
+              listRef={needListRef}
+              onDragging={onDragging}
+              onRemove={removeNeed}
+              onReorder={(next) =>
+                update([...next.map((item) => item.key), ...others])
+              }
+              testId="search-need-list"
+            />
+            <div
+              className="flex flex-wrap items-center gap-2"
+              data-testid="search-situation-tags"
+            >
+              {others.map((code: string) => (
+                <Badge
+                  key={code}
+                  variant="outline"
+                  className="bg-card border-primary shrink-0 gap-1.5 rounded-lg px-3 py-1.5"
+                >
+                  {labelOf(code)}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    aria-label={`Remove ${labelOf(code)}`}
+                    className="-my-1 -mr-1.5 size-6"
+                    onClick={() => removeTrait(code)}
+                  >
+                    <X className="size-3.5" aria-hidden="true" />
+                  </Button>
+                </Badge>
+              ))}
+              <Button
+                variant="outline"
+                ref={addButtonRef}
+                type="button"
+                data-dismiss-keep
+                aria-expanded={adding}
+                aria-label="Add a need"
+                className="border-primary/50 bg-primary/10 text-primary h-auto shrink-0 gap-1 rounded-lg border-dashed px-3 py-1.5 text-sm font-medium"
+                onClick={() => setAdding((prev) => !prev)}
+              >
+                <Plus className="size-3.5" aria-hidden="true" />
+                Add
+              </Button>
+            </div>
+            {adding && (
+              <div className="flex flex-col gap-1" ref={addBoxRef}>
+                <input
+                  autoFocus
+                  aria-label="Add a need"
+                  value={draft}
+                  placeholder="Start typing, then pick one"
+                  onChange={(event) => setDraft(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      if (matches[0]) addTerm(matches[0].code);
+                      else if (typed) flagMissing();
+                    }
+                    if (event.key === 'Escape') closeAdd();
+                  }}
+                  className="bg-card border-primary w-full rounded-lg border px-3 py-2 text-base outline-none focus:outline-none md:text-sm"
+                />
+                <p className="sr-only" role="status">
+                  {typed ? `${matches.length} matches` : ''}
+                </p>
+                {typed && (
+                  <ul className="bg-card rounded-lg border">
+                    {matches.map((term) => (
+                      <li key={term.code}>
+                        <Button
+                          variant="ghost"
+                          type="button"
+                          className="h-auto w-full justify-start rounded-lg px-3 py-2 text-left text-sm font-normal"
+                          onClick={() => addTerm(term.code)}
+                        >
+                          {term.label}
+                        </Button>
+                      </li>
+                    ))}
+                    <li className={cn(matches.length > 0 && 'border-t')}>
+                      <Button
+                        variant="ghost"
+                        type="button"
+                        className="text-primary h-auto w-full justify-start rounded-lg px-3 py-2 text-left text-sm font-medium"
+                        onClick={flagMissing}
+                      >
+                        Don&apos;t see your option?
+                      </Button>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            )}
+          </>
+        )}
+        <p className="text-muted-foreground text-sm empty:hidden" role="status">
+          {thanks}
+        </p>
+        {phase === 'done' && (
+          <DialogClose asChild>
+            <Button className="h-auto self-end rounded-lg px-4 py-2 text-sm font-semibold">
+              Close
+            </Button>
+          </DialogClose>
+        )}
+        {phase !== 'done' && (
+          <div className="flex items-center justify-between gap-2">
+            {phase === 'rank' ? (
+              <Button
+                variant="link"
+                type="button"
+                className="h-auto px-1 py-2 text-sm font-medium no-underline"
+                onClick={() => {
+                  setThanks('');
+                  setPhase('tags');
+                }}
+              >
+                Back
+              </Button>
+            ) : (
+              <span />
+            )}
+            <Button
+              type="button"
+              data-testid="search-help-looks-good"
+              className="h-auto rounded-lg px-4 py-2 text-sm font-semibold"
+              onClick={() => {
+                if (phase === 'tags') {
+                  setThanks('');
+                  setPhase('rank');
+                } else {
+                  finish();
+                }
+              }}
+            >
+              Looks good
+            </Button>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** Phone only: the help opener as the last item of the results list, not a floating button. */
+export function ResultsHelpItem() {
+  const { label } = useSuneSearch();
+  const setOpen = useSetAtom(resultsHelpOpenAtom);
+  if (!label.trim()) return null;
+  return (
+    <Button
+      id={HELP_ITEM_ID}
+      type="button"
+      className="h-auto min-h-11 w-full rounded-lg bg-orange-700 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-800 md:hidden print:hidden"
+      data-testid="results-help-item"
+      onClick={() => setOpen(true)}
+    >
+      Not getting the results you expected?
+    </Button>
+  );
+}
+
+/** A typed answer, in its own box beside the listed answers. */
+export function OtherBox({
+  className,
+  onSubmit,
+  placeholder,
+  autoFocus,
+}: {
+  className?: string;
+  autoFocus?: boolean;
+  onSubmit: (text: string) => void;
+  placeholder: string;
+}) {
+  const [text, setText] = useState('');
+  const send = () => {
+    if (!text.trim()) return;
+    onSubmit(text.trim());
+    setText('');
+  };
+
+  return (
+    <div className={cn('relative w-full', className)}>
+      <input
+        aria-label={placeholder}
+        placeholder={placeholder}
+        value={text}
+        autoFocus={autoFocus}
+        onChange={(event) => setText(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            send();
+          }
+        }}
+        className="border-control-border focus-visible:ring-primary focus:border-primary min-h-12 w-full rounded-lg border bg-white py-2 pr-12 pl-4 text-base outline-none focus:outline-none focus-visible:ring-2"
+        data-testid="other-box"
+      />
+      <Button
+        size="icon"
+        type="button"
+        aria-label="Send your answer"
+        className="absolute top-2 right-2 size-8 rounded-lg after:absolute after:-inset-1.5 after:content-['']"
+        onClick={send}
+      >
+        <ArrowUp className="size-4" aria-hidden="true" />
+      </Button>
+    </div>
+  );
+}
+
+const ORANGE = {
+  card: 'border-orange-400 bg-orange-50',
+  label: 'text-orange-800',
+  title: '',
+  button: 'border-orange-400 text-orange-900 bg-white',
+};
+const QUIET = {
+  card: 'border-primary/30 bg-primary/10',
+  label: 'text-primary',
+  title: 'Tell us more to get better results',
+  button: 'border-control-border bg-white',
+};
+
+/** Nothing left to ask: one quiet line that opens the free-text box (Lucas, 2026-11-13, F1). */
+function AddMoreLine({
+  noted,
+  onSubmit,
+}: {
+  noted: string;
+  onSubmit: (text: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="border-primary/30 bg-primary/10 flex flex-col gap-2 rounded-lg border px-3"
+      data-testid="search-refine-question"
+      data-question="done"
+    >
+      <Button
+        variant="link"
+        type="button"
+        aria-expanded={open}
+        aria-controls="add-more-box"
+        className="h-auto min-h-11 w-full justify-between gap-2 text-left text-sm font-semibold no-underline"
+        onClick={() => setOpen((v) => !v)}
+      >
+        Add more about your situation
+        <ChevronDown
+          className={cn('size-4 shrink-0', open && 'rotate-180')}
+          aria-hidden="true"
+        />
+      </Button>
+      <div id="add-more-box" hidden={!open} className="pb-3">
+        {open && (
+          <OtherBox
+            autoFocus
+            placeholder="Tell us in your own words"
+            onSubmit={onSubmit}
+          />
+        )}
+      </div>
+      <p className="pb-2 text-sm empty:hidden" role="status">
+        {noted}
+      </p>
+    </div>
+  );
+}
+
+/** The option's count: nothing for null, red for 0 (Lucas 2026-11-19). */
+export function OptionCount({
+  count,
+  className,
+}: {
+  count?: number | null;
+  className?: string;
+}) {
+  const { t } = useTranslation('common');
+  const tone = countTone(count);
+  if (tone === 'none') return null;
+  return (
+    <span
+      data-testid="option-count"
+      data-tone={tone}
+      className={cn(
+        'text-xs font-normal',
+        tone === 'zero'
+          ? 'font-semibold text-red-700'
+          : 'text-muted-foreground',
+        className,
+      )}
+    >
+      {t('search.v2_option_services_count', { count: count as number })}
+    </span>
+  );
+}
+
+/**
+ * The one info control (Lucas 2026-11-19): a 44x44 px button with a 24 px icon on the right side.
+ * It toggles `children` open under the row (`aria-expanded`). Nothing shows until it is tapped.
+ */
+export function InfoToggle({
+  label,
+  className,
+  testId,
+  textClassName,
+  children,
+}: {
+  label: string;
+  className?: string;
+  testId: string;
+  textClassName?: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        aria-label={label}
+        aria-expanded={open}
+        data-testid={testId}
+        className={cn(
+          'text-muted-foreground hover:text-foreground size-11 shrink-0 rounded-full',
+          className,
+        )}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Info className="size-6" aria-hidden="true" />
+      </Button>
+      {open && (
+        <p
+          className={cn(
+            'text-muted-foreground bg-muted/50 order-last w-full basis-full rounded-lg px-3 py-2 text-sm',
+            textClassName,
+          )}
+          data-testid={`${testId}-text`}
+        >
+          {children}
+        </p>
+      )}
+    </>
+  );
+}
+
+/**
+ * One option card: the label only. A large info icon on the right toggles the description under
+ * it (Lucas 2026-11-19). The icon is a sibling of the answer button.
+ */
+export function OptionCard({
+  description,
+  className,
+  children,
+}: {
+  description?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  // `className` carries the card border and colours: the description opens INSIDE this box.
+  return (
+    <div
+      className={cn('relative flex flex-col rounded-lg border', className)}
+      data-testid="option-card"
+    >
+      {children}
+      {description && (
+        <InfoToggle
+          label="More about this option"
+          testId="option-info"
+          className="absolute top-0 right-0"
+          textClassName="bg-transparent pt-0 pr-12 pl-4"
+        >
+          {description}
+        </InfoToggle>
+      )}
+    </div>
+  );
+}
+
+/** The look follows the question's `style` (standard, subtle); the emergency question is red. */
+export const QUESTION_STYLES = {
+  emergency: {
+    card: 'border-red-700 bg-red-50',
+    label: 'text-red-700',
+    title: '',
+    button: 'border-red-700 text-red-700 bg-white',
+  },
+  standard: ORANGE,
+  subtle: QUIET,
+  none: QUIET,
+};
+
+/**
+ * Lucas 2026-11-18: Quick exit stays on screen while the emergency popup is open. One line flips
+ * it. When true, the popup carries its own Quick exit link inside the dialog (so the focus trap
+ * keeps it reachable by keyboard) and the floating one is hidden behind the full-screen popup.
+ */
+export const SHOW_QUICK_EXIT_ON_EMERGENCY = true;
+
+/** The query text the person closed the danger popup for ("Continue to results"). */
+export const emergencyPopupDismissedAtom = atom<string | null>(null);
+
+const POPUP_BUTTON =
+  'flex h-auto min-h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-lg font-semibold no-underline focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none disabled:opacity-60';
+
+function PopupQuickExit() {
+  if (!SHOW_QUICK_EXIT_ON_EMERGENCY) return null;
+  return (
+    <SafeExitLink
+      className="fixed top-4 right-4 flex min-h-11 items-center gap-1 rounded-lg bg-white px-4 text-sm font-semibold text-red-800 no-underline shadow-lg focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-red-800 focus-visible:outline-none"
+      testId="emergency-popup-quick-exit"
+    />
+  );
+}
+
+/**
+ * The red emergency popup (Lucas 2026-11-18): a modal dialog that covers the whole screen in one
+ * solid colour, header included, with nothing else on it. `ask` shows the question and exactly
+ * three answers (each writes `urgency=` and searches again, so it does not return). `danger`
+ * (urgency=U-0) shows big Call buttons and a way on to the results. Focus is trapped inside,
+ * starts on the first button, and the heading labels the dialog.
+ */
+/** The popup title only when the API sends a blank stem. */
+const POPUP_TITLE_FALLBACK = 'Are you in danger right now?';
+
+export function EmergencyPopup({
+  mode,
+  question,
+  hotlines,
+  busy = false,
+  onAnswer,
+  onContinue,
+}: {
+  mode: 'ask' | 'danger';
+  /** The question with the three urgency options (see `withEmergencyAnswers`). */
+  question: V2Question;
+  hotlines: V2Hotline[];
+  busy?: boolean;
+  onAnswer: (value: string) => void;
+  onContinue: () => void;
+}) {
+  useLockPageScroll(true);
+  const tenantHotlines = useAppConfig()?.search?.hotlines;
+  const setPopupOpen = useSetAtom(emergencyPopupOpenAtom);
+  useEffect(() => {
+    setPopupOpen(true);
+    return () => setPopupOpen(false);
+  }, [setPopupOpen]);
+  const contentRef = useRef<HTMLDivElement>(null);
+  // A new mode (ask -> danger) is a new screen: focus goes to its first button.
+  useEffect(() => {
+    contentRef.current
+      ?.querySelector<HTMLElement>('[data-popup-first], button, a[href]')
+      ?.focus();
+  }, [mode]);
+  return (
+    <Dialog open modal>
+      <DialogContent
+        bare
+        overlay={false}
+        withClose={false}
+        ref={contentRef}
+        data-testid="emergency-popup"
+        data-mode={mode}
+        aria-busy={busy}
+        className="fixed inset-0 z-[70] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-red-800 p-6 pt-20 text-white outline-none"
+        onEscapeKeyDown={(event) => event.preventDefault()}
+        onInteractOutside={(event) => event.preventDefault()}
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          contentRef.current
+            ?.querySelector<HTMLElement>('[data-popup-first]')
+            ?.focus();
+        }}
+      >
+        <DialogTitle className="max-w-md text-center text-3xl leading-tight font-bold tracking-normal">
+          {mode === 'ask'
+            ? question.stem.trim() || POPUP_TITLE_FALLBACK
+            : 'Call for help now'}
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          {mode === 'ask'
+            ? 'Choose the answer that fits. Your answer changes the search.'
+            : 'Call 911 or 988, or continue to the results.'}
+        </DialogDescription>
+        <div
+          className="flex w-full max-w-md flex-col gap-3"
+          data-testid="emergency-popup-actions"
+        >
+          {mode === 'ask' &&
+            question.options.map((option, i) => (
+              <Button
+                key={option.value}
+                type="button"
+                disabled={busy}
+                data-popup-first={i === 0 ? '' : undefined}
+                data-testid={`emergency-answer-${option.value}`}
+                className={cn(
+                  POPUP_BUTTON,
+                  i === 0
+                    ? 'bg-white text-red-800 hover:bg-white/90'
+                    : 'border-2 border-white bg-transparent text-white hover:bg-white/10',
+                )}
+                onClick={() => onAnswer(option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          {mode === 'danger' && (
+            <>
+              {popupHotlines(hotlines, tenantHotlines).map((line, i) => (
+                <DialButton
+                  key={line.number}
+                  number={line.number}
+                  ariaLabel={`Call ${line.number}, ${line.label}`}
+                  testId={`emergency-call-${line.number}`}
+                  className={cn(
+                    POPUP_BUTTON,
+                    'text-2xl',
+                    i === 0
+                      ? 'bg-white text-red-800'
+                      : 'border-2 border-white bg-transparent text-white',
+                  )}
+                >
+                  <Phone className="size-6" aria-hidden="true" />
+                  Call {line.number}
+                </DialButton>
+              ))}
+              <Button
+                type="button"
+                className={cn(
+                  POPUP_BUTTON,
+                  'mt-4 border border-white bg-transparent text-base text-white underline hover:bg-white/10',
+                )}
+                data-testid="emergency-popup-continue"
+                onClick={onContinue}
+              >
+                Continue to results
+              </Button>
+            </>
+          )}
+        </div>
+        <PopupQuickExit />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/**
+ * Prototype: on a phone the refine card pins under the search bar once the page scrolls
+ * to it, and compacts to one line. A tap opens it, and more scrolling compacts it again.
+ */
+/** The phone breakpoint the refine card uses (below md). */
+const PHONE_QUERY = '(max-width: 767.98px)';
+
+function usePhonePin(
+  collapsed: boolean,
+  setCollapsed: (next: boolean) => void,
+) {
+  const holderRef = useRef<HTMLDivElement>(null);
+  const [pinned, setPinned] = useState(false);
+  const [height, setHeight] = useState<number>();
+  const live = useRef({ pinned, collapsed, before: false, openedAt: 0 });
+  live.current.pinned = pinned;
+  live.current.collapsed = collapsed;
+
+  useEffect(() => {
+    const phone = window.matchMedia(PHONE_QUERY);
+    const read = () => {
+      const holder = holderRef.current;
+      if (!holder) return;
+      const state = live.current;
+      const next =
+        phone.matches && holder.getBoundingClientRect().top < PIN_TOP;
+      if (next !== state.pinned) {
+        state.pinned = next;
+        if (next) {
+          state.before = state.collapsed;
+          setHeight(holder.offsetHeight);
+          setCollapsed(true);
+        } else {
+          setHeight(undefined);
+          setCollapsed(state.before);
+        }
+        setPinned(next);
+        return;
+      }
+      // Typing opens the keyboard, and the keyboard scrolls the page.
+      const typing =
+        holder.contains(document.activeElement) &&
+        /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? '');
+      if (
+        state.pinned &&
+        !state.collapsed &&
+        !typing &&
+        Math.abs(window.scrollY - state.openedAt) > PIN_TOP
+      ) {
+        setCollapsed(true);
+      }
+    };
+    read();
+    window.addEventListener('scroll', read, { passive: true });
+    window.addEventListener('resize', read);
+    return () => {
+      window.removeEventListener('scroll', read);
+      window.removeEventListener('resize', read);
+    };
+  }, [setCollapsed]);
+
+  const toggle = () => {
+    live.current.openedAt = window.scrollY;
+    setCollapsed(!collapsed);
+  };
+  return { holderRef, pinned, height, toggle };
+}
+
+/** The answers ticked on a multi-select question. A new question starts empty. */
+export function useAnswerPicks(questionId?: string) {
+  const [state, setState] = useState<{ id?: string; labels: string[] }>({
+    labels: [],
+  });
+  const picks = state.id === questionId ? state.labels : [];
+  const toggle = (label: string) =>
+    setState((prev) => {
+      const labels = prev.id === questionId ? prev.labels : [];
+      return {
+        id: questionId,
+        labels: labels.includes(label)
+          ? labels.filter((pick) => pick !== label)
+          : [...labels, label],
+      };
+    });
+  const clear = () => setState({ labels: [] });
+  return { picks, toggle, clear };
+}
+
+/** The tick box on a multi-select answer, so a picked answer does not rely on color alone. */
+export function PickMark({ on }: { on: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'flex size-5 shrink-0 items-center justify-center rounded border',
+        on
+          ? 'bg-primary border-primary text-primary-foreground'
+          : 'border-control-border bg-white',
+      )}
+    >
+      {on && <Check className="size-3.5" />}
+    </span>
+  );
+}
+
+/** Says what a tick changed, because the count and Continue are out of a screen reader's view. */
+export function PicksStatus({
+  count,
+  total,
+}: {
+  count: number;
+  total: number;
+}) {
+  return (
+    <p className="sr-only" role="status">
+      {count > 0 ? `${count} picked, ${resultCount(total)}.` : ''}
+    </p>
+  );
+}
+
+export const PICKED = 'border-primary bg-primary/10 text-foreground';
+export const resultCount = (count: number) =>
+  `${count} ${count === 1 ? 'result' : 'results'}`;
+
+/** A v2 question in the shape the cards draw. Option values ride along, so an answer can write them. */
+export function toCardQuestion(q: V2Question): Question & { values: string[] } {
+  return {
+    id: q.id,
+    type: styleOf(q),
+    ...cardWording(q),
+    values: q.options.map((o) => o.value),
+    answers: q.options.map((o) => ({
+      label: o.label,
+      add: [o.value],
+      keeps: o.results_count ?? undefined,
+      value: o.value,
+      description: optionDescription(o),
+    })),
+  };
+}
+
+/** The value an answer label stands for, on the v2 question it came from. */
+export const valueOfLabel = (q: V2Question, label: string) =>
+  q.options.find((o) => o.label === label)?.value ?? label;
+
+/**
+ * Prototype: the refine question beside the results. Round 17: it comes from `GET /v2/search`
+ * (real ml-broker classifier, real rules engine). It hides while the guided flow (`refine=1`) is open.
+ */
+export function SearchRefineQuestion() {
+  const tenantHotlines = useAppConfig()?.search?.hotlines;
+  // The count key lives in `common`; the search page's default namespace is `page-search`.
+  const { data, isFetching, isPlaceholderData, query: label } = useV2Search();
+  const { refine, params, asked, needs, passedNeeds } = useV2Url();
+  const { answer: writeAnswer, write, isPending: isWriting } = useV2Navigate();
+  const [collapsed, setCollapsed] = useAtom(refineCollapsedAtom);
+  const setFlagged = useSetAtom(flaggedAtom);
+  // The emergency comes only from the emergency question (Decision 54).
+  const emergencyQ = emergencyQuestionOf(data);
+  // Popup only (Lucas 2026-11-18): the red question is the full-screen popup, never a card.
+  const dismissed = isDangerDismissed(
+    useAtomValue(emergencyPopupDismissedAtom),
+    label,
+    params.get('urgency'),
+  );
+  const setDismissed = useSetAtom(emergencyPopupDismissedAtom);
+  const popupMode = dismissed
+    ? null
+    : emergencyPopupMode(
+        emergencyQ,
+        params.get('urgency'),
+        asked,
+        isPlaceholderData,
+      );
+  // The danger popup (urgency=U-0) keeps the question although it is in `asked`; after Continue it goes.
+  const askedForNext = !emergencyQ
+    ? asked
+    : dismissed
+      ? [...asked, emergencyQ.id]
+      : popupMode === 'danger'
+        ? asked.filter((id) => id !== emergencyQ.id)
+        : asked;
+  const v2 = refineQuestionOf(data, askedForNext, params.get('urgency'));
+  const isPending = isFetching || isWriting;
+  // Always refine: with nothing left to ask, the card still invites more.
+  const question: Question = v2
+    ? toCardQuestion(v2)
+    : {
+        id: 'done',
+        text: 'Is there anything else we should know?',
+        why: 'Every question that changes the results is answered.',
+        answers: [],
+      };
+  const { picks, toggle } = useAnswerPicks(question.id);
+  const [showAll, setShowAll] = useState(false);
+  useEffect(() => setShowAll(false), [question.id]);
+  const { shown: shownAnswers, hidden: hiddenCount } = visibleOptions(
+    { placement: v2?.placement },
+    question.answers.map((a) => ({ ...a, value: a.value ?? a.label })),
+    showAll,
+  );
+  const [noted, setNoted] = useState('');
+  const pin = usePhonePin(collapsed, setCollapsed);
+  // Lucas 2026-11-06: on a phone a quiet question starts small and stays small, also at the top;
+  // an orange or red one opens. Wider screens: a new question must not arrive hidden.
+  const quiet = !v2 || QUESTION_STYLES[styleOf(v2)] === QUIET;
+  useEffect(() => {
+    if (quiet && window.matchMedia(PHONE_QUERY).matches) {
+      setCollapsed(true);
+      return;
+    }
+    if (!pin.pinned) setCollapsed(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.id]);
+  // An answer removes the control in focus, so focus goes to the next question.
+  const questionRef = useRef<HTMLHeadingElement>(null);
+  const moveFocus = useRef(false);
+  useEffect(() => {
+    if (!moveFocus.current) return;
+    moveFocus.current = false;
+    questionRef.current?.focus({ preventScroll: true });
+  }, [question.id]);
+
+  if (!label || refine || !data) return null;
+  const type: keyof typeof QUESTION_STYLES = v2 ? styleOf(v2) : 'none';
+  const style = QUESTION_STYLES[type];
+  // Card, popup and pinned row share the chip row's list: tenant, API, then 911 and 988 (F-1 = A).
+  const hotlines = emergencyLineHotlines(
+    tenantHotlines,
+    hotlinesOf(emergencyQ),
+  );
+  const soft = isSoftEmergency(emergencyQ);
+
+  const submitOther = (text: string) => {
+    setNoted('Thank you. We added that to your search.');
+    setFlagged((prev) => [...prev, text]);
+    moveFocus.current = true;
+    // The text joins the query (Decision 7). It clears `asked` and `urgency`,
+    // so the emergency question can ask again.
+    write({
+      // A question of the last answer, kept while a new text loads, passes no needs for the new text.
+      ...otherChanges(
+        isPlaceholderData ? undefined : v2,
+        params.get('query'),
+        text,
+        { needs, passedNeeds },
+      ),
+    });
+  };
+  // Each answer is a history entry, so the browser's Back button undoes it.
+  const answer = (labels: string[] = []) => {
+    if (!v2) return;
+    setNoted('');
+    moveFocus.current = true;
+    writeAnswer(
+      v2,
+      labels.map((l) => valueOfLabel(v2, l)),
+    );
+  };
+  // Skip on the emergency question writes no urgency (U-X counts as no answer, Decision 51):
+  // it only marks the question seen, so the numbers stay and the next question comes.
+  const skipEmergency = () => {
+    if (!emergencyQ) return;
+    moveFocus.current = true;
+    write({ asked: [...new Set([...asked, emergencyQ.id])] });
+  };
+  // Each answer of the red popup writes urgency= and searches again (Lucas 2026-11-18).
+  const onPopupAnswer = (value: string) => {
+    if (!emergencyQ) return;
+    moveFocus.current = true;
+    writeAnswer(withEmergencyAnswers(emergencyQ), [value]);
+  };
+  const popup = emergencyQ && popupMode && (
+    <EmergencyPopup
+      key={label}
+      mode={popupMode}
+      question={withEmergencyAnswers(emergencyQ)}
+      hotlines={hotlines}
+      busy={isPending}
+      onAnswer={onPopupAnswer}
+      onContinue={() => setDismissed(label)}
+    />
+  );
+  // The title of `start` and `no_match` is the question's own `stem` (API string table), shown as
+  // the question text, so the card label is the style's one, never picked from the id.
+  const cardTitle = style.title;
+
+  // The emergency question never compacts. Soft: the orange card. Red: only the popup (and, once
+  // it is closed, the numbers alone). Scrolled away, a row leads back.
+  if (popup || (v2 && type === 'emergency')) {
+    return (
+      <div ref={pin.holderRef} className="mt-3">
+        {popup}
+        {!popup && (
+          <EmergencyBox
+            question={soft ? question : undefined}
+            hotlines={hotlines}
+            soft={soft}
+            busy={isPending}
+            onAnswer={(option) => answer([option.label])}
+            onSkip={soft ? skipEmergency : undefined}
+          />
+        )}
+        {pin.pinned && !popup && (
+          <div className={PINNED}>
+            <PinnedNumbers hotlines={hotlines} />
+            {soft && (
+              <Button
+                variant="link"
+                type="button"
+                className="h-auto min-h-11 justify-start text-left text-sm font-semibold whitespace-normal text-red-700 underline"
+                data-testid="pinned-emergency-question"
+                onClick={() => window.scrollTo({ top: 0 })}
+              >
+                {question.text}
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+  // A skipped emergency question stays as the numbers alone.
+  const hotline =
+    Boolean(emergencyQ) && !isUrgencyAnswered(params.get('urgency'));
+
+  if (!v2) {
+    return (
+      <div className="mt-3 flex flex-col gap-3">
+        {hotline && <EmergencyBox hotlines={hotlines} soft={soft} />}
+        <AddMoreLine noted={noted} onSubmit={submitOther} />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={pin.holderRef}
+      className="mt-3 flex flex-col gap-3"
+      style={{ height: pin.height }}
+    >
+      {hotline && <EmergencyBox hotlines={hotlines} soft={soft} />}
+      <div className={cn(pin.pinned && PINNED)}>
+        {pin.pinned && hotline && <PinnedNumbers hotlines={hotlines} />}
+        <section
+          aria-label="Refine your search"
+          aria-busy={isPending}
+          className={cn(
+            'flex flex-col gap-2 rounded-lg border p-3 md:gap-3 md:p-4',
+            collapsed && 'max-md:py-0',
+            style.card,
+            isPending && 'opacity-70',
+          )}
+          data-type={type}
+          data-question={question.id}
+          data-testid="search-refine-question"
+        >
+          <Button
+            variant="ghost"
+            type="button"
+            aria-expanded={!collapsed}
+            className="h-auto min-h-11 justify-between gap-2 px-0 text-left font-normal whitespace-normal hover:bg-transparent md:hidden"
+            onClick={pin.toggle}
+          >
+            <span className={cn('text-sm font-semibold', style.label)}>
+              {cardTitle || 'Refine your search'}
+            </span>
+            <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-sm font-medium">
+              {collapsed ? 'Show' : 'Hide'}
+              <ChevronDown
+                className={cn('size-4', !collapsed && 'rotate-180')}
+                aria-hidden="true"
+              />
+            </span>
+          </Button>
+          {cardTitle && (
+            <p
+              className={cn(
+                'hidden text-sm font-semibold md:block',
+                style.label,
+              )}
+            >
+              {cardTitle}
+            </p>
+          )}
+          <div
+            className={cn(
+              'flex flex-col gap-2 md:gap-3',
+              collapsed && 'hidden md:flex',
+            )}
+          >
+            <div className="flex flex-wrap items-start justify-between gap-x-2">
+              <div className="min-w-0 flex-1">
+                <h2
+                  ref={questionRef}
+                  id="refine-question"
+                  aria-describedby={question.multi ? 'refine-hint' : undefined}
+                  tabIndex={-1}
+                  className="text-base font-semibold outline-none md:text-xl"
+                >
+                  {question.text}
+                </h2>
+                {question.multi && (
+                  <p id="refine-hint" className="text-muted-foreground text-sm">
+                    Pick all that fit.
+                  </p>
+                )}
+              </div>
+            </div>
+            <div
+              role="group"
+              aria-labelledby="refine-question"
+              className="grid grid-cols-2 gap-2 md:flex md:flex-wrap"
+            >
+              {shownAnswers.map((option) => {
+                const on = picks.includes(option.label);
+                return (
+                  <OptionCard
+                    key={option.label}
+                    description={option.description}
+                    className={cn(style.button, on && PICKED)}
+                  >
+                    <button
+                      type="button"
+                      disabled={isPending}
+                      aria-pressed={question.multi ? on : undefined}
+                      className={cn(
+                        'group flex min-h-11 w-full cursor-pointer rounded-lg bg-transparent py-2 pr-12 pl-3 text-left text-sm font-medium',
+                        question.multi
+                          ? 'items-center gap-2'
+                          : 'flex-col items-start justify-center',
+                      )}
+                      onClick={() =>
+                        question.multi
+                          ? toggle(option.label)
+                          : answer([option.label])
+                      }
+                    >
+                      {question.multi && <PickMark on={on} />}
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        {option.label}
+                        <OptionCount count={option.keeps} />
+                      </span>
+                    </button>
+                  </OptionCard>
+                );
+              })}
+              {hiddenCount > 0 && (
+                <Button
+                  variant="link"
+                  type="button"
+                  className="h-auto min-h-11 justify-self-start px-1 text-sm font-semibold underline"
+                  data-testid="show-more-options"
+                  onClick={() => setShowAll(true)}
+                >
+                  Show more ({hiddenCount})
+                </Button>
+              )}
+              {(!v2 || v2.allow_other) && (
+                <OtherBox
+                  className="col-span-2"
+                  placeholder={
+                    v2 ? 'Other: type your own' : 'Tell us in your own words'
+                  }
+                  onSubmit={submitOther}
+                />
+              )}
+              <p className="sr-only" role="status">
+                {picks.length > 0 ? `${picks.length} picked.` : ''}
+              </p>
+              {v2 && picks.length === 0 && (
+                <Button
+                  variant="link"
+                  type="button"
+                  className="text-muted-foreground h-auto min-h-11 justify-self-start px-1 text-sm underline"
+                  onClick={() => answer()}
+                >
+                  Skip
+                </Button>
+              )}
+              {picks.length > 0 && (
+                <Button
+                  type="button"
+                  disabled={isPending}
+                  className="col-span-2 h-auto min-h-11 rounded-lg px-5 text-sm font-semibold"
+                  data-testid="refine-continue"
+                  onClick={() => answer(picks)}
+                >
+                  Continue
+                </Button>
+              )}
+            </div>
+            <p className="text-sm empty:hidden" role="status">
+              {noted}
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+/** Demo only: shows Skyler what drove the screen. Not part of the proposed design. */
+export function SearchClassifierPeek() {
+  const { data, error, query } = useV2Search();
+  if (!DEMO_PEEK_ENABLED || !query) return null;
+
+  return (
+    <details className="text-muted-foreground mt-3 hidden text-xs md:block print:hidden">
+      <summary className="cursor-pointer">
+        Demo only: what the v2 call returned
+      </summary>
+      <div className="mt-2 flex flex-col gap-1" data-testid="v2-peek">
+        {error && <p>The v2 call failed: {String(error.message)}</p>}
+        {data && (
+          <>
+            <p>
+              Classifier: {data.prototype?.classifier ?? 'unknown'}; services:{' '}
+              {data.prototype?.services ?? 'unknown'}.
+            </p>
+            <p>
+              Needs:{' '}
+              {data.intent.needs
+                .map(
+                  (n) =>
+                    `${labelOf(n.value)} (${n.state}, ${n.source}${n.confidence !== undefined ? ` ${Math.round(n.confidence * 100)}%` : ''})`,
+                )
+                .join(', ') || 'none'}
+            </p>
+            <p>
+              Urgency: {data.intent.urgency.value} ({data.intent.urgency.source}
+              , {data.intent.urgency.state}). Emergency question:{' '}
+              {(() => {
+                const e = emergencyQuestionOf(data);
+                return e ? `${placementOf(e)}/${styleOfQuestion(e)}` : 'none';
+              })()}
+              .
+            </p>
+            <p>
+              Questions:{' '}
+              {data.clarification.questions
+                .map((q) => `${q.id} (${placementOf(q)}/${styleOfQuestion(q)})`)
+                .join(', ') || 'none'}
+            </p>
+            <p>
+              Versions: model {data.model_version ?? 'none'}, rules{' '}
+              {data.rules_version}. Time: classify{' '}
+              {data.prototype?.timing_ms.classify ?? '?'} ms, total{' '}
+              {data.prototype?.timing_ms.total ?? '?'} ms.
+            </p>
+          </>
+        )}
+      </div>
+    </details>
+  );
+}

@@ -9,9 +9,13 @@ import {
   TenantMedia,
 } from '@/payload/payload-types';
 import { AppConfig } from '@/types/appConfig';
+import { searchHotlinesFor } from '@/utils/hotlines';
 
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
-import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
+import {
+  DEFAULT_SEARCH_CARD_LAYOUT,
+  V2_DEFAULT_SEARCH_CARD_LAYOUT,
+} from '../../features/search/types/card-layout-config';
 import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
 import { applyTemplateTags } from './applyTemplateTags';
 
@@ -237,6 +241,7 @@ export async function buildAppConfig(
       featureFlags: {
         enablePrintableDirectories: false,
         enableOrganizationSearch: false,
+        enableV2Api: false,
         requireAuthenticationForFavorites: false,
         requireUserLocation: false,
         showAgeFilter: false,
@@ -397,6 +402,7 @@ export async function buildAppConfig(
         resourceDirectory.featureFlags?.enablePrintableDirectories ?? false,
       enableOrganizationSearch:
         resourceDirectory.featureFlags?.enableOrganizationSearch ?? false,
+      enableV2Api: resourceDirectory.featureFlags?.enableV2Api ?? false,
       requireAuthenticationForFavorites:
         resourceDirectory.featureFlags?.requireAuthenticationForFavorites ??
         false,
@@ -552,6 +558,10 @@ export async function buildAppConfig(
         resourceDirectory.search.searchSettings.defaultRadius ?? undefined,
       searchEngine:
         resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
+      ...searchHotlinesFor(
+        resourceDirectory.featureFlags?.enableV2Api,
+        resourceDirectory.search.searchSettings.hotlines,
+      ),
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
       showAllResultsOnMap:
         resourceDirectory.search.searchSettings.showAllResultsOnMap ?? false,
@@ -597,7 +607,10 @@ export async function buildAppConfig(
                 ? resourceDirectory.search.cardLayout
                 : englishResourceDirectory?.search.cardLayout,
             )
-          : DEFAULT_SEARCH_CARD_LAYOUT,
+          : // The tenant's v2 switch: off keeps the v1 default order.
+            resourceDirectory.featureFlags?.enableV2Api
+            ? V2_DEFAULT_SEARCH_CARD_LAYOUT
+            : DEFAULT_SEARCH_CARD_LAYOUT,
     },
     noindex: getTenant(resourceDirectory)?.seo?.noindex ?? false,
     badges:

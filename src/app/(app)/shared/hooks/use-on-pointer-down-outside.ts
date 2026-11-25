@@ -1,21 +1,61 @@
 import { useEffect } from 'react';
 
+/** v1 default: a press outside (touch or mouse). */
+export const POINTER_DOWN_EVENTS = ['touchstart', 'mousedown'];
+
+/**
+ * A press, wheel or touch-move outside. Wheel and touch-move stand in for scroll: a phone's own scroll
+ * to a focused input must not close it. Used by the v2 inline boxes.
+ */
+export const POINTER_OR_SCROLL_EVENTS = ['pointerdown', 'wheel', 'touchmove'];
+
+type Options = {
+  /** Listen only while true (default true). */
+  active?: boolean;
+  /** Document events that count as "outside" (default `POINTER_DOWN_EVENTS`). */
+  events?: string[];
+  /** A target inside this selector never counts as outside (the button that toggles the box). */
+  keepSelector?: string;
+};
+
+/** v1 adds its two listeners with no options; only the v2 boxes (own `events`) ask for passive. */
+export function listenerOptions(
+  events: string[] | undefined,
+): AddEventListenerOptions | undefined {
+  return events ? { passive: true } : undefined;
+}
+
 export function useOnPointerDownOutside(
   ref: React.RefObject<HTMLElement | null>,
   handler: (event: PointerEvent) => void,
+  { active = true, events: eventsOption, keepSelector }: Options = {},
 ) {
+  const events = eventsOption ?? POINTER_DOWN_EVENTS;
+  const custom = eventsOption !== undefined;
+  const eventKey = events.join(',');
   useEffect(() => {
+    if (!active) return;
+    const names = eventKey.split(',');
     const listener = (event: PointerEvent) => {
       const el = ref?.current;
       if (!el || el.contains(event.target as Node)) return;
+      if (keepSelector && (event.target as Element).closest?.(keepSelector)) {
+        return;
+      }
       handler(event);
     };
 
-    document.addEventListener('touchstart', listener);
-    document.addEventListener('mousedown', listener);
+    for (const name of names) {
+      document.addEventListener(
+        name,
+        listener as EventListener,
+        listenerOptions(custom ? events : undefined),
+      );
+    }
     return () => {
-      document.removeEventListener('touchstart', listener);
-      document.removeEventListener('mousedown', listener);
+      for (const name of names) {
+        document.removeEventListener(name, listener as EventListener);
+      }
     };
-  }, [ref, handler]);
+  }, [ref, handler, active, eventKey, keepSelector, custom]);
 }

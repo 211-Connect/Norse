@@ -79,6 +79,7 @@ export const useOnSearchSubmit = ({
           requireUserLocation,
         }),
         searchEngine: appConfig.search.searchEngine,
+        v2: appConfig.featureFlags.enableV2Api,
       });
       let [routed] = transition(searchResolverMachine, resting, {
         type: 'SUBMIT',

@@ -1,5 +1,6 @@
 'use client';
 
+import { SearchGuideWhenRefining } from '@/app/(app)/shared/components/search/search-guide';
 import { useAtom, useAtomValue } from 'jotai';
 import { Filter } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
@@ -23,6 +24,18 @@ import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { useSearchResults } from '../../context/search-results-context';
+import {
+  emergencyQuestionOf,
+  hotlinesOf,
+  useV2Facets,
+  useV2Search,
+} from '../../v2/use-v2-search';
+import {
+  SearchClassifierPeek,
+  SearchRefineQuestion,
+  SearchResultsHelp,
+} from '../search-follow-up';
+import { EmergencyLine } from '../emergency-line';
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
 import { useFacetUiConfig } from './use-facet-ui-config';
@@ -42,8 +55,15 @@ export function FilterPanel({
 }: FilterPanelProps) {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
+  // The tenant's v2 switch: off keeps the v1 filter panel (no v2 questions, no inline search box).
+  const v2 = appConfig.featureFlags.enableV2Api;
   const showAgeFilter = appConfig.featureFlags.showAgeFilter;
-  const { filters } = useSearchResults();
+  const { filters: serverFilters } = useSearchResults();
+  // The v2 response carries the facet counts for the current filters; until it has them (or on an
+  // older server) the facets of the server-rendered page stay.
+  const v2Filters = useV2Facets();
+  const { data: v2Data } = useV2Search();
+  const filters = v2Filters ?? serverFilters;
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
 
@@ -83,6 +103,7 @@ export function FilterPanel({
     <div
       className={cn(
         'w-full self-start overflow-auto p-2.5 lg:max-w-75 lg:pl-5 xl:max-w-85',
+        v2 && 'md:min-h-0 md:self-stretch md:overflow-y-auto',
         appConfig.header?.position === 'sticky' && 'md:sticky md:top-26',
         appConfig.header?.position === 'sticky' &&
           appConfig.newLayout?.enabled &&
@@ -90,9 +111,14 @@ export function FilterPanel({
       )}
       id="filter-panel"
     >
+      {/* Always on, in every search state, also when the classifier fails (ADR 0039 Decision 45). */}
+      {v2 && (
+        <EmergencyLine hotlines={hotlinesOf(emergencyQuestionOf(v2Data))} />
+      )}
       <div className="flex items-center print:hidden">
         <MainSearchLayout
           className="flex-1"
+          inlineSearch={v2}
           legacyAiClarifyState={legacyAiClarifyState}
           onLegacyAiClarifyAction={onLegacyAiClarifyAction}
           searchIntent={searchIntent}
@@ -110,6 +136,14 @@ export function FilterPanel({
           {t('search.filter', 'Filter')}
         </Button>
       </div>
+      {v2 && (
+        <>
+          <SearchGuideWhenRefining />
+          <SearchRefineQuestion />
+          <SearchClassifierPeek />
+          <SearchResultsHelp />
+        </>
+      )}
       {hasSearchCoordinates && (
         <SearchLocationActions
           className="mt-3 print:hidden"

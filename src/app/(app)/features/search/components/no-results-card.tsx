@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
@@ -19,12 +18,16 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
-export function NoResultsCard() {
+import { NoResultsCall } from './no-results-call';
+
+/** `text` replaces the footer message (the v2 weak-match note, which names the way on). */
+export function NoResultsCard({ text: textOverride }: { text?: string } = {}) {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
 
   const text =
+    textOverride ||
     appConfig.search.texts?.noResultsFallbackText ||
     (appConfig?.contact?.number
       ? t('no_results.need_help')
@@ -52,12 +55,13 @@ export function NoResultsCard() {
         <p className="font-semibold">{text}</p>
 
         {appConfig?.contact?.number && (
-          <LocalizedLink
-            href={`tel:${appConfig.contact.number}`}
+          <NoResultsCall
+            number={appConfig.contact.number}
+            v2={appConfig.featureFlags?.enableV2Api === true}
             className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
           >
             <Phone className="size-4" /> {appConfig.contact.number}
-          </LocalizedLink>
+          </NoResultsCall>
         )}
       </CardFooter>
     </Card>

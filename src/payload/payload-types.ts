@@ -941,6 +941,16 @@ export interface ResourceDirectory {
        * They cannot be placed in any area, so each one is listed in every area search or in none. A virtual service with no service area usually serves everyone. "All" also lists physical services that are missing their address.
        */
       unlocatedInAreaSearch?: ('none' | 'virtual' | 'all') | null;
+      /**
+       * Shown, in this order, only when a search looks like an emergency. Leave empty to use 988 (Crisis line) and 911 (Emergency).
+       */
+      hotlines?:
+        | {
+            label: string;
+            number: string;
+            id?: string | null;
+          }[]
+        | null;
     };
     facets?:
       | {
@@ -1069,6 +1079,8 @@ export interface ResourceDirectory {
     showSearchAndResourceServiceName?: boolean | null;
     showSuggestionListTaxonomyBadge?: boolean | null;
     enableOrganizationSearch?: boolean | null;
+    enableV2Api?: boolean | null;
+    enableV2Ai?: boolean | null;
     showOrganizationLocationBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
@@ -1910,6 +1922,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               defaultRadius?: T;
               areaMatchMode?: T;
               unlocatedInAreaSearch?: T;
+              hotlines?:
+                | T
+                | {
+                    label?: T;
+                    number?: T;
+                    id?: T;
+                  };
             };
         facets?:
           | T
@@ -2013,6 +2032,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showSearchAndResourceServiceName?: T;
         showSuggestionListTaxonomyBadge?: T;
         enableOrganizationSearch?: T;
+        enableV2Api?: T;
+        enableV2Ai?: T;
         showOrganizationLocationBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;

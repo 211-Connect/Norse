@@ -69,6 +69,8 @@ export type AppConfig = {
   featureFlags: {
     enablePrintableDirectories: boolean;
     enableOrganizationSearch: boolean;
+    /** Super-admin only, default off: the tenant's site uses the v2 search page and API. */
+    enableV2Api: boolean;
     requireUserLocation: boolean;
     showAgeFilter: boolean;
     showFeedbackButtonGlobal: boolean;
@@ -159,6 +161,8 @@ export type AppConfig = {
     }[];
     defaultRadius?: number;
     searchEngine: SearchEngine;
+    /** The tenant's emergency hotlines. Set only when `enableV2Api` is on; absent for v1. */
+    hotlines?: { label: string; number: string }[];
     resultsLimit: number;
     showAllResultsOnMap: boolean;
     pinnedResourcesMode: 'ignore' | 'boost' | 'top';

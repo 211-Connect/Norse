@@ -1,14 +1,20 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
 import { useCallback, useState } from 'react';
 
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { useBreakpoint } from '@/app/(app)/shared/hooks/use-breakpoint';
+import { resultsViewAtom } from '@/app/(app)/shared/store/results';
 
+import { useSearchResults } from '../context/search-results-context';
 import { FilterPanel } from './filter/filter-panel';
 import { MapContainer } from './map-container';
 import { ResultsSection } from './results-section';
+import { ResultsViewToggle } from './results-view-toggle';
 
 type SearchPageShellProps = {
   aiSearchAlert?: string;
@@ -28,26 +34,60 @@ export function SearchPageShell({
     Boolean(legacyAiClarifyState?.autoOpenDialog),
   );
 
+  // A phone shows one view at a time, and loads the map only when the person asks for it.
+  const wide = useBreakpoint(768);
+  const { results } = useSearchResults();
+  const mapChosen =
+    useAtomValue(resultsViewAtom) === 'map' && results.length > 0;
+
   const handleLegacyDialogClose = useCallback(() => {
     setHideSupplementaryContent(false);
   }, []);
 
+  // The tenant's v2 switch: off keeps the v1 results page layout.
+  if (!useFlag('enableV2Api')) {
+    return (
+      <div className="flex h-full w-full flex-col md:flex-row">
+        <FilterPanel
+          legacyAiClarifyState={legacyAiClarifyState}
+          onLegacyAiClarifyAction={handleLegacyDialogClose}
+          searchIntent={searchIntent}
+        />
+        {!hideSupplementaryContent && (
+          <>
+            <ResultsSection
+              cardLayout={cardLayout}
+              aiSearchAlert={aiSearchAlert}
+            />
+            <MapContainer />
+          </>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-full w-full flex-col md:flex-row">
-      <FilterPanel
-        legacyAiClarifyState={legacyAiClarifyState}
-        onLegacyAiClarifyAction={handleLegacyDialogClose}
-        searchIntent={searchIntent}
-      />
-      {!hideSupplementaryContent && (
-        <>
-          <ResultsSection
-            cardLayout={cardLayout}
-            aiSearchAlert={aiSearchAlert}
-          />
-          <MapContainer />
-        </>
-      )}
+    <div className="flex h-full min-h-0 w-full flex-col">
+      <div className="flex min-h-0 w-full flex-1 flex-col md:flex-row">
+        <FilterPanel
+          legacyAiClarifyState={legacyAiClarifyState}
+          onLegacyAiClarifyAction={handleLegacyDialogClose}
+          searchIntent={searchIntent}
+        />
+        {!hideSupplementaryContent && (
+          <>
+            <ResultsSection
+              cardLayout={cardLayout}
+              aiSearchAlert={aiSearchAlert}
+              className={mapChosen ? 'max-md:hidden' : undefined}
+            />
+            {(wide || mapChosen) && (
+              <MapContainer phoneView={mapChosen && !wide} />
+            )}
+            <ResultsViewToggle />
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -45,8 +45,12 @@ export type AutocompleteProps = {
   /** Option committed when the field loses focus while its value doesn't
    *  match any option. */
   autoSelectOnBlurIndex?: number;
+  /** v2 pages: an emptied box picks nothing on blur. Off keeps the v1 pick. */
+  skipBlurPickWhenEmpty?: boolean;
   defaultOpen?: boolean;
   clearButtonLabel?: string;
+  /** Show the label as a tooltip under the clear (x) button. Default true. */
+  clearButtonTooltip?: boolean;
   /** Anchor the list's position (and width) to a different element than the
    *  input, by DOM id — e.g. a wrapper spanning several combined inputs, so
    *  the list opens below the whole group. */
@@ -69,4 +73,10 @@ export type AutocompleteProps = {
   /** Extra classes for the list, e.g. a shadow where it floats over other
    *  content such as a dialog. */
   listboxClassName?: string;
+  /** `auto` (default): the list may flip above the input. `below`: it always stays under the
+   *  input and scrolls inside itself. */
+  placement?: 'auto' | 'below';
+  /** Enter and Tab wait for `loading` to end before committing (the list stays open), then
+   *  commit the option that would have been picked. Default: commit at once. */
+  waitForOptions?: boolean;
 };

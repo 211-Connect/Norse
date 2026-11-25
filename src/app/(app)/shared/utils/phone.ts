@@ -30,8 +30,9 @@ export function formatPhoneNumber(raw: string | null | undefined): string {
 }
 
 /**
- * `tel:` URI for a phone number. Extensions use a pause (`,`) rather than
+ * `tel:` URI for a phone number, or '' for "no link". Extensions use a pause (`,`) rather than
  * RFC 3966 `;ext=`, because phone dialers dial the pause and ignore `;ext=`.
+ * The one place a phone number becomes a link.
  */
 export function getPhoneHref(raw: string | null | undefined): string {
   if (!raw) {

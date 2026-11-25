@@ -11,7 +11,31 @@ import { GeocodeResult } from '@/types/resource';
 
 import { useGeocodingAdapter } from '../use-geocoding-adapter';
 
-export function useLocations(searchTerm: string, excludeEverywhere = false) {
+/**
+ * Where "Everywhere" goes in the list (v2 pages): first when the box is empty, when the typed text
+ * is the start of the word "Everywhere" (case-insensitive), or when the place lookup found nothing.
+ * Otherwise last, so the first real match is the default.
+ */
+export function everywhereFirst(
+  typed: string,
+  matchCount: number,
+  everywhereLabel: string,
+): boolean {
+  const text = typed.trim().toLowerCase();
+  if (!text || matchCount === 0) return true;
+  return everywhereLabel.toLowerCase().startsWith(text);
+}
+
+/** Index of the first real place in the list, given where "Everywhere" sits. */
+export function firstPlaceIndex(everywhereIsFirst: boolean): number {
+  return everywhereIsFirst ? 1 : 0;
+}
+
+export function useLocations(
+  searchTerm: string,
+  excludeEverywhere = false,
+  { rankEverywhere = false }: { rankEverywhere?: boolean } = {},
+) {
   const adapter = useGeocodingAdapter();
   const appConfig = useAppConfig();
   const { t, i18n } = useTranslation('common');
@@ -50,20 +74,26 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
     [t],
   );
 
-  const options = useMemo(() => {
-    return [
-      ...(excludeEverywhere
-        ? []
-        : additionalLocations.map((loc) => ({
-            value: loc.address,
-            Icon: EarthIcon,
-          }))),
-      ...data.map((loc) => ({
-        value: loc.address,
-        Icon: EarthIcon,
-      })),
-    ];
-  }, [data, additionalLocations, excludeEverywhere]);
+  const everywhereLabel = t('search.everywhere', 'Everywhere');
+  const everywhereIsFirst =
+    !rankEverywhere ||
+    everywhereFirst(searchTerm, data.length, everywhereLabel);
 
-  return { data, options, additionalLocations, isFetching };
+  const options = useMemo(() => {
+    const everywhere = excludeEverywhere
+      ? []
+      : additionalLocations.map((loc) => ({
+          value: loc.address,
+          Icon: EarthIcon,
+        }));
+    const places = data.map((loc) => ({
+      value: loc.address,
+      Icon: EarthIcon,
+    }));
+    return everywhereIsFirst
+      ? [...everywhere, ...places]
+      : [...places, ...everywhere];
+  }, [data, additionalLocations, excludeEverywhere, everywhereIsFirst]);
+
+  return { data, options, additionalLocations, isFetching, everywhereIsFirst };
 }

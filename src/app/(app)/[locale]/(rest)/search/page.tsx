@@ -5,6 +5,8 @@ import { cache } from 'react';
 
 import { SearchPageShell } from '@/app/(app)/features/search/components/search-page-shell';
 import { SearchResultsProvider } from '@/app/(app)/features/search/context/search-results-context';
+import { isV2Enabled } from '@/app/(app)/features/search/v2/enabled';
+import { V2ResultsBridge } from '@/app/(app)/features/search/components/v2-results-bridge';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -29,6 +31,7 @@ import {
   type RawSearchParams,
 } from '@/app/(app)/features/search/intent';
 import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
+import { areaSettingsForQuery } from '@/app/(app)/features/search/utils/area-settings';
 import { liftSearchRequest } from '@/app/(app)/features/search/utils/liftSearchRequest';
 import { navigateToSearchWithCoords } from '@/app/(app)/features/search/utils';
 import { getPrintableDirectoryContextParams } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
@@ -45,8 +48,10 @@ function withAreaSettings(
   if (!query.region) return query;
   return {
     ...query,
-    areaMatch: appConfig.search.areaMatch,
-    unlocated: appConfig.search.unlocatedInAreaSearch,
+    ...areaSettingsForQuery(
+      appConfig.search,
+      appConfig.featureFlags.enableV2Api === true,
+    ),
   };
 }
 
@@ -57,7 +62,10 @@ const getPageData = cache(async function (
   const appConfig = await getAppConfigWithoutHost(locale);
 
   const { intent, envelope } = liftSearchRequest(rawParams);
-  const searchQuery = withAreaSettings(toFindResourcesQuery(intent), appConfig);
+  const searchQuery = withAreaSettings(
+    toFindResourcesQuery(intent, { v2: appConfig.featureFlags.enableV2Api }),
+    appConfig,
+  );
   const widgetId = (
     Array.isArray(rawParams.widgetId)
       ? rawParams.widgetId[0]
@@ -160,7 +168,12 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const [{ locale }, rawParams] = await Promise.all([params, searchParams]);
   const appConfig = await getAppConfigWithoutHost(locale);
-  const searchQuery = toFindResourcesQuery(liftSearchRequest(rawParams).intent);
+  const searchQuery = toFindResourcesQuery(
+    liftSearchRequest(rawParams).intent,
+    {
+      v2: appConfig.featureFlags.enableV2Api,
+    },
+  );
 
   const baseTitle = appConfig.meta.title || appConfig.brand.name || '';
   const parts = [
@@ -230,12 +243,24 @@ export default async function SearchPage({
     appConfig,
   } = await getPageData(locale, searchParamsResult);
   const aiSearchAlert = envelope.a;
+  const shell = (v2: boolean) => {
+    const page = (
+      <SearchPageShell
+        legacyAiClarifyState={legacyAiClarifyState ?? undefined}
+        searchIntent={intent}
+        cardLayout={cardLayout}
+        aiSearchAlert={aiSearchAlert}
+      />
+    );
+    return v2 ? <V2ResultsBridge>{page}</V2ResultsBridge> : page;
+  };
   const listTotal = appConfig.search.showAllResultsOnMap
     ? Math.min(totalResults, MAP_PINS_LIMIT)
     : totalResults;
 
   return (
     <PageWrapper
+      fitViewport
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       search={{
@@ -268,12 +293,8 @@ export default async function SearchPage({
           region: searchQuery.region ?? null,
         }}
       >
-        <SearchPageShell
-          legacyAiClarifyState={legacyAiClarifyState ?? undefined}
-          searchIntent={intent}
-          cardLayout={cardLayout}
-          aiSearchAlert={aiSearchAlert}
-        />
+        {/* The tenant's v2 switch: off renders the v1 page, with no v2 call. */}
+        {shell(isV2Enabled(appConfig))}
       </SearchResultsProvider>
     </PageWrapper>
   );
