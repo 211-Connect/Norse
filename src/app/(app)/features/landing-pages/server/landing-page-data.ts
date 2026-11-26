@@ -17,7 +17,9 @@ import { createLogger } from '@/lib/logger';
 import { type AppConfig } from '@/types/appConfig';
 import { type FiltersMap } from '@/types/search';
 
+import { landingAreas } from '../lib/areas';
 import { type CopyField, fillCopy, regionDisplayName } from '../lib/copy';
+import { hubPages } from '../lib/hub';
 import {
   isRefinedRequest,
   landingRefinements,
@@ -26,9 +28,13 @@ import {
 import { redirectHref } from '../lib/seo';
 import { STATE_NAMES, localizedLandingHref } from '../lib/slugs';
 import { type LandingPageStrings, loadLandingStrings } from '../lib/strings';
-import type { LandingPageView, LandingRegion } from '../lib/types';
-import { getLandingResolution } from './landing-data';
-import { LANDING_SEARCH_TTL, landingSearch } from './landing-search';
+import type { LandingLink, LandingPageView, LandingRegion } from '../lib/types';
+import { getLandingResolution, getLandingSitemap } from './landing-data';
+import {
+  LANDING_SEARCH_TTL,
+  type LandingSearchPage,
+  landingSearch,
+} from './landing-search';
 
 const log = createLogger('landing-page');
 
@@ -119,6 +125,8 @@ export async function resolveLandingRequest({
 
 export type LandingCrumb = { label: string; href?: string };
 export type LandingChildLink = { label: string; href: string };
+/** One list of links under "Search for services in other regions". */
+export type LandingAreaGroup = { heading: string; links: LandingChildLink[] };
 
 /** The page's texts and links, in its locale. */
 export async function getLandingContent(
@@ -169,31 +177,136 @@ export async function getLandingContent(
     { label: location },
   ];
 
-  const children: LandingChildLink[] = page.children
-    .map((child) => ({ label: nameOf(child.region), href: href(child.path) }))
-    .sort((a, b) => a.label.localeCompare(b.label, locale));
-  const childrenType = page.children[0]?.region.type;
-  const childrenHeading = (
-    childrenType === 'county' ? strings.page.counties : strings.page.cities
-  ).replace(/\{\{\s*location\s*\}\}/g, location);
+  const links = (list: LandingLink[]): LandingChildLink[] =>
+    list.map((link) => ({ label: nameOf(link.region), href: href(link.path) }));
+  const fill = (text: string, place: string) =>
+    text.replace(/\{\{\s*location\s*\}\}/g, place);
+  const { page: labels } = strings;
+  const county = page.parents.find((p) => p.region.type === 'county');
+  const childLevel = page.children[0]?.region.type;
+  const areas: LandingAreaGroup[] = [
+    {
+      heading: fill(
+        childLevel === 'county' ? labels.counties : labels.cities,
+        location,
+      ),
+      links: links(page.children),
+    },
+    {
+      heading:
+        page.region.type === 'state'
+          ? labels.otherStates
+          : page.region.type === 'county'
+            ? fill(labels.otherCounties, stateName)
+            : fill(
+                labels.otherCities,
+                county ? nameOf(county.region) : stateName,
+              ),
+      links: links(page.siblings ?? []),
+    },
+  ].filter((group) => group.links.length > 0);
 
   return {
     copy,
     location,
     crumbs,
-    children,
-    childrenHeading,
+    areas,
     labels: strings.page satisfies LandingPageStrings,
   };
 }
 
 /**
- * The page's results: the topic's search on the page's region, refined by
- * the query string, through the same pipeline as `/search`.
+ * `/{topic-slug}`: the topic's search across the whole tenant, with links to
+ * its top-level pages (docs/landing-pages.md, "Topic hub"). 404 when the
+ * topic has no live page in the locale. Cached per request.
+ */
+export const getLandingHub = cache(async (locale: string, topic: string) => {
+  const appConfig = await getAppConfigWithoutHost(locale);
+  if (!servesLandingPages(appConfig)) notFound();
+  const sitemap = await getLandingSitemap(appConfig.tenantId);
+  const hub = hubPages(sitemap, topic, locale);
+  if (!hub) notFound();
+
+  // The topic's search and name, from one of its pages: already cached.
+  const resolution = await getLandingResolution(
+    appConfig.tenantId,
+    locale,
+    hub.pages[0].path,
+  );
+  if (resolution.kind !== 'page') notFound();
+  const { topic: topicView } = resolution.page;
+
+  const strings = await loadLandingStrings(locale);
+  const { defaultLocale } = appConfig.i18n;
+  const { page: labels } = strings;
+  const stateOf = (region: LandingRegion) =>
+    STATE_NAMES[region.state] ?? region.state;
+  const links = (list: LandingLink[]): LandingChildLink[] =>
+    list
+      .map((link) => ({
+        label: regionDisplayName(
+          link.region,
+          strings.region,
+          stateOf(link.region),
+        ),
+        href: localizedLandingHref(link.path, locale, defaultLocale),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, locale));
+  const fill = (text: string, place: string) =>
+    text.replace(/\{\{\s*location\s*\}\}/g, place);
+
+  const top = hub.pages[0].region;
+  const areas: LandingAreaGroup[] = [
+    {
+      heading:
+        top.type === 'state'
+          ? labels.states
+          : fill(
+              top.type === 'county' ? labels.counties : labels.cities,
+              stateOf(top),
+            ),
+      links: links(hub.pages),
+    },
+  ];
+  // One state: its counties (or cities) too, so the hub reaches them.
+  if (top.type === 'state' && hub.pages.length === 1) {
+    const { children } = landingAreas(top, hub.all);
+    const level = children[0]?.region.type;
+    areas.push({
+      heading: fill(
+        level === 'county' ? labels.counties : labels.cities,
+        stateOf(top),
+      ),
+      links: links(children),
+    });
+  }
+
+  return {
+    appConfig,
+    topic: topicView,
+    alternates: hub.alternates,
+    path: localizedLandingHref(topic, locale, defaultLocale),
+    crumbs: [
+      {
+        label: labels.home,
+        href: locale === defaultLocale ? '/' : `/${locale}`,
+      },
+      { label: topicView.name },
+    ] satisfies LandingCrumb[],
+    areas: areas.filter((group) => group.links.length > 0),
+    labels,
+  };
+});
+
+/**
+ * The page's results: the topic's search on the page's region (the whole
+ * tenant for a hub), refined by the query string, through the same pipeline
+ * as `/search`.
  */
 export async function getLandingResults(
   appConfig: AppConfig,
-  page: LandingPageView,
+  /** A page, or a topic's hub (no region); `id` is for logs. */
+  page: LandingSearchPage & { id: string },
   locale: string,
   searchParams: RawSearchParams,
 ) {

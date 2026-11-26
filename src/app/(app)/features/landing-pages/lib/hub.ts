@@ -1,15 +1,12 @@
 /**
- * A topic's hub URL (`/food-pantries`, docs/landing-pages.md, "URLs"): the
- * topic's top-level pages in a locale. Pure.
+ * A topic's hub (`/food-pantries`, docs/landing-pages.md, "Topic hub"): the
+ * topic's pages in a locale, top level first. Pure.
  */
-import type { LandingRegionType, LandingSitemap } from './types';
+import type { LandingLink, LandingRegionType, LandingSitemap } from './types';
 
 const LEVELS: LandingRegionType[] = ['state', 'county', 'place'];
 
-export type HubPage = {
-  path: string;
-  region: { name: string; type: LandingRegionType; state: string };
-};
+export type HubPage = LandingLink;
 
 /**
  * The live pages under `topicSlug` in `locale` at the highest level the
@@ -23,6 +20,8 @@ export function hubPages(
 ): {
   topicId: string;
   pages: HubPage[];
+  /** Every live page of the topic in `locale`, whatever its level. */
+  all: HubPage[];
   alternates: Record<string, string>;
 } | null {
   const prefix = `${topicSlug}/`;
@@ -35,11 +34,13 @@ export function hubPages(
   const alternates = Object.fromEntries(
     Object.entries(under[0].paths).map(([l, path]) => [l, path.split('/')[0]]),
   );
+  const all = under.map((entry) => ({
+    path: entry.paths[locale],
+    region: entry.region,
+  }));
   for (const level of LEVELS) {
-    const pages = under
-      .filter((entry) => entry.region.type === level)
-      .map((entry) => ({ path: entry.paths[locale], region: entry.region }));
-    if (pages.length > 0) return { topicId, pages, alternates };
+    const pages = all.filter((page) => page.region.type === level);
+    if (pages.length > 0) return { topicId, pages, all, alternates };
   }
   return null;
 }

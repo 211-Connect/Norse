@@ -13,6 +13,12 @@
     "home": "Home",
     "breadcrumbs": "Breadcrumb",
     "counties": "Counties in {{location}}",
-    "cities": "Cities in {{location}}"
+    "cities": "Cities in {{location}}",
+    "otherAreas": "Search for services in other regions",
+    "otherStates": "Other states",
+    "otherCounties": "Other counties in {{location}}",
+    "otherCities": "Other cities in {{location}}",
+    "byRegion": "Search for services by region",
+    "states": "States"
   }
 }

@@ -59,7 +59,9 @@ export function htmlSitemapTopics(
   const byTopic = new Map<string, typeof sitemap.entries>();
   for (const entry of sitemap.entries) {
     if (!entry.paths[locale]) continue;
-    byTopic.set(entry.topicId, [...(byTopic.get(entry.topicId) ?? []), entry]);
+    const list = byTopic.get(entry.topicId);
+    if (list) list.push(entry);
+    else byTopic.set(entry.topicId, [entry]);
   }
 
   const topics = [...byTopic].map(([id, entries]): SitemapTopic => {

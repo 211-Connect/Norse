@@ -13,6 +13,12 @@
     "home": "Inicio",
     "breadcrumbs": "Ruta de navegación",
     "counties": "Condados en {{location}}",
-    "cities": "Ciudades en {{location}}"
+    "cities": "Ciudades en {{location}}",
+    "otherAreas": "Buscar servicios en otras regiones",
+    "otherStates": "Otros estados",
+    "otherCounties": "Otros condados en {{location}}",
+    "otherCities": "Otras ciudades en {{location}}",
+    "byRegion": "Buscar servicios por región",
+    "states": "Estados"
   }
 }

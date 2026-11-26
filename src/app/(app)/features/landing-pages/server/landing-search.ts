@@ -20,7 +20,8 @@ export const LANDING_SEARCH_TTL = ONE_DAY;
 /** What a page's search depends on. */
 export type LandingSearchPage = {
   topic: { name: string; search: LandingSearch };
-  region: LandingRegion;
+  /** None for a topic's hub (`/{topic}`): the topic across the tenant. */
+  region: LandingRegion | null;
 };
 
 /**
@@ -38,7 +39,7 @@ export async function landingSearch(
   locale: string,
   requestParams: RawSearchParams = {},
 ): Promise<{
-  /** The place as the location field shows it. */
+  /** The place as the location field shows it; empty for a hub. */
   location: string;
   /** The fixed search as `/search` parameters. */
   base: [string, string][];
@@ -46,16 +47,19 @@ export async function landingSearch(
   query: FindResourcesQuery;
 }> {
   const strings = await loadLandingStrings(locale);
-  const location = regionDisplayName(
-    page.region,
-    strings.region,
-    STATE_NAMES[page.region.state] ?? page.region.state,
-  );
+  const { region } = page;
+  const location = region
+    ? regionDisplayName(
+        region,
+        strings.region,
+        STATE_NAMES[region.state] ?? region.state,
+      )
+    : '';
   const base = landingBaseParams({
     search: page.topic.search,
     topicName: page.topic.name,
-    regionId: page.region.id,
-    location,
+    regionId: region?.id ?? null,
+    location: location || null,
     searchEngine: appConfig.search.searchEngine,
   });
   const { intent } = liftSearchRequest(

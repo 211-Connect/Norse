@@ -16,6 +16,14 @@ export type LandingPageStrings = {
   breadcrumbs: string;
   counties: string;
   cities: string;
+  /** Heading over the links to other areas. */
+  otherAreas: string;
+  /** Heading over a topic hub's links to its areas. */
+  byRegion: string;
+  states: string;
+  otherStates: string;
+  otherCounties: string;
+  otherCities: string;
 };
 
 const PAGE_FALLBACK: LandingPageStrings = {
@@ -23,6 +31,12 @@ const PAGE_FALLBACK: LandingPageStrings = {
   breadcrumbs: 'Breadcrumb',
   counties: 'Counties in {{location}}',
   cities: 'Cities in {{location}}',
+  otherAreas: 'Search for services in other regions',
+  byRegion: 'Search for services by region',
+  states: 'States',
+  otherStates: 'Other states',
+  otherCounties: 'Other counties in {{location}}',
+  otherCities: 'Other cities in {{location}}',
 };
 
 type LandingStrings = {

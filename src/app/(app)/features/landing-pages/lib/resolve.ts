@@ -61,7 +61,11 @@ export async function resolveLandingPath(
     if (!page) return { kind: 'not-found' };
 
     if (page.status === 'live') {
-      const current = await store.currentPath(page.id, locale);
+      // The slug matched is current: no need to look the path up again.
+      const current =
+        !viaRedirect && slug.current && slug.pageId === page.id
+          ? path
+          : await store.currentPath(page.id, locale);
       if (!current) return { kind: 'not-found' };
       if (viaRedirect || current !== path) {
         return { kind: 'redirect', path: current };

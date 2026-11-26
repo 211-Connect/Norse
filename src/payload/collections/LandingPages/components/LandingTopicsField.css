@@ -13,6 +13,12 @@
   gap: 16px;
 }
 
+.landing-topics__subtitle {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 .landing-topics__title {
   margin: 0;
 }
@@ -27,7 +33,7 @@
 }
 
 .landing-topics__panel {
-  margin: 12px 0 16px;
+  margin: 16px 0 0;
   padding: 12px 16px;
   border-radius: var(--style-radius-s);
   background: var(--theme-elevation-50);

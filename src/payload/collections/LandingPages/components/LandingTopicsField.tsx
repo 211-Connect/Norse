@@ -62,7 +62,7 @@ async function createTopic(body: Record<string, unknown>): Promise<void> {
 
 /**
  * The Topics section of the Landing Pages tab: the tenant's landing-page
- * topics, and an Add topics panel that copies a topic-card subtopic, a
+ * topics, and the Add topics panel below them, which copies a topic-card subtopic, a
  * search suggestion or a custom query into a new topic
  * (docs/landing-pages.md, Topics). Reads the saved Resource Directory, so
  * new cards or suggestions appear after a save.
@@ -80,7 +80,6 @@ const LandingTopicsField = () => {
   const [topics, setTopics] = useState<TopicRow[] | null>(null);
   const [sources, setSources] = useState<TopicSource[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>('subtopic');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
@@ -234,170 +233,9 @@ const LandingTopicsField = () => {
             moves it to the trash. Changes take effect on Apply changes.
           </p>
         </div>
-        <Button
-          buttonStyle={open ? 'secondary' : 'primary'}
-          size="small"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? 'Close' : 'Add topics'}
-        </Button>
       </header>
 
       {error && <p className="landing-topics__error">{error}</p>}
-
-      {open && (
-        <div className="landing-topics__panel">
-          <div className="landing-topics__tabs" role="tablist">
-            {TABS.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                aria-selected={tab === id}
-                className="landing-topics__tab"
-                onClick={() => setTab(id)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {tab === 'custom' ? (
-            <div className="landing-topics__custom">
-              <label>
-                <span>Name</span>
-                <input
-                  value={custom.name}
-                  placeholder="Food pantries"
-                  onChange={(e) =>
-                    setCustom({ ...custom, name: e.target.value })
-                  }
-                />
-              </label>
-              <label>
-                <span>Search by</span>
-                <select
-                  value={custom.queryType}
-                  onChange={(e) =>
-                    setCustom({
-                      ...custom,
-                      queryType: e.target.value as TopicSearch['queryType'],
-                    })
-                  }
-                >
-                  <option value="text">Text</option>
-                  <option value="taxonomy">Taxonomy codes</option>
-                </select>
-              </label>
-              <label className="landing-topics__wide">
-                <span>
-                  {custom.queryType === 'taxonomy'
-                    ? 'Taxonomy codes, comma-separated'
-                    : 'Search text'}
-                </span>
-                <input
-                  value={custom.query}
-                  placeholder={
-                    custom.queryType === 'taxonomy'
-                      ? 'BD-1800.2000, BD-1800.1900'
-                      : 'food pantry'
-                  }
-                  onChange={(e) =>
-                    setCustom({ ...custom, query: e.target.value })
-                  }
-                />
-              </label>
-              <Button
-                size="small"
-                disabled={saving || !custom.name.trim() || !custom.query.trim()}
-                onClick={addCustom}
-              >
-                Add topic
-              </Button>
-            </div>
-          ) : visible.length === 0 ? (
-            <p className="landing-topics__muted">
-              {tab === 'subtopic'
-                ? 'This Resource Directory has no topic cards with subtopics.'
-                : 'This Resource Directory has no search suggestions.'}
-            </p>
-          ) : (
-            <>
-              <div className="landing-topics__toolbar">
-                {selectAllButton(
-                  visible,
-                  tab === 'subtopic'
-                    ? 'Select all subtopics'
-                    : 'Select all suggestions',
-                )}
-              </div>
-              {groups.map((group) => {
-                const inGroup = visible.filter(
-                  (s) => (s.group ?? '') === group,
-                );
-                return (
-                  <fieldset key={group} className="landing-topics__group">
-                    {group && (
-                      <legend>
-                        {group}
-                        {groups.length > 1 &&
-                          selectAllButton(inGroup, 'Select all')}
-                      </legend>
-                    )}
-                    {inGroup.map((source) => {
-                      const key = sourceKey(source.kind, source.ref);
-                      const isAdded = added.has(key);
-                      const reason = isAdded
-                        ? undefined
-                        : source.disabledReason;
-                      return (
-                        <label
-                          key={key}
-                          className="landing-topics__option"
-                          data-disabled={
-                            isAdded || Boolean(reason) || undefined
-                          }
-                          title={isAdded ? 'Already a topic' : undefined}
-                        >
-                          <input
-                            type="checkbox"
-                            disabled={isAdded || Boolean(reason)}
-                            checked={selected.has(key)}
-                            onChange={() => toggle(key)}
-                          />
-                          <span>{source.label || '(no name)'}</span>
-                          {isAdded && (
-                            <span
-                              className="landing-topics__added"
-                              aria-label="Already a topic"
-                            >
-                              ✓
-                            </span>
-                          )}
-                          {reason && (
-                            <span className="landing-topics__reason">
-                              {reason}
-                            </span>
-                          )}
-                        </label>
-                      );
-                    })}
-                  </fieldset>
-                );
-              })}
-              <Button
-                size="small"
-                disabled={saving || selected.size === 0}
-                onClick={addSelected}
-              >
-                {saving
-                  ? 'Adding…'
-                  : `Add ${selected.size || ''} topic${selected.size === 1 ? '' : 's'}`}
-              </Button>
-            </>
-          )}
-        </div>
-      )}
 
       {topics === null ? (
         <p className="landing-topics__muted">Loading topics…</p>
@@ -448,6 +286,150 @@ const LandingTopicsField = () => {
           </tbody>
         </table>
       )}
+      <div className="landing-topics__panel">
+        <h4 className="landing-topics__subtitle">Add topics</h4>
+        <div className="landing-topics__tabs" role="tablist">
+          {TABS.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={tab === id}
+              className="landing-topics__tab"
+              onClick={() => setTab(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'custom' ? (
+          <div className="landing-topics__custom">
+            <label>
+              <span>Name</span>
+              <input
+                value={custom.name}
+                placeholder="Food pantries"
+                onChange={(e) => setCustom({ ...custom, name: e.target.value })}
+              />
+            </label>
+            <label>
+              <span>Search by</span>
+              <select
+                value={custom.queryType}
+                onChange={(e) =>
+                  setCustom({
+                    ...custom,
+                    queryType: e.target.value as TopicSearch['queryType'],
+                  })
+                }
+              >
+                <option value="text">Text</option>
+                <option value="taxonomy">Taxonomy codes</option>
+              </select>
+            </label>
+            <label className="landing-topics__wide">
+              <span>
+                {custom.queryType === 'taxonomy'
+                  ? 'Taxonomy codes, comma-separated'
+                  : 'Search text'}
+              </span>
+              <input
+                value={custom.query}
+                placeholder={
+                  custom.queryType === 'taxonomy'
+                    ? 'BD-1800.2000, BD-1800.1900'
+                    : 'food pantry'
+                }
+                onChange={(e) =>
+                  setCustom({ ...custom, query: e.target.value })
+                }
+              />
+            </label>
+            <Button
+              size="small"
+              disabled={saving || !custom.name.trim() || !custom.query.trim()}
+              onClick={addCustom}
+            >
+              Add topic
+            </Button>
+          </div>
+        ) : visible.length === 0 ? (
+          <p className="landing-topics__muted">
+            {tab === 'subtopic'
+              ? 'This Resource Directory has no topic cards with subtopics.'
+              : 'This Resource Directory has no search suggestions.'}
+          </p>
+        ) : (
+          <>
+            <div className="landing-topics__toolbar">
+              {selectAllButton(
+                visible,
+                tab === 'subtopic'
+                  ? 'Select all subtopics'
+                  : 'Select all suggestions',
+              )}
+            </div>
+            {groups.map((group) => {
+              const inGroup = visible.filter((s) => (s.group ?? '') === group);
+              return (
+                <fieldset key={group} className="landing-topics__group">
+                  {group && (
+                    <legend>
+                      {group}
+                      {groups.length > 1 &&
+                        selectAllButton(inGroup, 'Select all')}
+                    </legend>
+                  )}
+                  {inGroup.map((source) => {
+                    const key = sourceKey(source.kind, source.ref);
+                    const isAdded = added.has(key);
+                    const reason = isAdded ? undefined : source.disabledReason;
+                    return (
+                      <label
+                        key={key}
+                        className="landing-topics__option"
+                        data-disabled={isAdded || Boolean(reason) || undefined}
+                        title={isAdded ? 'Already a topic' : undefined}
+                      >
+                        <input
+                          type="checkbox"
+                          disabled={isAdded || Boolean(reason)}
+                          checked={selected.has(key)}
+                          onChange={() => toggle(key)}
+                        />
+                        <span>{source.label || '(no name)'}</span>
+                        {isAdded && (
+                          <span
+                            className="landing-topics__added"
+                            aria-label="Already a topic"
+                          >
+                            ✓
+                          </span>
+                        )}
+                        {reason && (
+                          <span className="landing-topics__reason">
+                            {reason}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  })}
+                </fieldset>
+              );
+            })}
+            <Button
+              size="small"
+              disabled={saving || selected.size === 0}
+              onClick={addSelected}
+            >
+              {saving
+                ? 'Adding…'
+                : `Add ${selected.size || ''} topic${selected.size === 1 ? '' : 's'}`}
+            </Button>
+          </>
+        )}
+      </div>
     </section>
   );
 };

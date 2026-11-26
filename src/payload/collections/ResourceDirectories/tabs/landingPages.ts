@@ -47,6 +47,22 @@ export const landingPages: Tab = {
       },
     },
     {
+      name: 'regions',
+      type: 'json',
+      validate: validateRegions,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+      admin: {
+        condition: (data) => Boolean(data?.featureFlags?.enableLandingPages),
+        components: {
+          Field:
+            '@/payload/collections/LandingPages/components/RegionPickerField',
+        },
+      },
+    },
+    {
       name: 'landingTopics',
       type: 'ui',
       admin: {
@@ -67,22 +83,6 @@ export const landingPages: Tab = {
           'Used by every page unless its topic sets its own. Variables: {topic}, {location}, {state}, {name}, {phone}, {email}. Empty fields use the built-in text for the language. Other languages are translated automatically from English.',
       },
       fields: landingCopyFields('template'),
-    },
-    {
-      name: 'regions',
-      type: 'json',
-      validate: validateRegions,
-      access: {
-        create: superAdminOrSupportOrTenantAccess,
-        update: superAdminOrSupportOrTenantAccess,
-      },
-      admin: {
-        condition: (data) => Boolean(data?.featureFlags?.enableLandingPages),
-        components: {
-          Field:
-            '@/payload/collections/LandingPages/components/RegionPickerField',
-        },
-      },
     },
   ],
 };

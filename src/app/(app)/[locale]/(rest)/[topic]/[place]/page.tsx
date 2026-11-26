@@ -178,8 +178,8 @@ export default async function LandingPage({ params, searchParams }: Props) {
             }
             resultsFooter={
               <LandingPlaces
-                heading={content.childrenHeading}
-                places={content.children}
+                heading={content.labels.otherAreas}
+                groups={content.areas}
               />
             }
           />

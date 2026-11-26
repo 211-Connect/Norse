@@ -260,7 +260,7 @@ const LandingSummaryCard = () => {
             disabled={busy || working || modified}
             onClick={showPreview}
           >
-            Apply changes…
+            Apply changes
           </Button>
           <span className="landing-summary__hint">
             {modified

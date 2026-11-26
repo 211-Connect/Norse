@@ -32,7 +32,8 @@ export interface PageSearchState {
   distance?: string;
   /**
    * The location is the page's own place, not one the visitor chose (an SEO
-   * landing page): shown in the form, never saved to the location cookies.
+   * landing page; none on a topic hub): shown in the form instead of the
+   * saved one, never saved to the location cookies.
    */
   fixedLocation?: boolean;
 }
@@ -74,12 +75,15 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
     appConfig?.search?.defaultRadius?.toString()?.trim() ||
     '0';
 
-  const location = urlLocation
+  // A fixed location is the page's own, even none (a topic hub searches the
+  // whole tenant): the saved one would misdescribe the results.
+  const usePageLocation = Boolean(urlLocation) || fixedLocation;
+  const location = usePageLocation
     ? decodeURIComponent(urlLocation)
     : cookieLocation;
 
   // The region belongs to the location it came with: the URL's, else the saved one.
-  const region = urlLocation
+  const region = usePageLocation
     ? urlRegion
     : isRegionId(cookieRegion)
       ? cookieRegion

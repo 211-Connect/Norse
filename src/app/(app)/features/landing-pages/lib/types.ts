@@ -53,8 +53,10 @@ export type LandingPageView = {
   alternates: Record<string, string>;
   /** State page, then county page, when they exist and are live. */
   parents: LandingLink[];
-  /** State page → its counties; county page → its cities. Live only. */
+  /** State page → its counties (or cities); county page → its cities. Live only. */
   children: LandingLink[];
+  /** Same level: other states, other counties of the state, other cities of the county. Live only. */
+  siblings: LandingLink[];
 };
 
 export type LandingResolution =

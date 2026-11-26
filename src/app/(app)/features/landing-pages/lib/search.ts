@@ -40,17 +40,18 @@ export function landingBaseParams({
 }: {
   search: LandingSearch;
   topicName: string;
-  regionId: string;
-  /** The place as the location field shows it, e.g. "Tacoma, WA". */
-  location: string;
+  /** None for a topic's hub: the search covers the whole tenant. */
+  regionId: string | null;
+  /** The place as the location field shows it, e.g. "Tacoma, WA"; none for a hub. */
+  location: string | null;
   searchEngine: SearchEngine;
 }): [string, string][] {
   const url = buildSearchUrl({
     query: search.query,
     queryLabel: topicName,
     queryType: search.queryType,
-    location,
-    region: regionId,
+    location: location ?? undefined,
+    region: regionId ?? undefined,
     searchEngine,
   });
   const query = url.slice(url.indexOf('?') + 1);

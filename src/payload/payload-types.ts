@@ -1149,6 +1149,15 @@ export interface ResourceDirectory {
     };
   };
   landingPages?: {
+    regions?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
     /**
      * Used by every page unless its topic sets its own. Variables: {topic}, {location}, {state}, {name}, {phone}, {email}. Empty fields use the built-in text for the language. Other languages are translated automatically from English.
      */
@@ -1170,15 +1179,6 @@ export interface ResourceDirectory {
        */
       intro?: string | null;
     };
-    regions?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -2267,6 +2267,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   landingPages?:
     | T
     | {
+        regions?: T;
         templates?:
           | T
           | {
@@ -2275,7 +2276,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               h1?: T;
               intro?: T;
             };
-        regions?: T;
       };
   updatedAt?: T;
   createdAt?: T;

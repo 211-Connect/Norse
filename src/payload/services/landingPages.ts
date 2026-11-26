@@ -1,5 +1,6 @@
 import type { Payload, Where } from 'payload';
 
+import { landingAreas } from '@/app/(app)/features/landing-pages/lib/areas';
 import {
   type LandingStore,
   type PageRow,
@@ -104,7 +105,19 @@ class PayloadLandingStore implements LandingStore {
     };
   }
 
-  private async page(id: string): Promise<LandingPage | null> {
+  /** One read per page and resolution: `findPage` and `view` share it. */
+  private readonly pages = new Map<string, Promise<LandingPage | null>>();
+
+  private page(id: string): Promise<LandingPage | null> {
+    let pending = this.pages.get(id);
+    if (!pending) {
+      pending = this.readPage(id);
+      this.pages.set(id, pending);
+    }
+    return pending;
+  }
+
+  private async readPage(id: string): Promise<LandingPage | null> {
     const { docs } = await this.payload.find({
       collection: 'landing-pages',
       where: this.where({ id: { equals: Number(id) } }),
@@ -153,10 +166,13 @@ class PayloadLandingStore implements LandingStore {
     return new Map(docs.map((row) => [String(idOf(row.page)), row.path]));
   }
 
-  /** Live pages of a topic matching `extra`, as links in a locale. */
-  private async links(
+  /**
+   * The topic's live pages in `state` and its live state pages elsewhere,
+   * as links in a locale: two queries, whatever the page's level.
+   */
+  private async nearby(
     topicId: number,
-    extra: Where,
+    state: string,
     locale: string,
   ): Promise<LandingLink[]> {
     const { docs } = await this.payload.find({
@@ -165,12 +181,16 @@ class PayloadLandingStore implements LandingStore {
         and: [
           { topic: { equals: topicId } },
           { status: { equals: 'live' } },
-          extra,
+          {
+            or: [
+              { regionState: { equals: state } },
+              { regionType: { equals: 'state' } },
+            ],
+          },
         ],
       }),
       depth: 0,
       pagination: false,
-      sort: 'regionName',
       select: REGION_SELECT,
     });
     const paths = await this.currentPaths(
@@ -190,56 +210,35 @@ class PayloadLandingStore implements LandingStore {
     if (!topicId) return null;
 
     const region = regionOf(page);
-    const live = (extra: Where) => this.links(topicId, extra, locale);
-    // Independent reads: one round trip of queries, not six in a row.
-    const [topic, { docs: slugRows }, stateLinks, countyLinks, children] =
-      await Promise.all([
-        this.payload.findByID({
-          collection: 'landing-page-topics',
-          id: topicId,
-          depth: 0,
-          locale: 'all',
-          // A trashed topic's pages stay live until Apply changes retires them.
-          trash: true,
+    // Independent reads, in parallel.
+    const [topic, { docs: slugRows }, nearby] = await Promise.all([
+      this.payload.findByID({
+        collection: 'landing-page-topics',
+        id: topicId,
+        depth: 0,
+        locale: 'all',
+        // A trashed topic's pages stay live until Apply changes retires them.
+        trash: true,
+      }),
+      this.payload.find({
+        collection: 'landing-page-slugs',
+        where: this.where({
+          page: { equals: page.id },
+          current: { equals: true },
         }),
-        this.payload.find({
-          collection: 'landing-page-slugs',
-          where: this.where({
-            page: { equals: page.id },
-            current: { equals: true },
-          }),
-          depth: 0,
-          pagination: false,
-          select: { locale: true, path: true },
-        }),
-        region.type === 'state'
-          ? []
-          : live({
-              regionType: { equals: 'state' },
-              regionState: { equals: region.state },
-            }),
-        region.type === 'place' && region.countyId
-          ? live({ regionId: { equals: region.countyId } })
-          : [],
-        region.type === 'state'
-          ? live({
-              regionType: { equals: 'county' },
-              regionState: { equals: region.state },
-            })
-          : region.type === 'county'
-            ? live({
-                regionType: { equals: 'place' },
-                countyId: { equals: region.id },
-              })
-            : [],
-      ]);
+        depth: 0,
+        pagination: false,
+        select: { locale: true, path: true },
+      }),
+      this.nearby(topicId, region.state, locale),
+    ]);
 
     const alternates: Record<string, string> = Object.fromEntries(
       slugRows.map((row) => [row.locale, row.path]),
     );
     const path = alternates[locale];
     if (!path) return null;
-    const parents = [...stateLinks, ...countyLinks];
+    const { parents, children, siblings } = landingAreas(region, nearby);
 
     const name =
       pick(topic.name as Localized<string>, locale) ??
@@ -261,6 +260,7 @@ class PayloadLandingStore implements LandingStore {
       alternates,
       parents,
       children,
+      siblings,
     };
   }
 }

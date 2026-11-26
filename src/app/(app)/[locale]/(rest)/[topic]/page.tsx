@@ -1,141 +1,171 @@
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
-import Link from 'next/link';
-import { notFound, permanentRedirect } from 'next/navigation';
 import { Metadata } from 'next/types';
-import { cache } from 'react';
 
 import { LandingHeader } from '@/app/(app)/features/landing-pages/components/landing-header';
-import { regionDisplayName } from '@/app/(app)/features/landing-pages/lib/copy';
-import { hubPages } from '@/app/(app)/features/landing-pages/lib/hub';
-import { landingAlternates } from '@/app/(app)/features/landing-pages/lib/seo';
+import { LandingPlaces } from '@/app/(app)/features/landing-pages/components/landing-places';
+import { LandingSearchProvider } from '@/app/(app)/features/landing-pages/components/landing-search-provider';
 import {
-  STATE_NAMES,
-  localizedLandingHref,
-} from '@/app/(app)/features/landing-pages/lib/slugs';
-import { loadLandingStrings } from '@/app/(app)/features/landing-pages/lib/strings';
-import { getLandingSitemap } from '@/app/(app)/features/landing-pages/server/landing-data';
+  isRefinedRequest,
+  requestedPage,
+} from '@/app/(app)/features/landing-pages/lib/search';
 import {
+  breadcrumbJsonLd,
+  landingAlternates,
+} from '@/app/(app)/features/landing-pages/lib/seo';
+import {
+  getLandingHub,
+  getLandingResults,
   landingOrigin,
-  servesLandingPages,
 } from '@/app/(app)/features/landing-pages/server/landing-page-data';
+import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
+import { SearchPageShell } from '@/app/(app)/features/search/components/search-page-shell';
+import { SearchResultsProvider } from '@/app/(app)/features/search/context/search-results-context';
+import { type RawSearchParams } from '@/app/(app)/features/search/intent';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { shouldBlockCrawlers } from '@/app/(app)/shared/utils/shouldBlockCrawlers';
 import { protectPage } from '@/lib/arcjet-page';
 
-const i18nNamespaces = ['common'];
+const i18nNamespaces = ['page-search', 'page-resource', 'page-list', 'common'];
 
-type Props = { params: Promise<{ locale: string; topic: string }> };
+type Props = {
+  params: Promise<{ locale: string; topic: string }>;
+  searchParams: Promise<RawSearchParams>;
+};
 
 /**
- * `/{topic-slug}`: a 308 to the topic's state page when the tenant covers one
- * state, else a list of its top-level pages; 404 for anything else
- * (docs/landing-pages.md, "URLs").
+ * `/{topic-slug}`: the topic's services across the tenant, with links to its
+ * state (or county) pages (docs/landing-pages.md, "Topic hub").
  */
-const getHub = cache(async (locale: string, topic: string) => {
-  const appConfig = await getAppConfigWithoutHost(locale);
-  if (!servesLandingPages(appConfig)) notFound();
-  const sitemap = await getLandingSitemap(appConfig.tenantId);
-  const hub = hubPages(sitemap, topic, locale);
-  if (!hub) notFound();
-  const { defaultLocale } = appConfig.i18n;
-  if (hub.pages.length === 1) {
-    permanentRedirect(
-      localizedLandingHref(hub.pages[0].path, locale, defaultLocale),
-    );
-  }
-  const strings = await loadLandingStrings(locale);
-  const links = hub.pages
-    .map((page) => ({
-      href: localizedLandingHref(page.path, locale, defaultLocale),
-      label: regionDisplayName(
-        page.region,
-        strings.region,
-        STATE_NAMES[page.region.state] ?? page.region.state,
-      ),
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, locale));
-  const topicName =
-    sitemap.topics[hub.topicId]?.[locale] ??
-    sitemap.topics[hub.topicId]?.[defaultLocale] ??
-    topic;
-  return {
-    appConfig,
-    links,
-    topicName,
-    alternates: hub.alternates,
-    home: {
-      label: strings.page.home,
-      href: locale === defaultLocale ? '/' : `/${locale}`,
-    },
-    breadcrumbsLabel: strings.page.breadcrumbs,
-  };
-});
-
 export const generateMetadata = async ({
   params,
+  searchParams,
 }: Props): Promise<Metadata> => {
-  const { locale, topic } = await params;
+  const [{ locale, topic }, rawParams] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   await protectPage(`/${locale}/${topic}`);
-  const { appConfig, topicName, alternates } = await getHub(locale, topic);
+  const {
+    appConfig,
+    topic: topicView,
+    alternates,
+  } = await getLandingHub(locale, topic);
   const origin = await landingOrigin(appConfig);
+  const refined = isRefinedRequest(rawParams);
+  const title = `${topicView.name} | ${appConfig.brand.name}`;
+  const { canonical, languages } = landingAlternates({
+    origin,
+    locale,
+    defaultLocale: appConfig.i18n.defaultLocale,
+    alternates,
+    page: refined ? 1 : requestedPage(rawParams),
+  });
   return {
-    title: `${topicName} | ${appConfig.brand.name}`,
-    alternates: landingAlternates({
-      origin,
-      locale,
-      defaultLocale: appConfig.i18n.defaultLocale,
-      alternates,
-      page: 1,
-    }),
+    title,
+    alternates: { canonical, languages },
+    // Only ever adds `noindex`, as on the landing pages.
+    ...(refined &&
+      !shouldBlockCrawlers(false) && {
+        robots: { index: false, follow: true },
+      }),
+    openGraph: {
+      title,
+      url: canonical,
+      type: 'website',
+      images: appConfig.brand.openGraphUrl
+        ? [{ url: appConfig.brand.openGraphUrl }]
+        : undefined,
+    },
   };
 };
 
-export default async function LandingHubPage({ params }: Props) {
-  const [{ locale, topic }, cookieList, headersList] = await Promise.all([
+export default async function LandingHubPage({ params, searchParams }: Props) {
+  const [{ locale, topic }, rawParams, cookieList] = await Promise.all([
     params,
+    searchParams,
     getCookies({ cookies }),
+  ]);
+
+  // Before any data fetch or streaming, so a denial is a real 403.
+  await protectPage(`/${locale}/${topic}`);
+
+  const hub = await getLandingHub(locale, topic);
+  const { appConfig } = hub;
+  const [results, { resources }, origin, headersList] = await Promise.all([
+    getLandingResults(
+      appConfig,
+      { id: `hub:${topic}`, topic: hub.topic, region: null },
+      locale,
+      rawParams,
+    ),
+    initTranslations(
+      locale,
+      i18nNamespaces,
+      appConfig.i18n.locales,
+      appConfig.i18n.defaultLocale,
+    ),
+    landingOrigin(appConfig),
     headers(),
   ]);
-  await protectPage(`/${locale}/${topic}`);
-  const { appConfig, links, topicName, home, breadcrumbsLabel } = await getHub(
-    locale,
-    topic,
-  );
-  const { resources } = await initTranslations(
-    locale,
-    i18nNamespaces,
-    appConfig.i18n.locales,
-    appConfig.i18n.defaultLocale,
-  );
+  const nonce = headersList.get('x-nonce') ?? '';
+  const { searchQuery } = results;
 
   return (
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      nonce={headersList.get('x-nonce') ?? ''}
+      search={{
+        query: searchQuery.query,
+        queryLabel: searchQuery.queryLabel,
+        queryType: searchQuery.queryType,
+        fixedLocation: true,
+      }}
+      nonce={nonce}
     >
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
-        <LandingHeader
-          crumbs={[home, { label: topicName }]}
-          crumbsLabel={breadcrumbsLabel}
-          h1={topicName}
-          intro=""
-        />
-        <ul className="bg-background grid grid-cols-1 gap-x-6 gap-y-2 rounded-lg border p-4 sm:grid-cols-2 md:grid-cols-3">
-          {links.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className="text-primary underline-offset-2 hover:underline"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <script
+        type="application/ld+json"
+        nonce={nonce}
+        dangerouslySetInnerHTML={{
+          __html: breadcrumbJsonLd(hub.crumbs, origin, hub.path),
+        }}
+      />
+      <ResultsEvents
+        results={results.results}
+        totalResults={results.totalResults}
+      />
+      <LandingSearchProvider params={results.base} path={hub.path}>
+        <SearchResultsProvider
+          value={{
+            results: results.results,
+            totalResults: results.listTotal,
+            isTotalCapped: results.listTotal < results.totalResults,
+            pinsQuery: results.pinsQuery,
+            currentPage: results.currentPage,
+            filters: results.filters,
+            sort: searchQuery.sort ?? 'relevance',
+            coordinates: searchQuery.coordinates ?? null,
+            region: searchQuery.region ?? null,
+          }}
+        >
+          <SearchPageShell
+            searchIntent={results.intent}
+            cardLayout={results.cardLayout}
+            resultsHeader={
+              <LandingHeader
+                crumbs={hub.crumbs}
+                crumbsLabel={hub.labels.breadcrumbs}
+                h1={hub.topic.name}
+                intro=""
+              />
+            }
+            resultsFooter={
+              <LandingPlaces heading={hub.labels.byRegion} groups={hub.areas} />
+            }
+          />
+        </SearchResultsProvider>
+      </LandingSearchProvider>
     </PageWrapper>
   );
 }

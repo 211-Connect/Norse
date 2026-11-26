@@ -178,8 +178,8 @@ from that list.
 
 - **Topic first.** The URL then follows the page hierarchy (topic → state →
   county → city), which is what breadcrumbs and the HTML sitemap show, and
-  `/food-pantries` works as a hub URL. It sends a 308 to the state page when
-  the tenant covers one state, and lists its state pages otherwise.
+  `/food-pantries` is the topic's hub: its services across the tenant (see
+  "Topic hub").
 - **Topic slugs are translated; region slugs are not.** Place names are proper
   nouns. Counties are `{name}-county-{st}`, cities `{name}-{st}`, and states
   use their full name. These rules keep Spokane city and Spokane County apart,
@@ -397,6 +397,14 @@ to add coordinates (an area search needs none).
   through `getLandingResolution` (cached, see Caching). A redirect is a 308
   that keeps the visitor's refinements; `gone` and `not-found` are 404s.
   The page and its metadata share the lookup (React `cache`).
+- **Resolution cost** (`resolveLandingPath` over `PayloadLandingStore`,
+  `src/payload/services/landingPages.ts`), uncached: the slug by its unique
+  `(tenant, locale, path)` index, the page by id (read once, shared by every
+  step), then three reads in parallel (the topic, the page's current slugs,
+  the topic's live pages in the state plus its state pages), and one read of
+  those pages' current slugs. Queries select only the columns they use.
+  About 6–9 ms locally for state, county and city pages; the result is then
+  cached for a day.
 - **Metadata:** title and description from the copy; canonical pointing to
   itself on the canonical host (`appConfig.canonicalHost`, else the request
   host); hreflang for every locale the page has plus `x-default` (the
@@ -414,8 +422,18 @@ to add coordinates (an area search needs none).
   `findResources`, then `SearchResultsProvider` and `SearchPageShell`, with
   map pins as on `/search`. The warm-up job builds the search the same way.
   `?page=n` paginates, and each page has its own canonical (`?page=n`).
-- **Child places** (`LandingPlaces`, below the results): a state page lists
-  its counties, a county page its live cities.
+- **Other regions** (`LandingPlaces`, below the results, with or without
+  results): "Search for services in other regions", grouped by
+  `landingAreas` (`lib/areas.ts`) from the topic's live pages:
+
+  | Page | Groups |
+  | --- | --- |
+  | State | Counties in the state (its cities when it has no county pages); other states |
+  | County | Its cities; other counties in the state |
+  | City | Other cities in its county (in the state, for a city outside any county) |
+
+  Groups without links are left out, and so is the section when none has
+  any.
 - **Location:** the location field shows the page's region. The page passes
   `fixedLocation` to `SearchStateSync`, so the visitor's location cookies
   are never changed.
@@ -433,14 +451,31 @@ to add coordinates (an area search needs none).
 - **Bot protection:** `protectPage` before any data fetch, like other
   directory pages ([bot-protection.md](bot-protection.md)).
 
-**Hub** (`[locale]/(rest)/[topic]/page.tsx`): `/{topic-slug}` lists the
-topic's live pages at the highest level the tenant has (states, else
-counties, else cities; `hubPages` in `lib/hub.ts`), from the cached sitemap
-data. With one page there, it is a 308 to it. An unknown slug is a 404.
-It has breadcrumbs (Home › topic), a canonical pointing to itself and
-hreflang to the topic's slug in each locale.
+### Topic hub
 
-The page labels (Home, the child-place headings) are in
+`[locale]/(rest)/[topic]/page.tsx`: `/{topic-slug}` (the topic crumb's
+link) shows the topic's services across the whole tenant, never a redirect.
+
+- **Data:** `getLandingHub` (`server/landing-page-data.ts`) finds the
+  topic's live pages in the locale in the cached page list (`hubPages`,
+  `lib/hub.ts`) and takes the topic's search and name from one of them
+  (`getLandingResolution`, cached). An unknown slug, or one with no live
+  page in the locale, is a 404.
+- **Results:** the same pipeline as a page (`getLandingResults`), with the
+  topic's search and no region. The location field is empty
+  (`fixedLocation` with no location, so a saved location is not shown);
+  refining works as on a page.
+- **Links:** "Search for services by region": the topic's top-level pages
+  (states, else counties, else cities). With one state, its counties (or
+  cities) too.
+- **SEO:** H1 and breadcrumbs (Home › topic, also as `BreadcrumbList`),
+  title `{topic} | {brand}`, a canonical pointing to itself, hreflang to the
+  topic's slug in each locale, `noindex, follow` when refined. The hub is
+  not in the sitemaps; the pages' breadcrumbs link to it.
+- **Analytics:** none of its own; searches from it are ordinary search
+  events.
+
+The page labels (Home, the area headings) are in
 `public/locales/<locale>/landing-pages.json` under `page`; a locale without
 them uses English.
 
@@ -495,6 +530,17 @@ landing pages, and links between the landing pages lead to the rest.
 - **Data:** built from the cached page list (`landing_sitemap`, see Caching).
 - Metadata only ever adds `noindex`. A deployment that blocks crawlers keeps
   its `noindex, nofollow`.
+
+**Scale.** `tests/landing-pages-sitemap-scale.test.ts` builds both sitemaps
+for 36,000 pages in two locales (72,000 URLs): 8 XML files, each URL in
+exactly one, each file far below the protocol's 50,000 URLs and 50 MB, a new
+page never moving earlier ones to another file, and the HTML sitemap split
+by topic, each step well under a second. The page list it is built from
+(`listLandingSitemap`: three queries, narrow columns) took 41 ms for 1,332
+pages locally, so about a second and 8 MB of JSON at that size. It runs only
+when the version changes (or after a day) and is then served from Redis and
+memory (`landing_sitemap`, 64 MB in memory). A topic page of the HTML
+sitemap lists all that topic's pages: about 12,000 links in the test.
 
 ## Caching
 
