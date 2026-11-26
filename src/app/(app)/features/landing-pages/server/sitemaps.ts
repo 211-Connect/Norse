@@ -3,7 +3,7 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getNorseRole, servesPath } from '@/lib/norse-role';
 import { type AppConfig } from '@/types/appConfig';
 
-import { type SitemapUrl, landingSitemapUrls } from '../lib/sitemap';
+import { type SitemapUrl, landingSitemapUrls } from '../lib/xmlSitemap';
 import { getLandingSitemap } from './landing-data';
 import { landingOrigin, servesLandingPages } from './landing-page-data';
 

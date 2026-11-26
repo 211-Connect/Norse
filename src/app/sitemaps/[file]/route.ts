@@ -2,7 +2,7 @@ import {
   landingSitemapNumber,
   sitemapPage,
   urlsetXml,
-} from '@/app/(app)/features/landing-pages/lib/sitemap';
+} from '@/app/(app)/features/landing-pages/lib/xmlSitemap';
 import {
   SITEMAP_HEADERS,
   getSitemapUrls,
