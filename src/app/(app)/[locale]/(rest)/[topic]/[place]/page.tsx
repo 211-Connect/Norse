@@ -2,6 +2,7 @@ import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
 
+import { LandingAnalytics } from '@/app/(app)/features/landing-pages/components/landing-analytics';
 import { LandingHeader } from '@/app/(app)/features/landing-pages/components/landing-header';
 import { LandingPlaces } from '@/app/(app)/features/landing-pages/components/landing-places';
 import { LandingSearchProvider } from '@/app/(app)/features/landing-pages/components/landing-search-provider';
@@ -144,9 +145,11 @@ export default async function LandingPage({ params, searchParams }: Props) {
           __html: breadcrumbJsonLd(content.crumbs, origin, path),
         }}
       />
+      <LandingAnalytics pageId={String(page.id)} />
       <ResultsEvents
         results={results.results}
         totalResults={results.totalResults}
+        landingPageId={String(page.id)}
       />
       <LandingSearchProvider params={results.base} path={path}>
         <SearchResultsProvider

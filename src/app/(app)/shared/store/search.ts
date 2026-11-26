@@ -65,3 +65,6 @@ export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);
 export const searchRegionAtom = atom((get) => get(searchAtom).searchRegion);
 
 export const searchEntryAtom = atom<ResourceEntry>(ResourceEntry.SearchCard);
+
+/** The SEO landing page being shown, for analytics; null elsewhere. */
+export const landingPageIdAtom = atom<string | null>(null);

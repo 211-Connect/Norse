@@ -47,8 +47,6 @@ host:
   reorder the trusted domains.
 - **Sitemaps:** served whenever landing pages are served; there is no
   separate switch.
-- **Search Console:** the analytics import picks the property our service
-  account can read that covers the canonical host (see Analytics).
 
 **Resource Directory → Landing Pages tab**: content, edited by tenant admins.
 Every field is hidden until a super-admin turns on
@@ -220,7 +218,7 @@ Every collection is scoped to one Resource Directory.
   rows are never deleted.
 
 Topics and pages keep Payload versions (no drafts), which gives a dated change
-history to compare with Search Console data. Tenant admins edit topics and
+history to compare with analytics. Tenant admins edit topics and
 the copy templates. Only super-admins and support edit pages: status and
 manual redirect targets.
 
@@ -453,7 +451,7 @@ Home page topic cards are unchanged; they still open `/search`.
 **XML.** `/sitemap.xml` is a sitemap index pointing to
 `/sitemaps/landing-{n}.xml` files of up to 10,000 URLs each
 (`src/app/sitemap.xml/route.ts`, `src/app/sitemaps/[file]/route.ts`,
-builders in `features/landing-pages/lib/sitemap.ts`).
+builders in `features/landing-pages/lib/xmlSitemap.ts`).
 
 - One URL per page and locale. Each lists every locale version of its page
   as an `xhtml:link rel="alternate" hreflang` entry, plus `x-default` (the
@@ -549,13 +547,22 @@ summary card shows when pages were last counted.
 
 ## Analytics
 
-- **Umami:** search and result events carry `surface` (`landing` or `search`),
-  `landingPageId` and `locale`.
-- **Search Console:** a daily job imports impressions, clicks, CTR and average
-  position per landing-page URL and query, into
-  Norse-API/Mongo (the same pattern as
-  [blocked-traffic-analytics.md](blocked-traffic-analytics.md)). A Payload
-  widget shows trends per page and per topic. Nothing is stored in Postgres.
-  The property is the one our service account can read (Search Console
-  `sites.list`) that covers the tenant's canonical host, so it is not
-  configured per tenant.
+Landing-page analytics come from Umami only. Search events (`search_text`,
+`search_taxonomy`, `search_hybrid`) and the zero-results event
+(`search_zero_results`) carry:
+
+| Field | Value |
+| --- | --- |
+| `surface` | `landing` on a landing page, `search` everywhere else |
+| `landingPageId` | the landing page's id (landing only) |
+| `locale` | the page's locale |
+
+Funnels and searches can then be split by surface and by page. The landing
+page marks itself with `LandingAnalytics` (`landingPageIdAtom`, cleared when
+the visitor leaves), so a search started from its search bar or dialog
+reports `surface: landing`. `ResultsEvents` takes the page id as a prop. The
+payload is built by `searchSurfacePayload` in
+`src/app/(app)/shared/lib/analytics.ts`.
+
+Google Search numbers (impressions, clicks, position) are not imported; read
+them in Google Search Console.

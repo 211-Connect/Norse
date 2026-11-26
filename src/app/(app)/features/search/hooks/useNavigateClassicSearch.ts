@@ -1,4 +1,5 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { useSearchSurface } from '@/app/(app)/shared/hooks/use-search-surface';
 import {
   ResourceEntry,
   trackSearchEvent,
@@ -32,6 +33,7 @@ export const useNavigateClassicSearch = ({
   const setSearch = useSetAtom(searchAtom);
   const setSearchEntry = useSetAtom(searchEntryAtom);
   const distance = useAtomValue(searchDistanceAtom);
+  const surface = useSearchSurface();
 
   return useCallback(
     (locationPayload: Promise<SearchLocationPayload>) => {
@@ -83,6 +85,7 @@ export const useNavigateClassicSearch = ({
           query: String(query ?? ''),
           queryLabel: String(search.queryLabel ?? ''),
           tenantId: appConfig.tenantId ?? '',
+          ...surface,
           ...(utmSource ? { utm_source: utmSource } : {}),
         };
 
@@ -124,6 +127,7 @@ export const useNavigateClassicSearch = ({
       setSearch,
       setSearchEntry,
       startTransition,
+      surface,
     ],
   );
 };

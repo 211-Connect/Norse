@@ -2,6 +2,7 @@
 
 import { useAtomValue } from 'jotai';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
@@ -14,6 +15,7 @@ import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-locati
 import {
   AnalyticsEvent,
   AnalyticsTools,
+  searchSurfacePayload,
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import {
@@ -26,13 +28,18 @@ interface ResultsEventsProps {
   results: any;
   totalResults: any;
   widgetId?: string;
+  /** Set on an SEO landing page: the events then carry `surface: landing`. */
+  landingPageId?: string;
 }
 
 export const ResultsEvents = ({
   results,
   totalResults,
   widgetId,
+  landingPageId,
 }: ResultsEventsProps) => {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const { searchParamsObject } = useClientSearchParams();
   const appConfig = useAppConfig();
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
@@ -94,6 +101,7 @@ export const ResultsEvents = ({
         trackEvent(AnalyticsEvent.SearchZeroResults, AnalyticsTools.Umami, {
           query: String(searchParamsObject.query ?? ''),
           query_label: String(searchParamsObject.query_label ?? ''),
+          ...searchSurfacePayload(landingPageId, locale),
           ...locationPayload,
         });
       }
@@ -107,6 +115,8 @@ export const ResultsEvents = ({
   }, [
     appConfig.sessionId,
     appConfig.tenantId,
+    landingPageId,
+    locale,
     query,
     queryLabel,
     results,
