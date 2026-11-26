@@ -1,6 +1,6 @@
 import { Tab } from 'payload';
 
-import { generateUrlFields } from '@/payload/fields/urlField';
+import { customMenuField } from '@/payload/fields/customMenuField';
 
 import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { TEMPLATE_TAGS_DESCRIPTION } from '../templateTagsDescription';
@@ -20,27 +20,7 @@ export const footer: Tab = {
         update: superAdminOrSupportOrTenantAccess,
       },
     },
-    {
-      name: 'customMenu',
-      type: 'array',
-      localized: true,
-      labels: {
-        singular: 'Menu Item',
-        plural: 'Menu Items',
-      },
-      access: {
-        create: superAdminOrSupportOrTenantAccess,
-        update: superAdminOrSupportOrTenantAccess,
-      },
-      fields: [
-        {
-          name: 'name',
-          type: 'text',
-          required: true,
-        },
-        ...generateUrlFields('href'),
-      ],
-    },
+    customMenuField,
     {
       name: 'copyright',
       type: 'text',

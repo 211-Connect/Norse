@@ -1,5 +1,5 @@
 import { TaskConfig } from 'payload';
-import { retry } from 'radash';
+import { get, retry } from 'radash';
 
 import { createLogger } from '@/lib/logger';
 
@@ -9,6 +9,7 @@ import {
   TranslationEngine,
   batchTranslate,
 } from '../services/translationService';
+import { CUSTOM_MENU_PATHS } from '../utilities/getChangedLocalizedPaths';
 import { isEmpty } from '../utilities/isEmpty';
 
 interface FieldToTranslate {
@@ -88,6 +89,23 @@ async function executeBatchTranslation(
   }
 
   return translationsByPath;
+}
+
+type CustomMenuItem = NonNullable<
+  NonNullable<ResourceDirectory['header']>['customMenu']
+>[number];
+
+function withTranslatedMenuNames(
+  menuPath: (typeof CUSTOM_MENU_PATHS)[number],
+  targetMenu: CustomMenuItem[] | null | undefined,
+  translationsByPath: Record<string, string>,
+): CustomMenuItem[] | undefined {
+  if (!targetMenu) return undefined;
+
+  return targetMenu.map((item, index) => ({
+    ...item,
+    name: translationsByPath[`${menuPath}.${index}.name`] ?? item.name,
+  }));
 }
 
 function makeShouldTranslate(
@@ -534,6 +552,32 @@ export const translate: TaskConfig<'translate'> = {
             }
           },
         );
+
+        // Header and footer menu item names
+        CUSTOM_MENU_PATHS.forEach((menuPath) => {
+          const targetMenu: CustomMenuItem[] = get(targetDoc, menuPath, []);
+          const sourceMenu: CustomMenuItem[] = get(
+            englishResourceDirectory,
+            menuPath,
+            [],
+          );
+
+          sourceMenu.forEach((sourceItem, index) => {
+            const targetItem = targetMenu.find(
+              (item) => item.id === sourceItem.id,
+            );
+
+            if (
+              shouldTranslate(sourceItem.name, targetItem?.name, sourceItem.id)
+            ) {
+              fieldsToTranslate.push({
+                path: `${menuPath}.${index}.name`,
+                value: sourceItem.name!,
+                locale: targetLocale,
+              });
+            }
+          });
+        });
 
         // Header Texts
         HEADER_TEXT_FIELDS.forEach((field) => {
@@ -1098,6 +1142,23 @@ export const translate: TaskConfig<'translate'> = {
               englishResourceDirectory.header?.[field];
           }
         });
+
+        // Header and footer menu item names. The rows are shared by every
+        // locale, so only the names change; an untranslated name stays blank
+        // and the app shows the English one.
+        updateData.header.customMenu = withTranslatedMenuNames(
+          'header.customMenu',
+          targetDoc.header?.customMenu,
+          translationsByPath,
+        );
+        updateData.footer = {
+          ...targetDoc.footer,
+          customMenu: withTranslatedMenuNames(
+            'footer.customMenu',
+            targetDoc.footer?.customMenu,
+            translationsByPath,
+          ),
+        };
 
         // Callouts (from newLayout tab)
         if (englishResourceDirectory.newLayout?.callouts) {

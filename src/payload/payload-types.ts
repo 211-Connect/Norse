@@ -612,9 +612,12 @@ export interface ResourceDirectory {
      * Controls whether the header sticks to the top when scrolling or stays static
      */
     position?: ('sticky' | 'static') | null;
+    /**
+     * The same links are shown in every language. Only the name is translated; a blank translation shows the English name.
+     */
     customMenu?:
       | {
-          name: string;
+          name?: string | null;
           href?: string | null;
           openInNewTab?: boolean | null;
           id?: string | null;
@@ -643,9 +646,12 @@ export interface ResourceDirectory {
      * You can use {name}, {phone} and {email}. They are replaced with the directory name and the phone number and email from the Brand tab.
      */
     disclaimer?: string | null;
+    /**
+     * The same links are shown in every language. Only the name is translated; a blank translation shows the English name.
+     */
     customMenu?:
       | {
-          name: string;
+          name?: string | null;
           href?: string | null;
           openInNewTab?: boolean | null;
           id?: string | null;

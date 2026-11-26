@@ -1,5 +1,6 @@
 import { Tab } from 'payload';
 
+import { customMenuField } from '@/payload/fields/customMenuField';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
@@ -30,27 +31,7 @@ export const header: Tab = {
         update: superAdminOrSupportOrTenantAccess,
       },
     },
-    {
-      name: 'customMenu',
-      type: 'array',
-      localized: true,
-      labels: {
-        singular: 'Menu Item',
-        plural: 'Menu Items',
-      },
-      access: {
-        create: superAdminOrSupportOrTenantAccess,
-        update: superAdminOrSupportOrTenantAccess,
-      },
-      fields: [
-        {
-          name: 'name',
-          type: 'text',
-          required: true,
-        },
-        ...generateUrlFields('href'),
-      ],
-    },
+    customMenuField,
     {
       type: 'row',
       fields: [
