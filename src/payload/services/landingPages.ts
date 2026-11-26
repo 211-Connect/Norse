@@ -15,11 +15,7 @@ import type {
 } from '@/app/(app)/features/landing-pages/lib/types';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { defaultLocale } from '@/payload/i18n/locales';
-import type {
-  LandingPage,
-  LandingPageSlug,
-  LandingPageTopic,
-} from '@/payload/payload-types';
+import type { LandingPage, LandingPageTopic } from '@/payload/payload-types';
 
 /**
  * The CMS side of landing pages (docs/landing-pages.md): reads the
@@ -50,7 +46,12 @@ function pickCopy(
   };
 }
 
-function regionOf(page: LandingPage): LandingRegion {
+function regionOf(
+  page: Pick<
+    LandingPage,
+    'regionId' | 'regionType' | 'regionName' | 'regionState' | 'countyId'
+  >,
+): LandingRegion {
   return {
     id: page.regionId,
     type: page.regionType,
@@ -59,6 +60,15 @@ function regionOf(page: LandingPage): LandingRegion {
     countyId: page.countyId ?? null,
   };
 }
+
+/** The page columns `regionOf` reads. */
+const REGION_SELECT = {
+  regionId: true,
+  regionType: true,
+  regionName: true,
+  regionState: true,
+  countyId: true,
+} as const;
 
 const idOf = (value: number | { id: number } | null | undefined) =>
   typeof value === 'object' && value !== null ? value.id : value;
@@ -138,6 +148,7 @@ class PayloadLandingStore implements LandingStore {
       }),
       depth: 0,
       pagination: false,
+      select: { page: true, path: true },
     });
     return new Map(docs.map((row) => [String(idOf(row.page)), row.path]));
   }
@@ -160,6 +171,7 @@ class PayloadLandingStore implements LandingStore {
       depth: 0,
       pagination: false,
       sort: 'regionName',
+      select: REGION_SELECT,
     });
     const paths = await this.currentPaths(
       docs.map((doc) => String(doc.id)),
@@ -177,73 +189,57 @@ class PayloadLandingStore implements LandingStore {
     const topicId = idOf(page.topic);
     if (!topicId) return null;
 
-    const topic = await this.payload.findByID({
-      collection: 'landing-page-topics',
-      id: topicId,
-      depth: 0,
-      locale: 'all',
-      // A trashed topic's pages stay live until Apply changes retires them.
-      trash: true,
-    });
+    const region = regionOf(page);
+    const live = (extra: Where) => this.links(topicId, extra, locale);
+    // Independent reads: one round trip of queries, not six in a row.
+    const [topic, { docs: slugRows }, stateLinks, countyLinks, children] =
+      await Promise.all([
+        this.payload.findByID({
+          collection: 'landing-page-topics',
+          id: topicId,
+          depth: 0,
+          locale: 'all',
+          // A trashed topic's pages stay live until Apply changes retires them.
+          trash: true,
+        }),
+        this.payload.find({
+          collection: 'landing-page-slugs',
+          where: this.where({
+            page: { equals: page.id },
+            current: { equals: true },
+          }),
+          depth: 0,
+          pagination: false,
+          select: { locale: true, path: true },
+        }),
+        region.type === 'state'
+          ? []
+          : live({
+              regionType: { equals: 'state' },
+              regionState: { equals: region.state },
+            }),
+        region.type === 'place' && region.countyId
+          ? live({ regionId: { equals: region.countyId } })
+          : [],
+        region.type === 'state'
+          ? live({
+              regionType: { equals: 'county' },
+              regionState: { equals: region.state },
+            })
+          : region.type === 'county'
+            ? live({
+                regionType: { equals: 'place' },
+                countyId: { equals: region.id },
+              })
+            : [],
+      ]);
 
-    const { docs: slugRows } = await this.payload.find({
-      collection: 'landing-page-slugs',
-      where: this.where({
-        page: { equals: page.id },
-        current: { equals: true },
-      }),
-      depth: 0,
-      pagination: false,
-    });
-    const alternates = Object.fromEntries(
-      slugRows.map((row: LandingPageSlug) => [row.locale, row.path]),
+    const alternates: Record<string, string> = Object.fromEntries(
+      slugRows.map((row) => [row.locale, row.path]),
     );
     const path = alternates[locale];
     if (!path) return null;
-
-    const region = regionOf(page);
-    const parents: LandingLink[] = [];
-    if (region.type !== 'state') {
-      parents.push(
-        ...(await this.links(
-          topicId,
-          {
-            regionType: { equals: 'state' },
-            regionState: { equals: region.state },
-          },
-          locale,
-        )),
-      );
-    }
-    if (region.type === 'place' && region.countyId) {
-      parents.push(
-        ...(await this.links(
-          topicId,
-          { regionId: { equals: region.countyId } },
-          locale,
-        )),
-      );
-    }
-    const children =
-      region.type === 'state'
-        ? await this.links(
-            topicId,
-            {
-              regionType: { equals: 'county' },
-              regionState: { equals: region.state },
-            },
-            locale,
-          )
-        : region.type === 'county'
-          ? await this.links(
-              topicId,
-              {
-                regionType: { equals: 'place' },
-                countyId: { equals: region.id },
-              },
-              locale,
-            )
-          : [];
+    const parents = [...stateLinks, ...countyLinks];
 
     const name =
       pick(topic.name as Localized<string>, locale) ??
@@ -298,12 +294,14 @@ export async function listLandingSitemap(
         depth: 0,
         pagination: false,
         sort: 'regionName',
+        select: { ...REGION_SELECT, topic: true, updatedAt: true },
       }),
       payload.find({
         collection: 'landing-page-slugs',
         where: { and: [tenant, { current: { equals: true } }] },
         depth: 0,
         pagination: false,
+        select: { page: true, locale: true, path: true, updatedAt: true },
       }),
       payload.find({
         collection: 'landing-page-topics',
@@ -312,6 +310,7 @@ export async function listLandingSitemap(
         locale: 'all',
         pagination: false,
         trash: true,
+        select: { name: true },
       }),
     ]);
 

@@ -1,6 +1,12 @@
 'use client';
 
-import { Button, useFormFields, useFormModified } from '@payloadcms/ui';
+import {
+  Button,
+  useFormFields,
+  useFormModified,
+  useTranslation,
+} from '@payloadcms/ui';
+import { formatDate } from '@payloadcms/ui/shared';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -31,8 +37,7 @@ type Status = {
 
 type Preview = { summary: Summary; conflicts: string[] };
 
-const when = (value: string | null | undefined) =>
-  value ? new Date(value).toLocaleString() : 'never';
+const CARD_DATE = 'MMM d, yyyy, h:mm a';
 
 const plural = (n: number, one: string, many = `${one}s`) =>
   `${n.toLocaleString()} ${n === 1 ? one : many}`;
@@ -63,6 +68,11 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
  */
 const LandingSummaryCard = () => {
   const tenantId = useTenantId();
+  const { i18n } = useTranslation();
+  // Payload's date formatting, shorter than the admin's `dateFormat` so the
+  // four figures fit on one row.
+  const when = (value: string | null | undefined) =>
+    value ? formatDate({ date: value, i18n, pattern: CARD_DATE }) : 'never';
   const modified = useFormModified();
   const [status, setStatus] = useState<Status | null>(null);
   const [preview, setPreview] = useState<Preview | null>(null);

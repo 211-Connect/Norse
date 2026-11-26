@@ -6,9 +6,7 @@ regions and topics in Payload. Norse generates a page for every region × topic
 pair, in every locale the tenant has enabled, and lists each page in the
 sitemaps so search engines find it.
 
-**Status: designed, not built.** This doc is the design the tickets implement.
-Update each section as its ticket lands, and remove this note once everything
-is built.
+**Status: built; Playwright e2e tests come later.**
 
 | Piece | Ticket |
 | --- | --- |
@@ -24,7 +22,7 @@ is built.
 | XML sitemap | ISS-2299 |
 | HTML sitemap and footer link | ISS-2300 |
 | Analytics | ISS-2301 |
-| This doc and e2e | ISS-2866 |
+| E2e tests (later) | ISS-2866 |
 
 Out of scope: organization pages (ISS-2675), results chosen by SUNE need code
 (ISS-2668), pages made from any search intent (ISS-2686), the canonical tag on
@@ -439,6 +437,8 @@ to add coordinates (an area search needs none).
 topic's live pages at the highest level the tenant has (states, else
 counties, else cities; `hubPages` in `lib/hub.ts`), from the cached sitemap
 data. With one page there, it is a 308 to it. An unknown slug is a 404.
+It has breadcrumbs (Home › topic), a canonical pointing to itself and
+hreflang to the topic's slug in each locale.
 
 The page labels (Home, the child-place headings) are in
 `public/locales/<locale>/landing-pages.json` under `page`; a locale without

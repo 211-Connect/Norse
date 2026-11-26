@@ -115,6 +115,16 @@
 .landing-topics__table {
   width: 100%;
   border-collapse: collapse;
+  /* Fixed columns: long slugs and code lists truncate instead of wrapping. */
+  table-layout: fixed;
+}
+
+.landing-topics__table th:nth-child(1) {
+  width: 36%;
+}
+
+.landing-topics__table th:nth-child(2) {
+  width: 32%;
 }
 
 .landing-topics__table th,
@@ -124,8 +134,8 @@
   text-align: left;
 }
 
+.landing-topics__slug,
 .landing-topics__search {
-  max-width: 320px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

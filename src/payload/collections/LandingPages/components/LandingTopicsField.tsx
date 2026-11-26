@@ -430,10 +430,16 @@ const LandingTopicsField = () => {
                     </span>
                   )}
                 </td>
-                <td>
+                <td
+                  className="landing-topics__slug"
+                  title={topic.slug ? `/${topic.slug}/…` : undefined}
+                >
                   <code>/{topic.slug ?? '…'}/…</code>
                 </td>
-                <td className="landing-topics__search">
+                <td
+                  className="landing-topics__search"
+                  title={topic.search.query}
+                >
                   {topic.search.queryType === 'taxonomy' ? 'Codes: ' : 'Text: '}
                   {topic.search.query}
                 </td>

@@ -5,15 +5,20 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
 
+import { LandingHeader } from '@/app/(app)/features/landing-pages/components/landing-header';
 import { regionDisplayName } from '@/app/(app)/features/landing-pages/lib/copy';
 import { hubPages } from '@/app/(app)/features/landing-pages/lib/hub';
+import { landingAlternates } from '@/app/(app)/features/landing-pages/lib/seo';
 import {
   STATE_NAMES,
   localizedLandingHref,
 } from '@/app/(app)/features/landing-pages/lib/slugs';
 import { loadLandingStrings } from '@/app/(app)/features/landing-pages/lib/strings';
 import { getLandingSitemap } from '@/app/(app)/features/landing-pages/server/landing-data';
-import { servesLandingPages } from '@/app/(app)/features/landing-pages/server/landing-page-data';
+import {
+  landingOrigin,
+  servesLandingPages,
+} from '@/app/(app)/features/landing-pages/server/landing-page-data';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
@@ -55,7 +60,17 @@ const getHub = cache(async (locale: string, topic: string) => {
     sitemap.topics[hub.topicId]?.[locale] ??
     sitemap.topics[hub.topicId]?.[defaultLocale] ??
     topic;
-  return { appConfig, links, topicName };
+  return {
+    appConfig,
+    links,
+    topicName,
+    alternates: hub.alternates,
+    home: {
+      label: strings.page.home,
+      href: locale === defaultLocale ? '/' : `/${locale}`,
+    },
+    breadcrumbsLabel: strings.page.breadcrumbs,
+  };
 });
 
 export const generateMetadata = async ({
@@ -63,8 +78,18 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
   const { locale, topic } = await params;
   await protectPage(`/${locale}/${topic}`);
-  const { appConfig, topicName } = await getHub(locale, topic);
-  return { title: `${topicName} | ${appConfig.brand.name}` };
+  const { appConfig, topicName, alternates } = await getHub(locale, topic);
+  const origin = await landingOrigin(appConfig);
+  return {
+    title: `${topicName} | ${appConfig.brand.name}`,
+    alternates: landingAlternates({
+      origin,
+      locale,
+      defaultLocale: appConfig.i18n.defaultLocale,
+      alternates,
+      page: 1,
+    }),
+  };
 };
 
 export default async function LandingHubPage({ params }: Props) {
@@ -74,7 +99,10 @@ export default async function LandingHubPage({ params }: Props) {
     headers(),
   ]);
   await protectPage(`/${locale}/${topic}`);
-  const { appConfig, links, topicName } = await getHub(locale, topic);
+  const { appConfig, links, topicName, home, breadcrumbsLabel } = await getHub(
+    locale,
+    topic,
+  );
   const { resources } = await initTranslations(
     locale,
     i18nNamespaces,
@@ -88,9 +116,14 @@ export default async function LandingHubPage({ params }: Props) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={headersList.get('x-nonce') ?? ''}
     >
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-8">
-        <h1 className="text-2xl font-semibold">{topicName}</h1>
-        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+        <LandingHeader
+          crumbs={[home, { label: topicName }]}
+          crumbsLabel={breadcrumbsLabel}
+          h1={topicName}
+          intro=""
+        />
+        <ul className="bg-background grid grid-cols-1 gap-x-6 gap-y-2 rounded-lg border p-4 sm:grid-cols-2 md:grid-cols-3">
           {links.map((link) => (
             <li key={link.href}>
               <Link

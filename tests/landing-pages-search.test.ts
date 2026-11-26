@@ -172,7 +172,7 @@ describe('topic hub', () => {
         id: 'a',
         topicId: '1',
         region: region('state:WA', 'state'),
-        paths: { en: 'food/washington' },
+        paths: { en: 'food/washington', es: 'comida/washington' },
         lastModified: '',
       },
       {
@@ -201,6 +201,13 @@ describe('topic hub', () => {
       hubPages(sitemap, 'housing', 'en')?.pages.map((p) => p.path),
       ['housing/king-county-wa'],
     );
+  });
+
+  test("gives the topic's slug in every locale", () => {
+    assert.deepEqual(hubPages(sitemap, 'food', 'en')?.alternates, {
+      en: 'food',
+      es: 'comida',
+    });
   });
 
   test('is null for an unknown topic or locale', () => {

@@ -14,7 +14,7 @@ import { findResources } from '@/app/(app)/shared/services/search-service';
 import { getAppConfigForHost } from '@/app/(app)/shared/utils/appConfig';
 import { createLogger } from '@/lib/logger';
 import { mapWithLimit } from '@/utilities/mapWithLimit';
-import type { LandingPage, LandingPageTopic } from '@/payload/payload-types';
+import type { LandingPageTopic } from '@/payload/payload-types';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { tenantCanonicalHost } from '@/utils/canonicalHost';
 
@@ -78,6 +78,13 @@ export async function warmTenantLandingPages(
       },
       depth: 0,
       pagination: false,
+      select: {
+        topic: true,
+        regionId: true,
+        regionType: true,
+        regionName: true,
+        regionState: true,
+      },
     }),
     payload.find({
       collection: 'landing-page-topics',
@@ -96,7 +103,7 @@ export async function warmTenantLandingPages(
   const { searchEngine, resultsLimit, showAllResultsOnMap } = appConfig.search;
   const cache = { ttl: LANDING_SEARCH_TTL, refresh: true };
 
-  await mapWithLimit(pages, WARMUP_CONCURRENCY, async (page: LandingPage) => {
+  await mapWithLimit(pages, WARMUP_CONCURRENCY, async (page) => {
     const topic = topicsById.get(Number(idOf(page.topic)));
     if (!topic) return;
     try {
