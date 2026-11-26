@@ -252,9 +252,9 @@ failure names the same step a manual tester would report.
   matched case-sensitively. The last test
   logs the shared session out, so `afterAll` sweeps leftovers with a fresh
   login.
-- Sort after adding a location: located **taxonomy** searches (guided topics,
-  "Topics"/"Taxonomies"/"Suggestions" picks) expect "Nearest First"; a
-  located **text** search expects "Most Relevant" (PR #1185).
+- Sort after adding a location: every located search in the checklist (text
+  and taxonomy) expects "Nearest First"; only hybrid keeps "Most Relevant"
+  (`getSortOption`).
 - Where the sheet's wording no longer matches the app, the test asserts the
   current behaviour and says why in a comment (e.g. "Login" after logging out
   goes straight to Keycloak instead of a "Sign in required" dialog; "Site Area

@@ -5,34 +5,30 @@ export const isSortOption = (value: unknown): value is SortOption =>
   typeof value === 'string' &&
   ['relevance', 'distance', 'name', 'organization'].includes(value);
 
+/**
+ * The sort a search runs with. It is both what Norse-API is asked for and what
+ * the "Sort by" control shows, so it must name the order the results come in.
+ *
+ * A stated sort wins, except `distance` without a valid origin, which the API
+ * would rank by `_score` anyway. With no stated sort, a located search is
+ * nearest first and an unlocated one is most relevant.
+ *
+ * `rankableByDistance` is false for hybrid searches (and for searches whose
+ * type is not known to be text or taxonomy). Hybrid has no relevance gate
+ * (`minimum_should_match: 0`), so nearest first would list every resource in
+ * the radius regardless of the query, and its sort control is hidden, so the
+ * user could not undo it (9a35c7cf, SCC211).
+ */
 export const getSortOption = (
   currentSort: string | null,
   coords: number[] | null | undefined,
-  isTaxonomySearch = false,
+  rankableByDistance = false,
 ): SortOption => {
+  const located = isValidCoordinate(coords);
+
   if (isSortOption(currentSort)) {
-    // `distance` needs a real origin. Without one the API ranks by _score
-    // anyway, so reporting relevance keeps the label and the behavior honest.
-    if (currentSort === 'distance' && !isValidCoordinate(coords)) {
-      return 'relevance';
-    }
-
-    return currentSort;
+    return currentSort === 'distance' && !located ? 'relevance' : currentSort;
   }
 
-  // A located taxonomy search is already nearest first: taxonomy matching is
-  // binary, so Norse-API orders its "relevance" by distance (`buildSort`,
-  // relevanceMeans 'proximity') and `distance` returns the identical order.
-  // Report it as such so "Sort by" names the order on screen.
-  if (isTaxonomySearch && isValidCoordinate(coords)) {
-    return 'distance';
-  }
-
-  // Otherwise never infer an ordering from a location. Supplying one is a
-  // filtering intent ("near me"), already served by coords + radius — not a
-  // ranking intent ("ignore my search terms"). Inferring `distance` here
-  // silently overrode relevance on every located search, and on
-  // `query_type=hybrid` the sort control is not rendered, so it could be
-  // neither seen nor undone.
-  return 'relevance';
+  return located && rankableByDistance ? 'distance' : 'relevance';
 };

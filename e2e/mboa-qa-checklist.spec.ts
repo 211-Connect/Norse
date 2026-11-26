@@ -93,16 +93,10 @@ async function clickSearchBar(page: Page) {
  * Search, then the results are a subset (by total) of the location-less
  * search and the address is shown below the search bar.
  *
- * Sort label after adding a location (PR #1185): a located **taxonomy**
- * search is reported as "Nearest First" (Norse-API already orders it by
- * distance); a located **text** search keeps "Most Relevant" — a location is
- * a filter there, not a ranking intent.
+ * Adding a location with no stated sort makes a text or taxonomy search
+ * "Nearest First" (`getSortOption`; hybrid keeps "Most Relevant").
  */
-async function addStPaulLocationAndSearch(
-  page: Page,
-  totalBefore: number,
-  expectedSort: 'Nearest First' | 'Most Relevant',
-) {
+async function addStPaulLocationAndSearch(page: Page, totalBefore: number) {
   await chooseLocationFromSearchPage(page, MBOA_ST_PAUL_ADDRESS);
   await submitSearchDialog(page);
 
@@ -112,7 +106,7 @@ async function addStPaulLocationAndSearch(
   );
   await expectLocationBelowSearch(page, MBOA_ST_PAUL_ADDRESS.suggestion);
   expect(await getResultTotalNumber(page)).toBeLessThanOrEqual(totalBefore);
-  await expectSortLabel(page, expectedSort);
+  await expectSortLabel(page, 'Nearest First');
 }
 
 /** Results-page state right after a location-less search. */
@@ -303,11 +297,7 @@ test.describe('MBOA QA checklist', () => {
       });
 
       await test.step('6-8. Add the St. Paul location and search', () =>
-        addStPaulLocationAndSearch(
-          page,
-          totalWithoutLocation,
-          'Nearest First',
-        ));
+        addStPaulLocationAndSearch(page, totalWithoutLocation));
 
       await test.step('9. Sort by "Resource Name" → alphabetical', async () => {
         await selectSortOption(page, 'Resource Name');
@@ -357,11 +347,7 @@ test.describe('MBOA QA checklist', () => {
 
       // Failed in the 11/10/2026 manual run: sort stayed "Most Relevant".
       await test.step('6-9. Add the St. Paul location and search', () =>
-        addStPaulLocationAndSearch(
-          page,
-          totalWithoutLocation,
-          'Nearest First',
-        ));
+        addStPaulLocationAndSearch(page, totalWithoutLocation));
     });
 
     test('Text', async ({ page }) => {
@@ -391,11 +377,7 @@ test.describe('MBOA QA checklist', () => {
       });
 
       await test.step('8-10. Add the St. Paul location and search', () =>
-        addStPaulLocationAndSearch(
-          page,
-          totalWithoutLocation,
-          'Most Relevant',
-        ));
+        addStPaulLocationAndSearch(page, totalWithoutLocation));
     });
 
     test('Suggestions', async ({ page }) => {
@@ -436,11 +418,7 @@ test.describe('MBOA QA checklist', () => {
 
       // Failed in the 11/10/2026 manual run: sort stayed "Most Relevant".
       await test.step('5-7. Add the St. Paul location and search', () =>
-        addStPaulLocationAndSearch(
-          page,
-          totalWithoutLocation,
-          'Nearest First',
-        ));
+        addStPaulLocationAndSearch(page, totalWithoutLocation));
     });
   });
 

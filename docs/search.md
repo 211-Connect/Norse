@@ -34,6 +34,28 @@ for every engine, so the field shows in the CMS whatever the engine:
 "Pinned first" keeps pinned resources at the top even under `sort=distance`,
 so a pinned virtual service (no map point) does not drop to the bottom.
 
+### Default sort
+
+`getSortOption` (`src/app/(app)/shared/utils/getSortOption.ts`), called from
+`toFindResourcesQuery`, picks the sort sent to Norse-API, and the "Sort by"
+control shows that same value:
+
+| URL                                                     | Sort                 |
+| ------------------------------------------------------- | -------------------- |
+| `sort` stated                                           | that sort            |
+| `sort=distance` without valid `coords`                  | `relevance`          |
+| no `sort`, valid `coords`, `query_type` text or taxonomy | `distance`           |
+| no `sort`, anything else (no coords, hybrid, no type)   | `relevance`          |
+
+Hybrid stays `relevance` even with a location: its query has no relevance
+gate (`minimum_should_match: 0`), so nearest first would list every resource
+in the radius regardless of the query, and `ResultsSection` hides the sort
+control for hybrid, so it could not be undone. A URL without `query_type`
+may be hybrid on the tenant's engine (`deriveQueryType`), so it stays
+`relevance` too. For taxonomy, Norse-API already orders `relevance` by
+distance when there are coords (`buildSort`, `relevanceMeans: 'proximity'`).
+"Nearest First" is offered in the control only when the search has coords.
+
 ## The four autocomplete groups
 
 The search dialog's query input (`search-bar.tsx`) shows up to four grouped
