@@ -31,7 +31,7 @@ export const header: Tab = {
         update: superAdminOrSupportOrTenantAccess,
       },
     },
-    customMenuField,
+    customMenuField('header'),
     {
       type: 'row',
       fields: [

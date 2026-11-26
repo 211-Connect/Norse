@@ -1646,8 +1646,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.rds_header_custom_menu": {
-      "name": "rds_header_custom_menu",
+    "public.rds_header_menu": {
+      "name": "rds_header_menu",
       "schema": "",
       "columns": {
         "_order": {
@@ -1683,8 +1683,8 @@
         }
       },
       "indexes": {
-        "rds_header_custom_menu_order_idx": {
-          "name": "rds_header_custom_menu_order_idx",
+        "rds_header_menu_order_idx": {
+          "name": "rds_header_menu_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -1698,8 +1698,8 @@
           "method": "btree",
           "with": {}
         },
-        "rds_header_custom_menu_parent_id_idx": {
-          "name": "rds_header_custom_menu_parent_id_idx",
+        "rds_header_menu_parent_id_idx": {
+          "name": "rds_header_menu_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -1715,9 +1715,9 @@
         }
       },
       "foreignKeys": {
-        "rds_header_custom_menu_parent_id_fk": {
-          "name": "rds_header_custom_menu_parent_id_fk",
-          "tableFrom": "rds_header_custom_menu",
+        "rds_header_menu_parent_id_fk": {
+          "name": "rds_header_menu_parent_id_fk",
+          "tableFrom": "rds_header_menu",
           "tableTo": "rds",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
@@ -1731,8 +1731,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.rds_header_custom_menu_locales": {
-      "name": "rds_header_custom_menu_locales",
+    "public.rds_header_menu_locales": {
+      "name": "rds_header_menu_locales",
       "schema": "",
       "columns": {
         "name": {
@@ -1762,8 +1762,8 @@
         }
       },
       "indexes": {
-        "rds_header_custom_menu_locales_locale_parent_id_unique": {
-          "name": "rds_header_custom_menu_locales_locale_parent_id_unique",
+        "rds_header_menu_locales_locale_parent_id_unique": {
+          "name": "rds_header_menu_locales_locale_parent_id_unique",
           "columns": [
             {
               "expression": "_locale",
@@ -1783,8 +1783,8 @@
           "method": "btree",
           "with": {}
         },
-        "rds_header_custom_menu_locales_parent_id_idx": {
-          "name": "rds_header_custom_menu_locales_parent_id_idx",
+        "rds_header_menu_locales_parent_id_idx": {
+          "name": "rds_header_menu_locales_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -1800,10 +1800,10 @@
         }
       },
       "foreignKeys": {
-        "rds_header_custom_menu_locales_parent_id_fk": {
-          "name": "rds_header_custom_menu_locales_parent_id_fk",
-          "tableFrom": "rds_header_custom_menu_locales",
-          "tableTo": "rds_header_custom_menu",
+        "rds_header_menu_locales_parent_id_fk": {
+          "name": "rds_header_menu_locales_parent_id_fk",
+          "tableFrom": "rds_header_menu_locales",
+          "tableTo": "rds_header_menu",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
@@ -1816,8 +1816,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.rds_footer_custom_menu": {
-      "name": "rds_footer_custom_menu",
+    "public.rds_footer_menu": {
+      "name": "rds_footer_menu",
       "schema": "",
       "columns": {
         "_order": {
@@ -1853,8 +1853,8 @@
         }
       },
       "indexes": {
-        "rds_footer_custom_menu_order_idx": {
-          "name": "rds_footer_custom_menu_order_idx",
+        "rds_footer_menu_order_idx": {
+          "name": "rds_footer_menu_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -1868,8 +1868,8 @@
           "method": "btree",
           "with": {}
         },
-        "rds_footer_custom_menu_parent_id_idx": {
-          "name": "rds_footer_custom_menu_parent_id_idx",
+        "rds_footer_menu_parent_id_idx": {
+          "name": "rds_footer_menu_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -1885,9 +1885,9 @@
         }
       },
       "foreignKeys": {
-        "rds_footer_custom_menu_parent_id_fk": {
-          "name": "rds_footer_custom_menu_parent_id_fk",
-          "tableFrom": "rds_footer_custom_menu",
+        "rds_footer_menu_parent_id_fk": {
+          "name": "rds_footer_menu_parent_id_fk",
+          "tableFrom": "rds_footer_menu",
           "tableTo": "rds",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
@@ -1901,8 +1901,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.rds_footer_custom_menu_locales": {
-      "name": "rds_footer_custom_menu_locales",
+    "public.rds_footer_menu_locales": {
+      "name": "rds_footer_menu_locales",
       "schema": "",
       "columns": {
         "name": {
@@ -1932,8 +1932,8 @@
         }
       },
       "indexes": {
-        "rds_footer_custom_menu_locales_locale_parent_id_unique": {
-          "name": "rds_footer_custom_menu_locales_locale_parent_id_unique",
+        "rds_footer_menu_locales_locale_parent_id_unique": {
+          "name": "rds_footer_menu_locales_locale_parent_id_unique",
           "columns": [
             {
               "expression": "_locale",
@@ -1953,8 +1953,8 @@
           "method": "btree",
           "with": {}
         },
-        "rds_footer_custom_menu_locales_parent_id_idx": {
-          "name": "rds_footer_custom_menu_locales_parent_id_idx",
+        "rds_footer_menu_locales_parent_id_idx": {
+          "name": "rds_footer_menu_locales_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -1970,10 +1970,10 @@
         }
       },
       "foreignKeys": {
-        "rds_footer_custom_menu_locales_parent_id_fk": {
-          "name": "rds_footer_custom_menu_locales_parent_id_fk",
-          "tableFrom": "rds_footer_custom_menu_locales",
-          "tableTo": "rds_footer_custom_menu",
+        "rds_footer_menu_locales_parent_id_fk": {
+          "name": "rds_footer_menu_locales_parent_id_fk",
+          "tableFrom": "rds_footer_menu_locales",
+          "tableTo": "rds_footer_menu",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
@@ -6115,8 +6115,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public._rds_v_version_header_custom_menu": {
-      "name": "_rds_v_version_header_custom_menu",
+    "public._rds_header_menu_v": {
+      "name": "_rds_header_menu_v",
       "schema": "",
       "columns": {
         "_order": {
@@ -6158,8 +6158,8 @@
         }
       },
       "indexes": {
-        "_rds_v_version_header_custom_menu_order_idx": {
-          "name": "_rds_v_version_header_custom_menu_order_idx",
+        "_rds_header_menu_v_order_idx": {
+          "name": "_rds_header_menu_v_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -6173,8 +6173,8 @@
           "method": "btree",
           "with": {}
         },
-        "_rds_v_version_header_custom_menu_parent_id_idx": {
-          "name": "_rds_v_version_header_custom_menu_parent_id_idx",
+        "_rds_header_menu_v_parent_id_idx": {
+          "name": "_rds_header_menu_v_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -6190,9 +6190,9 @@
         }
       },
       "foreignKeys": {
-        "_rds_v_version_header_custom_menu_parent_id_fk": {
-          "name": "_rds_v_version_header_custom_menu_parent_id_fk",
-          "tableFrom": "_rds_v_version_header_custom_menu",
+        "_rds_header_menu_v_parent_id_fk": {
+          "name": "_rds_header_menu_v_parent_id_fk",
+          "tableFrom": "_rds_header_menu_v",
           "tableTo": "_rds_v",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
@@ -6206,8 +6206,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public._rds_v_version_header_custom_menu_locales": {
-      "name": "_rds_v_version_header_custom_menu_locales",
+    "public._rds_header_menu_v_locales": {
+      "name": "_rds_header_menu_v_locales",
       "schema": "",
       "columns": {
         "name": {
@@ -6237,8 +6237,8 @@
         }
       },
       "indexes": {
-        "_rds_v_version_header_custom_menu_locales_locale_parent_id_u": {
-          "name": "_rds_v_version_header_custom_menu_locales_locale_parent_id_u",
+        "_rds_header_menu_v_locales_locale_parent_id_unique": {
+          "name": "_rds_header_menu_v_locales_locale_parent_id_unique",
           "columns": [
             {
               "expression": "_locale",
@@ -6258,8 +6258,8 @@
           "method": "btree",
           "with": {}
         },
-        "_rds_v_version_header_custom_menu_locales_parent_id_idx": {
-          "name": "_rds_v_version_header_custom_menu_locales_parent_id_idx",
+        "_rds_header_menu_v_locales_parent_id_idx": {
+          "name": "_rds_header_menu_v_locales_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -6275,10 +6275,10 @@
         }
       },
       "foreignKeys": {
-        "_rds_v_version_header_custom_menu_locales_parent_id_fk": {
-          "name": "_rds_v_version_header_custom_menu_locales_parent_id_fk",
-          "tableFrom": "_rds_v_version_header_custom_menu_locales",
-          "tableTo": "_rds_v_version_header_custom_menu",
+        "_rds_header_menu_v_locales_parent_id_fk": {
+          "name": "_rds_header_menu_v_locales_parent_id_fk",
+          "tableFrom": "_rds_header_menu_v_locales",
+          "tableTo": "_rds_header_menu_v",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
@@ -6291,8 +6291,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public._rds_v_version_footer_custom_menu": {
-      "name": "_rds_v_version_footer_custom_menu",
+    "public._rds_footer_menu_v": {
+      "name": "_rds_footer_menu_v",
       "schema": "",
       "columns": {
         "_order": {
@@ -6334,8 +6334,8 @@
         }
       },
       "indexes": {
-        "_rds_v_version_footer_custom_menu_order_idx": {
-          "name": "_rds_v_version_footer_custom_menu_order_idx",
+        "_rds_footer_menu_v_order_idx": {
+          "name": "_rds_footer_menu_v_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -6349,8 +6349,8 @@
           "method": "btree",
           "with": {}
         },
-        "_rds_v_version_footer_custom_menu_parent_id_idx": {
-          "name": "_rds_v_version_footer_custom_menu_parent_id_idx",
+        "_rds_footer_menu_v_parent_id_idx": {
+          "name": "_rds_footer_menu_v_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -6366,9 +6366,9 @@
         }
       },
       "foreignKeys": {
-        "_rds_v_version_footer_custom_menu_parent_id_fk": {
-          "name": "_rds_v_version_footer_custom_menu_parent_id_fk",
-          "tableFrom": "_rds_v_version_footer_custom_menu",
+        "_rds_footer_menu_v_parent_id_fk": {
+          "name": "_rds_footer_menu_v_parent_id_fk",
+          "tableFrom": "_rds_footer_menu_v",
           "tableTo": "_rds_v",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
@@ -6382,8 +6382,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public._rds_v_version_footer_custom_menu_locales": {
-      "name": "_rds_v_version_footer_custom_menu_locales",
+    "public._rds_footer_menu_v_locales": {
+      "name": "_rds_footer_menu_v_locales",
       "schema": "",
       "columns": {
         "name": {
@@ -6413,8 +6413,8 @@
         }
       },
       "indexes": {
-        "_rds_v_version_footer_custom_menu_locales_locale_parent_id_u": {
-          "name": "_rds_v_version_footer_custom_menu_locales_locale_parent_id_u",
+        "_rds_footer_menu_v_locales_locale_parent_id_unique": {
+          "name": "_rds_footer_menu_v_locales_locale_parent_id_unique",
           "columns": [
             {
               "expression": "_locale",
@@ -6434,8 +6434,8 @@
           "method": "btree",
           "with": {}
         },
-        "_rds_v_version_footer_custom_menu_locales_parent_id_idx": {
-          "name": "_rds_v_version_footer_custom_menu_locales_parent_id_idx",
+        "_rds_footer_menu_v_locales_parent_id_idx": {
+          "name": "_rds_footer_menu_v_locales_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -6451,10 +6451,10 @@
         }
       },
       "foreignKeys": {
-        "_rds_v_version_footer_custom_menu_locales_parent_id_fk": {
-          "name": "_rds_v_version_footer_custom_menu_locales_parent_id_fk",
-          "tableFrom": "_rds_v_version_footer_custom_menu_locales",
-          "tableTo": "_rds_v_version_footer_custom_menu",
+        "_rds_footer_menu_v_locales_parent_id_fk": {
+          "name": "_rds_footer_menu_v_locales_parent_id_fk",
+          "tableFrom": "_rds_footer_menu_v_locales",
+          "tableTo": "_rds_footer_menu_v",
           "columnsFrom": ["_parent_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
@@ -13725,6 +13725,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "4ce3def0-4a61-4dd1-b186-053ee6141464",
+  "id": "e50b9f51-3feb-49e4-977d-10af69f1c3d0",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

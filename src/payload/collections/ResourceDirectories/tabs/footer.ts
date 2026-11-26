@@ -20,7 +20,7 @@ export const footer: Tab = {
         update: superAdminOrSupportOrTenantAccess,
       },
     },
-    customMenuField,
+    customMenuField('footer'),
     {
       name: 'copyright',
       type: 'text',

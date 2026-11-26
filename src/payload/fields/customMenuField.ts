@@ -18,10 +18,15 @@ const validateMenuItemName: TextFieldSingleValidation = (value, { req }) => {
 /**
  * A header or footer menu. The links are the same in every locale; only
  * each item's name is translated. See docs/custom-menu.md.
+ *
+ * It is stored in its own tables (`rds_header_menu`, `rds_footer_menu` and
+ * their `_locales` and `_v` versions); the old per-locale
+ * `rds_*_custom_menu` tables stay until the destructive migration.
  */
-export const customMenuField: ArrayField = {
+export const customMenuField = (location: 'header' | 'footer'): ArrayField => ({
   name: 'customMenu',
   type: 'array',
+  dbName: `rds_${location}_menu`,
   labels: {
     singular: 'Menu Item',
     plural: 'Menu Items',
@@ -43,4 +48,4 @@ export const customMenuField: ArrayField = {
     },
     ...generateUrlFields('href'),
   ],
-};
+});
