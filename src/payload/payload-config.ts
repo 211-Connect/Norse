@@ -56,6 +56,7 @@ import { translateTopics } from './jobs/translateTopics';
 import { tracedTask } from './jobs/tracedTask';
 import { warmCache } from './jobs/warmCache';
 import { generateLandingPages } from './jobs/generateLandingPages';
+import { warmLandingPages } from './jobs/warmLandingPages';
 import { translateLandingTopic } from './jobs/translateLandingTopic';
 import { addLocalAdminEndpoint, seedEndpoint } from './migrations';
 import { Config, Tenant } from './payload-types';
@@ -107,6 +108,7 @@ const config = buildConfig({
       warmCache,
       deliverScheduledPdfs,
       generateLandingPages,
+      warmLandingPages,
       translateLandingTopic,
     ].map(tracedTask),
     // Jobs run on the CMS only, never in the public app (NORSE_ROLE=app).

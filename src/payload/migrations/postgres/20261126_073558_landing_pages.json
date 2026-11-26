@@ -15257,6 +15257,7 @@
         "warmCache",
         "deliverScheduledPdfs",
         "generateLandingPages",
+        "warmLandingPages",
         "translateLandingTopic"
       ]
     },
@@ -15275,6 +15276,7 @@
         "warmCache",
         "deliverScheduledPdfs",
         "generateLandingPages",
+        "warmLandingPages",
         "translateLandingTopic"
       ]
     }
@@ -15289,6 +15291,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "78dd71b9-0e1f-418b-bf78-ed332fb13392",
+  "id": "c2e22473-43a3-47ad-ade8-c8e3426cd020",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

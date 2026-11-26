@@ -61,6 +61,7 @@ export const LandingPages: CollectionConfig = {
       'regionType',
       'status',
       'resultCount',
+      'countedAt',
       'addresses',
     ],
     components: {
@@ -220,13 +221,18 @@ export const LandingPages: CollectionConfig = {
           type: 'number',
           admin: {
             readOnly: true,
-            description: 'Results found by the last nightly count.',
+            description:
+              'Results found by the last count (nightly, and after Apply changes). Never changes the page.',
           },
         },
         {
           name: 'countedAt',
           type: 'date',
-          admin: { readOnly: true },
+          label: 'Counted',
+          admin: {
+            readOnly: true,
+            date: { pickerAppearance: 'dayAndTime' },
+          },
         },
       ],
     },

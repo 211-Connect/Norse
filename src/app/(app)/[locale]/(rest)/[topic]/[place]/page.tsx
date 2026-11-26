@@ -105,7 +105,7 @@ export default async function LandingPage({ params, searchParams }: Props) {
   });
   const content = await getLandingContent(appConfig, page, locale);
   const [results, { resources }, origin, headersList] = await Promise.all([
-    getLandingResults(appConfig, page, content.location, locale, rawParams),
+    getLandingResults(appConfig, page, locale, rawParams),
     initTranslations(
       locale,
       i18nNamespaces,

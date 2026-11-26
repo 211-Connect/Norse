@@ -134,6 +134,7 @@ html[data-theme='dark'] .landing-copy-preview__title {
 .landing-pages-export {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   margin-bottom: 12px;
 }
 

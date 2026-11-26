@@ -1,17 +1,12 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import { cache } from 'react';
 
-import {
-  toFindResourcesQuery,
-  type RawSearchParams,
-} from '@/app/(app)/features/search/intent';
+import { type RawSearchParams } from '@/app/(app)/features/search/intent';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import {
   MAP_PINS_LIMIT,
   lastPageWithinPinLimit,
 } from '@/app/(app)/features/search/utils/map-pins';
-import { liftSearchRequest } from '@/app/(app)/features/search/utils/liftSearchRequest';
-import { withAreaSettings } from '@/app/(app)/features/search/utils/withAreaSettings';
 import { toPinsQuery } from '@/app/(app)/shared/lib/search-params';
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { findResources } from '@/app/(app)/shared/services/search-service';
@@ -25,9 +20,7 @@ import { type FiltersMap } from '@/types/search';
 import { type CopyField, fillCopy, regionDisplayName } from '../lib/copy';
 import {
   isRefinedRequest,
-  landingBaseParams,
   landingRefinements,
-  landingSearchParams,
   requestedPage,
 } from '../lib/search';
 import { redirectHref } from '../lib/seo';
@@ -35,6 +28,7 @@ import { STATE_NAMES, localizedLandingHref } from '../lib/slugs';
 import { type LandingPageStrings, loadLandingStrings } from '../lib/strings';
 import type { LandingPageView, LandingRegion } from '../lib/types';
 import { getLandingResolution } from './landing-data';
+import { LANDING_SEARCH_TTL, landingSearch } from './landing-search';
 
 const log = createLogger('landing-page');
 
@@ -200,7 +194,6 @@ export async function getLandingContent(
 export async function getLandingResults(
   appConfig: AppConfig,
   page: LandingPageView,
-  location: string,
   locale: string,
   searchParams: RawSearchParams,
 ) {
@@ -209,16 +202,11 @@ export async function getLandingResults(
     showAllResultsOnMap,
     resultsLimit: limit,
   } = appConfig.search;
-  const base = landingBaseParams({
-    search: page.topic.search,
-    topicName: page.topic.name,
-    regionId: page.region.id,
-    location,
-    searchEngine,
-  });
-  const raw = landingSearchParams(base, searchParams);
-  const { intent } = liftSearchRequest(raw);
-  const searchQuery = withAreaSettings(toFindResourcesQuery(intent), appConfig);
+  const {
+    base,
+    intent,
+    query: searchQuery,
+  } = await landingSearch(appConfig, page, locale, searchParams);
 
   const wanted = requestedPage(searchParams);
   const currentPage = showAllResultsOnMap
@@ -232,6 +220,7 @@ export async function getLandingResults(
     limit,
     appConfig.tenantId,
     searchEngine,
+    { ttl: LANDING_SEARCH_TTL },
   );
   if (!result) {
     log.warn(

@@ -281,6 +281,7 @@ export interface Config {
       warmCache: TaskWarmCache;
       deliverScheduledPdfs: TaskDeliverScheduledPdfs;
       generateLandingPages: TaskGenerateLandingPages;
+      warmLandingPages: TaskWarmLandingPages;
       translateLandingTopic: TaskTranslateLandingTopic;
       inline: {
         input: unknown;
@@ -1426,7 +1427,7 @@ export interface LandingPage {
     path?: string | null;
   };
   /**
-   * Results found by the last nightly count.
+   * Results found by the last count (nightly, and after Apply changes). Never changes the page.
    */
   resultCount?: number | null;
   countedAt?: string | null;
@@ -1526,6 +1527,7 @@ export interface PayloadJob {
           | 'warmCache'
           | 'deliverScheduledPdfs'
           | 'generateLandingPages'
+          | 'warmLandingPages'
           | 'translateLandingTopic';
         taskID: string;
         input?:
@@ -1567,6 +1569,7 @@ export interface PayloadJob {
         | 'warmCache'
         | 'deliverScheduledPdfs'
         | 'generateLandingPages'
+        | 'warmLandingPages'
         | 'translateLandingTopic'
       )
     | null;
@@ -2962,6 +2965,22 @@ export interface TaskGenerateLandingPages {
       | number
       | boolean
       | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskWarmLandingPages".
+ */
+export interface TaskWarmLandingPages {
+  input: {
+    tenantId?: string | null;
+  };
+  output: {
+    tenants: number;
+    pages: number;
+    warmed: number;
+    zeroResults: number;
+    failed: number;
   };
 }
 /**

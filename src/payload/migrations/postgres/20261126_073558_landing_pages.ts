@@ -22,10 +22,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     ADD VALUE 'generateLandingPages';
 
     ALTER TYPE "public"."enum_payload_jobs_log_task_slug"
+    ADD VALUE 'warmLandingPages';
+
+    ALTER TYPE "public"."enum_payload_jobs_log_task_slug"
     ADD VALUE 'translateLandingTopic';
 
     ALTER TYPE "public"."enum_payload_jobs_task_slug"
     ADD VALUE 'generateLandingPages';
+
+    ALTER TYPE "public"."enum_payload_jobs_task_slug"
+    ADD VALUE 'warmLandingPages';
 
     ALTER TYPE "public"."enum_payload_jobs_task_slug"
     ADD VALUE 'translateLandingTopic';

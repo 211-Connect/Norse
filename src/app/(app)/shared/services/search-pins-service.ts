@@ -4,7 +4,12 @@ import { type SearchPin } from '@/app/(app)/features/search/utils/map-pins';
 import { getApiHeaders } from '@/lib/api';
 import { SearchPinsResponseDto } from '@/lib/api/generated/data-contracts';
 import { createLogger } from '@/lib/logger';
-import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
+import {
+  ONE_HOUR,
+  type Seconds,
+  stableHash,
+  withCache,
+} from '@/utilities/withCache';
 
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
@@ -56,15 +61,18 @@ export async function findResourcePins(
   params: Record<string, unknown>,
   locale: string,
   tenantId: string,
+  /** Redis TTL (default 6 h) and refresh, for the landing-pages warm-up. */
+  options: { ttl?: Seconds; refresh?: boolean } = {},
 ): Promise<SearchPin[] | null> {
   const request = { ...params, locale, tenant_id: tenantId };
+  const { ttl = SEARCH_PINS_CACHE_TTL, refresh = false } = options;
 
   return withCache(
     `search_pins:${tenantId}:${locale}:${stableHash(request)}`,
     () => findResourcePinsOrigin(request, locale, tenantId),
     // An empty list is cached too: a search with no located results stays one.
     // A failure is null, which is never cached.
-    { redis: true, memory: false, ttl: SEARCH_PINS_CACHE_TTL },
+    { redis: true, memory: false, ttl, refresh },
   ).catch((err) => {
     log.error({ err, tenantId, locale }, 'Search pins cache error');
     return null;

@@ -516,12 +516,36 @@ entry ([caching.md](caching.md)).
 
 ## Warm-up and count job
 
-A nightly Payload job in the CMS process, also run after the generation job
-and after a data import if Norse-API can signal that one finished. For every
-live page it runs the page's search and pins search in the tenant's default
-locale, with a concurrency limit, which writes the exact keys the page reads.
-It also saves `resultCount` and `countedAt` on the row. The page list shows
-the counts as sortable columns, with a "0 results" filter and CSV export.
+`warmLandingPages` (`src/payload/jobs/warmLandingPages.ts`, service
+`src/payload/services/landingPagesWarmup.ts`) runs in the CMS process on the
+`landingPages` queue:
+
+- **When:** nightly at 03:30 for every tenant with the flag on, and for one
+  tenant after each generation run (Apply changes queues it). Norse-API has no
+  import-finished signal (the data is published by Dagster), so there is no
+  run after an import.
+- **What:** for every live page it builds the page's search with
+  `landingSearch` (`features/landing-pages/server/landing-search.ts`), the one
+  builder the route uses too, in the tenant's default locale. Then it runs
+  the first page of results and, when the tenant shows every result on the
+  map, the pins search. Both are written to the keys the page reads
+  (`search_results:…`, `search_pins:…`) with `refresh` (no read first) and a
+  24 h TTL (`LANDING_SEARCH_TTL`); the page itself also caches its searches
+  for 24 h. Other locales and later pages of results are not warmed.
+- **Concurrency:** 4 pages at a time (`WARMUP_CONCURRENCY`).
+- **Count:** `resultCount` and `countedAt` are written straight to `lp_pages`,
+  not through Payload. A Payload update would bump `updatedAt`, which would
+  move the sitemap `lastmod` and the cache version every night. Counts never
+  change a page's status or copy.
+- **Failures:** a failing page is logged (`Landing page warm-up failed`) and
+  skipped; the run goes on. The output has `tenants`, `pages`, `warmed`,
+  `zeroResults` and `failed`.
+- Warm-up searches are not counted in the search metrics.
+
+The page list shows **Results** and **Counted** as sortable columns. **0
+results** above the list filters it to `resultCount = 0` (it shows in
+Filters), and **Export CSV** includes `result_count` and `counted_at`. The
+summary card shows when pages were last counted.
 
 ## Analytics
 

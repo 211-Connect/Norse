@@ -7,7 +7,7 @@ import { createSingleFlight } from '@/utilities/singleFlight';
 
 const log = createLogger('withCache');
 
-type Seconds = number;
+export type Seconds = number;
 export const ONE_MINUTE: Seconds = 60;
 const FIFTEEN_MINUTES: Seconds = 15 * ONE_MINUTE;
 export const ONE_HOUR: Seconds = 60 * ONE_MINUTE;
@@ -42,6 +42,12 @@ export type CacheConfig = {
   redis?: boolean;
   memory?: boolean;
   ttl?: Seconds;
+  /**
+   * Skip the reads and fetch: the value is written again with a fresh TTL.
+   * For jobs that keep keys warm (the landing-pages warm-up), never for
+   * request paths.
+   */
+  refresh?: boolean;
 };
 
 const DEFAULT_CACHE_CONFIG: CacheConfig = {
@@ -185,6 +191,7 @@ export const withCache = async <T>(
   const {
     redis = DEFAULT_CACHE_CONFIG.redis,
     memory = DEFAULT_CACHE_CONFIG.memory,
+    refresh = false,
   } = config;
 
   // Telemetry must never break the cache.
@@ -196,7 +203,7 @@ export const withCache = async <T>(
     }
   };
 
-  if (memory) {
+  if (memory && !refresh) {
     try {
       const memCachedValue = memoryCacheFor(key).get(key);
       if (memCachedValue !== undefined) {
@@ -217,7 +224,7 @@ export const withCache = async <T>(
     }
   }
 
-  if (redis) {
+  if (redis && !refresh) {
     try {
       const cachedValue = await cacheService.get(key);
       if (cachedValue) {
