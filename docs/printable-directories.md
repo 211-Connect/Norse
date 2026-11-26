@@ -234,6 +234,13 @@ that put the search page into directory context
   or resource print dialogs. Share links carry it as `pdBooklet`.
 - Selectable languages are exactly `directory.locales`, for everyone; there
   is no capability check at print time.
+- Resource headers (`getDisplayTitleAndSubtitle` in
+  `shared/components/directory-print/pdf-print-primitives.tsx`): the title is
+  always the full resource name, never shortened. The service name is shown
+  below it only when the name does not already contain it (case- and
+  whitespace-insensitive). Tenants compose names differently ("Org – Service",
+  "Service offered by Org", translated variants), so cutting the service name
+  out of the title would leave fragments like "offered by Org".
 
 ## Access control
 
