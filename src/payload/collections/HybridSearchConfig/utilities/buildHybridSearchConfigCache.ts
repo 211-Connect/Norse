@@ -30,6 +30,9 @@ export function buildHybridSearchConfigCache(
   const enableOrganizationSearch =
     resourceDirectory.featureFlags?.enableOrganizationSearch ?? false;
 
+  // Norse-API opens /v2/search for the tenant only when this is true.
+  const enableV2Api = resourceDirectory.featureFlags?.enableV2Api ?? false;
+
   return {
     tenant_id: tenantId,
     vector_score_weight: hybridSearchConfig?.vectorScoreWeight ?? null,
@@ -51,5 +54,6 @@ export function buildHybridSearchConfigCache(
     area_match: searchSettings?.areaMatchMode ?? 'located_or_serving',
     unlocated_in_area_search:
       searchSettings?.unlocatedInAreaSearch ?? DEFAULT_UNLOCATED,
+    enable_v2_api: enableV2Api,
   };
 }

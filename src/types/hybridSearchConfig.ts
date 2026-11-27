@@ -18,4 +18,5 @@ export type HybridSearchConfigCache = {
   enable_organization_search: boolean;
   area_match: AreaMatch;
   unlocated_in_area_search: Unlocated;
+  enable_v2_api: boolean;
 };

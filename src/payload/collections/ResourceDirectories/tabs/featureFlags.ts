@@ -136,5 +136,15 @@ export const featureFlags: Tab = {
         update: superAdminOrSupportAccess,
       },
     },
+    {
+      name: 'enableV2Api',
+      type: 'checkbox',
+      label: 'Enable v2 search API',
+      defaultValue: false,
+      access: {
+        create: superAdminAccess,
+        update: superAdminAccess,
+      },
+    },
   ],
 };
