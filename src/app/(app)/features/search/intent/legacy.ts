@@ -6,6 +6,7 @@ import type { FindResourcesQuery } from '@/app/(app)/shared/services/search-serv
 import {
   isEverywhereLocation,
   isTaxonomySearch,
+  QueryType,
 } from '@/app/(app)/shared/lib/search-utils';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { isRegionId } from '@/types/areaSearch';
@@ -23,8 +24,8 @@ const nonEmpty = (slot: Slot<string>) => valueOf(slot) || undefined;
  * The intent in the shape the search service and the deep-link gate take. This is where the readings that the intent
  * deliberately does not make live: empty is absent, "Everywhere" is no location, a malformed region is no
  * region, age 0 is no age, and
- * sort falls back to relevance, or to distance for a located taxonomy search (and to relevance from distance without
- * valid coords).
+ * sort falls back to distance for a located text or taxonomy search and to relevance otherwise (and to relevance
+ * from distance without valid coords).
  */
 export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
   const coordinates = valueOf(intent.coords);
@@ -47,7 +48,9 @@ export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
     sort: getSortOption(
       valueOf(intent.sort) ?? null,
       coordinates,
-      isTaxonomySearch(queryType, query),
+      // Text and taxonomy only: an unstated type may be hybrid (the tenant's engine decides it), and hybrid
+      // stays relevance (see getSortOption).
+      queryType === QueryType.Text || isTaxonomySearch(queryType, query),
     ),
     age: valueOf(intent.age) || undefined,
   };

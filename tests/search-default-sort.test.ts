@@ -1,11 +1,10 @@
 // The sort a search reports when the URL states none. It is both what Norse-API is asked for and what the
 // "Sort by" control shows, so it must name the order the API actually returns.
 //
-// For a taxonomy search with a location Norse-API orders "relevance" nearest-first (taxonomy matching is
-// binary, `_score` carries no signal: Norse-API `buildSort`, relevanceMeans 'proximity'). Reporting
-// "Most Relevant" there mislabels a nearest-first list (MBOA staging, Respite Care / "I need
-// transportation." from 540 Cedar Street, Saint Paul). Text and hybrid searches keep relevance: there it
-// is a real score, and inferring distance from a location discarded it (9a35c7cf, SCC211).
+// A located text or taxonomy search is nearest first (MBOA QA checklist, "Monarch Healthcare Management" and
+// Respite Care from 540 Cedar Street, Saint Paul). Hybrid stays relevance: its query has no relevance gate, so
+// nearest first would list every resource in the radius, and its sort control is hidden (9a35c7cf, SCC211).
+// A search whose type the URL does not state may be hybrid on the tenant's engine, so it stays relevance too.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
@@ -47,13 +46,36 @@ test('a taxonomy search without a location stays relevance', () => {
   );
 });
 
-test('text and hybrid searches with a location stay relevance (SCC211)', () => {
+test('a located text search with no stated sort is nearest first', () => {
   assert.equal(
-    sortFor(`query=food&query_type=text&${SAINT_PAUL}`),
+    sortFor(
+      `query=Monarch+Healthcare+management&query_label=Monarch+Healthcare+management&query_type=text&${SAINT_PAUL}`,
+    ),
+    'distance',
+  );
+});
+
+test('a text search without a location stays relevance', () => {
+  assert.equal(
+    sortFor('query=Monarch+Healthcare+management&query_type=text'),
     'relevance',
   );
+});
+
+test('a located hybrid search stays relevance (SCC211)', () => {
   assert.equal(
     sortFor(`query=food&query_type=hybrid&${SAINT_PAUL}`),
+    'relevance',
+  );
+});
+
+test('a located search without a query type stays relevance', () => {
+  assert.equal(sortFor(`query=food&${SAINT_PAUL}`), 'relevance');
+});
+
+test('a stated distance without valid coords is relevance', () => {
+  assert.equal(
+    sortFor('query=food&query_type=text&sort=distance'),
     'relevance',
   );
 });
@@ -62,6 +84,10 @@ test('a stated sort always wins', () => {
   for (const sort of ['relevance', 'name', 'organization'] as const) {
     assert.equal(
       sortFor(`query=PH-7000&query_type=taxonomy&sort=${sort}&${SAINT_PAUL}`),
+      sort,
+    );
+    assert.equal(
+      sortFor(`query=food&query_type=text&sort=${sort}&${SAINT_PAUL}`),
       sort,
     );
   }
