@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}، {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} په {{location}} کې",
+    "description": "{{topic}} په {{location}} کې ومومئ: پتې، ساعتونه او څنګه مرسته ترلاسه کړئ، له {{name}} څخه.",
+    "h1": "{{topic}} په {{location}} کې",
+    "intro": "په {{topic}} کې د {{location}} لپاره پروګرامونه او خدمات. که تاسو د سم موندلو کې مرستې ته اړتیا لرئ نو 211 ته زنګ ووهئ."
+  },
+  "page": {
+    "home": "کور پاڼه",
+    "breadcrumbs": "د بریډکرمب نیویګیشن",
+    "counties": "په {{location}} کې ولسوالۍ",
+    "cities": "په {{location}} کې ښارونه",
+    "otherAreas": "په نورو سیمو کې د خدماتو لټون وکړئ",
+    "otherStates": "نور ایالتونه",
+    "otherCounties": "په {{location}} کې نورې ولسوالۍ",
+    "otherCities": "نور ښارونه په {{location}} کې",
+    "byRegion": "د سیمې له مخې د خدماتو لټون وکړئ",
+    "states": "ایالتونه"
+  }
+}

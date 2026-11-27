@@ -172,7 +172,8 @@
     "provided_by": "Podaci koje je pružio"
   },
   "footer": {
-    "copyright": "© Autorska prava {{text}}"
+    "copyright": "© Autorska prava {{text}}",
+    "sitemap": "Karta web-mjesta"
   },
   "carousel": {
     "previous": "Prethodno",

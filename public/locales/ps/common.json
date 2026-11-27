@@ -172,7 +172,8 @@
     "provided_by": "معلومات د لخوا چمتو شوي"
   },
   "footer": {
-    "copyright": "© د چاپ حق {{text}}"
+    "copyright": "© د چاپ حق {{text}}",
+    "sitemap": "د سایټ نقشه"
   },
   "carousel": {
     "previous": "مخکینی",

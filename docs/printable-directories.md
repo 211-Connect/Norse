@@ -26,7 +26,8 @@ Printable Directories let authorized users create curated, branded, printable br
 
 - Payload CMS (tenant config only)
   - `featureFlags.enablePrintableDirectories` (super-admin/support only)
-  - `printableDirectories` tab: access mode, allow-lists, user groups (see
+  - `printableDirectories` tab, hidden until the flag is on: access mode,
+    allow-lists, user groups (see
     "Access control" below); automatic translation limits and the usage
     table (super-admins and support only; see
     [translation-usage.md](./translation-usage.md))

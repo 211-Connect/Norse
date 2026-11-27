@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "Hrabstwo {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} w {{location}}",
+    "description": "Znajdź {{topic}} w {{location}}: adresy, godziny otwarcia i informacje o tym, jak uzyskać pomoc od {{name}}.",
+    "h1": "{{topic}} w {{location}}",
+    "intro": "Programy i usługi dla {{topic}} w {{location}}. Zadzwoń pod numer 211, jeśli potrzebujesz pomocy w znalezieniu odpowiedniego programu."
+  },
+  "page": {
+    "home": "Strona główna",
+    "breadcrumbs": "Nawigacja za pomocą ścieżki nawigacyjnej",
+    "counties": "Powiaty w {{location}}",
+    "cities": "Miasta w {{location}}",
+    "otherAreas": "Wyszukaj usługi w innych regionach",
+    "otherStates": "Inne stany",
+    "otherCounties": "Inne hrabstwa w {{location}}",
+    "otherCities": "Inne miasta w {{location}}",
+    "byRegion": "Wyszukaj usługi według regionu",
+    "states": "Stany"
+  }
+}

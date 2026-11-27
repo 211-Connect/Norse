@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "Comté de {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} dans {{location}}",
+    "description": "Trouvez {{topic}} dans {{location}} : adresses, horaires et comment obtenir de l’aide, de {{name}}.",
+    "h1": "{{topic}} dans {{location}}",
+    "intro": "Programmes et services pour {{topic}} à {{location}}. Appelez le 211 si vous avez besoin d'aide pour trouver le bon."
+  },
+  "page": {
+    "home": "Page d'accueil",
+    "breadcrumbs": "Navigation par fil d'Ariane",
+    "counties": "Comtés de {{location}}",
+    "cities": "Villes dans {{location}}",
+    "otherAreas": "Rechercher des services dans d'autres régions",
+    "otherStates": "Autres États",
+    "otherCounties": "Autres comtés à {{location}}",
+    "otherCities": "Autres villes à {{location}}",
+    "byRegion": "Recherche de services par région",
+    "states": "États"
+  }
+}

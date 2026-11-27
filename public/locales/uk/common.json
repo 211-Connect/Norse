@@ -172,7 +172,8 @@
     "provided_by": "Дані, надані"
   },
   "footer": {
-    "copyright": "© Авторські права {{text}}"
+    "copyright": "© Авторські права {{text}}",
+    "sitemap": "Карта сайту"
   },
   "carousel": {
     "previous": "Попередній",

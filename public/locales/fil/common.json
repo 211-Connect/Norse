@@ -172,7 +172,8 @@
     "provided_by": "Ang datos na ibinigay ni"
   },
   "footer": {
-    "copyright": "© Karapatang-ari {{text}}"
+    "copyright": "© Karapatang-ari {{text}}",
+    "sitemap": "Mapa ng site"
   },
   "carousel": {
     "previous": "Nakaraan",

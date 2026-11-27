@@ -16,6 +16,11 @@ import {
   WidgetSlug,
 } from './components/analytics/widgetInfo';
 import { HybridSearchConfig } from './collections/HybridSearchConfig';
+import {
+  LandingPageSlugs,
+  LandingPageTopics,
+  LandingPages,
+} from './collections/LandingPages';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { TenantMedia } from './collections/TenantMedia';
@@ -50,6 +55,9 @@ import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { tracedTask } from './jobs/tracedTask';
 import { warmCache } from './jobs/warmCache';
+import { generateLandingPages } from './jobs/generateLandingPages';
+import { warmLandingPages } from './jobs/warmLandingPages';
+import { translateLandingTopic } from './jobs/translateLandingTopic';
 import { addLocalAdminEndpoint, seedEndpoint } from './migrations';
 import { Config, Tenant } from './payload-types';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
@@ -89,11 +97,20 @@ const config = buildConfig({
     HybridSearchConfig,
     TranslationUsage,
     TranslationUsageAlerts,
+    LandingPageTopics,
+    LandingPages,
+    LandingPageSlugs,
   ],
   jobs: {
-    tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs].map(
-      tracedTask,
-    ),
+    tasks: [
+      translateTopics,
+      translate,
+      warmCache,
+      deliverScheduledPdfs,
+      generateLandingPages,
+      warmLandingPages,
+      translateLandingTopic,
+    ].map(tracedTask),
     // Jobs run on the CMS only, never in the public app (NORSE_ROLE=app).
     shouldAutoRun: () => runsPayload(),
     autoRun: [
@@ -107,6 +124,10 @@ const config = buildConfig({
       },
       {
         queue: 'pdfDelivery',
+        cron: '* * * * *',
+      },
+      {
+        queue: 'landingPages',
         cron: '* * * * *',
       },
     ],
@@ -135,7 +156,10 @@ const config = buildConfig({
     },
     user: Users.slug,
     components: {
-      beforeNavLinks: ['@/payload/components/AnalyticsNavLink'],
+      beforeNavLinks: [
+        '@/payload/components/AnalyticsNavLink',
+        '@/payload/components/LandingPagesNavGate',
+      ],
       afterNavLinks: [
         '@/payload/components/ScorecardsNavLink',
         '@/payload/components/PopulateApiConfigCacheButton',
@@ -527,6 +551,9 @@ const config = buildConfig({
     multiTenantPlugin<Config>({
       collections: {
         [TenantMedia.slug]: true,
+        [LandingPageTopics.slug]: true,
+        [LandingPages.slug]: true,
+        [LandingPageSlugs.slug]: true,
         [ResourceDirectories.slug]: {
           isGlobal: true,
         },

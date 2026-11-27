@@ -30,6 +30,12 @@ export interface PageSearchState {
   /** The area searched, when the location is one (docs/area-search.md). */
   region?: string;
   distance?: string;
+  /**
+   * The location is the page's own place, not one the visitor chose (an SEO
+   * landing page; none on a topic hub): shown in the form instead of the
+   * saved one, never saved to the location cookies.
+   */
+  fixedLocation?: boolean;
 }
 
 interface SearchStateSyncProps {
@@ -61,6 +67,7 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
   const cookieCoords = cookies[USER_PREF_COORDS] ?? '';
   const cookieLocation = cookies[USER_PREF_LOCATION] ?? '';
   const urlRegion = search?.region ?? '';
+  const fixedLocation = search?.fixedLocation ?? false;
   const cookieRegion = cookies[USER_PREF_REGION_ID] ?? '';
   const distance =
     search?.distance?.trim() ||
@@ -68,12 +75,15 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
     appConfig?.search?.defaultRadius?.toString()?.trim() ||
     '0';
 
-  const location = urlLocation
+  // A fixed location is the page's own, even none (a topic hub searches the
+  // whole tenant): the saved one would misdescribe the results.
+  const usePageLocation = Boolean(urlLocation) || fixedLocation;
+  const location = usePageLocation
     ? decodeURIComponent(urlLocation)
     : cookieLocation;
 
   // The region belongs to the location it came with: the URL's, else the saved one.
-  const region = urlLocation
+  const region = usePageLocation
     ? urlRegion
     : isRegionId(cookieRegion)
       ? cookieRegion
@@ -126,7 +136,7 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
   }, [urlCoords, cookieCoords]);
 
   useEffect(() => {
-    if (urlLocation) {
+    if (urlLocation && !fixedLocation) {
       setCookie(USER_PREF_LOCATION, decodeURIComponent(urlLocation), {
         path: '/',
       });
@@ -136,7 +146,7 @@ export function SearchStateSync({ cookies, search }: SearchStateSyncProps) {
         deleteCookie(USER_PREF_REGION_ID, { path: '/' });
       }
     }
-  }, [urlLocation, urlRegion]);
+  }, [urlLocation, urlRegion, fixedLocation]);
 
   const atomValues = useMemo(
     () =>

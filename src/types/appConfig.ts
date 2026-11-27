@@ -47,6 +47,11 @@ export type AppConfig = {
    * When true, this branded domain is served with a noindex directive.
    */
   noindex?: boolean;
+  /**
+   * The host canonical tags, hreflang links and sitemap URLs name: the
+   * tenant's first trusted domain; null when the tenant has no domain.
+   */
+  canonicalHost?: string | null;
   brand: {
     name: string;
     logoUrl?: string;
@@ -81,6 +86,17 @@ export type AppConfig = {
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
     requireAuthenticationForFavorites: boolean;
+    /** SEO landing pages and their sitemaps (docs/landing-pages.md). */
+    enableLandingPages: boolean;
+  };
+  /** Landing-page copy templates in this locale (docs/landing-pages.md). */
+  landingPages: {
+    templates: {
+      title?: string | null;
+      description?: string | null;
+      h1?: string | null;
+      intro?: string | null;
+    };
   };
   printableDirectories: {
     accessMode: 'everyone' | 'allowlist';

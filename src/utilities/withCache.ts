@@ -7,7 +7,7 @@ import { createSingleFlight } from '@/utilities/singleFlight';
 
 const log = createLogger('withCache');
 
-type Seconds = number;
+export type Seconds = number;
 export const ONE_MINUTE: Seconds = 60;
 const FIFTEEN_MINUTES: Seconds = 15 * ONE_MINUTE;
 export const ONE_HOUR: Seconds = 60 * ONE_MINUTE;
@@ -30,14 +30,24 @@ export type CacheKey =
   | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
   | `region_area:${string}`
+  | `state_regions:${string}`
   | `search_config:${TenantId}:${Locale}`
   | `search_suggestions:${TenantId}:${Locale}:${Hash}`
-  | `orchestration_config:${TenantId}`;
+  | `orchestration_config:${TenantId}`
+  | `landing_version:${TenantId}`
+  | `landing_page:${TenantId}:${Locale}:${Hash}`
+  | `landing_sitemap:${TenantId}:${Hash}`;
 
 export type CacheConfig = {
   redis?: boolean;
   memory?: boolean;
   ttl?: Seconds;
+  /**
+   * Skip the reads and fetch: the value is written again with a fresh TTL.
+   * For jobs that keep keys warm (the landing-pages warm-up), never for
+   * request paths.
+   */
+  refresh?: boolean;
 };
 
 const DEFAULT_CACHE_CONFIG: CacheConfig = {
@@ -84,6 +94,11 @@ export const MEMORY_CACHE_LIMITS: Partial<Record<CacheFeature, MemoryLimit>> = {
     ttlSeconds: FIFTEEN_MINUTES,
   },
   region_area: { maxEntries: 2048, maxBytes: 64 * MB },
+  // Landing pages (docs/landing-pages.md, "Caching"): the version is read on
+  // every page view, the resolved page and the page list are keyed by it.
+  landing_version: { maxEntries: 256, maxBytes: 1 * MB },
+  landing_page: { maxEntries: 4096, maxBytes: 32 * MB },
+  landing_sitemap: { maxEntries: 64, maxBytes: 64 * MB },
 };
 
 const DEFAULT_MEMORY_LIMIT: MemoryLimit = { maxEntries: 500, maxBytes: 4 * MB };
@@ -176,6 +191,7 @@ export const withCache = async <T>(
   const {
     redis = DEFAULT_CACHE_CONFIG.redis,
     memory = DEFAULT_CACHE_CONFIG.memory,
+    refresh = false,
   } = config;
 
   // Telemetry must never break the cache.
@@ -187,7 +203,7 @@ export const withCache = async <T>(
     }
   };
 
-  if (memory) {
+  if (memory && !refresh) {
     try {
       const memCachedValue = memoryCacheFor(key).get(key);
       if (memCachedValue !== undefined) {
@@ -208,7 +224,7 @@ export const withCache = async <T>(
     }
   }
 
-  if (redis) {
+  if (redis && !refresh) {
     try {
       const cachedValue = await cacheService.get(key);
       if (cachedValue) {

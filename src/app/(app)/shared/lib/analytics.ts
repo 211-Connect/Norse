@@ -151,3 +151,19 @@ export function consumePendingResourceEntry(
     return undefined;
   }
 }
+
+/** Where a search or its results happened (docs/landing-pages.md, "Analytics"). */
+export type SearchSurface = 'landing' | 'search';
+
+/**
+ * The `surface`, `landingPageId` and `locale` fields search and result
+ * events carry: `landing` with the page's id on an SEO landing page.
+ */
+export function searchSurfacePayload(
+  landingPageId: string | null | undefined,
+  locale: string,
+): Record<string, string> {
+  return landingPageId
+    ? { surface: 'landing', landingPageId, locale }
+    : { surface: 'search', locale };
+}

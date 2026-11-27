@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}}縣",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{location}}的{{topic}}",
+    "description": "尋找{{location}}的{{topic}}：地址、營業時間以及取得協助的方式，由{{name}}提供。",
+    "h1": "{{location}}的{{topic}}",
+    "intro": "{{location}}的{{topic}}項目和服務。如需協助尋找合適的服務，請致電211。"
+  },
+  "page": {
+    "home": "首頁",
+    "breadcrumbs": "麵包屑導航",
+    "counties": "{{location}}的縣",
+    "cities": "{{location}}的城市",
+    "otherAreas": "在其他地區尋找服務",
+    "otherStates": "其他州",
+    "otherCounties": "{{location}}的其他縣",
+    "otherCities": "{{location}}的其他城市",
+    "byRegion": "按地區搜尋服務",
+    "states": "各州"
+  }
+}

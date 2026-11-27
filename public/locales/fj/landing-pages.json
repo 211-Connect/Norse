@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} ena {{location}}",
+    "description": "Vaqara na {{topic}} ena {{location}}: itikotiko, auwa kei na sala mo rawata kina na veivuke, mai na {{name}}.",
+    "h1": "{{topic}} ena {{location}}",
+    "intro": "Porokaramu kei na veiqaravi me baleta na {{topic}} ena {{location}}. Kaciva na 211 kevaka o gadreva na veivuke mo kunea na kena dodonu."
+  },
+  "page": {
+    "home": "Tabana ni vale",
+    "breadcrumbs": "Veisoliyaki ni madrai",
+    "counties": "Vanua ena {{location}}",
+    "cities": "Ciudades en {{location}}",
+    "otherAreas": "Vakasaqara na veiqaravi ena veivanua tale eso .",
+    "otherStates": "Eso tale na matanitu",
+    "otherCounties": "Na veivanua tale eso ena {{location}}",
+    "otherCities": "Otros ciudades en {{location}}",
+    "byRegion": "Vakasaqara na veiqaravi ena veivanua",
+    "states": "Matanitu"
+  }
+}

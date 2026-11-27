@@ -47,6 +47,10 @@ export const AUTO_TRANSLATED_STRING_PATHS = [
   'search.texts.noResultsFallbackText',
   'header.favoritesButtonLabel',
   'header.feedbackButtonLabel',
+  'landingPages.templates.title',
+  'landingPages.templates.description',
+  'landingPages.templates.h1',
+  'landingPages.templates.intro',
 ];
 
 function deepLocalizedDiff(

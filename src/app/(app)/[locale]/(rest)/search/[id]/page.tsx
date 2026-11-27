@@ -36,10 +36,9 @@ async function canonicalFor(
   resourceId: string,
 ) {
   const { host, protocol } = await getHost();
-  let trustedDomains: string[] = [];
+  let tenant: Awaited<ReturnType<typeof getTenantByHost>> = null;
   try {
-    const tenant = await getTenantByHost(parseHost(host));
-    trustedDomains = (tenant?.trustedDomains ?? []).map(({ domain }) => domain);
+    tenant = await getTenantByHost(parseHost(host));
   } catch (err) {
     log.warn(
       { err, host },
@@ -47,7 +46,7 @@ async function canonicalFor(
     );
   }
   return resourceCanonicalUrl({
-    ...canonicalOrigin({ trustedDomains, host, protocol }),
+    ...canonicalOrigin({ tenant, host, protocol }),
     locale,
     defaultLocale,
     id: resourceId,

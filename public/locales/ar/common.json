@@ -172,7 +172,8 @@
     "provided_by": "البيانات المقدمة من"
   },
   "footer": {
-    "copyright": "© حقوق النشر {{text}}"
+    "copyright": "© حقوق النشر {{text}}",
+    "sitemap": "خريطة الموقع"
   },
   "carousel": {
     "previous": "سابق",

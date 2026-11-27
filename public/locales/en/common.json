@@ -231,7 +231,8 @@
     "logout_and_try_again": "Logout and try again"
   },
   "footer": {
-    "copyright": "© Copyright {{text}}"
+    "copyright": "© Copyright {{text}}",
+    "sitemap": "Sitemap"
   },
   "filter_results_count_one": "{{count}} result",
   "filter_results_count_other": "{{count}} results",

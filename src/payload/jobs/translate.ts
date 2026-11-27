@@ -1,5 +1,10 @@
 import { TaskConfig } from 'payload';
-import { retry } from 'radash';
+import { get, retry, set } from 'radash';
+
+import {
+  maskTemplateTags,
+  unmaskTemplateTags,
+} from '@/app/(app)/features/landing-pages/lib/templateTags';
 
 import { createLogger } from '@/lib/logger';
 
@@ -55,6 +60,17 @@ const HIGHLIGHT_TEXT_FIELDS = ['title', 'description', 'buttonText'] as const;
  * (see customAttributeFields.ts). icon/iconColor/size/titleBelow/url/urlTarget
  * are configuration, not user-facing copy, and must not be translated.
  */
+/**
+ * Landing-page copy templates (docs/landing-pages.md). Their `{topic}`-style
+ * variables are protected like every other single-brace tag.
+ */
+const LANDING_TEMPLATE_PATHS = [
+  'landingPages.templates.title',
+  'landingPages.templates.description',
+  'landingPages.templates.h1',
+  'landingPages.templates.intro',
+] as const;
+
 const CUSTOM_ATTRIBUTE_TEXT_FIELDS = [
   'title',
   'subtitle',
@@ -72,18 +88,26 @@ async function executeBatchTranslation(
 
   for (let i = 0; i < fields.length; i += batchSize) {
     const batch = fields.slice(i, i + batchSize);
+    // Single-brace tags ({name}, {topic}, …) must come back untranslated.
+    const masked = new Map(
+      batch.map((f) => [f.path, maskTemplateTags(f.value)]),
+    );
     const translations = await retry({ times: 3, delay: 1000 }, () =>
       batchTranslate(
         engine,
         batch.map((f) => ({
           id: f.path,
-          text: f.value,
+          text: masked.get(f.path)!.text,
           targetLocale: f.locale,
         })),
       ),
     );
     translations.forEach((t) => {
-      if (t?.id) translationsByPath[t.id] = t.translatedText;
+      if (!t?.id) return;
+      const tags = masked.get(t.id)?.tags ?? [];
+      translationsByPath[t.id] = tags.length
+        ? unmaskTemplateTags(t.translatedText, tags)
+        : t.translatedText;
     });
   }
 
@@ -379,6 +403,27 @@ export const translate: TaskConfig<'translate'> = {
               value: sourceSuggestion.value,
               locale: targetLocale,
               id: sourceSuggestion.id,
+            });
+          }
+        });
+
+        // Landing-page copy templates. One cleared in English is cleared here
+        // too, so every language falls back to its built-in text together.
+        const clearedTemplates = LANDING_TEMPLATE_PATHS.filter(
+          (path) =>
+            isEmpty(get<string | null>(englishResourceDirectory, path)) &&
+            !isEmpty(get<string | null>(targetDoc, path)),
+        );
+        LANDING_TEMPLATE_PATHS.forEach((path) => {
+          const sourceValue = get<string | null>(
+            englishResourceDirectory,
+            path,
+          );
+          if (shouldTranslate(sourceValue, get(targetDoc, path), path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
             });
           }
         });
@@ -696,7 +741,7 @@ export const translate: TaskConfig<'translate'> = {
           },
         );
 
-        if (fieldsToTranslate.length === 0) {
+        if (fieldsToTranslate.length === 0 && clearedTemplates.length === 0) {
           log.debug(
             { targetLocale, tenantId },
             'No fields to translate for locale; skipping',
@@ -900,6 +945,30 @@ export const translate: TaskConfig<'translate'> = {
               return newItem;
             },
           );
+        }
+
+        // Landing-page copy templates: an untranslated one stays empty and
+        // falls back to the built-in text for the locale.
+        if (
+          clearedTemplates.length > 0 ||
+          LANDING_TEMPLATE_PATHS.some((path) => translationsByPath[path])
+        ) {
+          let landingPages = (targetDoc.landingPages ?? {}) as Record<
+            string,
+            unknown
+          >;
+          LANDING_TEMPLATE_PATHS.forEach((path) => {
+            const cleared = clearedTemplates.includes(path);
+            if (translationsByPath[path] || cleared) {
+              landingPages = set(
+                { landingPages },
+                path,
+                cleared ? null : translationsByPath[path],
+              ).landingPages;
+            }
+          });
+          updateData.landingPages =
+            landingPages as ResourceDirectory['landingPages'];
         }
 
         // Search Texts

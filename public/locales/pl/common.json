@@ -172,7 +172,8 @@
     "provided_by": "Dane dostarczone przez"
   },
   "footer": {
-    "copyright": "© Prawa autorskie {{text}}"
+    "copyright": "© Prawa autorskie {{text}}",
+    "sitemap": "Mapa strony"
   },
   "carousel": {
     "previous": "Poprzedni",

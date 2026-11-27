@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}}县",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{location}}的{{topic}}",
+    "description": "查找{{location}}的{{topic}}：地址、营业时间以及获取帮助的方式，由{{name}}提供。",
+    "h1": "{{location}}的{{topic}}",
+    "intro": "{{location}}的{{topic}}项目和服务。如需帮助寻找合适的服务，请致电211。"
+  },
+  "page": {
+    "home": "首页",
+    "breadcrumbs": "面包屑导航",
+    "counties": "{{location}}的县",
+    "cities": "{{location}}的城市",
+    "otherAreas": "在其他地区查找服务",
+    "otherStates": "其他州",
+    "otherCounties": "{{location}}的其他县",
+    "otherCities": "{{location}}的其他城市",
+    "byRegion": "按地区搜索服务",
+    "states": "各州"
+  }
+}

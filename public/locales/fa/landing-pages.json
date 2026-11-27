@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "شهرستان {{name}}",
+    "place": "{{name}}، {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} در {{location}}",
+    "description": "{{topic}} را در {{location}} پیدا کنید: آدرس‌ها، ساعات کاری و نحوه دریافت کمک از {{name}}.",
+    "h1": "{{topic}} در {{location}}",
+    "intro": "برنامه‌ها و خدمات برای {{topic}} در {{location}}. در صورت نیاز به کمک برای یافتن مورد مناسب، با شماره ۲۱۱ تماس بگیرید."
+  },
+  "page": {
+    "home": "صفحه اصلی",
+    "breadcrumbs": "ناوبری بردکرامب",
+    "counties": "شهرستان‌های {{location}}",
+    "cities": "شهرهای {{location}}",
+    "otherAreas": "جستجوی خدمات در مناطق دیگر",
+    "otherStates": "ایالت‌های دیگر",
+    "otherCounties": "سایر شهرستان‌ها در {{location}}",
+    "otherCities": "شهرهای دیگر در {{location}}",
+    "byRegion": "جستجوی خدمات بر اساس منطقه",
+    "states": "ایالت‌ها"
+  }
+}

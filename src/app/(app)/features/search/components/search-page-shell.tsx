@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
@@ -16,6 +16,10 @@ type SearchPageShellProps = {
   legacyAiClarifyState?: LegacyAiClarifyState;
   /** The lifted intent: the plain data the client's resolver starts from. */
   searchIntent?: SearchIntent;
+  /** Shown above the results list (a landing page's heading). */
+  resultsHeader?: ReactNode;
+  /** Shown below the results list (a landing page's child places). */
+  resultsFooter?: ReactNode;
 };
 
 export function SearchPageShell({
@@ -23,6 +27,8 @@ export function SearchPageShell({
   cardLayout,
   legacyAiClarifyState,
   searchIntent,
+  resultsHeader,
+  resultsFooter,
 }: SearchPageShellProps) {
   const [hideSupplementaryContent, setHideSupplementaryContent] = useState(
     Boolean(legacyAiClarifyState?.autoOpenDialog),
@@ -44,6 +50,8 @@ export function SearchPageShell({
           <ResultsSection
             cardLayout={cardLayout}
             aiSearchAlert={aiSearchAlert}
+            header={resultsHeader}
+            footer={resultsFooter}
           />
           <MapContainer />
         </>

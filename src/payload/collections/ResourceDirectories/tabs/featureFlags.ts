@@ -136,5 +136,15 @@ export const featureFlags: Tab = {
         update: superAdminOrSupportAccess,
       },
     },
+    {
+      name: 'enableLandingPages',
+      type: 'checkbox',
+      label: 'Enable Landing Pages',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
+      },
+    },
   ],
 };

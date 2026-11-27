@@ -177,7 +177,8 @@
     "go_to": "行く"
   },
   "footer": {
-    "copyright": "© 著作権 {{text}}"
+    "copyright": "© 著作権 {{text}}",
+    "sitemap": "サイトマップ"
   },
   "filter_results_count_one": "{{count}}件の結果",
   "filter_results_count_other": "{{count}}件の結果",

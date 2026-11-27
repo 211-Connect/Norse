@@ -23,6 +23,10 @@ export const PRINTABLE_DIRECTORY_CAPABILITIES = [
 export const printableDirectories: Tab = {
   name: 'printableDirectories',
   label: 'Printable Directories',
+  admin: {
+    condition: (data) =>
+      Boolean(data?.featureFlags?.enablePrintableDirectories),
+  },
   fields: [
     {
       name: 'accessMode',

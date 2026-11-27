@@ -26,7 +26,9 @@ export async function revalidateCache({
       await Promise.all(
         trustedDomains.map(async (domain) => {
           const host = parseHost(domain);
-          await cacheService.delPattern(`tenant_basic_config:${host}`);
+          // The key `getTenantBasicConfig` writes, and the one before `v2`.
+          await cacheService.del(`tenant_basic_config:v2:${host}`);
+          await cacheService.del(`tenant_basic_config:${host}`);
           await cacheService.del(`tenant:${host}`);
           await cacheService.delPattern(`resource_directory:${host}:*`);
           await cacheService.delPattern(`app_config:${host}:*`);

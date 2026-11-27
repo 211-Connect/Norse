@@ -172,7 +172,8 @@
     "provided_by": "የቀረቡ መረጃዎች"
   },
   "footer": {
-    "copyright": "© የቅጂ መብት {{text}}"
+    "copyright": "© የቅጂ መብት {{text}}",
+    "sitemap": "የጣቢያ ካርታ"
   },
   "carousel": {
     "previous": "ቀዳሚ",

@@ -172,7 +172,8 @@
     "provided_by": "Tiedot toimittanut"
   },
   "footer": {
-    "copyright": "© Tekijänoikeus {{text}}"
+    "copyright": "© Tekijänoikeus {{text}}",
+    "sitemap": "Sivukartta"
   },
   "carousel": {
     "previous": "Edellinen",

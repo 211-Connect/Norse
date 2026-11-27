@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} muri {{location}}",
+    "description": "Shaka {{topic}} muri {{location}}: aderesi, amasaha n'uburyo bwo kubona ubufasha, kuri {{name}}.",
+    "h1": "{{topic}} muri {{location}}",
+    "intro": "Porogaramu na serivisi za {{topic}} muri {{location}}. Hamagara 211 niba ukeneye ubufasha bwo kubona ikwiye."
+  },
+  "page": {
+    "home": "Urupapuro rw'ibanze",
+    "breadcrumbs": "Uburyo bwo kugenzura imigati",
+    "counties": "Uturere turi muri {{location}}",
+    "cities": "Imijyi iri muri {{location}}",
+    "otherAreas": "Shakisha serivisi mu tundi turere",
+    "otherStates": "Izindi leta",
+    "otherCounties": "Izindi ntara muri {{location}}",
+    "otherCities": "Indi mijyi iri muri {{location}}",
+    "byRegion": "Shakisha serivisi ukurikije akarere",
+    "states": "Ibihugu"
+  }
+}

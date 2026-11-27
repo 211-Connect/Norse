@@ -1,8 +1,8 @@
 # Technical SEO on existing pages
 
 What Norse tells search engines about the pages it already serves. Today that is which URL is a resource page's
-own (its canonical). Landing pages (ISS-2296) and their sitemap, hreflang and cache policy are ISS-2299, not this
-doc.
+own (its canonical). Landing pages, their sitemaps, hreflang and caching are in
+[landing-pages.md](landing-pages.md).
 
 ## Resource detail pages (`/[locale]/search/[id]`, ISS-2678)
 
@@ -15,9 +15,10 @@ directory pointing to the record steward's own site is deferred to ISS-2676). It
 - **the record's id** (`resource.id`, its service-at-location id), not the URL's. Norse-API's lookup falls back
   to the Mongo `_id` and then across tenants, so a page reached through a fallback still names the record's
   real URL;
-- **the tenant's first trusted domain** (`trustedDomains[0]`, read through `@/lib/cms`), the primary domain
-  Norse already uses elsewhere, so a tenant with several domains has one canonical. When the tenant cannot be
-  read, it falls back to the request's host;
+- **the tenant's first trusted domain** (`trustedDomains[0]`, read through `@/lib/cms` and
+  `tenantCanonicalHost` in `src/utils/canonicalHost.ts`), the primary domain Norse already uses elsewhere, so a
+  tenant with several domains has one canonical. When the tenant cannot be read, it falls back to the request's
+  host;
 - the first value of `x-forwarded-proto` (a proxy chain can append more), the custom base path if set, and no
   locale prefix for the tenant's default locale (as `next-i18n-router` serves it). The id is lower-cased.
 
@@ -34,7 +35,7 @@ Tests: `tests/resource-seo.test.ts`.
 
 | Piece | Ticket | Blocked on |
 | --- | --- | --- |
-| `sitemap.xml` of resource pages per tenant host | ISS-2679 | Norse-API has no endpoint that lists a tenant's resources; `/search` stops at 10,000 results |
+| Resource pages in the sitemap (`/sitemaps/resources-{n}.xml` in the landing-page index, [landing-pages.md](landing-pages.md#sitemaps)) | ISS-2679 | Norse-API has no endpoint that lists a tenant's resources; `/search` stops at 10,000 results |
 | Canonical on `/search` pages | ISS-2680 | the landing page → query → topic card design (`query_label` is part of the intent) |
 | Cacheable HTML for anonymous visitors | ISS-2681 | Arcjet bypass on cache hits, per-visitor HTML, first-visit cookies, Cloudflare rules |
 

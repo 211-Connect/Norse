@@ -1,4 +1,5 @@
 import { DEFAULT_AREA_MATCH, DEFAULT_UNLOCATED } from '@/types/areaSearch';
+import { tenantCanonicalHost } from '@/utils/canonicalHost';
 import { TypedLocale } from 'payload';
 
 import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
@@ -249,7 +250,9 @@ export async function buildAppConfig(
         showOrganizationLocationBadge: false,
         showUseMyLocationButtonOnDesktop: false,
         turnResourceCardTaxonomiesIntoLinks: true,
+        enableLandingPages: false,
       },
+      landingPages: { templates: {} },
       printableDirectories: {
         accessMode: 'allowlist',
         allowedEmails: [],
@@ -425,6 +428,11 @@ export async function buildAppConfig(
         resourceDirectory.featureFlags?.turnResourceCardTaxonomiesIntoLinks ??
         true,
       showAgeFilter: resourceDirectory.featureFlags?.showAgeFilter ?? false,
+      enableLandingPages:
+        resourceDirectory.featureFlags?.enableLandingPages ?? false,
+    },
+    landingPages: {
+      templates: resourceDirectory.landingPages?.templates ?? {},
     },
     printableDirectories: {
       accessMode:
@@ -600,6 +608,7 @@ export async function buildAppConfig(
           : DEFAULT_SEARCH_CARD_LAYOUT,
     },
     noindex: getTenant(resourceDirectory)?.seo?.noindex ?? false,
+    canonicalHost: tenantCanonicalHost(getTenant(resourceDirectory)),
     badges:
       resourceDirectory.badges?.list
         ?.filter((badge) => badge.filter)

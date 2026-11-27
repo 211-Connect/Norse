@@ -172,7 +172,8 @@
     "provided_by": "داده‌های ارائه شده توسط"
   },
   "footer": {
-    "copyright": "© حق نشر {{text}}"
+    "copyright": "© حق نشر {{text}}",
+    "sitemap": "نقشه سایت"
   },
   "carousel": {
     "previous": "قبلی",

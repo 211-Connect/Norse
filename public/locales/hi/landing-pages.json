@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} काउंटी",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{location}} में {{topic}}",
+    "description": "{{location}} में {{topic}} खोजें: पते, खुलने का समय और सहायता कैसे प्राप्त करें, {{name}} की ओर से।",
+    "h1": "{{location}} में {{topic}}",
+    "intro": "{{location}} में {{topic}} के लिए कार्यक्रम और सेवाएं। सही सेवा ढूंढने में सहायता के लिए 211 पर कॉल करें।"
+  },
+  "page": {
+    "home": "होम पेज",
+    "breadcrumbs": "ब्रेडक्रम्ब नेविगेशन",
+    "counties": "{{location}} में काउंटी",
+    "cities": "{{location}} में शहर",
+    "otherAreas": "अन्य क्षेत्रों में सेवाओं की खोज करें",
+    "otherStates": "अन्य राज्य",
+    "otherCounties": "{{location}} में अन्य काउंटी",
+    "otherCities": "{{location}} में अन्य शहर",
+    "byRegion": "क्षेत्र के अनुसार सेवाओं की खोज करें",
+    "states": "राज्य"
+  }
+}

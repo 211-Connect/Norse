@@ -12,7 +12,12 @@ import {
   SearchFacet,
   SearchHit,
 } from '@/types/search';
-import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
+import {
+  ONE_HOUR,
+  type Seconds,
+  stableHash,
+  withCache,
+} from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
 import { API_URL } from '../lib/constants';
@@ -232,7 +237,16 @@ export async function findResources(
   limit: number | undefined,
   tenantId: string,
   searchEngine: SearchEngine,
+  options: {
+    /** Redis TTL; default 1 h. Landing pages use 24 h. */
+    ttl?: Seconds;
+    /** Fetch and rewrite the cached value (warm-up jobs only). */
+    refresh?: boolean;
+    /** Count the search in the search metrics; off for warm-up jobs. */
+    record?: boolean;
+  } = {},
 ) {
+  const { ttl = ONE_HOUR, refresh = false, record = true } = options;
   let cacheHit = false;
   const result = await withCache(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit, searchEngine })}`,
@@ -245,12 +259,14 @@ export async function findResources(
         tenantId,
         searchEngine,
       }),
-    { redis: true, memory: isCommonSearch(query, page), ttl: ONE_HOUR },
+    { redis: true, memory: isCommonSearch(query, page), ttl, refresh },
     (value) => value.results.length > 0,
     (hit) => {
       cacheHit = hit;
     },
   );
+
+  if (!record) return result;
 
   // Only the shape of the search is recorded: never the query, location,
   // coordinates, taxonomy or filters (privacy rule 8).

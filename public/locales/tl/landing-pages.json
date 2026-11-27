@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "Kondado ng {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} sa {{location}}",
+    "description": "Hanapin ang {{topic}} sa {{location}}: mga address, oras at kung paano makakuha ng tulong, mula sa {{name}}.",
+    "h1": "{{topic}} sa {{location}}",
+    "intro": "Mga programa at serbisyo para kay {{topic}} sa {{location}}. Tumawag sa 211 kung kailangan mo ng tulong sa paghahanap ng tama."
+  },
+  "page": {
+    "home": "Pahina ng bahay",
+    "breadcrumbs": "Pag-navigate sa breadcrumb",
+    "counties": "Mga Kondado sa {{location}}",
+    "cities": "Mga Lungsod sa {{location}}",
+    "otherAreas": "Maghanap ng mga serbisyo sa ibang mga rehiyon",
+    "otherStates": "Iba pang mga estado",
+    "otherCounties": "Iba pang mga county sa {{location}}",
+    "otherCities": "Iba pang mga lungsod sa {{location}}",
+    "byRegion": "Maghanap ng mga serbisyo ayon sa rehiyon",
+    "states": "Mga Estado"
+  }
+}

@@ -75,6 +75,9 @@ export interface Config {
     'hybrid-search-config': HybridSearchConfig;
     'translation-usage': TranslationUsage;
     'translation-usage-alerts': TranslationUsageAlert;
+    'landing-page-topics': LandingPageTopic;
+    'landing-pages': LandingPage;
+    'landing-page-slugs': LandingPageSlug;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -91,6 +94,9 @@ export interface Config {
     'hybrid-search-config': HybridSearchConfigSelect<false> | HybridSearchConfigSelect<true>;
     'translation-usage': TranslationUsageSelect<false> | TranslationUsageSelect<true>;
     'translation-usage-alerts': TranslationUsageAlertsSelect<false> | TranslationUsageAlertsSelect<true>;
+    'landing-page-topics': LandingPageTopicsSelect<false> | LandingPageTopicsSelect<true>;
+    'landing-pages': LandingPagesSelect<false> | LandingPagesSelect<true>;
+    'landing-page-slugs': LandingPageSlugsSelect<false> | LandingPageSlugsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -274,6 +280,9 @@ export interface Config {
       translate: TaskTranslate;
       warmCache: TaskWarmCache;
       deliverScheduledPdfs: TaskDeliverScheduledPdfs;
+      generateLandingPages: TaskGenerateLandingPages;
+      warmLandingPages: TaskWarmLandingPages;
+      translateLandingTopic: TaskTranslateLandingTopic;
       inline: {
         input: unknown;
         output: unknown;
@@ -1078,6 +1087,7 @@ export interface ResourceDirectory {
     requireAuthenticationForFavorites?: boolean | null;
     showAgeFilter?: boolean | null;
     enablePrintableDirectories?: boolean | null;
+    enableLandingPages?: boolean | null;
   };
   printableDirectories?: {
     /**
@@ -1136,6 +1146,38 @@ export interface ResourceDirectory {
       alertThresholdUsd?: number | null;
       userQuotaUsd?: number | null;
       tenantCapUsd?: number | null;
+    };
+  };
+  landingPages?: {
+    regions?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    /**
+     * Used by every page unless its topic sets its own. Variables: {topic}, {location}, {state}, {name}, {phone}, {email}. Empty fields use the built-in text for the language. Other languages are translated automatically from English.
+     */
+    templates?: {
+      /**
+       * SEO title: the blue link in Google results. About 60 characters.
+       */
+      title?: string | null;
+      /**
+       * Meta description: the grey text under the link. About 155 characters. It changes how many people click, not the ranking.
+       */
+      description?: string | null;
+      /**
+       * The main heading on the page.
+       */
+      h1?: string | null;
+      /**
+       * A short paragraph above the results.
+       */
+      intro?: string | null;
     };
   };
   updatedAt: string;
@@ -1287,6 +1329,130 @@ export interface TranslationUsageAlert {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-topics".
+ */
+export interface LandingPageTopic {
+  id: number;
+  tenant?: (string | null) | Tenant;
+  /**
+   * What the topic is called on its pages, in the words people search with.
+   */
+  name: string;
+  /**
+   * The first part of the page URL, e.g. food-pantries in /food-pantries/tacoma-wa.
+   */
+  slug?: string | null;
+  /**
+   * The search behind every page of this topic, copied from its source.
+   */
+  search: {
+    queryType: 'taxonomy' | 'text';
+    /**
+     * Comma-separated taxonomy codes, or the text to search for.
+     */
+    query: string;
+  };
+  /**
+   * Where the search was copied from.
+   */
+  source: {
+    kind: 'subtopic' | 'suggestion' | 'custom';
+    /**
+     * Id of the subtopic or suggestion in the Resource Directory.
+     */
+    ref?: string | null;
+    /**
+     * Its name when the search was copied.
+     */
+    label?: string | null;
+  };
+  /**
+   * Overrides the Resource Directory templates for every page of this topic. Leave empty to use the templates.
+   */
+  copy?: {
+    /**
+     * SEO title: the blue link in Google results. About 60 characters.
+     */
+    title?: string | null;
+    /**
+     * Meta description: the grey text under the link. About 155 characters. It changes how many people click, not the ranking.
+     */
+    description?: string | null;
+    /**
+     * The main heading on the page.
+     */
+    h1?: string | null;
+    /**
+     * A short paragraph above the results.
+     */
+    intro?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-pages".
+ */
+export interface LandingPage {
+  id: number;
+  tenant?: (string | null) | Tenant;
+  /**
+   * Topic and region, for lists.
+   */
+  label?: string | null;
+  topic: number | LandingPageTopic;
+  /**
+   * Live: in Google and the sitemaps. Off: switched off by an admin. Retired: removed from the selection; its URL redirects.
+   */
+  status: 'live' | 'off' | 'retired';
+  regionId: string;
+  regionType: 'state' | 'county' | 'place';
+  regionName: string;
+  regionState: string;
+  countyId?: string | null;
+  /**
+   * The second part of the URL, e.g. tacoma-wa. The same in every locale.
+   */
+  placeSlug: string;
+  /**
+   * Where visitors and search engines go while this page is not live.
+   */
+  redirect?: {
+    page?: (number | null) | LandingPage;
+    /**
+     * Used when no page is selected, e.g. /search?…
+     */
+    path?: string | null;
+  };
+  /**
+   * Results found by the last count (nightly, and after Apply changes). Never changes the page.
+   */
+  resultCount?: number | null;
+  countedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-slugs".
+ */
+export interface LandingPageSlug {
+  id: number;
+  tenant?: (string | null) | Tenant;
+  locale: string;
+  /**
+   * topic-slug/region-slug
+   */
+  path: string;
+  current?: boolean | null;
+  page: number | LandingPage;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1354,7 +1520,15 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs';
+        taskSlug:
+          | 'inline'
+          | 'translateTopics'
+          | 'translate'
+          | 'warmCache'
+          | 'deliverScheduledPdfs'
+          | 'generateLandingPages'
+          | 'warmLandingPages'
+          | 'translateLandingTopic';
         taskID: string;
         input?:
           | {
@@ -1387,7 +1561,18 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs') | null;
+  taskSlug?:
+    | (
+        | 'inline'
+        | 'translateTopics'
+        | 'translate'
+        | 'warmCache'
+        | 'deliverScheduledPdfs'
+        | 'generateLandingPages'
+        | 'warmLandingPages'
+        | 'translateLandingTopic'
+      )
+    | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1441,6 +1626,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'translation-usage-alerts';
         value: number | TranslationUsageAlert;
+      } | null)
+    | ({
+        relationTo: 'landing-page-topics';
+        value: number | LandingPageTopic;
+      } | null)
+    | ({
+        relationTo: 'landing-pages';
+        value: number | LandingPage;
+      } | null)
+    | ({
+        relationTo: 'landing-page-slugs';
+        value: number | LandingPageSlug;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2022,6 +2219,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         requireAuthenticationForFavorites?: T;
         showAgeFilter?: T;
         enablePrintableDirectories?: T;
+        enableLandingPages?: T;
       };
   printableDirectories?:
     | T
@@ -2064,6 +2262,19 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               alertThresholdUsd?: T;
               userQuotaUsd?: T;
               tenantCapUsd?: T;
+            };
+      };
+  landingPages?:
+    | T
+    | {
+        regions?: T;
+        templates?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              h1?: T;
+              intro?: T;
             };
       };
   updatedAt?: T;
@@ -2146,6 +2357,78 @@ export interface TranslationUsageAlertsSelect<T extends boolean = true> {
   month?: T;
   billedCharacters?: T;
   thresholdUsd?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-topics_select".
+ */
+export interface LandingPageTopicsSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  slug?: T;
+  search?:
+    | T
+    | {
+        queryType?: T;
+        query?: T;
+      };
+  source?:
+    | T
+    | {
+        kind?: T;
+        ref?: T;
+        label?: T;
+      };
+  copy?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        h1?: T;
+        intro?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-pages_select".
+ */
+export interface LandingPagesSelect<T extends boolean = true> {
+  tenant?: T;
+  label?: T;
+  topic?: T;
+  status?: T;
+  regionId?: T;
+  regionType?: T;
+  regionName?: T;
+  regionState?: T;
+  countyId?: T;
+  placeSlug?: T;
+  redirect?:
+    | T
+    | {
+        page?: T;
+        path?: T;
+      };
+  resultCount?: T;
+  countedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-page-slugs_select".
+ */
+export interface LandingPageSlugsSelect<T extends boolean = true> {
+  tenant?: T;
+  locale?: T;
+  path?: T;
+  current?: T;
+  page?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2655,6 +2938,62 @@ export interface TaskDeliverScheduledPdfs {
     sentAsLink: number;
     skipped: number;
     failed: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateLandingPages".
+ */
+export interface TaskGenerateLandingPages {
+  input: {
+    tenantId: string;
+  };
+  output: {
+    creates: number;
+    retires: number;
+    revives: number;
+    unchanged: number;
+    addressChanges: number;
+    redirectsUpdated: number;
+    conflicts: number;
+    conflictList?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskWarmLandingPages".
+ */
+export interface TaskWarmLandingPages {
+  input: {
+    tenantId?: string | null;
+  };
+  output: {
+    tenants: number;
+    pages: number;
+    warmed: number;
+    zeroResults: number;
+    failed: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskTranslateLandingTopic".
+ */
+export interface TaskTranslateLandingTopic {
+  input: {
+    topicId: number;
+    fields?: ('name' | 'copy.title' | 'copy.description' | 'copy.h1' | 'copy.intro')[] | null;
+  };
+  output: {
+    translated: number;
   };
 }
 /**

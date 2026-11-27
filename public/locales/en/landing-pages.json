@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} in {{location}}",
+    "description": "Find {{topic}} in {{location}}: addresses, hours and how to get help, from {{name}}.",
+    "h1": "{{topic}} in {{location}}",
+    "intro": "Programs and services for {{topic}} in {{location}}. Call 211 if you need help finding the right one."
+  },
+  "page": {
+    "home": "Home",
+    "breadcrumbs": "Breadcrumb",
+    "counties": "Counties in {{location}}",
+    "cities": "Cities in {{location}}",
+    "otherAreas": "Search for services in other regions",
+    "otherStates": "Other states",
+    "otherCounties": "Other counties in {{location}}",
+    "otherCities": "Other cities in {{location}}",
+    "byRegion": "Search for services by region",
+    "states": "States"
+  }
+}

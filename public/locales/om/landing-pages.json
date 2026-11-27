@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} {{location}} keessatti.",
+    "description": "{{topic}} {{location}}: teessoo, sa'aatii fi akkaataa gargaarsa itti argatan, {{name}} irraa barbaadi.",
+    "h1": "{{topic}} {{location}} keessatti.",
+    "intro": "Sagantaa fi tajaajiloota {{topic}} {{location}} keessatti. Yoo gargaarsa sirrii ta’e argachuuf barbaadde 211 bilbili."
+  },
+  "page": {
+    "home": "Fuula jalqabaa",
+    "breadcrumbs": "Navigeeshinii daabboo qamadii",
+    "counties": "Kaawuntii {{location}} keessa jiran.",
+    "cities": "Magaalota {{location}} keessa jiran.",
+    "otherAreas": "Tajaajila naannoo biroo barbaaduu",
+    "otherStates": "Naannoolee biroo",
+    "otherCounties": "Kaawuntii biroo {{location}}",
+    "otherCities": "Magaalota biroo {{location}}",
+    "byRegion": "Tajaajila naannoodhaan barbaaduu",
+    "states": "Naannoolee"
+  }
+}

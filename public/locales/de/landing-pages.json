@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} County",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} in {{location}}",
+    "description": "Finden Sie {{topic}} in {{location}}: Adressen, Öffnungszeiten und wie Sie Hilfe erhalten, von {{name}}.",
+    "h1": "{{topic}} in {{location}}",
+    "intro": "Programme und Dienstleistungen für {{topic}} in {{location}}. Rufen Sie 211 an, wenn Sie Hilfe bei der Suche nach dem richtigen Angebot benötigen."
+  },
+  "page": {
+    "home": "Startseite",
+    "breadcrumbs": "Breadcrumb-Navigation",
+    "counties": "Landkreise in {{location}}",
+    "cities": "Städte in {{location}}",
+    "otherAreas": "Suche nach Dienstleistungen in anderen Regionen",
+    "otherStates": "Andere Staaten",
+    "otherCounties": "Andere Landkreise in {{location}}",
+    "otherCities": "Andere Städte in {{location}}",
+    "byRegion": "Suche nach Diensten nach Region",
+    "states": "Staaten"
+  }
+}

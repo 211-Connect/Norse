@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "Kalana o {{name}}",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{topic}} i loko o {{location}}",
+    "description": "E huli iā {{topic}} ma {{location}}: nā helu wahi, nā hola a pehea e loaʻa ai ke kōkua, mai {{name}}.",
+    "h1": "{{topic}} i loko o {{location}}",
+    "intro": "Nā polokalamu a me nā lawelawe no {{topic}} ma {{location}}. E kelepona i ka 211 inā makemake ʻoe i ke kōkua e ʻimi i ka mea kūpono."
+  },
+  "page": {
+    "home": "ʻAoʻao home",
+    "breadcrumbs": "Hoʻokele ʻōpala palaoa",
+    "counties": "Nā Kalana ma {{location}}",
+    "cities": "Nā kūlanakauhale ma {{location}}",
+    "otherAreas": "E huli i nā lawelawe ma nā wahi ʻē aʻe",
+    "otherStates": "Nā moku'āina ʻē aʻe",
+    "otherCounties": "Nā kalana ʻē aʻe ma {{location}}",
+    "otherCities": "Nā kūlanakauhale ʻē aʻe ma {{location}}",
+    "byRegion": "E huli i nā lawelawe ma ka ʻāina",
+    "states": "Nā Moku'āina"
+  }
+}

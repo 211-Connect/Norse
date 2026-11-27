@@ -1,4 +1,5 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { useSearchSurface } from '@/app/(app)/shared/hooks/use-search-surface';
 import {
   ResourceEntry,
   trackSearchEvent,
@@ -32,6 +33,7 @@ export const useNavigateAiSearch = ({
   const search = useAtomValue(searchAtom);
   const distance = useAtomValue(searchDistanceAtom);
   const setSearchEntry = useSetAtom(searchEntryAtom);
+  const surface = useSearchSurface();
 
   return useCallback(
     ({
@@ -76,6 +78,7 @@ export const useNavigateAiSearch = ({
                 query,
                 queryLabel: String(search.queryLabel ?? ''),
                 tenantId: appConfig.tenantId ?? '',
+                ...surface,
                 ...resolvedLocationPayload,
               },
               appConfig.sessionId,
@@ -110,6 +113,7 @@ export const useNavigateAiSearch = ({
       setDialogOpen,
       setSearchEntry,
       startTransition,
+      surface,
     ],
   );
 };

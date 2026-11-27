@@ -2,7 +2,6 @@
 
 import { Phone } from 'lucide-react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
@@ -19,10 +18,12 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
+import { useEffectiveSearchParams } from '../context/fixed-search-context';
+
 export function NoResultsCard() {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
-  const searchParams = useSearchParams();
+  const searchParams = useEffectiveSearchParams();
 
   const text =
     appConfig.search.texts?.noResultsFallbackText ||

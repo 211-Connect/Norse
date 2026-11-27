@@ -1,0 +1,24 @@
+{
+  "region": {
+    "county": "{{name}} કાઉન્ટી",
+    "place": "{{name}}, {{state}}"
+  },
+  "defaults": {
+    "title": "{{location}} માં {{topic}}",
+    "description": "{{location}} માં {{topic}} શોધો: સરનામાં, સમય અને મદદ કેવી રીતે મેળવવી, {{name}} તરફથી.",
+    "h1": "{{location}} માં {{topic}}",
+    "intro": "{{location}} માં {{topic}} માટે કાર્યક્રમો અને સેવાઓ. યોગ્ય સેવા શોધવામાં મદદની જરૂર હોય તો 211 પર કૉલ કરો."
+  },
+  "page": {
+    "home": "હોમ પેજ",
+    "breadcrumbs": "બ્રેડક્રમ્બ નેવિગેશન",
+    "counties": "{{location}} માં કાઉન્ટીઓ",
+    "cities": "{{location}} માં શહેરો",
+    "otherAreas": "અન્ય પ્રદેશોમાં સેવાઓ શોધો",
+    "otherStates": "અન્ય રાજ્યો",
+    "otherCounties": "{{location}} માં અન્ય કાઉન્ટીઓ",
+    "otherCities": "{{location}} માં અન્ય શહેરો",
+    "byRegion": "પ્રદેશ પ્રમાણે સેવાઓ શોધો",
+    "states": "રાજ્યો"
+  }
+}

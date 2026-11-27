@@ -172,7 +172,8 @@
     "provided_by": "Done yo bay pa"
   },
   "footer": {
-    "copyright": "© Dwa otè {{text}}"
+    "copyright": "© Dwa otè {{text}}",
+    "sitemap": "Kat sit la"
   },
   "carousel": {
     "previous": "Anvan",

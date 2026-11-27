@@ -20,6 +20,10 @@ public site shows the tenant's own values in their place, so one shared text
   (`{website_owner}`) are left as typed.
 - Double braces are left alone: `{{name}}` is i18next interpolation, not a
   template tag.
+- Machine translation (the `translate` job) keeps single-brace tags as
+  they are: they are masked before the text goes to the engine.
+- Landing-page copy also takes `{topic}`, `{location}` and `{state}`
+  ([landing-pages.md](landing-pages.md#page-copy)).
 - Values are inserted as typed, without HTML escaping. They come from the same
   tenant admins who write the raw HTML page content.
 

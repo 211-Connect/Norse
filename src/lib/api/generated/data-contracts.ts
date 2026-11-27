@@ -3793,3 +3793,51 @@ export type AnalyticsControllerGetCrawlerTrafficData = CrawlerTrafficResponse;
 
 export type CrawlerTrafficInternalControllerRecordData =
   RecordCrawlerTrafficResponseDto;
+
+export interface StateRegionDto {
+  /** @example "place:5370000" */
+  id: string;
+  type: "county" | "place";
+  /** @example "Tacoma" */
+  name: string;
+  /** @example "WA" */
+  state: string;
+  /**
+   * Places only: the globally unique canonical slug.
+   * @example "tacoma-wa"
+   */
+  slug?: string;
+  /**
+   * Places only: Census classification; known values include city, town, cdp and unknown.
+   * @example "city"
+   */
+  place_type?: string;
+  /**
+   * Places only: the county that contains the place's centroid; null when none does.
+   * @example "county:53053"
+   */
+  county_id?: string | null;
+}
+
+export interface StateRegionsResponseDto {
+  /** Every listed Region of the state, sorted by name. */
+  items: StateRegionDto[];
+}
+
+export interface RegionPublicControllerListByStateParams {
+  /**
+   * Uppercase state or territory postal code.
+   * @pattern ^[A-Z]{2}$
+   * @example "WA"
+   */
+  state: string;
+  /**
+   * Comma-separated Region types to list: `county`, `place`. Absent means both.
+   * @example "county,place"
+   */
+  types?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
+
+export type RegionPublicControllerListByStateData = StateRegionsResponseDto;

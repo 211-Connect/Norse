@@ -172,7 +172,8 @@
     "provided_by": "ຂໍ້ມູນສະໜອງໃຫ້ໂດຍ"
   },
   "footer": {
-    "copyright": "© ລິຂະສິດ {{text}}"
+    "copyright": "© ລິຂະສິດ {{text}}",
+    "sitemap": "ແຜນຜັງເວັບໄຊ"
   },
   "carousel": {
     "previous": "ກ່ອນໜ້ານີ້",

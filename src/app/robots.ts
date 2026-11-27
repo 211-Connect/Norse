@@ -3,9 +3,24 @@ import { headers } from 'next/headers';
 
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { shouldBlockCrawlers } from '@/app/(app)/shared/utils/shouldBlockCrawlers';
+import { getSitemapUrls } from '@/app/(app)/features/landing-pages/server/sitemaps';
 import { getTenantByHost } from '@/lib/cms/tenants';
+import { createLogger } from '@/lib/logger';
 
 import { indexableRobotsRules } from './robotsRules';
+
+const log = createLogger('robots');
+
+/** `https://host/sitemap.xml` when the host serves a sitemap. */
+async function sitemapUrl(): Promise<string | undefined> {
+  try {
+    const sitemap = await getSitemapUrls();
+    return sitemap ? `${sitemap.origin}/sitemap.xml` : undefined;
+  } catch (err) {
+    log.warn({ err }, 'Sitemap lookup failed; robots.txt names no sitemap');
+    return undefined;
+  }
+}
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   // Resolve the branded tenant for this request host so de-indexing can be
@@ -35,5 +50,6 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     };
   }
 
-  return indexableRobotsRules();
+  const sitemap = await sitemapUrl();
+  return { ...indexableRobotsRules(), ...(sitemap && { sitemap }) };
 }

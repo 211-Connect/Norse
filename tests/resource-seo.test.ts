@@ -59,7 +59,12 @@ test('canonical: one URL per resource whatever the id case in the request', () =
 test("canonical origin: the tenant's first trusted domain, not whichever host the request came in on", () => {
   assert.deepEqual(
     canonicalOrigin({
-      trustedDomains: ['search.wa211.org', 'wa211.norse.app'],
+      tenant: {
+        trustedDomains: [
+          { domain: 'search.wa211.org' },
+          { domain: 'wa211.norse.app' },
+        ],
+      },
       host: 'wa211.norse.app',
       protocol: 'https',
     }),
@@ -67,7 +72,7 @@ test("canonical origin: the tenant's first trusted domain, not whichever host th
   );
   assert.deepEqual(
     canonicalOrigin({
-      trustedDomains: ['https://Search.WA211.org:443/'],
+      tenant: { trustedDomains: [{ domain: 'https://Search.WA211.org:443/' }] },
       host: 'x',
       protocol: 'https',
     }),
@@ -75,7 +80,7 @@ test("canonical origin: the tenant's first trusted domain, not whichever host th
   );
   assert.deepEqual(
     canonicalOrigin({
-      trustedDomains: [],
+      tenant: null,
       host: 'localhost',
       protocol: 'http',
     }),
@@ -85,12 +90,12 @@ test("canonical origin: the tenant's first trusted domain, not whichever host th
 
 test('canonical origin: only the first x-forwarded-proto value counts', () => {
   assert.equal(
-    canonicalOrigin({ trustedDomains: [], host: 'h', protocol: 'https, http' })
+    canonicalOrigin({ tenant: null, host: 'h', protocol: 'https, http' })
       .protocol,
     'https',
   );
   assert.equal(
-    canonicalOrigin({ trustedDomains: [], host: 'h', protocol: '' }).protocol,
+    canonicalOrigin({ tenant: null, host: 'h', protocol: '' }).protocol,
     'https',
   );
 });

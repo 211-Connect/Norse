@@ -172,7 +172,8 @@
     "provided_by": "Amakuru yatanzwe na"
   },
   "footer": {
-    "copyright": "© Uburenganzira {{text}}"
+    "copyright": "© Uburenganzira {{text}}",
+    "sitemap": "Ikarita y'urubuga"
   },
   "carousel": {
     "previous": "Ibanjirije",

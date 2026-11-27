@@ -177,7 +177,8 @@
     "go_to": "Alu i le"
   },
   "footer": {
-    "copyright": "© Puletaofia {{text}}"
+    "copyright": "© Puletaofia {{text}}",
+    "sitemap": "Faafanua o le upega tafaʻilagi"
   },
   "filter_results_count_one": "I'uga {{count}}",
   "filter_results_count_other": "{{count}} taunuuga",

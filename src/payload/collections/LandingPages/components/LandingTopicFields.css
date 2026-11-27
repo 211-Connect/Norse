@@ -1,0 +1,20 @@
+.landing-topic-note {
+  margin: 8px 0 16px;
+  padding: 10px 12px;
+  border-radius: var(--style-radius-s);
+  background: var(--theme-elevation-50);
+  font-family: var(--font-body);
+}
+
+.landing-topic-note p {
+  margin: 0 0 8px;
+}
+
+.landing-topic-note--warn {
+  border-left: 3px solid var(--theme-warning-500);
+  background: var(--theme-warning-50, var(--theme-elevation-50));
+}
+
+.landing-topic-note .btn {
+  margin: 0;
+}

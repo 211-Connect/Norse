@@ -172,7 +172,8 @@
     "provided_by": "Macluumaadka ay bixiyaan"
   },
   "footer": {
-    "copyright": "© Xuquuqda daabacaadda {{text}}"
+    "copyright": "© Xuquuqda daabacaadda {{text}}",
+    "sitemap": "Khariidadda bogga"
   },
   "carousel": {
     "previous": "Kii hore",
