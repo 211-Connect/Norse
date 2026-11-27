@@ -81,7 +81,7 @@ export function SectionCarousel({
             <Button
               variant="outline"
               size="icon"
-              className="absolute top-1/2 left-4 z-10 hidden -translate-y-1/2 rounded-full shadow-lg sm:inline-flex"
+              className="absolute inset-y-0 left-4 z-10 my-auto hidden rounded-full shadow-lg sm:inline-flex"
               onClick={scrollPrev}
               aria-label={t('carousel.previous', 'Previous')}
             >
@@ -93,7 +93,7 @@ export function SectionCarousel({
             <Button
               variant="outline"
               size="icon"
-              className="absolute top-1/2 right-4 z-10 hidden -translate-y-1/2 rounded-full shadow-lg sm:inline-flex"
+              className="absolute inset-y-0 right-4 z-10 my-auto hidden rounded-full shadow-lg sm:inline-flex"
               onClick={scrollNext}
               aria-label={t('carousel.next', 'Next')}
             >
