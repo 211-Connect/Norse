@@ -276,47 +276,36 @@ function normalizeForComparison(value: string): string {
   return value.replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
+/**
+ * Header for a resource in the PDF: the full resource name as the title, and
+ * the service name below it only when it adds something.
+ *
+ * The title is never shortened. Tenants compose names in many ways ("Org –
+ * Service", "Service offered by Org", "Service at Org", translated variants),
+ * so cutting the service name out of the title leaves fragments like
+ * "offered by Org". When the title already contains the service name, the
+ * subtitle is dropped instead.
+ */
 export function getDisplayTitleAndSubtitle(item: PrintableDirectoryItemData): {
   title: string;
   subtitle: string;
 } {
-  const title = item.displayName;
-  const subtitle = item.serviceName;
+  const title = item.displayName.trim();
+  const subtitle = item.serviceName.trim();
 
-  const normalizedTitle = normalizeForComparison(title);
-  const normalizedSubtitle = normalizeForComparison(subtitle);
-
-  if (!normalizedTitle || !normalizedSubtitle) {
-    return { title, subtitle };
-  }
-
-  if (!normalizedTitle.includes(normalizedSubtitle)) {
-    return { title, subtitle };
-  }
-
-  const escapedSubtitle = normalizeForComparison(subtitle)
-    .split(' ')
-    .map((part) => escapeRegExp(part))
-    .join('\\s+');
-
-  const cleanedTitle = title
-    .replace(new RegExp(escapedSubtitle, 'ig'), ' ')
-    .replace(/\s*[|,;:\-–—]\s*/g, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
-
-  if (!cleanedTitle) {
+  if (!title) {
     return { title: subtitle, subtitle: '' };
   }
 
-  return {
-    title: cleanedTitle,
-    subtitle,
-  };
+  const normalizedSubtitle = normalizeForComparison(subtitle);
+  if (
+    !normalizedSubtitle ||
+    normalizeForComparison(title).includes(normalizedSubtitle)
+  ) {
+    return { title, subtitle: '' };
+  }
+
+  return { title, subtitle };
 }
 
 type PrintDatumProps = {
