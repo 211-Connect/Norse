@@ -1078,6 +1078,7 @@ export interface ResourceDirectory {
     requireAuthenticationForFavorites?: boolean | null;
     showAgeFilter?: boolean | null;
     enablePrintableDirectories?: boolean | null;
+    enableV2Api?: boolean | null;
   };
   printableDirectories?: {
     /**
@@ -2022,6 +2023,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         requireAuthenticationForFavorites?: T;
         showAgeFilter?: T;
         enablePrintableDirectories?: T;
+        enableV2Api?: T;
       };
   printableDirectories?:
     | T
