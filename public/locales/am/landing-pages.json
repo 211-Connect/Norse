@@ -8,5 +8,17 @@
     "description": "{{topic}} በ{{location}} ውስጥ ያግኙ፡ አድራሻዎች፣ የስራ ሰዓቶች እና እርዳታ እንዴት ማግኘት እንደሚችሉ፣ ከ {{name}} ያግኙ።",
     "h1": "{{topic}} በ {{location}} ውስጥ",
     "intro": "በ{{location}} ውስጥ ለ {{topic}} ፕሮግራሞች እና አገልግሎቶች። ትክክለኛውን ለማግኘት እርዳታ ከፈለጉ 211 ይደውሉ።"
+  },
+  "page": {
+    "home": "የመነሻ ገጽ",
+    "breadcrumbs": "የዳቦ ፍርፋሪ አሰሳ",
+    "counties": "በ {{location}} ውስጥ ያሉ አውራጃዎች",
+    "cities": "በ {{location}} ውስጥ ያሉ ከተሞች",
+    "otherAreas": "በሌሎች ክልሎች ውስጥ አገልግሎቶችን ይፈልጉ",
+    "otherStates": "ሌሎች ግዛቶች",
+    "otherCounties": "በ{{location}} ውስጥ ያሉ ሌሎች አውራጃዎች",
+    "otherCities": "በ{{location}} ውስጥ ያሉ ሌሎች ከተሞች",
+    "byRegion": "በክልል ደረጃ አገልግሎቶችን ይፈልጉ",
+    "states": "ግዛቶች"
   }
 }

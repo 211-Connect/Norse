@@ -8,5 +8,17 @@
     "description": "Yiytu {{topic}} e nder {{location}}: adresseeji, waktuuji e no keɓir-ɗaa ballal, gila e {{name}}.",
     "h1": "{{topic}} e nder {{location}}",
     "intro": "Porogaraamuuji e sarwisaaji ngam {{topic}} e nder {{location}}. Noddu 211 so aɗa yiɗi ballal ngam heɓde mo foti."
+  },
+  "page": {
+    "home": "Hello jaɓɓorgo",
+    "breadcrumbs": "Navigation ɓuuɓri mburu",
+    "counties": "Diiwanuuji nder {{location}}",
+    "cities": "Wurooji nder {{location}}",
+    "otherAreas": "Yiylo sarwisaaji e nder diiwanuuji goɗɗi",
+    "otherStates": "Dowlaaji goɗɗi",
+    "otherCounties": "Diiwanuuji goɗɗi e nder {{location}}",
+    "otherCities": "Wurooji goɗɗi e nder {{location}}",
+    "byRegion": "Yiylo sarwisaaji e diiwaan",
+    "states": "Dowlaaji"
   }
 }

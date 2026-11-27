@@ -8,5 +8,17 @@
     "description": "Найдите {{topic}} в {{location}}: адреса, часы работы и как получить помощь, от {{name}}.",
     "h1": "{{topic}} в {{location}}",
     "intro": "Программы и услуги для {{topic}} в {{location}}. Позвоните по номеру 211, если вам нужна помощь в поиске нужной программы."
+  },
+  "page": {
+    "home": "Главная страница",
+    "breadcrumbs": "Навигация по хлебным крошкам",
+    "counties": "Округа в {{location}}",
+    "cities": "Города в {{location}}",
+    "otherAreas": "Поиск услуг в других регионах",
+    "otherStates": "Другие штаты",
+    "otherCounties": "Другие округа в {{location}}",
+    "otherCities": "Другие города в {{location}}",
+    "byRegion": "Поиск услуг по региону",
+    "states": "Штаты"
   }
 }

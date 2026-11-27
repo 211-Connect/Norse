@@ -8,5 +8,17 @@
     "description": "Etsi {{topic}} kohdasta {{location}}: osoitteet, aukioloajat ja miten saat apua {{name}}:lta.",
     "h1": "{{topic}} kohdassa {{location}}",
     "intro": "Ohjelmat ja palvelut käyttäjälle {{topic}} {{location}} -alueella. Soita numeroon 211, jos tarvitset apua oikean löytämisessä."
+  },
+  "page": {
+    "home": "Etusivu",
+    "breadcrumbs": "Navigointipolun navigointi",
+    "counties": "Kreivikunnat {{location}}-ssa",
+    "cities": "Kaupungit {{location}} -alueella",
+    "otherAreas": "Hae palveluita muilta alueilta",
+    "otherStates": "Muut osavaltiot",
+    "otherCounties": "Muut piirikunnat {{location}} -alueella",
+    "otherCities": "Muita kaupunkeja {{location}} -alueella",
+    "byRegion": "Hae palveluita alueen mukaan",
+    "states": "Osavaltiot"
   }
 }

@@ -8,5 +8,17 @@
     "description": "Ka hel {{topic}} {{location}}: cinwaanada, saacadaha iyo sida loo helo caawimo, laga bilaabo {{name}}.",
     "h1": "{{topic}} ee {{location}}",
     "intro": "Barnaamijyada iyo adeegyada {{topic}} ee ku jira {{location}}. Wac 211 haddii aad u baahan tahay caawimo helitaanka mid sax ah."
+  },
+  "page": {
+    "home": "Bogga hore",
+    "breadcrumbs": "Raadinta rootiga jajaban",
+    "counties": "Degmooyinka ku yaal {{location}}",
+    "cities": "Magaalooyinka ku yaal {{location}}",
+    "otherAreas": "Ka raadi adeegyada gobollada kale",
+    "otherStates": "Gobollada kale",
+    "otherCounties": "Degmooyinka kale ee ku yaal {{location}}",
+    "otherCities": "Magaalooyinka kale ee ku yaal {{location}}",
+    "byRegion": "Ka raadi adeegyada gobol ahaan",
+    "states": "Gobollada"
   }
 }

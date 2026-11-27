@@ -4,9 +4,21 @@
     "place": "{{name}}, {{state}}"
   },
   "defaults": {
-    "title": "{{topic}} 在 {{location}}",
-    "description": "在 {{topic}} 中尋找 {{location}}：地址、營業時間以及如何從 {{name}} 取得協助。",
-    "h1": "{{topic}} 在 {{location}}",
-    "intro": "為{{topic}}在{{location}}地區提供的項目和服務。如果您需要協助找到合適的項目和服務，請致電211。"
+    "title": "{{location}}的{{topic}}",
+    "description": "尋找{{location}}的{{topic}}：地址、營業時間以及取得協助的方式，由{{name}}提供。",
+    "h1": "{{location}}的{{topic}}",
+    "intro": "{{location}}的{{topic}}項目和服務。如需協助尋找合適的服務，請致電211。"
+  },
+  "page": {
+    "home": "首頁",
+    "breadcrumbs": "麵包屑導航",
+    "counties": "{{location}}的縣",
+    "cities": "{{location}}的城市",
+    "otherAreas": "在其他地區尋找服務",
+    "otherStates": "其他州",
+    "otherCounties": "{{location}}的其他縣",
+    "otherCities": "{{location}}的其他城市",
+    "byRegion": "按地區搜尋服務",
+    "states": "各州"
   }
 }

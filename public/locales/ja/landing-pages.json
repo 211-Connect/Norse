@@ -4,9 +4,21 @@
     "place": "{{name}}、{{state}}"
   },
   "defaults": {
-    "title": "{{topic}} 内の {{location}}",
-    "description": "{{topic}} の住所、営業時間、サポートの受け方については、{{location}} を参照してください。 {{name}}",
-    "h1": "{{topic}} 内の {{location}}",
-    "intro": "{{topic}} の {{location}} 向けのプログラムとサービス。適切なプログラムを見つけるのにサポートが必要な場合は、211 に電話してください。"
+    "title": "{{location}}の{{topic}}",
+    "description": "{{location}}の{{topic}}を探す：住所、営業時間、支援の受け方。提供：{{name}}。",
+    "h1": "{{location}}の{{topic}}",
+    "intro": "{{location}}の{{topic}}に関するプログラムとサービスです。適切なサービスを探すのにお困りの場合は、211にお電話ください。"
+  },
+  "page": {
+    "home": "ホームページ",
+    "breadcrumbs": "パンくずリストナビゲーション",
+    "counties": "{{location}} の郡",
+    "cities": "{{location}} の都市",
+    "otherAreas": "他の地域でのサービスを検索する",
+    "otherStates": "その他の州",
+    "otherCounties": "{{location}} のその他の郡",
+    "otherCities": "{{location}} の他の都市",
+    "byRegion": "地域別にサービスを検索",
+    "states": "州"
   }
 }

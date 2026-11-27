@@ -4,9 +4,21 @@
     "place": "{{name}}, {{state}}"
   },
   "defaults": {
-    "title": "{{topic}} मा {{location}}",
-    "description": "{{topic}} लाई {{location}} मा खोज्नुहोस्: ठेगाना, घण्टा र मद्दत कसरी प्राप्त गर्ने, {{name}} बाट।",
-    "h1": "{{topic}} मा {{location}}",
-    "intro": "{{topic}} मा {{location}} का लागि कार्यक्रम र सेवाहरू। यदि तपाईंलाई सही खोज्न मद्दत चाहिन्छ भने २११ मा कल गर्नुहोस्।"
+    "title": "{{location}} मा {{topic}}",
+    "description": "{{location}} मा {{topic}} खोज्नुहोस्: ठेगाना, समय र मद्दत कसरी पाउने, {{name}} बाट।",
+    "h1": "{{location}} मा {{topic}}",
+    "intro": "{{location}} मा {{topic}} का लागि कार्यक्रम र सेवाहरू। सही सेवा खोज्न मद्दत चाहिए भने २११ मा कल गर्नुहोस्।"
+  },
+  "page": {
+    "home": "गृह पृष्ठ",
+    "breadcrumbs": "ब्रेडक्रम्ब नेभिगेसन",
+    "counties": "{{location}} मा रहेका काउन्टीहरू",
+    "cities": "{{location}} मा रहेका शहरहरू",
+    "otherAreas": "अन्य क्षेत्रहरूमा सेवाहरू खोज्नुहोस्",
+    "otherStates": "अन्य राज्यहरू",
+    "otherCounties": "{{location}} मा रहेका अन्य काउन्टीहरू",
+    "otherCities": "{{location}} मा रहेका अन्य शहरहरू",
+    "byRegion": "क्षेत्र अनुसार सेवाहरू खोज्नुहोस्",
+    "states": "राज्यहरू"
   }
 }

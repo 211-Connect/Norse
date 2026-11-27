@@ -8,5 +8,17 @@
     "description": "Tìm {{topic}} tại {{location}}: địa chỉ, giờ mở cửa và cách nhận trợ giúp, từ {{name}}.",
     "h1": "{{topic}} trong {{location}}",
     "intro": "Các chương trình và dịch vụ dành cho {{topic}} tại {{location}}. Gọi 211 nếu bạn cần trợ giúp tìm đúng chương trình/dịch vụ."
+  },
+  "page": {
+    "home": "Trang chủ",
+    "breadcrumbs": "Điều hướng bằng đường dẫn",
+    "counties": "Các quận ở {{location}}",
+    "cities": "Các thành phố ở {{location}}",
+    "otherAreas": "Tìm kiếm dịch vụ ở các khu vực khác",
+    "otherStates": "Các tiểu bang khác",
+    "otherCounties": "Các quận khác ở {{location}}",
+    "otherCities": "Các thành phố khác ở {{location}}",
+    "byRegion": "Tìm kiếm dịch vụ theo khu vực",
+    "states": "Các tiểu bang"
   }
 }

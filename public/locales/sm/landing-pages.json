@@ -8,5 +8,17 @@
     "description": "Saili le {{topic}} i le {{location}}: tuatusi, itula ma le auala e maua ai se fesoasoani, mai le {{name}}.",
     "h1": "{{topic}} i le {{location}}",
     "intro": "Polokalama ma auaunaga mo {{topic}} i le {{location}}. Vala'au le 211 pe afai e te mana'omia se fesoasoani e su'e ai le mea sa'o."
+  },
+  "page": {
+    "home": "Itulau autū",
+    "breadcrumbs": "Fa'asologa o falaoa falaoa",
+    "counties": "Itumalo i le {{location}}",
+    "cities": "Aai i le {{location}}",
+    "otherAreas": "Saili mo auaunaga i isi itulagi",
+    "otherStates": "Isi setete",
+    "otherCounties": "Isi itumalo i le {{location}}",
+    "otherCities": "Isi aai i le {{location}}",
+    "byRegion": "Saili mo auaunaga e ala i le itulagi",
+    "states": "Setete"
   }
 }

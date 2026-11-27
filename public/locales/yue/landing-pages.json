@@ -4,9 +4,21 @@
     "place": "{{name}}, {{state}}"
   },
   "defaults": {
-    "title": "{{topic}} 喺 {{location}}",
-    "description": "喺 {{topic}} 搵 {{location}} ：地址、營業時間同埋點樣搵人幫手，嚟自 {{name}} 。",
-    "h1": "{{topic}} 喺 {{location}}",
-    "intro": "喺 {{topic}} 入面嘅 {{location}} 嘅程式同服務。如果你需要幫手搵啱嘅，打211。"
+    "title": "{{location}}嘅{{topic}}",
+    "description": "搵{{location}}嘅{{topic}}：地址、開放時間同點樣搵人幫手，由{{name}}提供。",
+    "h1": "{{location}}嘅{{topic}}",
+    "intro": "{{location}}嘅{{topic}}服務同計劃。如果你需要幫手搵啱嘅服務，請打211。"
+  },
+  "page": {
+    "home": "首頁",
+    "breadcrumbs": "麵包糠導航",
+    "counties": "{{location}} 入面嘅縣市",
+    "cities": "{{location}} 入面嘅城市",
+    "otherAreas": "喺其他地區搜尋服務",
+    "otherStates": "其他州",
+    "otherCounties": "{{location}} 內其他縣市",
+    "otherCities": "{{location}} 入面嘅其他城市",
+    "byRegion": "按地區搜尋服務",
+    "states": "州"
   }
 }

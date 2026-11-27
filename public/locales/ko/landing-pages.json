@@ -4,9 +4,21 @@
     "place": "{{name}}, {{state}}"
   },
   "defaults": {
-    "title": "{{topic}}에서 {{location}}",
-    "description": "{{topic}}을 {{location}}에서 찾으세요: 주소, 영업 시간 및 도움을 받는 방법 ({{name}}에서 확인 가능).",
-    "h1": "{{topic}}에서 {{location}}",
-    "intro": "{{topic}} 지역 주민을 위한 프로그램 및 서비스입니다. 적합한 프로그램을 찾는 데 도움이 필요하시면 211번으로 전화하세요. {{location}}"
+    "title": "{{location}}의 {{topic}}",
+    "description": "{{location}}의 {{topic}} 찾기: 주소, 운영 시간, 도움받는 방법 ({{name}} 제공).",
+    "h1": "{{location}}의 {{topic}}",
+    "intro": "{{location}}의 {{topic}} 관련 프로그램과 서비스입니다. 알맞은 서비스를 찾는 데 도움이 필요하시면 211로 전화하세요."
+  },
+  "page": {
+    "home": "홈페이지",
+    "breadcrumbs": "탐색 경로",
+    "counties": "{{location}}의 카운티",
+    "cities": "{{location}}의 도시들",
+    "otherAreas": "다른 지역의 서비스를 검색하세요",
+    "otherStates": "기타 주",
+    "otherCounties": "{{location}}의 다른 카운티",
+    "otherCities": "{{location}}의 다른 도시들",
+    "byRegion": "지역별 서비스 검색",
+    "states": "주"
   }
 }

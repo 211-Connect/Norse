@@ -8,5 +8,17 @@
     "description": "Nrhiav {{topic}} hauv {{location}}: chaw nyob, sijhawm ua haujlwm thiab yuav ua li cas thiaj tau kev pab, los ntawm {{name}}.",
     "h1": "{{topic}} nyob rau hauv {{location}}",
     "intro": "Cov kev pab cuam thiab cov kev pabcuam rau {{topic}} hauv {{location}}. Hu rau 211 yog tias koj xav tau kev pab nrhiav qhov yog."
+  },
+  "page": {
+    "home": "Nplooj ntawv tsev",
+    "breadcrumbs": "Kev taw qhia ntawm cov khoom noj txom ncauj",
+    "counties": "Cov nroog hauv {{location}}",
+    "cities": "Cov nroog hauv {{location}}",
+    "otherAreas": "Nrhiav cov kev pabcuam hauv lwm thaj chaw",
+    "otherStates": "Lwm lub xeev",
+    "otherCounties": "Lwm lub nroog hauv {{location}}",
+    "otherCities": "Lwm lub nroog hauv {{location}}",
+    "byRegion": "Tshawb nrhiav cov kev pabcuam los ntawm thaj chaw",
+    "states": "Cov Xeev"
   }
 }

@@ -146,14 +146,19 @@ The topic editor shows a warning when its source subtopic or suggestion
 changed (search or name) or is gone, with **Re-copy from source**, which
 updates the form for the admin to save. Editing a slug that live pages use
 shows that the ranking moves to the new URL; the old address redirects after
-Apply changes.
+Apply changes. A saved slug changes no page until then: the pages keep their
+current URL (the new one is a 404), and the topic editor says so while a
+live page's URL in the open locale still has another topic segment
+(`LandingTopicSlugWarning`, from the copy-context endpoint's sample path).
 
 **Names and slugs in every locale.** A topic is written in English. On
 create, an empty slug is filled from the name. Whenever the English name or
 copy changes, the `translateLandingTopic` job (queue `translation`) translates
 them into the tenant's other locales with `{…}` tags masked
 (`lib/templateTags.ts`), and sets each locale's slug from its translated name
-unless someone edited that slug. Slugs are lower-case ASCII: accents are
+unless someone edited that slug. Its writes take no `req`: the jobs of one
+run share it, and a Local API call with a `locale` writes that locale onto
+it, so concurrent topics saved into each other's locales. Slugs are lower-case ASCII: accents are
 dropped (`alimentación` → `alimentacion`). A name in a non-Latin script
 (Chinese, Arabic, Russian…) has no ASCII slug, so that locale's slug stays
 empty and its pages use the default locale's slug; the page is still in that
@@ -337,7 +342,11 @@ locale works without data entry. The index name's state suffix is dropped
 pattern, so parishes and boroughs keep their name. State names stay in
 English. The strings were machine-translated with `npm run sync-translations`
 and the county patterns then corrected by hand; where the local word was
-uncertain the English "County" is kept.
+uncertain the English "County" is kept. The default copy of head-final
+languages (Japanese, Korean, Chinese, Cantonese, Hindi, Gujarati, Nepali,
+Odia) is written place first ("King 카운티의 돌봄"); machine translation had
+swapped topic and place. `tests/landing-pages-locales.test.ts` checks that
+every locale has every English string with the same `{{tags}}`.
 
 **Translation.** Templates are written in English. Saving them queues the
 `translate` job like other Resource Directory texts
@@ -476,8 +485,9 @@ link) shows the topic's services across the whole tenant, never a redirect.
   events.
 
 The page labels (Home, the area headings) are in
-`public/locales/<locale>/landing-pages.json` under `page`; a locale without
-them uses English.
+`public/locales/<locale>/landing-pages.json` under `page`, in every locale
+(machine-translated; "Home" from "Home page", so it does not read as
+"house"). A locale missing one uses English.
 
 Home page topic cards are unchanged; they still open `/search`.
 

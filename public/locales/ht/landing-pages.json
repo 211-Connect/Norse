@@ -8,5 +8,17 @@
     "description": "Jwenn {{topic}} nan {{location}}: adrès, lè ouvèti ak kijan pou jwenn èd, nan men {{name}}.",
     "h1": "{{topic}} nan {{location}}",
     "intro": "Pwogram ak sèvis pou {{topic}} nan {{location}}. Rele 211 si ou bezwen èd pou jwenn youn ki bon pou ou."
+  },
+  "page": {
+    "home": "Paj dakèy",
+    "breadcrumbs": "Navigasyon Breadcrumb",
+    "counties": "Konte nan {{location}}",
+    "cities": "Vil nan {{location}}",
+    "otherAreas": "Chèche sèvis nan lòt rejyon yo",
+    "otherStates": "Lòt eta yo",
+    "otherCounties": "Lòt konte nan {{location}}",
+    "otherCities": "Lòt vil nan {{location}}",
+    "byRegion": "Chèche sèvis pa rejyon",
+    "states": "Eta yo"
   }
 }

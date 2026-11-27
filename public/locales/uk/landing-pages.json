@@ -8,5 +8,17 @@
     "description": "Знайдіть {{topic}} у {{location}}: адреси, години роботи та як отримати допомогу від {{name}}.",
     "h1": "{{topic}} у {{location}}",
     "intro": "Програми та послуги для {{topic}} у {{location}}. Зателефонуйте 211, якщо вам потрібна допомога у пошуку потрібної."
+  },
+  "page": {
+    "home": "Головна сторінка",
+    "breadcrumbs": "Навігація по хлібних крихтах",
+    "counties": "Округи в {{location}}",
+    "cities": "Міста в {{location}}",
+    "otherAreas": "Пошук послуг в інших регіонах",
+    "otherStates": "Інші штати",
+    "otherCounties": "Інші округи в {{location}}",
+    "otherCities": "Інші міста в {{location}}",
+    "byRegion": "Пошук послуг за регіоном",
+    "states": "Штати"
   }
 }

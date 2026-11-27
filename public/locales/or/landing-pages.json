@@ -4,9 +4,21 @@
     "place": "{{name}}, {{state}}"
   },
   "defaults": {
-    "title": "{{topic}} ରେ {{location}}",
-    "description": "{{topic}} କୁ {{location}} ରେ ଖୋଜନ୍ତୁ: ଠିକଣା, ସମୟ ଏବଂ ସାହାଯ୍ୟ କିପରି ପାଇବେ, {{name}} ରୁ।",
-    "h1": "{{topic}} ରେ {{location}}",
-    "intro": "{{topic}} ରେ {{location}} ପାଇଁ କାର୍ଯ୍ୟକ୍ରମ ଏବଂ ସେବା। ଯଦି ଆପଣଙ୍କୁ ସଠିକ୍ ଖୋଜିବାରେ ସାହାଯ୍ୟର ଆବଶ୍ୟକତା ଅଛି, ତେବେ 211 କୁ କଲ୍ କରନ୍ତୁ।"
+    "title": "{{location}} ରେ {{topic}}",
+    "description": "{{location}} ରେ {{topic}} ଖୋଜନ୍ତୁ: ଠିକଣା, ସମୟ ଏବଂ ସାହାଯ୍ୟ କିପରି ପାଇବେ, {{name}} ଠାରୁ।",
+    "h1": "{{location}} ରେ {{topic}}",
+    "intro": "{{location}} ରେ {{topic}} ପାଇଁ କାର୍ଯ୍ୟକ୍ରମ ଏବଂ ସେବା। ସଠିକ୍ ସେବା ଖୋଜିବାରେ ସାହାଯ୍ୟ ଦରକାର ହେଲେ 211 କୁ କଲ୍ କରନ୍ତୁ।"
+  },
+  "page": {
+    "home": "ମୂଳ ପୃଷ୍ଠା",
+    "breadcrumbs": "ବ୍ରେଡକ୍ରମ୍ବ ନାଭିଗେସନ୍",
+    "counties": "{{location}} ରେ ଥିବା କାଉଣ୍ଟିଗୁଡ଼ିକ",
+    "cities": "{{location}} ରେ ଥିବା ସହରଗୁଡ଼ିକ",
+    "otherAreas": "ଅନ୍ୟ ଅଞ୍ଚଳରେ ସେବାଗୁଡ଼ିକ ଖୋଜନ୍ତୁ",
+    "otherStates": "ଅନ୍ୟାନ୍ୟ ରାଜ୍ୟ",
+    "otherCounties": "{{location}} ରେ ଥିବା ଅନ୍ୟାନ୍ୟ କାଉଣ୍ଟିଗୁଡ଼ିକ",
+    "otherCities": "{{location}} ରେ ଥିବା ଅନ୍ୟାନ୍ୟ ସହରଗୁଡ଼ିକ",
+    "byRegion": "ଅଞ୍ଚଳ ଅନୁସାରେ ସେବା ଖୋଜନ୍ତୁ",
+    "states": "ରାଜ୍ୟଗୁଡ଼ିକ"
   }
 }

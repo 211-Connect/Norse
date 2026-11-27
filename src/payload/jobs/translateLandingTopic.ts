@@ -132,13 +132,15 @@ export const translateLandingTopic: TaskConfig<'translateLandingTopic'> = {
         }
       }
       if (Object.keys(data).length === 0) continue;
+      // No `req`: jobs of one run share it, and a Local API call writes its
+      // `locale` onto it, so concurrent topics would save into each other's
+      // locales (one topic's Amharic name landing in Spanish).
       await payload.update({
         collection: 'landing-page-topics',
         id: input.topicId,
         locale: locale as never,
         data,
         context: { skipLandingTopicTranslation: true },
-        req,
         trash: true,
       });
     }
