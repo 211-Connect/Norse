@@ -14,6 +14,7 @@ import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-co
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
 import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
 import { applyTemplateTags } from './applyTemplateTags';
+import { withMenuNameFallback } from './customMenu';
 
 /**
  * Builds a tenant's app config from its Payload documents. Reads the
@@ -448,12 +449,18 @@ export async function buildAppConfig(
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,
     footer: {
-      customMenu: resourceDirectory.footer?.customMenu ?? [],
+      customMenu: withMenuNameFallback(
+        resourceDirectory.footer?.customMenu,
+        englishResourceDirectory?.footer?.customMenu,
+      ),
       copyright: resourceDirectory.footer?.copyright ?? undefined,
       disclaimer: resourceDirectory.footer?.disclaimer ?? undefined,
     },
     header: {
-      customMenu: resourceDirectory.header?.customMenu ?? [],
+      customMenu: withMenuNameFallback(
+        resourceDirectory.header?.customMenu,
+        englishResourceDirectory?.header?.customMenu,
+      ),
       customHomeUrl: resourceDirectory.header?.customHomeUrl ?? undefined,
       favoritesButtonLabel:
         resourceDirectory.header?.favoritesButtonLabel ?? undefined,

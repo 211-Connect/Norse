@@ -5,6 +5,7 @@ import { createLogger } from '@/lib/logger';
 import { ResourceDirectory } from '@/payload/payload-types';
 import {
   AUTO_TRANSLATED_STRING_PATHS,
+  CUSTOM_MENU_PATHS,
   getChangedLocalizedPaths,
 } from '@/payload/utilities/getChangedLocalizedPaths';
 
@@ -92,6 +93,7 @@ export const autoTranslate: CollectionAfterChangeHook<
         'badges.list',
         'search.facets',
         'search.cardLayout',
+        ...CUSTOM_MENU_PATHS,
       ] as const;
 
       for (const prefix of flatPrefixes) {

@@ -21,6 +21,16 @@ type SearchCardLayoutItem = NonNullable<
   ResourceDirectory['search']['cardLayout']
 >[number];
 
+type CustomMenuItem = NonNullable<
+  NonNullable<ResourceDirectory['header']>['customMenu']
+>[number];
+
+/** Menus whose item names are auto-translated (see customMenuField.ts). */
+export const CUSTOM_MENU_PATHS = [
+  'header.customMenu',
+  'footer.customMenu',
+] as const;
+
 /**
  * The only `localized: true` fields on a Custom Attribute layout item
  * (see customAttributeFields.ts). icon/iconColor/size/titleBelow/url/urlTarget
@@ -383,6 +393,25 @@ function deepLocalizedDiff(
           }
         });
       });
+    });
+  });
+
+  // HEADER / FOOTER MENU ITEM NAMES (the links are shared by every locale)
+
+  CUSTOM_MENU_PATHS.forEach((menuPath) => {
+    const beforeMenu: CustomMenuItem[] = get(before, menuPath, []);
+    const afterMenu: CustomMenuItem[] = get(after, menuPath, []);
+    const beforeMenuMap = new Map(beforeMenu.map((item) => [item.id, item]));
+
+    afterMenu.forEach((afterItem, index) => {
+      const beforeName = beforeMenuMap.get(afterItem.id)?.name;
+      if (beforeName !== afterItem.name) {
+        changes.push({
+          path: `${menuPath}.${index}.name`,
+          before: beforeName,
+          after: afterItem.name,
+        });
+      }
     });
   });
 
