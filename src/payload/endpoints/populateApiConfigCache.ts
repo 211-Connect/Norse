@@ -7,6 +7,7 @@ import { Tenant } from '@/payload/payload-types';
 import { pushHybridSearchConfigToCache } from '../collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
 import { pushOrchestrationConfigToCache } from '../collections/OrchestrationConfig/hooks/pushOrchestrationConfigToCache';
 import { pushFacetsToCache } from '../collections/ResourceDirectories/hooks/pushFacetsToCache';
+import { pushPublicAppConfigToCache } from '../collections/ResourceDirectories/hooks/pushPublicAppConfigToCache';
 import { pushSuggestionsToCache } from '../collections/ResourceDirectories/hooks/pushSuggestionsToCache';
 import { pushTopicsToCache } from '../collections/ResourceDirectories/hooks/pushTopicsToCache';
 import { pushEnabledLocalesToCache } from '../collections/Tenants/hooks/pushEnabledLocalesToCache';
@@ -64,6 +65,7 @@ export const populateApiConfigCache: Endpoint = {
       let orchestrationConfigTriggered = 0;
       let analyticsConfigTriggered = 0;
       let hybridSearchConfigTriggered = 0;
+      let publicAppConfigTriggered = 0;
 
       for (const tenant of tenants) {
         const tenantId = tenant.id;
@@ -81,6 +83,9 @@ export const populateApiConfigCache: Endpoint = {
 
         await pushAnalyticsConfigToCache(tenant);
         analyticsConfigTriggered++;
+
+        await pushPublicAppConfigToCache(tenantId, req);
+        publicAppConfigTriggered++;
 
         const [resourceDirectory] = await payload
           .find({
@@ -161,6 +166,7 @@ export const populateApiConfigCache: Endpoint = {
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
           hybridSearchConfigTriggered,
+          publicAppConfigTriggered,
         },
         'API config cache population completed',
       );
@@ -177,6 +183,7 @@ export const populateApiConfigCache: Endpoint = {
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
           hybridSearchConfigTriggered,
+          publicAppConfigTriggered,
         },
         { status: 200 },
       );
