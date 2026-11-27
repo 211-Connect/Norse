@@ -16,7 +16,7 @@ const topicSegment = (path: string | null | undefined) => {
  * Below the slug (docs/landing-pages.md, Topics): while a slug that live
  * pages use is being edited, that their URLs move and the old ones answer
  * 308; once a new slug is saved, that the pages keep their old URL until
- * Apply changes.
+ * the address job (queued by the save) has moved them.
  */
 const LandingTopicSlugWarning = () => {
   const { id } = useDocumentInfo();
@@ -54,19 +54,18 @@ const LandingTopicSlugWarning = () => {
         {livePages === 1
           ? 'The old URL of its live page keeps'
           : `The old URLs of its ${livePages} live pages keep`}{' '}
-        working with a 308 redirect after Apply changes.
+        working with a 308 redirect.
       </p>
     );
   }
 
-  // Saved, not applied yet: the new URL is not live, the old one still is.
+  // Saved, the address job not run yet: the old URL is still the live one.
   if (saved && pagesSlug && pagesSlug !== saved) {
     return (
-      <p className="landing-topic-note landing-topic-note--warn">
-        The pages still use <code>/{pagesSlug}/…</code>. Click Apply changes on
-        the Resource Directory&apos;s Landing Pages tab to move them to{' '}
-        <code>/{saved}/…</code>; until then the new URLs answer 404, and
-        afterwards the old ones redirect.
+      <p className="landing-topic-note">
+        The pages are moving from <code>/{pagesSlug}/…</code> to{' '}
+        <code>/{saved}/…</code>; this takes about a minute. Afterwards the old
+        URLs redirect.
       </p>
     );
   }

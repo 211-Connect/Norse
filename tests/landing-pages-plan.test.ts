@@ -9,6 +9,7 @@ import {
   type PlanTopic,
   type SelectedRegion,
   planGeneration,
+  topicAddressPlan,
 } from '../src/app/(app)/features/landing-pages/lib/plan';
 
 const PIERCE: SelectedRegion = {
@@ -306,5 +307,66 @@ describe('planGeneration', () => {
     assert.ok(plan.conflicts.length > 0);
     const paths = plan.slugInserts.map((s) => s.path);
     assert.equal(new Set(paths).size, paths.length);
+  });
+});
+
+describe('topicAddressPlan', () => {
+  const HOUSING: PlanTopic = {
+    id: 2,
+    trashed: false,
+    slugs: { en: 'housing' },
+    names: { en: 'Housing' },
+    search: { queryType: 'text', query: 'housing' },
+  };
+
+  test("moves only that topic's existing pages, in every locale", () => {
+    // Generated before the Spanish slug was translated: es uses `food`.
+    const first = generate(
+      base({
+        regions: [TACOMA],
+        topics: [
+          { ...FOOD, slugs: { en: 'food' }, names: { en: 'Food' } },
+          HOUSING,
+        ],
+      }),
+    ).next;
+    const input: PlanInput = {
+      ...first,
+      // Now: Spanish translated, a housing slug edit and a new region wait.
+      regions: [TACOMA, PIERCE],
+      topics: [FOOD, { ...HOUSING, slugs: { en: 'homes' } }],
+    };
+    const plan = topicAddressPlan(planGeneration(input), input, FOOD.id);
+    assert.deepEqual(plan.creates, []);
+    assert.deepEqual(plan.pageUpdates, []);
+    assert.equal(plan.summary.addressChanges, 2); // Tacoma and the state, in es
+    const after = apply(input, plan);
+    const current = after.slugs
+      .filter((s) => s.current)
+      .map((s) => `${s.locale}/${s.path}`)
+      .sort();
+    assert.deepEqual(current, [
+      'en/food/tacoma-wa',
+      'en/food/washington',
+      'en/housing/tacoma-wa', // housing waits for Apply changes
+      'en/housing/washington',
+      'es/alimentos/tacoma-wa',
+      'es/alimentos/washington',
+      'es/housing/tacoma-wa',
+      'es/housing/washington',
+    ]);
+    // The old Spanish URLs stay, not current, so they redirect.
+    assert.ok(
+      after.slugs.some(
+        (s) => s.path === 'food/tacoma-wa' && s.locale === 'es' && !s.current,
+      ),
+    );
+    // Nothing left for the topic afterwards.
+    const again = topicAddressPlan(
+      planGeneration({ ...input, ...after }),
+      { ...input, ...after },
+      FOOD.id,
+    );
+    assert.equal(again.slugInserts.length + again.slugUpdates.length, 0);
   });
 });

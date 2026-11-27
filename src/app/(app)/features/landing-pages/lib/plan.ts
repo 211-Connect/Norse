@@ -451,3 +451,45 @@ export function planGeneration(input: PlanInput): GenerationPlan {
     },
   };
 }
+
+/**
+ * Only the address changes of one topic's existing pages: what a slug edit
+ * or translation applies at once, without Apply changes. New, retired and
+ * revived pages and address moves between pages wait for Apply changes.
+ */
+export function topicAddressPlan(
+  plan: GenerationPlan,
+  input: Pick<PlanInput, 'pages' | 'slugs'>,
+  topicId: number,
+): GenerationPlan {
+  const pageIds = new Set(
+    input.pages.filter((page) => page.topicId === topicId).map((p) => p.id),
+  );
+  const slugPage = new Map(input.slugs.map((slug) => [slug.id, slug.pageId]));
+  const ours = (ref: PageRef) => 'id' in ref && pageIds.has(ref.id);
+  const slugInserts = plan.slugInserts.filter((insert) => ours(insert.page));
+  const slugUpdates = plan.slugUpdates.filter((update) =>
+    // A row moved onto one of the topic's pages, or one of its own rows.
+    update.page
+      ? ours(update.page)
+      : pageIds.has(slugPage.get(update.id) ?? -1),
+  );
+  return {
+    creates: [],
+    pageUpdates: [],
+    slugInserts,
+    slugUpdates,
+    // Conflicts are shown by the Apply changes preview, which plans them all.
+    conflicts: [],
+    summary: {
+      creates: 0,
+      retires: 0,
+      revives: 0,
+      unchanged: 0,
+      // A move: an address that stops being current.
+      addressChanges: slugUpdates.filter((update) => !update.current).length,
+      redirectsUpdated: 0,
+      conflicts: 0,
+    },
+  };
+}

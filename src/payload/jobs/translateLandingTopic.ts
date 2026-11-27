@@ -12,6 +12,7 @@ import {
 import { createLogger } from '@/lib/logger';
 
 import { defaultLocale } from '../i18n/locales';
+import { applyTopicAddresses } from '../services/landingPagesGeneration';
 import { batchTranslate } from '../services/translationService';
 
 const log = createLogger('translateLandingTopic');
@@ -113,6 +114,7 @@ export const translateLandingTopic: TaskConfig<'translateLandingTopic'> = {
 
     const names = read(topic, 'name');
     const slugs = read(topic, 'slug');
+    let slugChanged = false;
     for (const locale of targets) {
       const data: Record<string, unknown> = {};
       const copy: Record<string, string> = {};
@@ -129,6 +131,7 @@ export const translateLandingTopic: TaskConfig<'translateLandingTopic'> = {
         const current = slugs[locale] ?? null;
         if (!current || current === autoTopicSlug(names[locale])) {
           data.slug = autoTopicSlug(data.name);
+          if (data.slug !== current) slugChanged = true;
         }
       }
       if (Object.keys(data).length === 0) continue;
@@ -153,6 +156,18 @@ export const translateLandingTopic: TaskConfig<'translateLandingTopic'> = {
       },
       'Landing topic translated',
     );
+    // Pages generated before the translation finished still use the
+    // default locale's slug in these locales: move them now.
+    if (slugChanged) {
+      try {
+        await applyTopicAddresses(tenantId, input.topicId);
+      } catch (error) {
+        log.error(
+          { err: error, topicId: input.topicId },
+          'Failed to apply translated slugs; Apply changes will',
+        );
+      }
+    }
     return { output: { translated: requests.length } };
   },
 };

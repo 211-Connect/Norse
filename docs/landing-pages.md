@@ -145,10 +145,13 @@ lists the sources and compares a topic with its source.
 The topic editor shows a warning when its source subtopic or suggestion
 changed (search or name) or is gone, with **Re-copy from source**, which
 updates the form for the admin to save. Editing a slug that live pages use
-shows that the ranking moves to the new URL; the old address redirects after
-Apply changes. A saved slug changes no page until then: the pages keep their
-current URL (the new one is a 404), and the topic editor says so while a
-live page's URL in the open locale still has another topic segment
+shows that the ranking moves to the new URL and the old address redirects.
+Saving the slug moves the topic's pages on its own, with no Apply changes:
+the topic's afterChange hook (`queueAddressUpdate`) queues the
+`generateLandingPages` job with `{ tenantId, topicId }`, which writes only
+that topic's address changes (`topicAddressPlan` in `lib/plan.ts`, then
+`applyTopicAddresses`). Until the job has run, within about a minute, the
+pages keep their old URL and the topic editor says so
 (`LandingTopicSlugWarning`, from the copy-context endpoint's sample path).
 
 **Names and slugs in every locale.** A topic is written in English. On
@@ -156,7 +159,11 @@ create, an empty slug is filled from the name. Whenever the English name or
 copy changes, the `translateLandingTopic` job (queue `translation`) translates
 them into the tenant's other locales with `{…}` tags masked
 (`lib/templateTags.ts`), and sets each locale's slug from its translated name
-unless someone edited that slug. Its writes take no `req`: the jobs of one
+unless someone edited that slug. When a slug changed, it then moves that
+topic's pages to the new slugs (`applyTopicAddresses`), so pages generated
+before the translation finished don't keep the English slug in those
+locales (`/es/home-delivered-meals/…` → 308 `/es/comidas-a-domicilio/…`).
+Its writes take no `req`: the jobs of one
 run share it, and a Local API call with a `locale` writes that locale onto
 it, so concurrent topics saved into each other's locales. Slugs are lower-case ASCII: accents are
 dropped (`alimentación` → `alimentacion`). A name in a non-Latin script
@@ -267,7 +274,13 @@ the tenant's enabled locales and the existing rows. `previewLandingPages`
 returns the plan for the confirmation; the `generateLandingPages` job (queue
 `landingPages`, input `{ tenantId }`, no retries) writes it in one transaction
 with bulk SQL (`src/payload/services/landingPagesGeneration.ts`), so generated
-rows get a Payload version only once someone edits them.
+rows get a Payload version only once someone edits them. With `topicId` in
+its input it writes only that topic's moved URLs and redirects (no new or
+retired pages, no warm-up); a slug save and the translation job use that, and
+`getLandingGenerationStatus` ignores those runs. Every writer first takes a
+transaction-scoped advisory lock on the tenant
+(`pg_advisory_xact_lock(hashtext('landing_pages:<tenant>'))`) and reads the
+rows after it, so two runs never plan from the same stale rows.
 `getLandingGenerationStatus` reads the tenant's latest run from the jobs
 collection (queued, running, done with its counts, failed). Finished jobs are
 deleted, so "last generated" falls back to the newest page update. The
@@ -289,8 +302,8 @@ Rules the plan follows:
   brings its pages back on the next Apply changes. A topic with pages can't
   be deleted from the trash for good. Its slugs stay reserved while it is in
   the trash, so a new topic can't take over its old URLs.
-- An address change (topic slug edited) makes the new path current and keeps
-  the old row, which then redirects. Going back to an old slug makes that row
+- An address change (topic slug edited or translated) makes the new path
+  current and keeps the old row, which then redirects. Going back to an old slug makes that row
   current again. Two pages that would share an address are reported as
   conflicts and the second one is skipped.
 

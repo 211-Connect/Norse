@@ -109,6 +109,40 @@ const queueTranslation: CollectionAfterChangeHook = async ({
 };
 
 /**
+ * A slug saved on a topic with pages moves them to it without Apply changes:
+ * the generation job, with `topicId`, after this save commits (the old
+ * URLs redirect). The translation job applies the slugs it sets itself.
+ */
+const queueAddressUpdate: CollectionAfterChangeHook = async ({
+  doc,
+  previousDoc,
+  operation,
+  req,
+  context,
+}) => {
+  if (operation !== 'update' || context?.skipLandingTopicTranslation) {
+    return doc;
+  }
+  if ((doc.slug ?? null) === (previousDoc?.slug ?? null)) return doc;
+  const tenantId = tenantIdOf(doc.tenant);
+  if (!tenantId) return doc;
+  try {
+    await req.payload.jobs.queue({
+      task: 'generateLandingPages',
+      input: { tenantId, topicId: doc.id },
+      queue: 'landingPages',
+      req,
+    });
+  } catch (error) {
+    log.error(
+      { err: error, topicId: doc.id },
+      'Failed to queue landing topic address update; save continues',
+    );
+  }
+  return doc;
+};
+
+/**
  * Pages keep their topic for good (a retired page redirects to the topic's
  * search), so a topic with pages stays in the trash rather than being
  * deleted for good. Moving it to the trash is an update, not a delete.
@@ -154,7 +188,7 @@ export const LandingPageTopics: CollectionConfig = {
   trash: true,
   hooks: {
     beforeChange: [fillSlug],
-    afterChange: [queueTranslation],
+    afterChange: [queueTranslation, queueAddressUpdate],
     beforeDelete: [refuseDeleteWithPages],
   },
   admin: {

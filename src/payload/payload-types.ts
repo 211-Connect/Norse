@@ -2947,6 +2947,7 @@ export interface TaskDeliverScheduledPdfs {
 export interface TaskGenerateLandingPages {
   input: {
     tenantId: string;
+    topicId?: number | null;
   };
   output: {
     creates: number;

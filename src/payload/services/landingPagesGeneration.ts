@@ -11,6 +11,7 @@ import {
   type SelectedRegion,
   planGeneration,
   regionLabel,
+  topicAddressPlan,
 } from '@/app/(app)/features/landing-pages/lib/plan';
 import { buildSearchUrl } from '@/app/(app)/features/search/utils/buildSearchUrl';
 import { createLogger } from '@/lib/logger';
@@ -278,13 +279,29 @@ async function writePlan(
   }
 }
 
+/**
+ * One writer of a tenant's pages and addresses at a time (Apply changes, a
+ * topic's address update), until the transaction ends. The plan is read
+ * after the lock, so it sees what the previous writer committed.
+ */
+async function lockTenant(tx: SqlExecutor, tenantId: string): Promise<void> {
+  await tx.execute(sql`
+    SELECT
+      pg_advisory_xact_lock(hashtext (${`landing_pages:${tenantId}`}))
+  `);
+}
+
 /** Plans and writes the tenant's landing pages; returns what changed. */
 export async function generateLandingPages(
   tenantId: string,
 ): Promise<PlanSummary & { conflictList: string[] }> {
   const payload = await getPayloadSingleton();
-  const plan = planGeneration(await loadInput(payload, tenantId));
-  await db(payload).transaction((tx) => writePlan(tx, tenantId, plan));
+  const plan = await db(payload).transaction(async (tx) => {
+    await lockTenant(tx, tenantId);
+    const planned = planGeneration(await loadInput(payload, tenantId));
+    await writePlan(tx, tenantId, planned);
+    return planned;
+  });
   log.info(
     { event: 'landing_pages_generated', tenantId, ...plan.summary },
     'Landing pages generated',
@@ -300,6 +317,38 @@ export async function generateLandingPages(
     );
   }
   return { ...plan.summary, conflictList: plan.conflicts.slice(0, 200) };
+}
+
+/**
+ * Moves one topic's existing pages to its current slugs in every locale
+ * (old URLs redirect), without the rest of Apply changes: run when a slug
+ * is saved or translated (docs/landing-pages.md, Topics). Returns the
+ * number of moved addresses.
+ */
+export async function applyTopicAddresses(
+  tenantId: string,
+  topicId: number,
+): Promise<number> {
+  const payload = await getPayloadSingleton();
+  const plan = await db(payload).transaction(async (tx) => {
+    await lockTenant(tx, tenantId);
+    const input = await loadInput(payload, tenantId);
+    const planned = topicAddressPlan(planGeneration(input), input, topicId);
+    await writePlan(tx, tenantId, planned);
+    return planned;
+  });
+  if (plan.slugInserts.length === 0 && plan.slugUpdates.length === 0) return 0;
+  log.info(
+    {
+      event: 'landing_topic_addresses_applied',
+      tenantId,
+      topicId,
+      moved: plan.summary.addressChanges,
+      inserted: plan.slugInserts.length,
+    },
+    'Landing topic addresses applied',
+  );
+  return plan.summary.addressChanges;
 }
 
 export type LandingGenerationStatus = {
@@ -322,9 +371,11 @@ export async function getLandingGenerationStatus(
     limit: 50,
     depth: 0,
   });
-  const job = docs.find(
-    (doc) => (doc.input as { tenantId?: string } | null)?.tenantId === tenantId,
-  );
+  // Apply changes runs only: a topic's address update (`topicId`) is not one.
+  const job = docs.find((doc) => {
+    const input = doc.input as { tenantId?: string; topicId?: number } | null;
+    return input?.tenantId === tenantId && !input.topicId;
+  });
   if (!job) return { state: 'never' };
   const output = job.log?.findLast((entry) => entry.state === 'succeeded')
     ?.output as PlanSummary | undefined;
